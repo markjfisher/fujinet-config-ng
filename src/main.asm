@@ -1,12 +1,6 @@
-; WUDSN IDE Atari Rainbow Example - MADS syntax
+; Load the relocatable main wherever we want 
 
-      org $4000 ; Start of code
+      org $2000
+      .link 'libs/main_reloc.obx'
 
-start lda #0    ; Disable screen DMA
-      sta 559
-
-      doloop
-
-      .link 'libs/loop-part.obx'
-
-      run start ; Define run address
+      run start

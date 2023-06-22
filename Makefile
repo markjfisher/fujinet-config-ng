@@ -23,12 +23,9 @@ $(BUILDDIR):
 $(LIBS_OUT):
 	@$(call MKDIR,$@)
 
-TARGET_FILES := $(LIBS_OUT)/loop-part.obx $(LIBS_OUT)/other.obx
+TARGET_FILES := $(LIBS_OUT)/main_reloc.obx
 
-$(LIBS_OUT)/loop-part.obx: $(LIBS)/loop-part.asm | $(LIBS_OUT)
-	mads -o:$@ $(subst build,src,$@)
-
-$(LIBS_OUT)/other.obx: $(LIBS)/other.asm | $(LIBS_OUT)
+$(LIBS_OUT)/main_reloc.obx: $(LIBS)/main_reloc.asm | $(LIBS_OUT)
 	mads -o:$@ $(subst build,src,$@)
 
 $(BUILDDIR)/main.xex: $(TARGET_FILES) | $(BUILDDIR)

@@ -1,2 +1,0 @@
-        .reloc
-    pha

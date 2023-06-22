@@ -1,7 +1,8 @@
-        .public doloop
         .reloc
+        .public start
 
-doloop  .proc
+start lda #0    ; Disable screen DMA
+      sta 559
 
 loop  lda $d40b ; Load VCOUNT
       clc
@@ -10,4 +11,5 @@ loop  lda $d40b ; Load VCOUNT
       sta $d01a ; Change background color
       jmp loop
 
-      .endp
+      blk update address
+      blk update public
