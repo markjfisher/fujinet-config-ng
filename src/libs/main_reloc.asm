@@ -1,15 +1,9 @@
-        .reloc
-        .public start
+      .extrn p3, io_init .proc
 
-start lda #0    ; Disable screen DMA
-      sta 559
+      .public start
+      .reloc
 
-loop  lda $d40b ; Load VCOUNT
-      clc
-      adc 20    ; Add counter
-      sta $d40a
-      sta $d01a ; Change background color
-      jmp loop
-
-      blk update address
-      blk update public
+start
+      io_init
+      p3
+      rts

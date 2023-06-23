@@ -23,10 +23,25 @@ $(BUILDDIR):
 $(LIBS_OUT):
 	@$(call MKDIR,$@)
 
-TARGET_FILES := $(LIBS_OUT)/main_reloc.obx
+TARGET_FILES :=  $(LIBS_OUT)/main_reloc.obx \
+	$(LIBS_OUT)/atari/os.obx \
+	$(LIBS_OUT)/atari/p1.obx \
+	$(LIBS_OUT)/atari/procs.obx
+
+$(LIBS_OUT)/atari/os.obx: $(LIBS)/atari/os.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/atari)
+	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
+
+$(LIBS_OUT)/atari/p1.obx: $(LIBS)/atari/p1.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/atari)
+	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
+
+$(LIBS_OUT)/atari/procs.obx: $(LIBS)/atari/procs.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/atari)
+	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
 
 $(LIBS_OUT)/main_reloc.obx: $(LIBS)/main_reloc.asm | $(LIBS_OUT)
-	mads -o:$@ $(subst build,src,$@)
+	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
 
 $(BUILDDIR)/main.xex: $(TARGET_FILES) | $(BUILDDIR)
 	@echo "================================================================"
