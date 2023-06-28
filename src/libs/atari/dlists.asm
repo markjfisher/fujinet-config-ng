@@ -3,6 +3,8 @@
 ; Heavily influenced by U1MB/S3 by FJC.
 
     icl "inc/antic.inc"
+    icl "inc/gtia.inc"
+    icl "../macros.mac"
 
     .public init_dl
     .reloc
@@ -15,6 +17,70 @@ init_dl .proc
         mwa #dlist SDLSTL
         rts
 .endp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DLI routines for dlist
+
+; top of the screen
+dli_0
+        pushAX
+        lda s_col_1
+        ldx s_col_0
+        sta wsync
+        sta colpf1
+        stx colpf2
+
+        mva #$22 dmactl
+        mva #$34 hposp3
+        mva #$03 sizep3
+        jmp next_dli
+
+dli_1
+        pushAX
+        ldx #$fe
+        mva #$22 wsync
+        stx grafp0
+        inx
+        stx grafp3
+        sta dmactl
+        bne next_dli
+
+
+
+; change to next dli routine in the table
+next_dli
+        inc i_dli
+        ldx i_dli
+        mva dli_tl,x VDSLST
+        mva dli_th,x VDSLST+1
+        pullAX
+        rti
+
+; end of the screen
+dli_17
+        pushAX
+        mva s_col_2 wsync
+        sta colpf1
+        mva #$ff i_dli
+        jmp next_dli
+
+; colour values
+s_col_0 dta $10
+s_col_1 dta $18
+s_col_2 dta $1e
+
+i_dli   dta $00 ; dli routine index
+
+; table of dli addresses. use mads looping to define them all from 0..17
+dli_tl
+    .rept 2, #
+    dta l(dli_:1)
+    .endr
+
+dli_th
+    .rept 2, #
+    dta h(dli_:1)
+    .endr
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; main display list
@@ -106,6 +172,7 @@ dlist
         ; finally, wsync jump back to top
         dta DL_JVB, a(dlist)
 
+; END OF DLIST
 
 gl1     ; a few lines of graphics for the curved section above main graphics
         dta $0f
@@ -165,3 +232,4 @@ m_l9    dta d'  line 9            123456789012345678  '
 m_l10   dta d'  line 10           123456789012345678  '
 m_help  dta d'  help line         123456789012345678  '
 m_prf   dta d'  profile           123456789012345678  '
+

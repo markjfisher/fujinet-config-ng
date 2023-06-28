@@ -1,5 +1,6 @@
 ;;; antic codes and addresses for display list handling
 
+VDSLST  = $0200
 SDLSTL  = $0230
 
 dmactl	= $d400

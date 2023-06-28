@@ -1,0 +1,11 @@
+.macro pushAX
+    pha
+    txa
+    pha
+.endm
+
+.macro pullAX
+    pla
+    tax
+    pla
+.endm
