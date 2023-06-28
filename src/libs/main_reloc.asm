@@ -1,9 +1,13 @@
-      .extrn p3, io_init .proc
+      .extrn io_init    .proc
+      .extrn init_dl    .proc
 
       .public start
       .reloc
 
 start
       io_init
-      p3
+      init_dl
+
+      jmp *
+
       rts

@@ -4,7 +4,6 @@
 
       .link 'libs/main_reloc.obx'
       .link 'libs/atari/os.obx'
-      .link 'libs/atari/procs.obx'
-      .link 'libs/atari/p1.obx'
+      .link 'libs/atari/dlists.obx'
 
       run start

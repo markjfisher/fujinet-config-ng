@@ -25,28 +25,29 @@ $(LIBS_OUT):
 
 TARGET_FILES :=  $(LIBS_OUT)/main_reloc.obx \
 	$(LIBS_OUT)/atari/os.obx \
-	$(LIBS_OUT)/atari/p1.obx \
-	$(LIBS_OUT)/atari/procs.obx
+	$(LIBS_OUT)/atari/dlists.obx
+
+# OTHER
+
+$(LIBS_OUT)/main_reloc.obx: $(LIBS)/main_reloc.asm | $(LIBS_OUT)
+	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
+
+# ATARI specific
 
 $(LIBS_OUT)/atari/os.obx: $(LIBS)/atari/os.asm | $(LIBS_OUT)
 	$(call MKDIR,$(LIBS_OUT)/atari)
 	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
 
-$(LIBS_OUT)/atari/p1.obx: $(LIBS)/atari/p1.asm | $(LIBS_OUT)
+$(LIBS_OUT)/atari/dlists.obx: $(LIBS)/atari/dlists.asm | $(LIBS_OUT)
 	$(call MKDIR,$(LIBS_OUT)/atari)
-	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
+	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/dlists.lst $(subst build,src,$@)
 
-$(LIBS_OUT)/atari/procs.obx: $(LIBS)/atari/procs.asm | $(LIBS_OUT)
-	$(call MKDIR,$(LIBS_OUT)/atari)
-	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
-
-$(LIBS_OUT)/main_reloc.obx: $(LIBS)/main_reloc.asm | $(LIBS_OUT)
-	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
+## EXECUTABLE
 
 $(BUILDDIR)/main.xex: $(TARGET_FILES) | $(BUILDDIR)
 	@echo "================================================================"
 	@echo "Building $@"	@echo "LIB_FILES: $(LIB_FILES)"
-	mads -o:$@ -i:$(BUILDDIR) src/$(notdir $(@:.xex=.asm))
+	mads -o:$@ -i:$(BUILDDIR) -l:build/main.lst src/$(notdir $(@:.xex=.asm))
 
 clean:
 	@rm -rf $(BUILDDIR)/*
