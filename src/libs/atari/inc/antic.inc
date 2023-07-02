@@ -16,6 +16,12 @@ nmien	= $d40e
 nmist	= $d40f
 nmires	= $d40f
 
+PIA   	EQU	$D300
+PORTA 	EQU	PIA+0
+PORTB 	EQU	PIA+1
+PACTL 	EQU	PIA+2
+PBCTL 	EQU	PIA+3
+
 ; absolute instructions (non mode lines)
 
 DL_JMP  = $01

@@ -18,13 +18,37 @@ init_dl .proc
         ; turn off screen and IRQs while we change things
         jsr init_screen
 
-        ; make new dlist active
+        ; setup VBLANK routine
+        mwa #do_vblank vvblki
+
+        ; point to the new dlist instructions
         mwa #dlist dlistl
 
-        ; setup VBLANK routine
-        jsr init_vlank
+        mvy #$01 prior      ; Player 0 - 3, playfield 0 - 3, BAK
+        iny
+        sty chactl          ; cursor: opaque/absent
+        mva #$e0 chbase     ; fonts e400
 
-        jsr init_nmi
+        mva #$30 hposp1
+        mva #$c8 hposp2
+        mva #$c7 hposm0
+        mvy #$00 zpv1
+        sty      sizep1
+        sty      sizep2
+        sty      sizep3
+        sty      hposm1
+        sty      hposm2
+        sty      hposm3
+        iny
+        sty sizep0
+
+        ;; whole routine started at $c31e, ends up affecting PACTL
+        mva #$3c PACTL      ; cassette motor off, porta register
+
+        jsr highlight_current_option
+
+        ; now need to fill lines with text for current option
+        jsr fill_lines
 
         ; show screen, implicit RTS at the end
         jmp show_screen
@@ -33,11 +57,11 @@ init_dl .proc
 
 ; clear sdmctl and gractl at start of screen.
 init_screen
-        mva #$00 nmien    ; don't allow interrupts while we work
+        mva #$00 nmien      ; don't allow interrupts while we work
         jsr wait_scan1
         mva #$00 sdmctl
         sta      gractl
-        jmp wait_scan1
+        jmp wait_scan1      ; implicit RTS
 
 wait_scan1
         ; use MADS 'repeat' loops to wait for VCOUNT = 0, then VCOUNT = 1
@@ -45,38 +69,42 @@ wait_scan1
         lda:req vcount
         rts
 
-init_nmi
-        rts
-
 show_screen
         rts
 
+highlight_current_option
+        jsr wait_scan1
+        ldx i_opt
+        mva opt_hp,x hposp0
+        rts
 
-do_nmi
-        bit nmist
-        bpl not_dli
-        jmp (VDSLST)
-
-not_dli
-        cld
-        phr
-        sta nmires
-        jmp (vvblki)
+fill_lines
+        ; this will call the option specific routine to display lines of text
+        ; and will eventually move out of this file
+        rts
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VBLANK routine
 
 do_vblank
         lda sdmctl
-        
+        bne screen_active
+        sta colbk
+        rts
 
+screen_active
+
+        rts
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DLI routines for dlist
 
 ; these use 3 color values and rotate around to achieve
 ; the correct background/foreground colours for text
-; and graphics at each part of the screen as it changes
+; and graphics at each part of the screen as it changes.
+; Players are used for the side bars, and highlighting current option.
+; The DLIs setup dmactl to set bytes per line.
+; Reverse engineered from U1MB by FJC.
 
 ; top of the screen
 dli_0
@@ -216,6 +244,9 @@ s_col_2 dta $1e
 ; dli routine index
 i_dli   dta $00
 
+; current option
+i_opt   dta $00
+
 ;;; used in grafm in L1
 v_unkn1 dta $00
 
@@ -225,6 +256,9 @@ l_brightness
 
 ; goes into grafm, unsure what for yet
 v_unkn2 dta $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+; table of hposp0 positions for the options on top
+opt_hp  dta $53, $61, $6f, $7e, $8c, $9a, $a8, $b6
 
 ; tables of dli L/H addresses.
 ; use mads looping to define them all from 0..17
@@ -394,4 +428,4 @@ m_help  dta d'  help line         123456789012345678  '
 m_prf   dta d'  profile           123456789012345678  '
 
 ; hold a few ZP vars for bits and bobs
-.zpvar zpv1 zpv2 zpv3 zpv4 .byte
+.zpvar zpv1 .byte
