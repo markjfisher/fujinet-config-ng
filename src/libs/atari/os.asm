@@ -2,6 +2,8 @@
     .reloc
 
 ; Yet to decide if a struct is better than just constants
+; nice having __os. to show it's os related routine
+; but requires a large struct to be setup.
 __os  .struct
     _f1 :559 .byte          ; skip $0000-$022e
     
@@ -31,13 +33,6 @@ __os  .struct
 io_init     .proc
     mva #$ff __os.noclik
     mva #$00 __os.shflok
-    mva #$aa __os.color0
-    mva #$e4 __os.color1        ; brightness of the white/main background
-    mva #$90 __os.color2
-    mva #$55 __os.color3
-    mva #$90 __os.color4
-    ; mva #$01 __os.coldst
-    ; mva #$00 __os.sdmctl
     rts
 .endp
 

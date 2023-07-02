@@ -4,22 +4,79 @@
 
     icl "inc/antic.inc"
     icl "inc/gtia.inc"
+    icl "inc/os.inc"
     icl "../macros.mac"
 
     .public init_dl
     .reloc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; initialise display list
+; initialise display
+; sets up dlist memory, and DLI/VBLANK/NMI routines
 
 init_dl .proc
+        ; turn off screen and IRQs while we change things
+        jsr init_screen
+
         ; make new dlist active
-        mwa #dlist SDLSTL
-        rts
+        mwa #dlist dlistl
+
+        ; setup VBLANK routine
+        jsr init_vlank
+
+        jsr init_nmi
+
+        ; show screen, implicit RTS at the end
+        jmp show_screen
+
 .endp
+
+; clear sdmctl and gractl at start of screen.
+init_screen
+        mva #$00 nmien    ; don't allow interrupts while we work
+        jsr wait_scan1
+        mva #$00 sdmctl
+        sta      gractl
+        jmp wait_scan1
+
+wait_scan1
+        ; use MADS 'repeat' loops to wait for VCOUNT = 0, then VCOUNT = 1
+        lda:rne vcount
+        lda:req vcount
+        rts
+
+init_nmi
+        rts
+
+show_screen
+        rts
+
+
+do_nmi
+        bit nmist
+        bpl not_dli
+        jmp (VDSLST)
+
+not_dli
+        cld
+        phr
+        sta nmires
+        jmp (vvblki)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; VBLANK routine
+
+do_vblank
+        lda sdmctl
+        
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DLI routines for dlist
+
+; these use 3 color values and rotate around to achieve
+; the correct background/foreground colours for text
+; and graphics at each part of the screen as it changes
 
 ; top of the screen
 dli_0
@@ -35,26 +92,107 @@ dli_0
         mva #$03 sizep3
         jmp next_dli
 
+; top of outer curve
 dli_1
         pushAX
         ldx #$fe
         mva #$22 wsync
-        stx grafp0
+        stx      grafp0
         inx
         stx grafp3
-        sta dmactl
+        sta dmactl          ; #$22: enable DMA Fetch + normal playerfield
         bne next_dli
 
+; above status
+dli_2
+        pushAX
+        lda s_col_2
+        ldx s_col_1
+        sta wsync
+        sta colpf1
+        stx colpf2
 
+        mva #$00 grafp0
+        sta      grafp3
+        mva #$fc grafp1
+        mva #$3f grafp2
+        bne next_dli
+
+; top of inner curve
+dli_3
+        pushAX
+        lda s_col_1
+        ldx s_col_0
+        sta wsync
+        sta colpf1
+        stx colpf2
+        bne next_dli
+
+; top of L1
+dli_4
+        pushAX
+        lda l_brightness
+        and s_col_2
+        sta wsync
+        sta colpf1
+        mva #$21 dmactl     ; enable DMA fetch + narrow playfield
+        mva v_unkn1 grafm   ; ? PM data $00 ?
+        ; run into next_dli
 
 ; change to next dli routine in the table
 next_dli
         inc i_dli
         ldx i_dli
-        mva dli_tl,x VDSLST
-        mva dli_th,x VDSLST+1
+        mva dli_tl,x vdslst
+        mva dli_th,x vdslst+1
         pullAX
         rti
+
+; L2..L10, or dli_5 to dli_13
+        .rept 9, #+5
+dli_:1
+        .endr
+
+        pushAX
+        ldx i_dli
+        ; adjust to table of brightnesses for line index
+        lda l_brightness - 4, x
+        and s_col_2
+        sta wsync
+        sta colpf1
+        lda v_unkn2 - 5, x
+        sta grafm           ; missile - seems to be 00, but see if it changes
+        jmp next_dli
+
+; top of close inner curve (smaller section before help text)
+dli_14
+        pushAX
+        mva s_col_1 wsync
+        sta colpf1
+        mva #$22 dmactl
+        mva #$00 grafm
+        beq next_dli
+
+; bottom of close inner curve (still above help)
+dli_15
+        pushAX
+        lda s_col_2
+        ldx s_col_1
+        sta wsync
+        sta colpf1
+        stx colpf2
+        jmp next_dli
+
+; bootom of profile line
+dli_16
+        pushAX
+        ldx s_col_0
+        mva #$00 wsync
+        sta      grafp1
+        sta      grafp2
+        stx colpf2
+        mva s_col_1 colpf1
+        jmp next_dli
 
 ; end of the screen
 dli_17
@@ -64,21 +202,40 @@ dli_17
         mva #$ff i_dli
         jmp next_dli
 
-; colour values
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; DATA
+
+; colour values. high nyble is the colour number. low is dark/medium/high brightness
 s_col_0 dta $10
 s_col_1 dta $18
 s_col_2 dta $1e
 
-i_dli   dta $00 ; dli routine index
+; dli routine index
+i_dli   dta $00
 
-; table of dli addresses. use mads looping to define them all from 0..17
+;;; used in grafm in L1
+v_unkn1 dta $00
+
+; line 1 to 10. $08 = dark text, $0e = bright text
+l_brightness
+        dta $0e, $08, $0e, $08, $0e, $08, $0e, $08, $0e, $08
+
+; goes into grafm, unsure what for yet
+v_unkn2 dta $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+; tables of dli L/H addresses.
+; use mads looping to define them all from 0..17
+; note using l() and h() works with relocatable code. using < and > didn't
 dli_tl
-    .rept 2, #
+    .rept 18, #
     dta l(dli_:1)
     .endr
 
 dli_th
-    .rept 2, #
+    .rept 18, #
     dta h(dli_:1)
     .endr
 
@@ -219,17 +376,22 @@ goutbtm2
 
 ghd     ins 'fn320x24.hex'
 
+; 40 chars wide for status
 sline   dta d'  status line       123456789012345678  '
-m_l1    dta d'  line 1            123456789012345678  '
-m_l2    dta d'  line 2            123456789012345678  '
-m_l3    dta d'  line 3            123456789012345678  '
-m_l4    dta d'  line 4            123456789012345678  '
-m_l5    dta d'  line 5            123456789012345678  '
-m_l6    dta d'  line 6            123456789012345678  '
-m_l7    dta d'  line 7            123456789012345678  '
-m_l8    dta d'  line 8            123456789012345678  '
-m_l9    dta d'  line 9            123456789012345678  '
-m_l10   dta d'  line 10           123456789012345678  '
+; 32 chars wide for main lines
+m_l1    dta d'line 1                     01234'
+m_l2    dta d'line 2                     01234'
+m_l3    dta d'line 3                     01234'
+m_l4    dta d'line 4                     01234'
+m_l5    dta d'line 5                     01234'
+m_l6    dta d'line 6                     01234'
+m_l7    dta d'line 7                     01234'
+m_l8    dta d'line 8                     01234'
+m_l9    dta d'line 9                     01234'
+m_l10   dta d'line 10                    01234'
+; 40 chars wide for lower text
 m_help  dta d'  help line         123456789012345678  '
 m_prf   dta d'  profile           123456789012345678  '
 
+; hold a few ZP vars for bits and bobs
+.zpvar zpv1 zpv2 zpv3 zpv4 .byte
