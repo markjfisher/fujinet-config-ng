@@ -22,7 +22,7 @@ init_dl .proc
         mwa #do_vblank vvblki
 
         ; point to the new dlist instructions
-        mwa #dlist dlistl
+        mwa #main_dlist dlistl
 
         mvy #$01 prior      ; Player 0 - 3, playfield 0 - 3, BAK
         iny
@@ -61,7 +61,8 @@ init_screen
         jsr wait_scan1
         mva #$00 sdmctl
         sta      gractl
-        jmp wait_scan1      ; implicit RTS
+        sta      dmactl
+        ; jmp wait_scan1      ; implicit RTS
 
 wait_scan1
         ; use MADS 'repeat' loops to wait for VCOUNT = 0, then VCOUNT = 1
@@ -70,7 +71,10 @@ wait_scan1
         rts
 
 show_screen
-        rts
+        mva #$c0 nmien
+        mva #$21 sdmctl     ; the next vblank will start the DLI routines
+        jmp wait_scan1
+;        rts
 
 highlight_current_option
         jsr wait_scan1
@@ -90,11 +94,22 @@ do_vblank
         lda sdmctl
         bne screen_active
         sta colbk
-        rts
+        rti
 
 screen_active
+        mva s_col_0 colbk
+        mva s_col_1 colpm1
+        sta         colpm2
+        mva s_col_2 colpm0
+        sta         colpm3
 
-        rts
+        ; reset DLI to first entry
+        mva #$00 i_dli
+        mwa #dli_0 vdslst
+        mva sdmctl dmactl
+
+        plr
+        rti
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DLI routines for dlist
@@ -154,7 +169,7 @@ dli_3
         sta wsync
         sta colpf1
         stx colpf2
-        bne next_dli
+        jmp next_dli
 
 ; top of L1
 dli_4
@@ -258,7 +273,7 @@ l_brightness
 v_unkn2 dta $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 ; table of hposp0 positions for the options on top
-opt_hp  dta $53, $61, $6f, $7e, $8c, $9a, $a8, $b6
+opt_hp  dta $57, $61, $6f, $7e, $8c, $9a, $a8, $b6
 
 ; tables of dli L/H addresses.
 ; use mads looping to define them all from 0..17
@@ -276,7 +291,7 @@ dli_th
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; main display list
 
-dlist
+main_dlist
         ; blank lines and initial DLIs
         dta DL_BLK2
         dta DL_BLK6 + DL_DLI                                    ; DLI 0
@@ -346,7 +361,7 @@ dlist
         dta DL_MODE2 + DL_LMS, a(m_help)
 
         ; why m3 here?
-        dta DL_MODE2 + DL_LMS, a(gwht)
+        dta DL_MODE3 + DL_LMS, a(gwht)
 
         ; profile line
         dta DL_MODE2 + DL_LMS + DL_DLI, a(m_prf)                ; DLI 16 (end of profile, before close curve)
@@ -361,7 +376,7 @@ dlist
         dta DL_MODEF + DL_LMS, a(gwht)
 
         ; finally, wsync jump back to top
-        dta DL_JVB, a(dlist)
+        dta DL_JVB, a(main_dlist)
 
 ; END OF DLIST
 
