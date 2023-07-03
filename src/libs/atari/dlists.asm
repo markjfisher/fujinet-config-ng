@@ -219,14 +219,6 @@ dli_7
         mva s_col_1 colpf1
         jmp next_dli
 
-; end of the screen ; don't think this is called
-dli_8
-        pushAX
-        mva s_col_2 wsync
-        sta colpf1
-        mva #$ff i_dli
-        jmp next_dli
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; DATA
 
@@ -234,7 +226,7 @@ dli_8
 s_col_0 dta $10
 s_col_1 dta $18
 s_col_2 dta $1e
-s_col_3 dta $0e  ; brightness of text, this is s_col_2 and #$07 pre-computed
+s_col_3 dta $08  ; brightness of text. this was applied each line, e=bright, 8=med
 
 ; dli routine index
 i_dli   dta $00
@@ -246,15 +238,15 @@ i_opt   dta $00
 opt_hp  dta $57 //, $61, $6f, $7e, $8c, $9a, $a8, $b6
 
 ; tables of dli L/H addresses.
-; use mads looping to define them all from 0..17
+; use mads looping to define them all from 0..7
 ; note using l() and h() works with relocatable code. using < and > didn't
 dli_tl
-    .rept 9, #
+    .rept 8, #
     dta l(dli_:1)
     .endr
 
 dli_th
-    .rept 9, #
+    .rept 8, #
     dta h(dli_:1)
     .endr
 
@@ -275,14 +267,14 @@ main_dlist
         dta DL_MODEF                        ; 7f ff x 38 fe
 
         ; spacer
-    :2  dta DL_MODEF + DL_LMS, a(gbk)       ; 6 x ff x 40
+    :1  dta DL_MODEF + DL_LMS, a(gbk)       ; 6 x ff x 40
 
         ; main graphics header
         dta DL_MODEF + DL_LMS, a(ghd)       ; start of 24 line graphics header
     :23 dta DL_MODEF
 
         ; spacers, gbk = 40 x ff
-    :4  dta DL_MODEF + DL_LMS, a(gbk)
+    :2  dta DL_MODEF + DL_LMS, a(gbk)
         dta DL_MODEF + DL_LMS + DL_DLI, a(gbk)                  ; DLI 2
 
         ; status line for current state
@@ -298,11 +290,11 @@ main_dlist
         ; top of text DLI (for L1)
         dta DL_MODEF + DL_LMS + DL_DLI, a(gintop2)              ; DLI 4 (top of L1)
 
-        dta DL_BLK2
+        dta DL_BLK1
         ; LINE 1
         dta DL_MODE2 + DL_LMS, a(m_l1)                          ; (top of L2)
 
-    :14  dta DL_BLK1, DL_BLK1, DL_MODE2                          ; L2 - L15
+    :17  dta DL_BLK1, DL_MODE2                          ; L2 - L18
 
         ; inner curve BOTTOM of main text area
         dta DL_BLK1 + DL_DLI                                    ; DLI 5 (top of close inner curve)
@@ -311,19 +303,12 @@ main_dlist
         dta DL_MODEF + DL_LMS + DL_DLI, a(gintop1)              ; DLI 6 (end of close inner curve)
 
         ; spacer, 40x00 x 3
-    :1  dta DL_MODEF + DL_LMS, a(gwht)
+    :2  dta DL_MODEF + DL_LMS, a(gwht)
 
         ; help text
         dta DL_MODE2 + DL_LMS, a(m_help)
 
-        ; why m3 here?
-        dta DL_MODE2 + DL_LMS, a(gwht)
-
-        ; profile line
-        dta DL_MODE2 + DL_LMS + DL_DLI, a(m_prf)                ; DLI 7 (end of profile, before close curve)
-
-        ; spacer
-        dta DL_MODEF + DL_LMS, a(gbk)
+    :1  dta DL_MODEF + DL_LMS + DL_DLI, a(gwht)                 ; DLI 7 (before close curve)
 
         ; close curve
     :2  dta DL_MODEF + DL_LMS, a(goutbtm1)
@@ -399,9 +384,11 @@ m_l12   dta d'line 12                    01234'
 m_l13   dta d'line 13                    01234'
 m_l14   dta d'line 14                    01234'
 m_l15   dta d'line 15                    01234'
+m_l16   dta d'line 16                    01234'
+m_l17   dta d'line 17                    01234'
+m_l18   dta d'line 18                    01234'
 ; 40 chars wide for lower text
 m_help  dta d'  help line         123456789012345678  '
-m_prf   dta d'  profile           123456789012345678  '
 
 ; hold a few ZP vars for bits and bobs
 .zpvar zpv1 .byte
