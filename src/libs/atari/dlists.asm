@@ -174,12 +174,10 @@ dli_3
 ; top of L1
 dli_4
         pushAX
-        lda l_brightness
-        and s_col_2
-        sta wsync
-        sta colpf1
+        mva s_col_3  wsync
+        sta          colpf1
         mva #$21 dmactl     ; enable DMA fetch + narrow playfield
-        mva v_unkn1 grafm   ; ? PM data $00 ?
+        mva #$00 grafm
         ; run into next_dli
 
 ; change to next dli routine in the table
@@ -191,24 +189,8 @@ next_dli
         pullAX
         rti
 
-; L2..L10, or dli_5 to dli_13
-        .rept 9, #+5
-dli_:1
-        .endr
-
-        pushAX
-        ldx i_dli
-        ; adjust to table of brightnesses for line index
-        lda l_brightness - 4, x
-        and s_col_2
-        sta wsync
-        sta colpf1
-        lda v_unkn2 - 5, x
-        sta grafm           ; missile - seems to be 00, but see if it changes
-        jmp next_dli
-
 ; top of close inner curve (smaller section before help text)
-dli_14
+dli_5
         pushAX
         mva s_col_1 wsync
         sta colpf1
@@ -217,7 +199,7 @@ dli_14
         beq next_dli
 
 ; bottom of close inner curve (still above help)
-dli_15
+dli_6
         pushAX
         lda s_col_2
         ldx s_col_1
@@ -227,7 +209,7 @@ dli_15
         jmp next_dli
 
 ; bootom of profile line
-dli_16
+dli_7
         pushAX
         ldx s_col_0
         mva #$00 wsync
@@ -237,16 +219,13 @@ dli_16
         mva s_col_1 colpf1
         jmp next_dli
 
-; end of the screen
-dli_17
+; end of the screen ; don't think this is called
+dli_8
         pushAX
         mva s_col_2 wsync
         sta colpf1
         mva #$ff i_dli
         jmp next_dli
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; DATA
@@ -255,6 +234,7 @@ dli_17
 s_col_0 dta $10
 s_col_1 dta $18
 s_col_2 dta $1e
+s_col_3 dta $0e  ; brightness of text, this is s_col_2 and #$07 pre-computed
 
 ; dli routine index
 i_dli   dta $00
@@ -262,29 +242,19 @@ i_dli   dta $00
 ; current option
 i_opt   dta $00
 
-;;; used in grafm in L1
-v_unkn1 dta $00
-
-; line 1 to 10. $08 = dark text, $0e = bright text
-l_brightness
-        dta $0e, $08, $0e, $08, $0e, $08, $0e, $08, $0e, $08
-
-; goes into grafm, unsure what for yet
-v_unkn2 dta $00, $00, $00, $00, $00, $00, $00, $00, $00
-
-; table of hposp0 positions for the options on top
-opt_hp  dta $57, $61, $6f, $7e, $8c, $9a, $a8, $b6
+; table of hposp0 positions for the options on top. only first cacluated so far.
+opt_hp  dta $57 //, $61, $6f, $7e, $8c, $9a, $a8, $b6
 
 ; tables of dli L/H addresses.
 ; use mads looping to define them all from 0..17
 ; note using l() and h() works with relocatable code. using < and > didn't
 dli_tl
-    .rept 18, #
+    .rept 9, #
     dta l(dli_:1)
     .endr
 
 dli_th
-    .rept 18, #
+    .rept 9, #
     dta h(dli_:1)
     .endr
 
@@ -293,10 +263,10 @@ dli_th
 
 main_dlist
         ; blank lines and initial DLIs
-        dta DL_BLK2
-        dta DL_BLK6 + DL_DLI                                    ; DLI 0
-        dta DL_BLK8
-        dta DL_BLK4 + DL_DLI                                    ; DLI 1
+        dta DL_BLK1
+        dta DL_BLK1 + DL_DLI                                    ; DLI 0
+        dta DL_BLK1
+        dta DL_BLK1 + DL_DLI                                    ; DLI 1
 
         ; curved header
         dta DL_MODEF + DL_LMS, a(gl1)       ; 0f ff x 38 f0
@@ -305,14 +275,14 @@ main_dlist
         dta DL_MODEF                        ; 7f ff x 38 fe
 
         ; spacer
-    :6  dta DL_MODEF + DL_LMS, a(gbk)       ; 6 x ff x 40
+    :2  dta DL_MODEF + DL_LMS, a(gbk)       ; 6 x ff x 40
 
         ; main graphics header
         dta DL_MODEF + DL_LMS, a(ghd)       ; start of 24 line graphics header
     :23 dta DL_MODEF
 
         ; spacers, gbk = 40 x ff
-    :8  dta DL_MODEF + DL_LMS, a(gbk)
+    :4  dta DL_MODEF + DL_LMS, a(gbk)
         dta DL_MODEF + DL_LMS + DL_DLI, a(gbk)                  ; DLI 2
 
         ; status line for current state
@@ -324,47 +294,33 @@ main_dlist
 
         ; inner curve TOP of main text area
         dta DL_MODEF + DL_LMS, a(gintop1)
-        dta DL_MODEF + DL_LMS, a(gintop2)   ; this runs after last, could drop the LMS bit
+        dta DL_MODEF;  + DL_LMS, a(gintop2)   ; this runs after last, so dropping LMS instruction
         ; top of text DLI (for L1)
         dta DL_MODEF + DL_LMS + DL_DLI, a(gintop2)              ; DLI 4 (top of L1)
 
         dta DL_BLK2
-        ; LINE 1 + DLI (which triggers for L2)
-        dta DL_MODE2 + DL_LMS + DL_DLI, a(m_l1)                 ; DLI 5 (top of L2)
+        ; LINE 1
+        dta DL_MODE2 + DL_LMS, a(m_l1)                          ; (top of L2)
 
-        ; LINE 2, TODO: why not BL_BLK2 here?
-    :2  dta DL_BLK1
-        dta DL_MODE2
-
-        ; LINE 3-9 - at this point DLI is on blank line before the text line
-        dta DL_BLK1 + DL_DLI, DL_BLK1, DL_MODE2                 ; DLI 6 (top of L3)
-        dta DL_BLK1 + DL_DLI, DL_BLK1, DL_MODE2                 ; DLI 7 (top of L4)
-        dta DL_BLK1 + DL_DLI, DL_BLK1, DL_MODE2                 ; DLI 8 (top of L5)
-        dta DL_BLK1 + DL_DLI, DL_BLK1, DL_MODE2                 ; DLI 9 (top of L6)
-        dta DL_BLK1 + DL_DLI, DL_BLK1, DL_MODE2                 ; DLI 10 (top of L7)
-        dta DL_BLK1 + DL_DLI, DL_BLK1, DL_MODE2                 ; DLI 11 (top of L8)
-        dta DL_BLK1 + DL_DLI, DL_BLK1, DL_MODE2                 ; DLI 12 (top of L9)
-
-        ; LINE 10
-        dta DL_BLK1 + DL_DLI, DL_MODE2                          ; DLI 13 (top of L10)
+    :14  dta DL_BLK1, DL_BLK1, DL_MODE2                          ; L2 - L15
 
         ; inner curve BOTTOM of main text area
-        dta DL_BLK2 + DL_DLI                                    ; DLI 14 (top of close inner curve)
+        dta DL_BLK1 + DL_DLI                                    ; DLI 5 (top of close inner curve)
     :2  dta DL_MODEF + DL_LMS, a(gintop2)
 
-        dta DL_MODEF + DL_LMS + DL_DLI, a(gintop1)              ; DLI 15 (end of close inner curve)
+        dta DL_MODEF + DL_LMS + DL_DLI, a(gintop1)              ; DLI 6 (end of close inner curve)
 
         ; spacer, 40x00 x 3
-    :3  dta DL_MODEF + DL_LMS, a(gwht)
+    :1  dta DL_MODEF + DL_LMS, a(gwht)
 
         ; help text
         dta DL_MODE2 + DL_LMS, a(m_help)
 
         ; why m3 here?
-        dta DL_MODE3 + DL_LMS, a(gwht)
+        dta DL_MODE2 + DL_LMS, a(gwht)
 
         ; profile line
-        dta DL_MODE2 + DL_LMS + DL_DLI, a(m_prf)                ; DLI 16 (end of profile, before close curve)
+        dta DL_MODE2 + DL_LMS + DL_DLI, a(m_prf)                ; DLI 7 (end of profile, before close curve)
 
         ; spacer
         dta DL_MODEF + DL_LMS, a(gbk)
@@ -438,6 +394,11 @@ m_l7    dta d'line 7                     01234'
 m_l8    dta d'line 8                     01234'
 m_l9    dta d'line 9                     01234'
 m_l10   dta d'line 10                    01234'
+m_l11   dta d'line 11                    01234'
+m_l12   dta d'line 12                    01234'
+m_l13   dta d'line 13                    01234'
+m_l14   dta d'line 14                    01234'
+m_l15   dta d'line 15                    01234'
 ; 40 chars wide for lower text
 m_help  dta d'  help line         123456789012345678  '
 m_prf   dta d'  profile           123456789012345678  '
