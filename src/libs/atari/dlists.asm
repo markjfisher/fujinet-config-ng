@@ -8,6 +8,8 @@
     icl "../macros.mac"
 
     .public init_dl
+    .extrn decompress .proc
+    .extrn d_dst, d_src .byte
     .reloc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,6 +17,11 @@
 ; sets up dlist memory, and DLI/VBLANK/NMI routines
 
 init_dl .proc
+        ; decompress the heading gfx into target
+        mwa #ghdz d_src
+        mwa #ghd d_dst
+        decompress
+
         ; turn off screen and IRQs while we change things
         jsr init_screen
 
@@ -32,7 +39,6 @@ init_dl .proc
         mva #$30 hposp1
         mva #$c8 hposp2
         mva #$c7 hposm0
-        mvy #$00 zpv1
         sty      sizep1
         sty      sizep2
         sty      sizep3
@@ -131,35 +137,41 @@ dli_0
         stx colpf2
 
         mva #$22 dmactl
-        mva #$34 hposp3
-        mva #$03 sizep3
+
+        ; player posn behind the FujiNet
+        ; mva #$34 hposp3
+        ; mva #$03 sizep3
         jmp next_dli
 
 ; top of outer curve
 dli_1
         pushAX
-        ldx #$fe
-        mva #$22 wsync
-        stx      grafp0
-        inx
-        stx grafp3
-        sta dmactl          ; #$22: enable DMA Fetch + normal playerfield
-        bne next_dli
+        ; ldx #$fe            ; white behind FN logo
+        ; mvx #$22 wsync
+        ; stx      grafp0
+        ; inx
+        ; stx grafp3
+        ; sta dmactl          ; #$22: enable DMA Fetch + normal playerfield
+        jmp next_dli
 
-; above status
+; (above) status line - change colours to invert and merge into header colours 
 dli_2
         pushAX
+        ; mva #$00 wsync
+        ; inverse for status line - this really looks nice, maybe if it's just an image and we have severl for each
+        ; top level option copied in, it will mean being able to remove the DLI
         lda s_col_2
         ldx s_col_1
         sta wsync
         sta colpf1
         stx colpf2
 
-        mva #$00 grafp0
-        sta      grafp3
-        mva #$fc grafp1
-        mva #$3f grafp2
-        bne next_dli
+        ; ; PMs for the side bars
+        ; mva #$00 grafp0
+        ; sta      grafp3
+        ; mva #$fc grafp1
+        ; mva #$3f grafp2
+        jmp next_dli
 
 ; top of inner curve
 dli_3
@@ -364,7 +376,14 @@ goutbtm2
     :38 dta $ff
         dta $fc
 
-ghd     ins 'fn320x24.hex'
+; ghd     ins 'fn320x24.hex'
+; test decompression, reserve space for decompressed image
+ghd :960 dta $00
+
+; actual compressed data
+ghdz    ins 'fn320x24.z'
+
+;; use raw images for the 
 
 ; 40 chars wide for status
 sline   dta d'  status line       123456789012345678  '
@@ -389,6 +408,3 @@ m_l17   dta d'line 17                    01234'
 m_l18   dta d'line 18                    01234'
 ; 40 chars wide for lower text
 m_help  dta d'  help line         123456789012345678  '
-
-; hold a few ZP vars for bits and bobs
-.zpvar zpv1 .byte
