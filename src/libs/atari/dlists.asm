@@ -17,11 +17,6 @@
 ; sets up dlist memory, and DLI/VBLANK/NMI routines
 
 init_dl .proc
-        ; decompress the heading gfx into target
-        mwa #ghdz d_src
-        mwa #ghd d_dst
-        decompress
-
         ; turn off screen and IRQs while we change things
         jsr init_screen
 
@@ -184,16 +179,7 @@ gintop2
     :36 dta $00
         dta $01, $ff
 
-; ghd     ins 'fn320x24.hex'
-; test decompression, reserve space for decompressed image
-; 40x24x2
-;ghd :960 dta $00
-; 40x28x4 ??
-ghd :1120 dta $00
-
-; actual compressed data
-; ghdz    ins 'fn320x24.z'
-ghdz    ins 'fn-160x28x4c.z'
+ghd    ins 'fn-160x28x4c.hex'
 
 
 m_l1    dta $80, d' line 1                         01234 ', $80
