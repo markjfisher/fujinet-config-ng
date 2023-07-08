@@ -27,6 +27,8 @@ $(LIBS_OUT):
 
 TARGET_FILES :=  $(LIBS_OUT)/main_reloc.obx \
 	$(LIBS_OUT)/decompress.obx \
+	$(LIBS_OUT)/modules.obx \
+	$(LIBS_OUT)/modules/hosts.obx \
 	$(LIBS_OUT)/atari/os.obx \
 	$(LIBS_OUT)/atari/dlists.obx
 
@@ -34,6 +36,13 @@ TARGET_FILES :=  $(LIBS_OUT)/main_reloc.obx \
 
 $(LIBS_OUT)/main_reloc.obx: $(LIBS)/main_reloc.asm | $(LIBS_OUT)
 	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
+
+$(LIBS_OUT)/modules.obx: $(LIBS)/modules.asm | $(LIBS_OUT)
+	mads -o:$@ -i:$(BUILDDIR) $(subst build,src,$@)
+
+$(LIBS_OUT)/modules/hosts.obx: $(LIBS)/modules/hosts.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/modules)
+	mads -o:$@ -i:$(BUILDDIR) -l:build/libs/modules/hosts.lst -t:build/libs/modules/hosts.lab $(subst build,src,$@)
 
 $(LIBS_OUT)/decompress.obx: $(LIBS)/decompress.asm | $(LIBS_OUT)
 	mads -o:$@ -i:$(BUILDDIR) -l:build/libs/decompress.lst -t:build/libs/decompress.lab $(subst build,src,$@)

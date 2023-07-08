@@ -7,9 +7,11 @@
     icl "inc/os.inc"
     icl "../macros.mac"
 
-    .public init_dl
+    .public init_dl, i_opt
     .extrn decompress .proc
     .extrn d_dst, d_src .byte
+    .extrn t1, t2 .byte
+    .extrn mod_table, mod_d .word
     .reloc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -26,38 +28,23 @@ init_dl .proc
         ; point to the new dlist instructions
         mwa #main_dlist dlistl
 
-        ; mvy #$01 prior      ; Player 0 - 3, playfield 0 - 3, BAK
-        mvy #$02 chactl          ; cursor: opaque/absent
-        mva #$e0 chbase     ; fonts e400
+        mva #$02 chactl         ; cursor: opaque/absent
+        mva #$3c PACTL          ; cassette motor off, porta register
 
-        ; mva #$30 hposp1
-        ; mva #$c8 hposp2
-        ; mva #$c7 hposm0
-        ; sty      sizep1
-        ; sty      sizep2
-        ; sty      sizep3
-        ; sty      hposm1
-        ; sty      hposm2
-        ; sty      hposm3
-        ; iny
-        ; sty sizep0
+        ; colours from header graphics.
+        ; mva #$00 colpf3 // back
+        ; mva #$28 colpf0 // ball         (red)
+        ; mva #$ca colpf1 // fujinet logo (yellow)
+        ; mva #$94 colpf2 // items        (blue)
 
-        ;; whole routine started at $c31e, ends up affecting PACTL
-        mva #$3c PACTL      ; cassette motor off, porta register
+        mva s_col_0 colpf1
+        mva s_col_1 colpf2
+        mva s_col_2 colpf3
+        mva #$00 colpf0
 
-        ; jsr highlight_current_option
+        run_module
 
-        ; now need to fill lines with text for current option
-        jsr fill_lines
-
-        mva #$00 colpf3 // back
-        mva #$28 colpf0 // ball         (red)
-        mva #$ca colpf1 // fujinet logo (yellow)
-        mva #$94 colpf2 // items        (blue)
-
-        ; show screen, implicit RTS at the end
         jmp show_screen
-
 .endp
 
 ; clear sdmctl and gractl at start of screen.
@@ -67,7 +54,6 @@ init_screen
         mva #$00 sdmctl
         sta      gractl
         sta      dmactl
-        ; jmp wait_scan1      ; implicit RTS
 
 wait_scan1
         ; use MADS 'repeat' loops to wait for VCOUNT = 0, then VCOUNT = 1
@@ -77,14 +63,43 @@ wait_scan1
 
 show_screen
         mva #$40 nmien      ; just VBI
-        mva #$22 sdmctl     ; no more dlis
+        mva #$22 sdmctl
         mva #$22 dmactl
         jmp wait_scan1
 
-fill_lines
-        ; this will call the option specific routine to display lines of text
-        ; and will eventually move out of this file
+run_module      .proc
+        jsr call_module
+
+        ; copy 38x16 bytes from mod_d to m_l1+2
+        mwa mod_d t1
+        mwa #m_l1 t2
+        adw t2 #$2
+        ldx #15           ; rows
+ycol    ldy #35           ; columns
+xrow    lda (t1), y
+        sta (t2), y
+        dey
+        bpl xrow
+        ; increment src and targets, catering for the initial space
+        adw t1 #36     ; src is only 36 bytes wide
+        adw t2 #40     ; target is 40 bytes wide
+        dex
+        bpl ycol
         rts
+
+call_module
+        ; call the module, allows it to set mod_d to 36x16 data to show
+        lda i_opt
+        asl
+        tax
+        lda mod_table + 1, x
+        pha
+        lda mod_table, x
+        pha
+        rts             ; Stack based dispatch - THIS DOES A JMP to mod_table address for current index
+        ; the rts in the module will return to previous caller
+
+        .endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VBLANK routine
@@ -107,6 +122,7 @@ s_col_3 dta $08  ; brightness of text. this was applied each line, e=bright, 8=m
 ; current option
 i_opt   dta $00
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; main display list
 
@@ -121,44 +137,36 @@ main_dlist
     :2  dta DL_MODEF + DL_LMS, a(gbk)
 
         ; status line for current state
-        dta DL_MODE2 + DL_LMS, a(sline)
+        dta DL_MODE2 + DL_LMS, a(sline1)
+        dta DL_MODE2 + DL_LMS, a(sline2)
 
-        ; spacers, gbk = 40 x ff
+        ; spacers
     :2  dta DL_MODEF + DL_LMS, a(gbk)
-
-        ; gwht = 40 x 00
-    ;:1  dta DL_MODEF + DL_LMS, a(gwht)
 
         ; inner curve TOP of main text area
         dta DL_MODEF + DL_LMS, a(gintop1)
         dta DL_MODEF;  + DL_LMS, a(gintop2)   ; this runs after last, so dropping LMS instruction
         ; top of text (for L1)
-        dta DL_MODEF + DL_LMS, a(gintop2)              ; DLI 4 (top of L1)
+        dta DL_MODEF + DL_LMS, a(gintop2)
 
         ; LINE 1
         dta DL_MODE2 + DL_LMS, a(m_l1)
 
-    :17  dta DL_MODE2                          ; L2 - L..
-
+    :15  dta DL_MODE2
         ; inner curve BOTTOM of main text area
     :2  dta DL_MODEF + DL_LMS, a(gintop2)
 
-        dta DL_MODEF + DL_LMS, a(gintop1)                ; (end of close inner curve)
+        dta DL_MODEF + DL_LMS, a(gintop1)
 
-        ; spacers, gbk = 40 x ff
+        ; spacers
     :2  dta DL_MODEF + DL_LMS, a(gbk)
 
         ; help text
-        dta DL_MODE2 + DL_LMS, a(m_help)
+        dta DL_MODE2 + DL_LMS, a(m_help1)
+        dta DL_MODE2 + DL_LMS, a(m_help2)
 
-        ; spacers, gbk = 40 x ff
+        ; spacers
     :2  dta DL_MODEF + DL_LMS, a(gbk)
-
-;         ; close curve
-;     :2  dta DL_MODEF + DL_LMS, a(goutbtm1)
-;         dta DL_MODEF + DL_LMS, a(goutbtm2)
-;         dta DL_MODEF + DL_LMS, a(gl1)
-;         dta DL_MODEF + DL_LMS, a(gwht)
 
         ; finally, wsync jump back to top
         dta DL_JVB, a(main_dlist)
@@ -181,25 +189,25 @@ gintop2
 
 ghd    ins 'fn-160x28x4c.hex'
 
+; main screen area. Information will be copied into here
+m_l1    dta $80, d'                                      ', $80
+m_l2    dta $80, d'                                      ', $80
+m_l3    dta $80, d'                                      ', $80
+m_l4    dta $80, d'                                      ', $80
+m_l5    dta $80, d'                                      ', $80
+m_l6    dta $80, d'                                      ', $80
+m_l7    dta $80, d'                                      ', $80
+m_l8    dta $80, d'                                      ', $80
+m_l9    dta $80, d'                                      ', $80
+m_l10   dta $80, d'                                      ', $80
+m_l11   dta $80, d'                                      ', $80
+m_l12   dta $80, d'                                      ', $80
+m_l13   dta $80, d'                                      ', $80
+m_l14   dta $80, d'                                      ', $80
+m_l15   dta $80, d'                                      ', $80
+m_l16   dta $80, d'                                      ', $80
 
-m_l1    dta $80, d' line 1                         01234 ', $80
-m_l2    dta $80, d' line 2                         01234 ', $80
-m_l3    dta $80, d' line 3                         01234 ', $80
-m_l4    dta $80, d' line 4                         01234 ', $80
-m_l5    dta $80, d' line 5                         01234 ', $80
-m_l6    dta $80, d' line 6                         01234 ', $80
-m_l7    dta $80, d' line 7                         01234 ', $80
-m_l8    dta $80, d' line 8                         01234 ', $80
-m_l9    dta $80, d' line 9                         01234 ', $80
-m_l10   dta $80, d' line 10                        01234 ', $80
-m_l11   dta $80, d' line 11                        01234 ', $80
-m_l12   dta $80, d' line 12                        01234 ', $80
-m_l13   dta $80, d' line 13                        01234 ', $80
-m_l14   dta $80, d' line 14                        01234 ', $80
-m_l15   dta $80, d' line 15                        01234 ', $80
-m_l16   dta $80, d' line 16                        01234 ', $80
-m_l17   dta $80, d' line 17                        01234 ', $80
-m_l18   dta $80, d' line 18                        01234 ', $80
-
-sline   dta d'  status line       123456789012345678  '*
-m_help  dta d'  help line         123456789012345678  '*
+sline1  dta d'  status line1      123456789012345678  '*
+sline2  dta d'  status line2      123456789012345678  '*
+m_help1 dta d'  help line1        123456789012345678  '*
+m_help2 dta d'  help line2        123456789012345678  '*
