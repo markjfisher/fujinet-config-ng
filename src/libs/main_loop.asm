@@ -1,4 +1,4 @@
-      .extrn setup_screen .proc
+      .extrn setup_screen, run_module                              .proc
       .extrn check_wifi, connect_wifi, set_wifi, hosts_and_devices .proc
       .extrn select_file, select_slot, destination_host_slot       .proc
       .extrn perform_copy, show_info, show_devices, done           .proc
@@ -13,6 +13,9 @@ start
       setup_screen
 
 loop
+      ; not sure if these needs to be called all the time, maybe only on changes?
+      run_module
+
       ; start the main loop.
       lda state
 

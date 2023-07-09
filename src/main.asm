@@ -37,6 +37,7 @@
 
 .IF .DEF BUILD_ATARI
       .link 'libs/atari/dlists.obx'
+      .link 'libs/atari/io.obx'
       .link 'libs/atari/copy_to_screen.obx'
 ; add additional platform specifics here
 

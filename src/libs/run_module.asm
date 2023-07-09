@@ -5,10 +5,8 @@
 
         .reloc
         .public run_module
-        ;.extrn m_l1 .word                       ; top of the display memory where 
         .extrn copy_to_screen .proc
         .extrn mod_table, mod_d, i_opt .word
-        ;.extrn t1, t2 .byte
 
 run_module      .proc
         jsr call_module
@@ -16,7 +14,8 @@ run_module      .proc
         rts
 
 call_module
-        ; call the module, allows it to set mod_d to 36x16 data to show
+        ; call the code of the current module
+        ; Stack based dispatch - pushes address of routine to stack and uses 'rts' to do the actual JMP
         lda i_opt
         asl
         tax
@@ -24,7 +23,7 @@ call_module
         pha
         lda mod_table, x
         pha
-        rts             ; Stack based dispatch - THIS DOES A JMP to mod_table address for current index
+        rts ; JMP!
         ; the rts in the module will return to previous caller
 
         .endp

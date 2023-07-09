@@ -6,6 +6,7 @@
     icl "inc/gtia.inc"
     icl "inc/os.inc"
     icl "../macros.mac"
+    .extrn io_init .proc
 
     .public setup_screen, m_l1
     .reloc
@@ -33,10 +34,12 @@ setup_screen .proc
         ; mva #$ca colpf1 // fujinet logo (yellow)
         ; mva #$94 colpf2 // items        (blue)
 
-        mva s_col_0 colpf1
-        mva s_col_1 colpf2
-        mva s_col_2 colpf3
-        mva #$00 colpf0
+        ; mva s_col_0 colpf1
+        ; mva s_col_1 colpf2
+        ; mva s_col_2 colpf3
+        ; mva #$00 colpf0
+
+        io_init
 
         jmp show_screen
 

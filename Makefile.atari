@@ -8,11 +8,16 @@ all: $(BUILDDIR)/main.xex
 
 # Atari specific includes
 TARGET_FILES += $(LIBS_OUT)/atari/dlists.obx \
+	$(LIBS_OUT)/atari/io.obx \
 	$(LIBS_OUT)/atari/copy_to_screen.obx
 
 $(LIBS_OUT)/atari/dlists.obx: $(LIBS)/atari/dlists.asm | $(LIBS_OUT)
 	$(call MKDIR,$(LIBS_OUT)/atari)
 	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/dlists.lst -t:build/libs/atari/dlists.lab $(subst build,src,$@)
+
+$(LIBS_OUT)/atari/io.obx: $(LIBS)/atari/io.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/atari)
+	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/io.lst -t:build/libs/atari/io.lab $(subst build,src,$@)
 
 $(LIBS_OUT)/atari/copy_to_screen.obx: $(LIBS)/atari/copy_to_screen.asm | $(LIBS_OUT)
 	$(call MKDIR,$(LIBS_OUT)/atari)
