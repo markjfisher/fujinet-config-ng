@@ -7,11 +7,7 @@
     icl "inc/os.inc"
     icl "../macros.mac"
 
-    .public init_dl, i_opt, run_module
-    .extrn decompress .proc
-    .extrn d_dst, d_src .byte
-    .extrn t1, t2 .byte
-    .extrn mod_table, mod_d .word
+    .public init_dl, m_l1
     .reloc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -43,7 +39,6 @@ init_dl .proc
         mva #$00 colpf0
 
         jmp show_screen
-.endp
 
 ; clear sdmctl and gractl at start of screen.
 init_screen
@@ -63,46 +58,7 @@ show_screen
         mva #$40 nmien      ; just VBI
         mva #$22 sdmctl
         mva #$22 dmactl
-        jmp wait_scan1
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; run_module
-;
-; this will execute any code for the current module
-
-run_module      .proc
-        jsr call_module
-
-        ; copy 38x16 bytes from mod_d to m_l1+2
-        mwa mod_d t1
-        mwa #m_l1 t2
-        adw t2 #$2
-        ldx #15           ; rows
-ycol    ldy #35           ; columns
-xrow    lda (t1), y
-        sta (t2), y
-        dey
-        bpl xrow
-        ; increment src and targets, catering for the initial space
-        adw t1 #36     ; src is only 36 bytes wide
-        adw t2 #40     ; target is 40 bytes wide
-        dex
-        bpl ycol
-        rts
-
-call_module
-        ; call the module, allows it to set mod_d to 36x16 data to show
-        lda i_opt
-        asl
-        tax
-        lda mod_table + 1, x
-        pha
-        lda mod_table, x
-        pha
-        rts             ; Stack based dispatch - THIS DOES A JMP to mod_table address for current index
-        ; the rts in the module will return to previous caller
-
-        .endp
+        jmp wait_scan1      ; rts at end of wait
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VBLANK routine
@@ -113,6 +69,8 @@ do_vblank
         plr
         rti
 
+.endp ;; END OF init_dl
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; DATA
 
@@ -122,9 +80,6 @@ s_col_1 dta $18
 s_col_2 dta $1e
 s_col_3 dta $08  ; brightness of text. this was applied each line, e=bright, 8=med
 
-; current option
-i_opt   dta $00
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; main display list
@@ -133,8 +88,8 @@ main_dlist
         dta DL_BLK4
 
         ; main graphics header
-        dta DL_MODED + DL_LMS, a(ghd)       ; start of 28 line graphics header
-    :27 dta DL_MODED
+;         dta DL_MODED + DL_LMS, a(ghd)       ; start of 28 line graphics header
+;     :27 dta DL_MODED
 
         ; spacers, gbk = 40 x ff
     :2  dta DL_MODEF + DL_LMS, a(gbk)
@@ -190,7 +145,7 @@ gintop2
     :36 dta $00
         dta $01, $ff
 
-ghd    ins 'fn-160x28x4c.hex'
+; ghd    ins 'fn-160x28x4c.hex'
 
 ; main screen area. Information will be copied into here
 m_l1    dta $80, d'                                      ', $80

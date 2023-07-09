@@ -1,7 +1,7 @@
       .extrn init_dl    .proc
-      .extrn check_wifi, connect_wifi, set_wifi, hosts_and_devices      .proc
-      .extrn select_file, select_slot, destination_host_slot            .proc
-      .extrn perform_copy, show_info, show_devices, done                .proc
+      .extrn check_wifi, connect_wifi, set_wifi, hosts_and_devices .proc
+      .extrn select_file, select_slot, destination_host_slot       .proc
+      .extrn perform_copy, show_info, show_devices, done           .proc
 
       .public start
       .reloc
@@ -10,34 +10,35 @@
 
 start
       init_dl
-      jmp *
 
 loop
       ; start the main loop.
       lda state
 
-      cmp states.check_wifi
+      cmp #states.check_wifi
       beq check_wifi_t
-      cmp states.connect_wifi
+      cmp #states.connect_wifi
       beq connect_wifi_t
-      cmp states.set_wifi
+      cmp #states.set_wifi
       beq set_wifi_t
-      cmp states.hosts_and_devices
+      cmp #states.hosts_and_devices
       beq hosts_and_devices_t
-      cmp states.select_file
+      cmp #states.select_file
       beq select_file_t
-      cmp states.select_slot
+      cmp #states.select_slot
       beq select_slot_t
-      cmp states.destination_host_slot
+      cmp #states.destination_host_slot
       beq destination_host_slot_t
-      cmp states.perform_copy
+      cmp #states.perform_copy
       beq perform_copy_t
-      cmp states.show_info
+      cmp #states.show_info
       beq show_info_t
-      cmp states.show_devices
+      cmp #states.show_devices
       beq show_devices_t
-      cmp states.done
+      cmp #states.done
       beq done_t
+
+      jmp loop
 
 check_wifi_t
       check_wifi

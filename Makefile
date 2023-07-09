@@ -26,11 +26,13 @@ $(LIBS_OUT):
 	@$(call MKDIR,$@)
 
 TARGET_FILES :=  $(LIBS_OUT)/main_reloc.obx \
-	$(LIBS_OUT)/decompress.obx \
+	$(LIBS_OUT)/atari/os.obx \
+	$(LIBS_OUT)/atari/dlists.obx \
+	$(LIBS_OUT)/run_module.obx \
 	$(LIBS_OUT)/modules.obx \
 	$(LIBS_OUT)/modules/hosts.obx \
 	$(LIBS_OUT)/states/check_wifi.obx \
-    $(LIBS_OUT)/states/connect_wifi.obx \
+	$(LIBS_OUT)/states/connect_wifi.obx \
     $(LIBS_OUT)/states/set_wifi.obx \
     $(LIBS_OUT)/states/hosts_and_devices.obx \
     $(LIBS_OUT)/states/select_file.obx \
@@ -39,9 +41,7 @@ TARGET_FILES :=  $(LIBS_OUT)/main_reloc.obx \
     $(LIBS_OUT)/states/perform_copy.obx \
     $(LIBS_OUT)/states/show_info.obx \
     $(LIBS_OUT)/states/show_devices.obx \
-    $(LIBS_OUT)/states/done.obx \
-	$(LIBS_OUT)/atari/os.obx \
-	$(LIBS_OUT)/atari/dlists.obx
+    $(LIBS_OUT)/states/done.obx
 
 # CORE
 
@@ -57,6 +57,9 @@ $(LIBS_OUT)/modules/hosts.obx: $(LIBS)/modules/hosts.asm | $(LIBS_OUT)
 
 $(LIBS_OUT)/decompress.obx: $(LIBS)/decompress.asm | $(LIBS_OUT)
 	mads -o:$@ -i:$(BUILDDIR) -l:build/libs/decompress.lst -t:build/libs/decompress.lab $(subst build,src,$@)
+
+$(LIBS_OUT)/run_module.obx: $(LIBS)/run_module.asm | $(LIBS_OUT)
+	mads -o:$@ -i:$(BUILDDIR) -l:build/libs/run_module.lst -t:build/libs/run_module.lab $(subst build,src,$@)
 
 $(LIBS_OUT)/states/check_wifi.obx: $(LIBS)/states/check_wifi.asm | $(LIBS_OUT)
 	$(call MKDIR,$(LIBS_OUT)/states)

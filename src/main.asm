@@ -29,7 +29,8 @@
       .link 'libs/states/done.obx'
 
       ; utils
-      .link 'libs/decompress.obx'
+      ; .link 'libs/decompress.obx'
+      .link 'libs/run_module.obx'
 
       ; atari screen
       .link 'libs/atari/os.obx'
