@@ -11,12 +11,25 @@
       ; main routine
       .link 'libs/main_reloc.obx'
 
-      ; utils
-      .link 'libs/decompress.obx'
-
       ; modules
       .link 'libs/modules.obx'
       .link 'libs/modules/hosts.obx'
+
+      ; states
+      .link 'libs/states/check_wifi.obx'
+      .link 'libs/states/connect_wifi.obx'
+      .link 'libs/states/set_wifi.obx'
+      .link 'libs/states/hosts_and_devices.obx'
+      .link 'libs/states/select_file.obx'
+      .link 'libs/states/select_slot.obx'
+      .link 'libs/states/destination_host_slot.obx'
+      .link 'libs/states/perform_copy.obx'
+      .link 'libs/states/show_info.obx'
+      .link 'libs/states/show_devices.obx'
+      .link 'libs/states/done.obx'
+
+      ; utils
+      .link 'libs/decompress.obx'
 
       ; atari screen
       .link 'libs/atari/os.obx'

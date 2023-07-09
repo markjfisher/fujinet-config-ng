@@ -1,5 +1,4 @@
 ; module: hosts
-; lists hosts
 
         .public mod_hosts
         .extrn mod_d .word
@@ -8,8 +7,6 @@
 mod_hosts
         mwa #hosts_data mod_d
         rts
-
-
 
 hosts_data
     dta d'         hosts information          '

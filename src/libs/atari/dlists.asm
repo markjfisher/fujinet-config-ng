@@ -7,7 +7,7 @@
     icl "inc/os.inc"
     icl "../macros.mac"
 
-    .public init_dl, i_opt
+    .public init_dl, i_opt, run_module
     .extrn decompress .proc
     .extrn d_dst, d_src .byte
     .extrn t1, t2 .byte
@@ -42,8 +42,6 @@ init_dl .proc
         mva s_col_2 colpf3
         mva #$00 colpf0
 
-        run_module
-
         jmp show_screen
 .endp
 
@@ -66,6 +64,11 @@ show_screen
         mva #$22 sdmctl
         mva #$22 dmactl
         jmp wait_scan1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; run_module
+;
+; this will execute any code for the current module
 
 run_module      .proc
         jsr call_module
@@ -149,10 +152,10 @@ main_dlist
         ; top of text (for L1)
         dta DL_MODEF + DL_LMS, a(gintop2)
 
-        ; LINE 1
+        ; LINE 1 - 16
         dta DL_MODE2 + DL_LMS, a(m_l1)
+    :15 dta DL_MODE2
 
-    :15  dta DL_MODE2
         ; inner curve BOTTOM of main text area
     :2  dta DL_MODEF + DL_LMS, a(gintop2)
 
@@ -191,21 +194,21 @@ ghd    ins 'fn-160x28x4c.hex'
 
 ; main screen area. Information will be copied into here
 m_l1    dta $80, d'                                      ', $80
-m_l2    dta $80, d'                                      ', $80
-m_l3    dta $80, d'                                      ', $80
-m_l4    dta $80, d'                                      ', $80
-m_l5    dta $80, d'                                      ', $80
-m_l6    dta $80, d'                                      ', $80
-m_l7    dta $80, d'                                      ', $80
-m_l8    dta $80, d'                                      ', $80
-m_l9    dta $80, d'                                      ', $80
-m_l10   dta $80, d'                                      ', $80
-m_l11   dta $80, d'                                      ', $80
-m_l12   dta $80, d'                                      ', $80
-m_l13   dta $80, d'                                      ', $80
-m_l14   dta $80, d'                                      ', $80
-m_l15   dta $80, d'                                      ', $80
-m_l16   dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'          initialising...             ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
+        dta $80, d'                                      ', $80
 
 sline1  dta d'  status line1      123456789012345678  '*
 sline2  dta d'  status line2      123456789012345678  '*
