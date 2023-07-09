@@ -7,14 +7,14 @@
     icl "inc/os.inc"
     icl "../macros.mac"
 
-    .public init_dl, m_l1
+    .public setup_screen, m_l1
     .reloc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; initialise display
 ; sets up dlist memory, and DLI/VBLANK/NMI routines
 
-init_dl .proc
+setup_screen .proc
         ; turn off screen and IRQs while we change things
         jsr init_screen
 
@@ -69,7 +69,7 @@ do_vblank
         plr
         rti
 
-.endp ;; END OF init_dl
+.endp ;; END OF setup_screen
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; DATA

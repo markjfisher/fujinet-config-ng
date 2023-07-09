@@ -1,4 +1,4 @@
-      .extrn init_dl    .proc
+      .extrn setup_screen .proc
       .extrn check_wifi, connect_wifi, set_wifi, hosts_and_devices .proc
       .extrn select_file, select_slot, destination_host_slot       .proc
       .extrn perform_copy, show_info, show_devices, done           .proc
@@ -9,7 +9,8 @@
       icl "states/states.inc"
 
 start
-      init_dl
+      ; each platform defines its own setup
+      setup_screen
 
 loop
       ; start the main loop.

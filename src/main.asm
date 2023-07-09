@@ -9,10 +9,10 @@
       org $3000
 
       ; main routine
-      .link 'libs/main_reloc.obx'
+      .link 'libs/main_loop.obx'
 
       ; modules
-      .link 'libs/modules.obx'
+      .link 'libs/modules/modules.obx'
       .link 'libs/modules/hosts.obx'
 
       ; states
@@ -32,8 +32,17 @@
       ; .link 'libs/decompress.obx'
       .link 'libs/run_module.obx'
 
-      ; atari screen
-      .link 'libs/atari/os.obx'
+;; SCREEN ROUTINES, platform specific
+; A platform needs to have a proc named "setup_screen"
+
+.IF .DEF BUILD_ATARI
       .link 'libs/atari/dlists.obx'
+      .link 'libs/atari/copy_to_screen.obx'
+; add additional platform specifics here
+
+; add a default for no build.
+.ELSE
+      .link 'libs/default_screen/display.obx'
+.ENDIF
 
       run start

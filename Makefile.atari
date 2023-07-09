@@ -1,0 +1,42 @@
+# ATARI build file
+.DEFAULT_GOAL := all
+include Makefile.common
+
+ALTIRRA := $(ALTIRRA_HOME)/Altirra64.exe
+
+all: $(BUILDDIR)/main.xex
+
+# Atari specific includes
+TARGET_FILES += $(LIBS_OUT)/atari/dlists.obx \
+	$(LIBS_OUT)/atari/copy_to_screen.obx
+
+$(LIBS_OUT)/atari/dlists.obx: $(LIBS)/atari/dlists.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/atari)
+	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/dlists.lst -t:build/libs/atari/dlists.lab $(subst build,src,$@)
+
+$(LIBS_OUT)/atari/copy_to_screen.obx: $(LIBS)/atari/copy_to_screen.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/atari)
+	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/copy_to_screen.lst -t:build/libs/atari/copy_to_screen.lab $(subst build,src,$@)
+
+# DEBUG in Altirra emulator
+# You need to configure altirra-debug.ini by adding roms etc in initial run.
+# and export a value for ALTIRRA_HOME
+
+debug: $(BUILDDIR)/main.xex
+	$(ALTIRRA) \
+	/portable /portablealt:altirra-debug.ini \
+	/debug \
+	/debugcmd: ".loadsym build\main.lst" \
+	/debugcmd: ".loadsym build\main.lab" \
+	/debugcmd: ".loadsym build\libs\atari\dlists.lst" \
+	/debugcmd: ".loadsym build\libs\atari\dlists.lab" \
+	/debugcmd: "bp setup_screen" \
+	build\\main.xex
+
+## EXECUTABLE
+
+$(BUILDDIR)/main.xex: $(TARGET_FILES) | $(BUILDDIR)
+	@echo "================================================================"
+	@echo "Building $@"
+	@echo "TARGET_FILES: $(TARGET_FILES)"
+	mads -o:$@ -i:$(BUILDDIR) -l:build/main.lst -t:build/main.lab -d:BUILD_ATARI=1 src/$(notdir $(@:.xex=.asm))

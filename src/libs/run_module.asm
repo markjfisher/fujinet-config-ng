@@ -5,27 +5,14 @@
 
         .reloc
         .public run_module
-        .extrn m_l1, mod_table, mod_d, i_opt .word
-        .extrn t1, t2 .byte
+        ;.extrn m_l1 .word                       ; top of the display memory where 
+        .extrn copy_to_screen .proc
+        .extrn mod_table, mod_d, i_opt .word
+        ;.extrn t1, t2 .byte
 
 run_module      .proc
         jsr call_module
-
-        ; copy 38x16 bytes from mod_d to m_l1+2
-        mwa mod_d t1
-        mwa #m_l1 t2
-        adw t2 #$2
-        ldx #15           ; rows
-ycol    ldy #35           ; columns
-xrow    lda (t1), y
-        sta (t2), y
-        dey
-        bpl xrow
-        ; increment src and targets, catering for the initial space
-        adw t1 #36     ; src is only 36 bytes wide
-        adw t2 #40     ; target is 40 bytes wide
-        dex
-        bpl ycol
+        copy_to_screen
         rts
 
 call_module
