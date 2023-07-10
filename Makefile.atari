@@ -4,6 +4,13 @@ include Makefile.common
 
 ALTIRRA := $(ALTIRRA_HOME)/Altirra64.exe
 
+# MSYS and MINGW cannot use "/portable" as an arg to Altirra, as the slash needs doubling up to "//portable"
+# to stop it thinking it's a path, so we define an "eXtra Slash", XS, to fix this
+XS := ""
+ifeq ($(detected_OS),$(filter $(detected_OS),MSYS MINGW))
+	XS := "/"
+endif
+
 all: $(BUILDDIR)/main.xex
 
 # Atari specific includes
@@ -29,13 +36,13 @@ $(LIBS_OUT)/atari/copy_to_screen.obx: $(LIBS)/atari/copy_to_screen.asm | $(LIBS_
 
 debug: $(BUILDDIR)/main.xex
 	$(ALTIRRA) \
-	/portable /portablealt:altirra-debug.ini \
-	/debug \
-	/debugcmd: ".loadsym build\main.lst" \
-	/debugcmd: ".loadsym build\main.lab" \
-	/debugcmd: ".loadsym build\libs\atari\dlists.lst" \
-	/debugcmd: ".loadsym build\libs\atari\dlists.lab" \
-	/debugcmd: "bp setup_screen" \
+	$(XS)/portable $(XS)/portablealt:altirra-debug.ini \
+	$(XS)/debug \
+	$(XS)/debugcmd: ".loadsym build\main.lst" \
+	$(XS)/debugcmd: ".loadsym build\main.lab" \
+	$(XS)/debugcmd: ".loadsym build\libs\atari\dlists.lst" \
+	$(XS)/debugcmd: ".loadsym build\libs\atari\dlists.lab" \
+	$(XS)/debugcmd: "bp setup_screen" \
 	build\\main.xex
 
 ## EXECUTABLE

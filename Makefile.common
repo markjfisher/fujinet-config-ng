@@ -5,6 +5,15 @@ BUILDDIR := build
 LIBS := src/libs
 LIBS_OUT := build/libs
 
+ifeq '$(findstring ;,$(PATH))' ';'
+    detected_OS := Windows
+else
+    detected_OS := $(shell uname 2>/dev/null || echo Unknown)
+    detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
+    detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
+    detected_OS := $(patsubst MINGW%,MSYS,$(detected_OS))
+endif
+
 # TODO: work out Windowsy way of doing this
 MKDIR = mkdir -p $1
 
@@ -92,3 +101,6 @@ $(LIBS_OUT)/states/done.obx: $(LIBS)/states/done.asm | $(LIBS_OUT)
 
 clean:
 	@rm -rf $(BUILDDIR)/*
+
+os:
+	@echo "Detected OS: $(detected_OS)"
