@@ -55,7 +55,7 @@ application {
     applicationDefaultJvmArgs = listOf(
         "-Dbdd6502.trace=true",
         "-Dcom.replicanet.cukesplus.server.featureEditor",
-        "-Dcom.replicanet.ACEServer.debug.requests=",
+        // "-Dcom.replicanet.ACEServer.debug.requests=", // enable this to get more debug output from server
         "--add-opens", "java.base/java.util=ALL-UNNAMED",
         "--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
         "--add-opens", "java.base/java.text=ALL-UNNAMED",
