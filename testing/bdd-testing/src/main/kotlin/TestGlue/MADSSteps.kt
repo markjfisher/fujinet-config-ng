@@ -29,7 +29,7 @@ class MADSSteps {
         val lines = madsFile.readLines()
         val outputString = lines.fold("") { s, line ->
             val parts = line.split("\\s+".toRegex())
-            if (parts[0] == "00") s + "${parts[2].lowercase()} = ${parts[1].toInt(16)}\n" else s
+            if (parts[0] == "00") s + "${parts[2].lowercase()} = 0x${parts[1]}\n" else s
         }
         val acmeFile = cwd.resolve(acmeLabs)
         acmeFile.writeText(outputString)

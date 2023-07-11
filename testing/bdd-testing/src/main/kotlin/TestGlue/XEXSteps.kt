@@ -35,8 +35,9 @@ class XEXSteps {
 
         val machine = Glue.getMachine()
         data.forEachIndexed { i, b ->
-            machine.bus.write(startAddress + i, b.toUByte().toInt())
+            machine.bus.write(loadAddress + i, b.toUByte().toInt())
         }
+        machine.cpu.programCounter = startAddress
         inFile.close()
     }
 
