@@ -8,12 +8,9 @@ class DebugSteps {
     @Throws(Exception::class)
     @Given("^I print memory from (.*) to (.*)$")
     fun `i print memory`(start: String, end: String) {
-        println("Start: >$start<, end: >$end<")
         val machine = Glue.getMachine()
-        val addrEnd: Int = valueToInt(end)
-        println("address end: $addrEnd")
         var addrStart: Int = valueToInt(start)
-        println("as: >$addrStart<, ae: >$addrEnd<")
+        val addrEnd: Int = valueToInt(end)
 
         var cr = 0
         var hexOutput = ""
