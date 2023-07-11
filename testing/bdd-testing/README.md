@@ -57,7 +57,7 @@ use.
 
 This project uses the [BDD6502](https://github.com/martinpiper/BDD6502) framework.
 
-Tests (or features) should go into [features](/features) folder.
+Tests (or features) should go into [features](features) folder.
 
 ## Example feature
 
