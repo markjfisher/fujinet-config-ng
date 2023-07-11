@@ -3,8 +3,7 @@ Feature:  Machine state test
   This tests expected machine state
 
   Scenario: Simple machine state test
-    Given I have a simple 6502 system
-    And I create directory "build/tests"
+    Given basic setup test "simple"
     And I create file "build/tests/test.a" with
   """
   ; begin
@@ -20,10 +19,7 @@ Feature:  Machine state test
 
     run start
   """
-    And I run the command line: mads -s -o:build/tests/test.xex -t:build/tests/test.lbl build/tests/test.a
-    And I load xex "build/tests/test.xex"
-    And I convert mads-labels file "build/tests/test.lbl" to acme labels file "build/tests/test.al"
-    And I load labels "build/tests/test.al"
+    And perform mads compile of test.a
 
     When I execute the procedure at start for no more than 100 instructions
 

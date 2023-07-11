@@ -46,7 +46,7 @@ type "And I run <ctrl enter>" and it will pop up all the available steps that wi
 
 Press ctrl-s to save it back to the server.
 
-If you need to create new Steps, do so in the `TestGlue` package, e.g. [StepDefs](src/main/kotlin/TestGlue/StepDefs.kt).
+If you need to create new Steps, do so in the [TestGlue](src/main/kotlin/TestGlue) package.
 This is the code that cucumber (the BDD testing framework) will use to bridge the gap between features
 and its simple english statements, and the things that actually run when the test is invoked.
 
@@ -57,7 +57,44 @@ use.
 
 This project uses the [BDD6502](https://github.com/martinpiper/BDD6502) framework.
 
-Tests (or features) should go into [features](features) folder.
+### Features
+
+Tests (or features) should go into [features](features) folder. Here is where the BDD statements are created
+that will test the code.
+
+### Macros
+
+You can additionally create "macros" which are combinations of other steps, and place these in the [macros](macros) folder.
+For example:
+
+```feature
+  Scenario: Simple machine state test
+    Given basic setup test "simple"
+```
+
+This `Given` line invokes the macro in `MADS.macro`:
+```feature
+Given basic setup test "*"
+  Given I have a simple overclocked 6502 system
+  And I create directory "build/tests"
+```
+
+Similarly, the following feature line:
+
+```
+    And perform mads compile of test.a
+```
+
+invokes the following macro in `MADS.macro`:
+```
+Given perform mads compile of test.a
+  When I run the command line: mads -s -o:build/tests/test.xex -t:build/tests/test.lbl build/tests/test.a
+  When I load xex "build/tests/test.xex"
+  When I convert mads-labels file "build/tests/test.lbl" to acme labels file "build/tests/test.al"
+  When I load labels "build/tests/test.al"
+```
+
+which allows for creating common patterns and making the original feature easier to read and understand.
 
 ## Example feature
 
