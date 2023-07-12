@@ -7,10 +7,7 @@
 nothing jmp nothing
 
 test_io_error
-        mva init_io DSTATS
         io_error
         rts
-
-init_io dta $00
 
         run nothing

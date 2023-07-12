@@ -1,6 +1,6 @@
 Feature:  Decompress library test
 
-  This tests decompress library
+  This tests decompress library.
 
   Scenario: Decompressing Compressed Text
     Given basic setup test "decompress text"
