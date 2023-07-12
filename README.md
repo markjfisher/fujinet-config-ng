@@ -20,12 +20,15 @@ There is a default Makefile that will build a basic non-platform specific versio
 the application, "main.com". This doesn't currently do a lot, as it has no screen setup or
 drawing implementation, but is enough to compile the common code into a default application.
 
+## Testing
+
+Testing is done with BDD features. See [Testing README](testing/bdd-testing/README.md)
+
 ## Platform Specific Information
 
 Every platform needs to define the following procedures:
 - `setup_screen` : used to initialise the screen, e.g. display list, vbi for atari
 - `copy_to_screen` : used to copy the current module's data into the screen
-
 
 
 ### Atari

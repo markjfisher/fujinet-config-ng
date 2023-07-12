@@ -12,6 +12,7 @@ Feature: IO library test
 
     Then I expect register A equal <A>
 
+  # A should contain (init & 0x80) as simplest test if bit 7 is set.
   Examples:
     | init |  A   |
     | 0x00 | 0x00 |
