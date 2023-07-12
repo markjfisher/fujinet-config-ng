@@ -44,7 +44,7 @@
     mva #$ea DCOMND
     mva #$40 DSTATS
     mwa #wifi_enabled DBUFLO
-    mwa #$01 DBYTLO  ; always unsure on this!
+    mwa #$01 DBYTLO
     mva #$00 DAUX1
 
     call_siov
@@ -57,6 +57,30 @@
     rts
     .endp
 
+; Returns: status from SIO call in A for this command
+;
+; Return values are:
+;  1: No SSID available
+;  3: Connection Successful
+;  4: Connect Failed
+;  5: Connection lost
+
 .proc io_get_wifi_status
+    .var status .byte
+
+    ; TODO: C version has a 1 second delay here.
+
+    set_sio_defaults
+    mva #$fa DCOMND
+    mva #$40 DSTATS
+    mwa #status DBUFLO
+    mwa #$01 DBYTLO
+    mva #$00 DAUX1
+
+    call_siov
+
+    ; return status in A
+    lda status
+
     rts
     .endp

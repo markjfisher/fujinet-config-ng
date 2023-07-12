@@ -44,7 +44,7 @@ Feature: IO library test
         icl "../../../../src/libs/atari/inc/os.inc"
 
         org SIOV
-        ; copy t_v into the DBUF buffer (which is a pointer to real location of memory)
+        ; Emulate SIOV call by injecting test value t_v into pointer in DBUF
         mwa DBUFLO $80
         ldy #0
         mva t_v ($80),y
@@ -79,3 +79,48 @@ Feature: IO library test
     | 1       |  Z:0  |  1  | Enabled        |
     | 0x80    |  Z:1  |  0  | Not enabled    |
     | 0xff    |  Z:1  |  0  | Not enabled    |
+
+  Scenario Outline: execute io_get_wifi_status returns status of wifi in A
+    Given basic setup test "io_get_wifi_status"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+
+        org SIOV
+        ; Emulate SIOV call by injecting test value t_v into pointer in DBUF
+        mwa DBUFLO $80
+        ldy #0
+        mva t_v ($80),y
+        rts
+
+      ; an address for the test to write to. this is the stubbed value that will be written to by pointer at DBUF
+      t_v dta 0
+
+    """
+    And I patch machine with file "sio-patch"
+
+    When I write memory at t_v with <sio_ret>
+     And I execute the procedure at io_get_wifi_status for no more than 50 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $fa
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal $01
+     And I expect to see dbythi equal $00
+
+    # Test status flags
+    And I expect register A equal <A>
+
+    # The injected value should go straight into the A reg
+    Examples:
+    | sio_ret |  A  | Comment               |
+    | 1       |  1  | No SSID Available     |
+    | 3       |  3  | Connection Successful |
+    | 4       |  4  | Connect Failed        |
+    | 5       |  5  | Connection lost       |
