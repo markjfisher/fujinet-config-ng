@@ -1,44 +1,47 @@
 package TestGlue
 
+import com.loomcom.symon.machines.Machine
 import cucumber.api.java.en.Given
-import java.io.FileInputStream
+import xex.ABFile
+import xex.DataSection
 import java.nio.file.Paths
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.readBytes
 
 class XEXSteps {
     @Throws(Exception::class)
     @Given("^I load xex \"([^\"]*)\"$")
     fun `i load xex`(file: String) {
         val cwd = Paths.get(".")
-        val theFile = cwd.resolve(file)
-        val inFile = FileInputStream(theFile.toFile())
-
-        // first 6 bytes:
-        // 00-01: $ff $ff
-        // 02-03: Load Address (lo, high) start
-        // 04-05: Load Address (lo, high) end
-
-        // final 6 bytes
-        // 00-01: e0 02 = $02e0
-        // 02-03: e1 02 = $02e1 (2 bytes)
-        // 00-01: run address
-
-        inFile.readNBytes(2) // ignore marker bytes
-        val loadAddressArray = inFile.readNBytes(2)
-        val endAddressArray = inFile.readNBytes(2)
-        val loadAddress = loadAddressArray[0].toUByte().toInt() + 256 * loadAddressArray[1].toUByte().toInt()
-        val endAddress = endAddressArray[0].toUByte().toInt() + 256 * endAddressArray[1].toUByte().toInt()
-        val len = endAddress - loadAddress + 1
-        val data = inFile.readNBytes(len)
-        inFile.readNBytes(4)  // ignore 4 bytes
-        val startAddressArray = inFile.readNBytes(2)
-        val startAddress = startAddressArray[0].toUByte().toInt() + 256 * startAddressArray[1].toUByte().toInt()
-
         val machine = Glue.getMachine()
-        data.forEachIndexed { i, b ->
-            machine.bus.write(loadAddress + i, b.toUByte().toInt())
+
+        // load all the DataSections of the binary into memory into their respective load locations
+        val abFile = ABFile(cwd.resolve(file).readBytes())
+        // abFile.dump()
+        copyToMachine(abFile, machine)
+        machine.cpu.programCounter = abFile.runAddress
+    }
+
+    @Given("^I patch machine from obx file \"([^\"]*)\"\$")
+    @Throws(Exception::class)
+    fun `i patch machine from obx file`(f: String) {
+        val cwd = Paths.get(".")
+        val obx = cwd.resolve("${f}.obx")
+        val lbl = cwd.resolve("${f}.al")
+        val machine = Glue.getMachine()
+
+        // the obx file needs to be xex format, not mads relocatable (FFFE etc)
+        val abFile = ABFile(obx.toFile().readBytes())
+        copyToMachine(abFile, machine)
+        Glue.loadLabels(lbl.absolutePathString())
+    }
+
+    private fun copyToMachine(abFile: ABFile, machine: Machine) {
+        abFile.sections.filterIsInstance<DataSection>().forEach { ds ->
+            ds.data.forEachIndexed { i, b ->
+                machine.bus.write(ds.startAddress + i, b.toUByte().toInt())
+            }
         }
-        machine.cpu.programCounter = startAddress
-        inFile.close()
     }
 
 }

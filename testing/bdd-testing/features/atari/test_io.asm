@@ -15,4 +15,8 @@ test_io_init
         io_init
         rts
 
+test_io_get_wifi_enabled
+        io_get_wifi_enabled
+        rts
+
         run nothing

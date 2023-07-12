@@ -1,6 +1,6 @@
     .reloc
     .public io_init, io_error
-    ; .public io_get_wifi_enabled, io.get_wifi_status
+    .public io_get_wifi_enabled, io_get_wifi_status
     ; .public io_get_ssid, io_set_ssid
     ; .public io_scan_for_networks, io_get_scan_result
     ; .public io_get_adapter_config
@@ -15,6 +15,7 @@
     icl "inc/antic.inc"
     icl "inc/gtia.inc"
     icl "inc/os.inc"
+    icl "../macros.mac"
 
 .proc io_init
     mva #$ff NOCLIK
@@ -28,9 +29,34 @@
     rts
     .endp
 
-; sets A to 0 if no error, 127 otherwise
+; sets A to 0 (and thus Z flag) if no error, 127 otherwise (not-Z)
 .proc io_error
     lda DSTATS
     and #$80
+    rts
+    .endp
+
+; returns A=1 if enabled (not-Z), A=0 if disabled (Z)
+.proc io_get_wifi_enabled
+    .var wifi_enabled .byte
+
+    set_sio_defaults
+    mva #$ea DCOMND
+    mva #$40 DSTATS
+    mwa #wifi_enabled DBUFLO
+    mwa #$01 DBYTLO  ; always unsure on this!
+    mva #$00 DAUX1
+
+    call_siov
+    cpb wifi_enabled #$01
+    bne @+
+    lda #$01
+    rts
+
+@   lda #$00
+    rts
+    .endp
+
+.proc io_get_wifi_status
     rts
     .endp

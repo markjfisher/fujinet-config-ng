@@ -353,6 +353,25 @@ DSPFLG = $02FE ; E: config for cursor control characters. 0 = normal operation. 
 SSFLAG = $02FF ; Scrolling stop/start control. 0 = normal scrolling.  $FF = stop scrolling.
 
 ;; These are OS.dcb.XXX
+
+; struct __dcb {
+;     unsigned char ddevic;           /* device id */
+;     unsigned char dunit;            /* unit number */
+;     unsigned char dcomnd;           /* command */
+;     unsigned char dstats;           /* command type / status return */
+;     void          *dbuf;            /* pointer to buffer */
+;     unsigned char dtimlo;           /* device timeout in seconds */
+;     unsigned char dunuse;           /* - unused - */
+;     unsigned int  dbyt;             /* # of bytes to transfer */
+;     union {
+;         struct {
+;             unsigned char daux1;    /* 1st command auxiliary byte */
+;             unsigned char daux2;    /* 2nd command auxiliary byte */
+;         };
+;         unsigned int daux;          /* auxiliary as word */
+;     };
+; };
+
 DDEVIC = $0300 ; Serial bus device ID. Set by Handler.
 DUNIT =  $0301 ; Device unit number. Set by user program.
 DCOMND = $0302 ; Device command set by handler or the user program.
