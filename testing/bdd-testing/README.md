@@ -42,7 +42,7 @@ To run one, click on it, and then click the "Run file" button. You can view resu
 additional logs in the terminal where you started the server.
 
 Making changes to the feature can be done in the UI. It has introspection on the steps too, for instance
-type "And I run <ctrl enter>" and it will pop up all the available steps that will complete the step.
+type "And I run + `ctrl enter`" and it will pop up all the available steps that will complete the step.
 
 Press ctrl-s to save it back to the server.
 
