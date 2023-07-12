@@ -16,5 +16,5 @@ Feature:  Decompress library test
     # returns with A = 0
     Then I expect register A equal 0
 
-    When I hex dump memory between output+0 and output+15
+    When I hex dump memory between output and output+15
     Then property "test.BDD6502.lastHexDump" must contain string "123451234512345"
