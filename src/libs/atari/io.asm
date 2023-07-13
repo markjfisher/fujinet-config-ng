@@ -106,7 +106,18 @@
     rts
     .endp
 
+; sends SSID information to SIO.
+; (A,X) contains the address of the memory structure to send
 .proc io_set_ssid
+    sta DBUFLO
+    stx DBUFHI
+    set_sio_defaults
+    mva #$fb DCOMND         ; Set SSID
+    mva #$80 DSTATS
+    mwa #.sizeof(NetConfig) DBYTLO
+    mva #$01 DAUX1
+
+    call_siov
     rts
     .endp
 

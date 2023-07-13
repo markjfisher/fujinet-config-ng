@@ -2,13 +2,14 @@ Feature: IO library test
 
   This tests Atari io.asm library
 
+  ##############################################################################################################
   Scenario Outline: execute io_error should set A
     Given basic setup test "io_error"
     And I mads-compile "io" from "../../src/libs/atari/io.asm"
     And I build and load the application "test_io" from "features/atari/test_io.asm"
 
     When I write memory at dstats with <init>
-     And I execute the procedure at test_io_error for no more than 50 instructions
+     And I execute the procedure at io_error for no more than 50 instructions
 
     Then I expect register A equal <A>
 
@@ -27,13 +28,14 @@ Feature: IO library test
     And I mads-compile "io" from "../../src/libs/atari/io.asm"
     And I build and load the application "test_io" from "features/atari/test_io.asm"
 
-    When I execute the procedure at test_io_init for no more than 50 instructions
+    When I execute the procedure at io_init for no more than 50 instructions
 
     Then I expect to see noclik equal $ff
      And I expect to see shflok equal $00
      And I expect to see coldst equal $01
      And I expect to see sdmctl equal $00
 
+  ##############################################################################################################
   Scenario Outline: execute io_get_wifi_enabled return if wifi is enabled
     Given basic setup test "io_get_wifi_enabled"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
@@ -57,7 +59,7 @@ Feature: IO library test
     And I patch machine with file "sio-patch"
 
     When I write memory at t_v with <sio_ret>
-     And I execute the procedure at test_io_get_wifi_enabled for no more than 50 instructions
+     And I execute the procedure at io_get_wifi_enabled for no more than 50 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -80,6 +82,7 @@ Feature: IO library test
     | 0x80    |  Z:1  |  0  | Not enabled    |
     | 0xff    |  Z:1  |  0  | Not enabled    |
 
+  ##############################################################################################################
   Scenario Outline: execute io_get_wifi_status returns status of wifi in A
     Given basic setup test "io_get_wifi_status"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
@@ -125,6 +128,7 @@ Feature: IO library test
     | 4       |  4  | Connect Failed        |
     | 5       |  5  | Connection lost       |
 
+  ##############################################################################################################
   Scenario: execute io_get_ssid returns pointer to NetConfig in A/X
     Given basic setup test "get ssid"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
@@ -156,7 +160,7 @@ Feature: IO library test
       nc dta NetConfig
     """
      And I patch machine with file "sio-patch"
-     And I print memory from siov to siov+192
+     # And I print memory from siov to siov+192
 
     When I execute the procedure at io_get_ssid for no more than 1000 instructions
 
@@ -180,3 +184,39 @@ Feature: IO library test
     When I add 33 to property "test.BDD6502.regsValue"
      And I hex dump memory for 8 bytes from property "test.BDD6502.regsValue"
     Then property "test.BDD6502.lastHexDump" must contain string "password"
+
+  ##############################################################################################################
+  Scenario: execute io_set_ssid calls SIOV with correct data
+    Given basic setup test "io_set_ssid"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        org $e459
+        ; marker to show we called it
+        mva #$01 $80
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I set register A to $aa
+     And I set register X to $bb
+     And I write memory at $80 with $00
+
+    When I execute the procedure at io_set_ssid for no more than 50 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $fb
+     And I expect to see dstats equal $80
+     And I expect to see dbytlo equal 97
+     And I expect to see dbythi equal $00
+     And I expect to see daux1 equal $01
+     # A/X are stored into the lo/hi locations
+     And I expect to see dbuflo equal $aa
+     And I expect to see dbufhi equal $bb
+     
+     # prove we called siov
+     And I expect to see $80 equal $01
