@@ -38,4 +38,28 @@ class CpuSteps {
             }
         }
     }
+
+    @Throws(Exception::class)
+    @Given("^I convert registers (.*) to address$")
+    fun `I convert registers to address`(regs: String) {
+        // Input format: "AX", "XY" etc. Convert to word value, e.g. "XY" -> X + 256 * Y
+        // Also can have single char, which acts like standard version
+        if (regs.length > 2) throw Exception("Maximum of 2 registers supported, found: >$regs<")
+        if (regs.any { !setOf('A', 'X', 'Y').contains(it.uppercaseChar()) }) throw Exception("Registers must be from A, X, or Y")
+        if (regs.isEmpty()) {
+            System.setProperty("test.BDD6502.regsValue", "0")
+            return
+        }
+        val machine = Glue.getMachine()
+        val aR = machine.cpu.accumulator
+        val xR = machine.cpu.xRegister
+        val yR = machine.cpu.yRegister
+
+        val mapRegToValue = mapOf('A' to aR, 'X' to xR, 'Y' to yR)
+
+        var v = mapRegToValue.getOrDefault(regs[0], 0)
+        if (regs.length == 2) v += 256 * mapRegToValue.getOrDefault(regs[1], 0)
+
+        System.setProperty("test.BDD6502.regsValue", "$v")
+    }
 }

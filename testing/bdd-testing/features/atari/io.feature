@@ -72,7 +72,7 @@ Feature: IO library test
     And I expect register state <ST>
     And I expect register A equal <A>
 
-    # Z flag should be set if wifi not enabled. clear otherwise. Need to hijack siov to  set wifi value
+    # Z flag should be set if wifi not enabled. clear otherwise.
     Examples:
     | sio_ret |  ST   |  A  | Comment        |
     | 0       |  Z:1  |  0  | Not enabled    |
@@ -124,3 +124,59 @@ Feature: IO library test
     | 3       |  3  | Connection Successful |
     | 4       |  4  | Connect Failed        |
     | 5       |  5  | Connection lost       |
+
+  Scenario: execute io_get_ssid returns pointer to NetConfig in A/X
+    Given basic setup test "get ssid"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the NetConfig struct
+
+        org SIOV
+        mwa DBUFLO $80
+
+        ; copy ssid/pass into netconfig buffer for test
+        ; this is needed because of a struct bug with strings in MADS, so having to manually copy strings.
+        ldy #8
+        mva:rpl t_ssid,y nc+NetConfig.ssid,y-
+        ldy #8
+        mva:rpl t_pass,y nc+NetConfig.password,y-
+
+        ; copy the netconfig to the caller's buffer.
+        ldy #96
+        mva:rpl nc,y ($80),y-
+        rts
+
+      t_ssid  dta d'yourssid'
+      t_pass  dta d'password'
+
+      nc dta NetConfig
+    """
+     And I patch machine with file "sio-patch"
+     And I print memory from siov to siov+192
+
+    When I execute the procedure at io_get_ssid for no more than 1000 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $fe
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal 97
+     And I expect to see dbythi equal $00
+
+    # A/X contains L/H address of NetConfig created. Returned in property test.BDD6502.regsValue
+    When I convert registers AX to address
+
+    # test the ssid was copied into struct
+     And I hex dump memory for 8 bytes from property "test.BDD6502.regsValue"
+    Then property "test.BDD6502.lastHexDump" must contain string "yourssid"
+
+    # test the password was copied into struct
+    When I add 33 to property "test.BDD6502.regsValue"
+     And I hex dump memory for 8 bytes from property "test.BDD6502.regsValue"
+    Then property "test.BDD6502.lastHexDump" must contain string "password"

@@ -1,7 +1,7 @@
     .reloc
     .public io_init, io_error
     .public io_get_wifi_enabled, io_get_wifi_status
-    ; .public io_get_ssid, io_set_ssid
+    .public io_get_ssid, io_set_ssid
     ; .public io_scan_for_networks, io_get_scan_result
     ; .public io_get_adapter_config
     ; .public io_get_device_slots, io_put_device_slots, io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
@@ -16,6 +16,8 @@
     icl "inc/gtia.inc"
     icl "inc/os.inc"
     icl "../macros.mac"
+    
+    icl "inc/io.inc"
 
 .proc io_init
     mva #$ff NOCLIK
@@ -41,7 +43,7 @@
     .var wifi_enabled .byte
 
     set_sio_defaults
-    mva #$ea DCOMND
+    mva #$ea DCOMND     ; Get WiFi enabled - TODO: Wiki undocumented
     mva #$40 DSTATS
     mwa #wifi_enabled DBUFLO
     mwa #$01 DBYTLO
@@ -71,7 +73,7 @@
     ; TODO: C version has a 1 second delay here.
 
     set_sio_defaults
-    mva #$fa DCOMND
+    mva #$fa DCOMND     ; Get WiFi Status
     mva #$40 DSTATS
     mwa #status DBUFLO
     mwa #$01 DBYTLO
@@ -84,3 +86,27 @@
 
     rts
     .endp
+
+; sets the current SSID information into memory, and returns
+; it's address in (A,X)
+.proc io_get_ssid
+    .var nc NetConfig
+
+    set_sio_defaults
+    mva #$fe DCOMND         ; Get SSID
+    mva #$40 DSTATS
+    mwa #nc DBUFLO
+    mwa #.sizeof(NetConfig) DBYTLO
+    mva #$00 DAUX1
+
+    call_siov
+    lda <nc
+    ldx >nc
+
+    rts
+    .endp
+
+.proc io_set_ssid
+    rts
+    .endp
+
