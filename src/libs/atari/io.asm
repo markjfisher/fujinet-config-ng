@@ -19,6 +19,8 @@
     
     icl "inc/io.inc"
 
+; ##################################################################################
+; some basic setup
 .proc io_init
     mva #$ff NOCLIK
     mva #$00 SHFLOK
@@ -31,6 +33,7 @@
     rts
     .endp
 
+; ##################################################################################
 ; sets A to 0 (and thus Z flag) if no error, 127 otherwise (not-Z)
 .proc io_error
     lda DSTATS
@@ -38,6 +41,7 @@
     rts
     .endp
 
+; ##################################################################################
 ; returns A=1 if enabled (not-Z), A=0 if disabled (Z)
 .proc io_get_wifi_enabled
     .var wifi_enabled .byte
@@ -59,6 +63,8 @@
     rts
     .endp
 
+
+; ##################################################################################
 ; Returns: status from SIO call in A for this command
 ;
 ; Return values are:
@@ -66,7 +72,6 @@
 ;  3: Connection Successful
 ;  4: Connect Failed
 ;  5: Connection lost
-
 .proc io_get_wifi_status
     .var status .byte
 
@@ -87,6 +92,7 @@
     rts
     .endp
 
+; ##################################################################################
 ; sets the current SSID information into memory, and returns
 ; it's address in (A,X)
 .proc io_get_ssid
@@ -106,8 +112,9 @@
     rts
     .endp
 
+; ##################################################################################
 ; sends SSID information to SIO.
-; (A,X) contains the address of the memory structure to send
+; param: (A,X) contains the address of the memory structure to send
 .proc io_set_ssid
     ; before we lose them, store A,X
     sta DBUFLO
@@ -122,10 +129,9 @@
     rts
     .endp
 
+; ##################################################################################
 ; call SIOV with 0xFD and pass in location of buffer
 ; returns: X = num of networks - Arbitrary picking X. Maybe a new standard for single byte returns
-; NOTE: Wiki ASM implementation looks wrong:
-; https://github.com/FujiNetWIFI/fujinet-platformio/wiki/SIO-Command-%24FD-Scan-Networks
 .proc io_scan_for_networks
     set_sio_defaults
     mva #$fd DCOMND         ; Scan networks
@@ -145,5 +151,6 @@
     rts
     .endp
 
+; ##################################################################################
 ; buffer for transfers
 response :512 .byte
