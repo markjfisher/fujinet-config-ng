@@ -54,4 +54,23 @@ class MemorySteps {
         }
     }
 
+    @Throws(Exception::class)
+    @Given("^I write word at (.*) with hex (.*)$")
+    fun `i write word at with hex`(mem: String, hex: String) {
+        if (hex.length > 4 || hex.isEmpty()) throw Exception("hex specified cannot be written to word: >$hex<")
+
+        val address = Glue.valueToInt(mem)
+
+        var nHex = hex // normalise to 2 or 4 bytes
+        if (hex.length == 1 || hex.length == 3) nHex = "0${hex}"
+        val hi = if (nHex.length == 2) 0 else nHex.substring(0, 2).toInt(16)
+        val loIndex = if (nHex.length == 4) 2 else 0
+        val lo = nHex.substring(loIndex, loIndex + 2).toInt(16)
+
+        println("MemorySteps::I write word at with hex: mem: $mem, hex: $hex, address: ${address.toString(16)}, lo: ${lo.toString(16)}, hi: ${hi.toString(16)}")
+        val machine = Glue.getMachine()
+        machine.bus.write(address, lo)
+        machine.bus.write(address+1, hi)
+    }
+
 }

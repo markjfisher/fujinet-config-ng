@@ -2,7 +2,7 @@
         .zpvar d_src, d_dst .word = $80
 
         org $3000
-        .link '../../build/tests/decompress.obx'
+        .link '../../../build/tests/decompress.obx'
 
 begin_test
         mwa #z_data d_src

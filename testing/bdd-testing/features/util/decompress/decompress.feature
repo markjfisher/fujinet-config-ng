@@ -6,10 +6,10 @@ Feature:  Decompress library test
     Given basic setup test "decompress text"
 
     # compile the library
-    And I mads-compile "decompress" from "../../src/libs/decompress.asm"
+    And I mads-compile "decompress" from "../../src/libs/util/decompress.asm"
 
     # compile the test application
-    And I build and load the application "test_decompress" from "features/decompress/test_decompress.asm"
+    And I build and load the application "test_decompress" from "features/util/decompress/test_decompress.asm"
 
     When I execute the procedure at begin_test for no more than 1000 instructions
 

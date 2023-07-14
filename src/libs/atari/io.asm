@@ -2,7 +2,7 @@
     .public io_init, io_error
     .public io_get_wifi_enabled, io_get_wifi_status
     .public io_get_ssid, io_set_ssid
-    ; .public io_scan_for_networks, io_get_scan_result
+    .public io_scan_for_networks, io_get_scan_result
     ; .public io_get_adapter_config
     ; .public io_get_device_slots, io_put_device_slots, io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
     ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
@@ -109,6 +109,7 @@
 ; sends SSID information to SIO.
 ; (A,X) contains the address of the memory structure to send
 .proc io_set_ssid
+    ; before we lose them, store A,X
     sta DBUFLO
     stx DBUFHI
     set_sio_defaults
@@ -121,3 +122,28 @@
     rts
     .endp
 
+; call SIOV with 0xFD and pass in location of buffer
+; returns: X = num of networks - Arbitrary picking X. Maybe a new standard for single byte returns
+; NOTE: Wiki ASM implementation looks wrong:
+; https://github.com/FujiNetWIFI/fujinet-platformio/wiki/SIO-Command-%24FD-Scan-Networks
+.proc io_scan_for_networks
+    set_sio_defaults
+    mva #$fd DCOMND         ; Scan networks
+    mva #$40 DSTATS
+    mwa #$04 DBYTLO
+    mva #$00 DAUX1
+    mwa #response DBUFLO
+
+    call_siov
+    ; put first byte of response into X
+    ldx response
+
+    rts
+    .endp
+
+.proc io_get_scan_result
+    rts
+    .endp
+
+; buffer for transfers
+response :512 .byte

@@ -220,3 +220,52 @@ Feature: IO library test
      
      # prove we called siov
      And I expect to see $80 equal $01
+
+  ##############################################################################################################
+  Scenario Outline: execute io_scan_for_networks gets number of networks via SIOV call
+    Given basic setup test "io_scan_for_networks"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        
+        org SIOV
+        ; buffer address in DBUF, copy t_v into first byte for network count
+        mwa DBUFLO $80
+        ldy #0
+        mva t_v ($80),y
+        rts
+
+      ; location for test to write the number of networks into
+      t_v dta 0
+
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I set register A to $aa
+     And I set register X to $bb
+     And I write memory at $80 with $00
+
+    When I write memory at t_v with <networks>
+     And I execute the procedure at io_scan_for_networks for no more than 50 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $fd
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal 4
+     And I expect to see dbythi equal $00
+     And I expect to see daux1 equal $00
+
+     # X contains count
+     And I expect register X equal <networks>
+
+    Examples:
+    | networks |
+    | 0        |
+    | 1        |
+    | 10       |     
