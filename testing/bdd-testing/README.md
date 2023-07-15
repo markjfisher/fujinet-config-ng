@@ -45,7 +45,7 @@ You will now have the required libraries installed locally to be able to run thi
 
 ## Running tests
 
-Open a terminal and cd into the bdd-testing directory, and run following:
+Open a terminal, and cd into the bdd-testing directory, and run following:
 
 ```shell
 ./gradlew runFeatures
