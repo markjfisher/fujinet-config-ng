@@ -269,3 +269,61 @@ Feature: IO library test
     | 0        |
     | 1        |
     | 10       |     
+
+  ##############################################################################################################
+  Scenario: execute io_get_scan_result returns pointer to SSIDInfo in A/X
+    Given basic setup test "io_get_scan_result"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the NetConfig struct
+
+        org SIOV
+        mwa DBUFLO $80  ; copy DBUF pointers into ZP
+
+        ; copy test data into struct (TODO: remove when MADS bug fixed)
+        ldy #8
+        mva:rpl t_ssid,y info+SSIDInfo.ssid,y-
+        mva     t_rssi   info+SSIDInfo.rssi
+
+        ; copy the test ssidinfo to the caller's buffer.
+        ldy #34
+        mva:rpl info,y ($80),y-
+        rts
+
+      ; locations for test to set values
+      t_ssid  dta d'ssidtime'
+      t_rssi  dta $69
+
+      ; location to store our stubbed return
+      info    dta SSIDInfo
+    """
+     And I patch machine with file "sio-patch"
+     And I print memory from siov to siov+192
+
+    When I execute the procedure at io_get_scan_result for no more than 1000 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $fc
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal 34
+     And I expect to see dbythi equal $00
+
+    # Test the return values in A/X point to buffer with correct data.
+    # A/X contains L/H address of SSIDInfo created. Returned in property test.BDD6502.regsValue
+    When I convert registers AX to address
+
+    # test the ssid was copied into struct
+     And I hex dump memory for 8 bytes from property "test.BDD6502.regsValue"
+    Then property "test.BDD6502.lastHexDump" must contain string "ssidtime"
+
+    # test the rssi was copied into struct
+    When I add 33 to property "test.BDD6502.regsValue"
+     And I hex dump memory for 1 bytes from property "test.BDD6502.regsValue"
+    Then property "test.BDD6502.lastHexDump" must contain string ": 69 :"

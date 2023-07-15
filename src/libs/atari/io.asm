@@ -157,7 +157,7 @@
     sta DAUX1
 
     set_sio_defaults
-    mva #$fe DCOMND         ; Get SSID
+    mva #$fc DCOMND         ; Get Scan Result
     mva #$40 DSTATS
     mwa #info DBUFLO
     mwa #.sizeof(SSIDInfo) DBYTLO
