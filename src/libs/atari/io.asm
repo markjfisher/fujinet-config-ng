@@ -147,7 +147,25 @@
     rts
     .endp
 
+; ##################################################################################
+; Parameter: A = index of network to get results for
+; returns: A/X = location of SSIDInfo memory
 .proc io_get_scan_result
+    .var info SSIDInfo
+
+    ; network index in A
+    sta DAUX1
+
+    set_sio_defaults
+    mva #$fe DCOMND         ; Get SSID
+    mva #$40 DSTATS
+    mwa #info DBUFLO
+    mwa #.sizeof(SSIDInfo) DBYTLO
+
+    call_siov
+    lda <info
+    ldx >info
+
     rts
     .endp
 

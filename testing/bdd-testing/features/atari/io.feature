@@ -222,7 +222,7 @@ Feature: IO library test
      And I expect to see $80 equal $01
 
   ##############################################################################################################
-  Scenario Outline: execute io_scan_for_networks gets number of networks via SIOV call
+  Scenario Outline: execute io_scan_for_networks puts number of networks into X
     Given basic setup test "io_scan_for_networks"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"

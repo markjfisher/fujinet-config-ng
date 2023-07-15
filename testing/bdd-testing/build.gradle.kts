@@ -7,12 +7,12 @@ group = "net.fish.bdd6502"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    implementation(files("lib/BDD6502-1.0.9-SNAPSHOT-jar-with-dependencies.jar"))
-
+    implementation("BDD6502:BDD6502:1.0.9-SNAPSHOT")
     testImplementation(kotlin("test"))
 }
 

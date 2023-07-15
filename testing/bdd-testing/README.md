@@ -6,6 +6,43 @@ It is a kotlin project using gradle to build. Everything can be run from the com
 wish to extend tests and add new Steps (the main part of features) you will be better served with an IDE.
 I'm using IntelliJ, and there are run configurations setup for using in IntelliJ.
 
+## Building
+
+Because this relies on the [BDD6502 framework](https://github.com/martinpiper/BDD6502), there
+are some libraries that first have to be built into your local maven repository.
+Hopefully this will eventually change when the author of BDD6502 releases his code to a
+public repository.
+
+Install the following:
+
+- java 8 or 11 - [sdkman](https://sdkman.io/) or other mechanism of your choice
+- maven - [sdkman](https://sdkman.io/), or [Apache Maven Project](https://maven.apache.org/install.html)
+
+Note: The required BDD6502 libraries currently do not support higher than Java 14.
+
+### Install BDD6502 libraries
+
+Clone the following 3 projects into a directory on your machine, build them, then come back to this project.
+
+```shell
+mkdir bdd
+cd bdd
+git clone https://github.com/martinpiper/ACEServer.git
+git clone https://github.com/martinpiper/BDD6502.git
+git clone https://github.com/martinpiper/CukesPlus.git
+
+cd ACEServer
+mvn install
+
+cd ../CukesPlus
+mvn install
+
+cd ../BDD6502
+mvn install -DskipTests
+```
+
+You will now have the required libraries installed locally to be able to run this project.
+
 ## Running tests
 
 Open a terminal and cd into the bdd-testing directory, and run following:
@@ -55,7 +92,7 @@ use.
 
 ## How it works
 
-This project uses the [BDD6502](https://github.com/martinpiper/BDD6502) framework.
+As mentioned, this project uses, and builds on top of the [BDD6502](https://github.com/martinpiper/BDD6502) framework.
 
 ### Features
 
@@ -110,5 +147,5 @@ Note the original project is geared towards ACME assembler and C64 dev, so some 
 
 ## Future plans
 
-- Integration with Altirra maybe?
-- Examples of working with the ASM code properly, not copying small bits of code into tests.
+- Integration with Altirra if possible for step debugging on fully emulated Atari, not just 6502, with screen handling.
+- Loading Atari ROM files into emulator?
