@@ -6,6 +6,10 @@ plugins {
 group = "net.fish.bdd6502"
 version = "1.0-SNAPSHOT"
 
+val assertJVersion: String by project
+val mockkVersion: String by project
+val junitJupiterEngineVersion: String by project
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -13,7 +17,21 @@ repositories {
 
 dependencies {
     implementation("BDD6502:BDD6502:1.0.9-SNAPSHOT")
-    testImplementation(kotlin("test"))
+
+    // fuck hamcrest. We're going jupiter/assertj baby.
+    implementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion")
+    implementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterEngineVersion")
+    implementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion")
+    implementation("org.assertj:assertj-core:$assertJVersion")
+    implementation("io.mockk:mockk:$mockkVersion")
+    // testImplementation(kotlin("test"))
+}
+
+configurations {
+    testCompileOnly {
+        // GET THEE HENCE JUNIT4
+        exclude(module = "junit", group = "junit")
+    }
 }
 
 kotlin {

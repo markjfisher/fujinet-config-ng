@@ -16,15 +16,6 @@
     mva #$0f DTIMLO  ; 15 second timeout
 .endm
 
-; this is too difficult to read when it's used, leaving it for a bit here
-.macro set_dcb _dcomnd, _dstats, _dbuf, _dbyt, _daux1
-    mva :_dcomnd DCOMND
-    mva :_dstats DSTATS
-    mwa :_dbuf   DBUFLO
-    mwa :_dbyt   DBYTLO
-    mva :_daux1  DAUX1
-.endm
-
 .macro call_siov
     jsr SIOV
 .endm

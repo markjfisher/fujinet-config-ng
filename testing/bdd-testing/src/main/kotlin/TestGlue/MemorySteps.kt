@@ -3,6 +3,7 @@ package TestGlue
 import com.loomcom.symon.machines.Machine
 import cucumber.api.java.en.Given
 import org.apache.commons.lang3.CharUtils
+import org.assertj.core.api.Assertions.assertThat
 
 class MemorySteps {
     @Throws(Exception::class)
@@ -52,6 +53,16 @@ class MemorySteps {
             }
             return hexOutput
         }
+
+        fun internalToChar(v: Int): Char {
+            return when (v) {
+                in 0..63 -> charMap.getOrDefault(v, '.')
+                in 97..122 -> 'a' + v - 97
+                else -> '.'
+            }
+        }
+
+        private val charMap = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_".mapIndexed { i, c -> i to c }.toMap()
     }
 
     @Throws(Exception::class)
@@ -71,6 +82,28 @@ class MemorySteps {
         val machine = Glue.getMachine()
         machine.bus.write(address, lo)
         machine.bus.write(address+1, hi)
+    }
+
+    @Throws(Exception::class)
+    @Given("^struct at registers (.*) contains$")
+    fun `struct at registers contains`(regs: String, structData: String) {
+        var address = CpuSteps.regsToAddress(regs)
+        val machine = Glue.getMachine()
+
+        // each line contains an offset to add after the test, and a string to check at start of current address
+        // e.g.
+        // 33:ssid
+
+        structData.lines().forEach { line ->
+            val parts = line.split(":")
+            val offset = parts[0].trim().toInt()
+            val testString = parts[1].trim()
+            val memString = testString.indices.map { i -> internalToChar(machine.cpu.bus.read(address + i)) }.joinToString("")
+            assertThat(memString).isEqualTo(testString)
+
+            address += offset
+        }
+
     }
 
 }

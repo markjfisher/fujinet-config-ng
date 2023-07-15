@@ -69,6 +69,8 @@ Feature: IO library test
      And I expect to see dstats equal $40
      And I expect to see dbytlo equal $01
      And I expect to see dbythi equal $00
+     And I expect to see daux1 equal $00
+     And I expect to see daux2 equal $00
 
     # Test status flags
     And I expect register state <ST>
@@ -116,6 +118,8 @@ Feature: IO library test
      And I expect to see dstats equal $40
      And I expect to see dbytlo equal $01
      And I expect to see dbythi equal $00
+     And I expect to see daux1 equal $00
+     And I expect to see daux2 equal $00
 
     # Test status flags
     And I expect register A equal <A>
@@ -172,6 +176,8 @@ Feature: IO library test
      And I expect to see dstats equal $40
      And I expect to see dbytlo equal 97
      And I expect to see dbythi equal $00
+     And I expect to see daux1 equal $00
+     And I expect to see daux2 equal $00
 
     # A/X contains L/H address of NetConfig created. Returned in property test.BDD6502.regsValue
     When I convert registers AX to address
@@ -214,6 +220,7 @@ Feature: IO library test
      And I expect to see dbytlo equal 97
      And I expect to see dbythi equal $00
      And I expect to see daux1 equal $01
+     And I expect to see daux2 equal $00
      # A/X are stored into the lo/hi locations
      And I expect to see dbuflo equal $aa
      And I expect to see dbufhi equal $bb
@@ -260,9 +267,10 @@ Feature: IO library test
      And I expect to see dbytlo equal 4
      And I expect to see dbythi equal $00
      And I expect to see daux1 equal $00
+     And I expect to see daux2 equal $00
 
      # X contains count
-     And I expect register X equal <networks>
+     And I expect register A equal <networks>
 
     Examples:
     | networks |
@@ -304,7 +312,9 @@ Feature: IO library test
      And I patch machine with file "sio-patch"
      And I print memory from siov to siov+192
 
-    When I execute the procedure at io_get_scan_result for no more than 1000 instructions
+    # call the proc for network number 5
+    When I set register A to 5
+     And I execute the procedure at io_get_scan_result for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -314,6 +324,9 @@ Feature: IO library test
      And I expect to see dstats equal $40
      And I expect to see dbytlo equal 34
      And I expect to see dbythi equal $00
+     # check the network index was used
+     And I expect to see daux1 equal $05
+     And I expect to see daux2 equal $00
 
     # Test the return values in A/X point to buffer with correct data.
     # A/X contains L/H address of SSIDInfo created. Returned in property test.BDD6502.regsValue
@@ -327,3 +340,91 @@ Feature: IO library test
     When I add 33 to property "test.BDD6502.regsValue"
      And I hex dump memory for 1 bytes from property "test.BDD6502.regsValue"
     Then property "test.BDD6502.lastHexDump" must contain string ": 69 :"
+
+  ##############################################################################################################
+  Scenario: execute io_get_adapter_config returns pointer to SSIDInfo in A/X
+    Given basic setup test "io_get_adapter_config"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the NetConfig struct
+
+        ; fake a call to get_adapter_config that returns known data
+        org SIOV
+
+        ; copy test data into struct (TODO: remove when MADS bug fixed)
+        ldy #10
+        mva:rpl t_ssid,y ac+AdapterConfig.ssid,y-
+        ldy #13
+        mva:rpl t_hostname,y ac+AdapterConfig.hostname,y-
+        ldy #1
+        mva:rpl t_localIP,y ac+AdapterConfig.localIP,y-
+        ldy #1
+        mva:rpl t_gateway,y ac+AdapterConfig.gateway,y-
+        ldy #1
+        mva:rpl t_netmask,y ac+AdapterConfig.netmask,y-
+        ldy #2
+        mva:rpl t_dnsIP,y ac+AdapterConfig.dnsIP,y-
+        ldy #5
+        mva:rpl t_macAddress,y ac+AdapterConfig.macAddress,y-
+        ldy #4
+        mva:rpl t_bssid,y ac+AdapterConfig.bssid,y-
+        ldy #13
+        mva:rpl t_fn_version,y ac+AdapterConfig.fn_version,y-
+
+        ; copy the test adapterconfig to the caller's buffer.
+        mwa DBUFLO $80  ; copy DBUF pointers into ZP
+        ldy #140
+        mva:rne ac,y ($80),y-
+        ; copy last byte, y = 0
+        mva ac ($80),y
+        rts
+
+      ; locations for test to set values
+      t_ssid        dta d'ssid name!!'
+      t_hostname    dta d'the "hostname"'
+      t_localIP     dta d'ip'
+      t_gateway     dta d'gw'
+      t_netmask     dta d'nm'
+      t_dnsIP       dta d'dns'
+      t_macAddress  dta d'macadd'
+      t_bssid       dta d'bssid'
+      t_fn_version  dta d'version string'
+
+      ; location to store our stubbed return
+      ac      dta AdapterConfig
+    """
+     And I patch machine with file "sio-patch"
+     And I print memory from siov to siov+192
+
+    # call the proc for network number 5
+    When I set register A to 5
+     And I execute the procedure at io_get_adapter_config for no more than 1000 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $e8
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal 140
+     And I expect to see dbythi equal $00
+     And I expect to see daux1 equal $00
+     And I expect to see daux2 equal $00
+
+    # Test the return values at A/X point to a struct with correct data
+    Then struct at registers AX contains
+    """
+      33:ssid name!!
+      64:the "hostname"
+       4:ip
+       4:gw
+       4:nm
+       4:dns
+       6:macadd
+       6:bssid
+      15:version string
+    """

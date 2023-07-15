@@ -380,7 +380,8 @@ DBUFLO = $0304 ; word. Data buffer address.
 DBUFHI = $0305 
 DTIMLO = $0306 ; Handler timeout in (approx) seconds.
 DBYTLO = $0308 ; word. Number of bytes transferred to/from buffer.
-DBYTHI = $0309 
+DBYTHI = $0309
+DAUX   = $030A ; expected to be set as a WORD to cover lo/hi
 DAUX1 =  $030A ; Information specific to device.  (sector number) 
 DAUX2 =  $030B ; Information specific to device.  (sector number) 
 

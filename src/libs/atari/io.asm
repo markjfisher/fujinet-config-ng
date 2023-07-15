@@ -3,7 +3,7 @@
     .public io_get_wifi_enabled, io_get_wifi_status
     .public io_get_ssid, io_set_ssid
     .public io_scan_for_networks, io_get_scan_result
-    ; .public io_get_adapter_config
+    .public io_get_adapter_config
     ; .public io_get_device_slots, io_put_device_slots, io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
     ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
     ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
@@ -51,7 +51,7 @@
     mva #$40 DSTATS
     mwa #wifi_enabled DBUFLO
     mwa #$01 DBYTLO
-    mva #$00 DAUX1
+    mwa #$00 DAUX
 
     call_siov
     cpb wifi_enabled #$01
@@ -82,7 +82,7 @@
     mva #$40 DSTATS
     mwa #status DBUFLO
     mwa #$01 DBYTLO
-    mva #$00 DAUX1
+    mwa #$00 DAUX
 
     call_siov
 
@@ -103,7 +103,7 @@
     mva #$40 DSTATS
     mwa #nc DBUFLO
     mwa #.sizeof(NetConfig) DBYTLO
-    mva #$00 DAUX1
+    mwa #$00 DAUX
 
     call_siov
     lda <nc
@@ -114,7 +114,7 @@
 
 ; ##################################################################################
 ; sends SSID information to SIO.
-; param: (A,X) contains the address of the memory structure to send
+; params: (A,X) contains the address of the memory structure to send
 .proc io_set_ssid
     ; before we lose them, store A,X
     sta DBUFLO
@@ -123,38 +123,38 @@
     mva #$fb DCOMND         ; Set SSID
     mva #$80 DSTATS
     mwa #.sizeof(NetConfig) DBYTLO
-    mva #$01 DAUX1
+    mwa #$01 DAUX
 
     call_siov
     rts
     .endp
 
 ; ##################################################################################
-; call SIOV with 0xFD and pass in location of buffer
-; returns: X = num of networks - Arbitrary picking X. Maybe a new standard for single byte returns
+; returns: A = num of networks
 .proc io_scan_for_networks
     set_sio_defaults
     mva #$fd DCOMND         ; Scan networks
     mva #$40 DSTATS
     mwa #$04 DBYTLO
-    mva #$00 DAUX1
+    mwa #$00 DAUX
     mwa #response DBUFLO
 
     call_siov
     ; put first byte of response into X
-    ldx response
+    lda response
 
     rts
     .endp
 
 ; ##################################################################################
-; Parameter: A = index of network to get results for
-; returns: A/X = location of SSIDInfo memory
+; params: A = index of network to get results for
+; returns: A/X = memory location of SSIDInfo
 .proc io_get_scan_result
     .var info SSIDInfo
 
     ; network index in A
-    sta DAUX1
+    sta      DAUX1
+    mva #$00 DAUX2
 
     set_sio_defaults
     mva #$fc DCOMND         ; Get Scan Result
@@ -165,6 +165,25 @@
     call_siov
     lda <info
     ldx >info
+
+    rts
+    .endp
+
+; ##################################################################################
+; returns: A/X = memory location of AdapterConfig
+.proc io_get_adapter_config
+    .var ac AdapterConfig
+
+    set_sio_defaults
+    mva #$e8 DCOMND         ; Get adapter config
+    mva #$40 DSTATS
+    mwa #ac  DBUFLO
+    mwa #.sizeof(AdapterConfig) DBYTLO
+    mwa #$00 DAUX
+
+    call_siov
+    lda <ac
+    ldx >ac
 
     rts
     .endp
