@@ -1,6 +1,7 @@
 package xex
 
 import java.lang.Exception
+import kotlin.math.min
 
 // Atari Binary file, e.g. xex, obx, com.
 data class ABFile(val bytes: ByteArray) {
@@ -50,7 +51,8 @@ data class ABFile(val bytes: ByteArray) {
         sections.forEach { section ->
             when(section) {
                 is DataSection -> {
-                    val first8 = section.data.sliceArray(0..7).joinToString(separator = " ") { eachByte -> "%02x".format(eachByte) }
+                    val upTo7 = min(7, section.data.size - 1)
+                    val first8 = section.data.sliceArray(0..upTo7).joinToString(separator = " ") { eachByte -> "%02x".format(eachByte) }
                     println("  DataSection, start: 0x${section.startAddress.toString(16)}, len: 0x${section.data.size.toString(16)}: $first8")
                 }
 

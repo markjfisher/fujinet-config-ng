@@ -4,7 +4,8 @@
     .public io_get_ssid, io_set_ssid
     .public io_scan_for_networks, io_get_scan_result
     .public io_get_adapter_config
-    ; .public io_get_device_slots, io_put_device_slots, io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
+    .public io_get_device_slots
+    ; .public io_put_device_slots, io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
     ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
     ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
     ; .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
@@ -186,6 +187,28 @@
     ldx >ac
 
     rts
+    .endp
+
+; ##################################################################################
+; params: A = index of device slots to read
+; differs from C implementation which passes in the array location start every time
+; and never uses the index. We'll store the data here, and ask for an index
+.proc io_get_device_slots
+    ; store the index into DAUX1
+    sta      DAUX1
+    mva #$00 DAUX2
+
+    set_sio_defaults
+    mva #$f2 DCOMND         ; Get device slot
+    mva #$40 DSTATS
+    mwa #.sizeof(DeviceSlot)*8 DBYTLO
+
+    call_siov
+    rts
+
+; TODO: how do we make this dynamic? Do we ever need more than 8?
+; NOTE: this can't be a .var at the beginning, the syntax doesn't allocate multiple
+deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..COUNT-1]
     .endp
 
 ; ##################################################################################

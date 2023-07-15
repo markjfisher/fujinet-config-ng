@@ -19,3 +19,9 @@
     bssid       :6  .byte
     fn_version  :15 .byte
 .ends
+
+.struct DeviceSlot
+    hostSlot        .byte
+    mode            .byte
+    file        :33 .byte
+.ends

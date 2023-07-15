@@ -287,7 +287,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the NetConfig struct
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
 
         org SIOV
         mwa DBUFLO $80  ; copy DBUF pointers into ZP
@@ -350,7 +350,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the NetConfig struct
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
 
         ; fake a call to get_adapter_config that returns known data
         org SIOV
@@ -398,10 +398,6 @@ Feature: IO library test
       ac      dta AdapterConfig
     """
      And I patch machine with file "sio-patch"
-     And I print memory from siov to siov+192
-
-    # call the proc for network number 5
-    When I set register A to 5
      And I execute the procedure at io_get_adapter_config for no more than 1000 instructions
 
     # check the DCB values were set correctly
@@ -428,3 +424,42 @@ Feature: IO library test
        6:bssid
       15:version string
     """
+
+  ##############################################################################################################
+  Scenario: execute io_get_device_slots returns pointer to SSIDInfo in A/X
+    Given basic setup test "io_get_device_slots"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+
+        org SIOV
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I print memory from $1200 to $1600
+
+    # call the proc for device index 5
+    When I set register A to 5
+     And I execute the procedure at io_get_device_slots for no more than 1000 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $f2
+     And I expect to see dstats equal $40
+     # 280 = $118 = 8 * 35 ... currently hardcoded to 8
+     And I expect to see dbytlo equal $18
+     And I expect to see dbythi equal $01
+     # index into device slots
+     And I expect to see daux1 equal $05
+     And I expect to see daux2 equal $00
+
+     # check SIOV was called
+     And I expect register A equal 1
