@@ -4,6 +4,10 @@ import com.loomcom.symon.machines.Machine
 import cucumber.api.java.en.Given
 import org.apache.commons.lang3.CharUtils
 import org.assertj.core.api.Assertions.assertThat
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.createTempFile
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.writeText
 
 class MemorySteps {
     @Throws(Exception::class)
@@ -14,6 +18,66 @@ class MemorySteps {
         val hex = memoryHex("$startAddress", "$endAddress", Glue.getMachine())
         System.setProperty("test.BDD6502.lastHexDump", hex)
     }
+
+    @Throws(Exception::class)
+    @Given("^I write word at (.*) with hex (.*)$")
+    fun `i write word at with hex`(mem: String, hex: String) {
+        if (hex.length > 4 || hex.isEmpty()) throw Exception("hex specified cannot be written to word: >$hex<")
+
+        val address = Glue.valueToInt(mem)
+
+        var nHex = hex // normalise to 2 or 4 bytes
+        if (hex.length == 1 || hex.length == 3) nHex = "0${hex}"
+        val hi = if (nHex.length == 2) 0 else nHex.substring(0, 2).toInt(16)
+        val loIndex = if (nHex.length == 4) 2 else 0
+        val lo = nHex.substring(loIndex, loIndex + 2).toInt(16)
+
+        println("MemorySteps::I write word at with hex: mem: $mem, hex: $hex, address: ${address.toString(16)}, lo: ${lo.toString(16)}, hi: ${hi.toString(16)}")
+        val machine = Glue.getMachine()
+        machine.bus.write(address, lo)
+        machine.bus.write(address+1, hi)
+    }
+
+    @Throws(Exception::class)
+    @Given("^memory at registers (.*) contains$")
+    fun `memory at registers contains`(regs: String, structData: String) {
+        assertMemoryMatches(structData, Glue.getMachine(), CpuSteps.regsToAddress(regs))
+    }
+
+    @Throws(Exception::class)
+    @Given("^memory at ([^\\s]*) contains$")
+    fun `memory at contains`(location: String, structData: String) {
+        assertMemoryMatches(structData, Glue.getMachine(), Glue.valueToInt(location))
+    }
+
+    private fun assertMemoryMatches(structData: String, machine: Machine, address: Int) {
+        // each line contains an offset to add after the test, and a string to check at start of current address
+        // e.g.
+        // 33:ssid here
+        // 15:another string
+
+        var mutableAddress = address
+        structData.lines().forEach { line ->
+            val parts = line.split(":")
+            val offset = parts[0].trim().toInt()
+            val testString = parts[1].trim()
+            val memString = testString.indices.map { i -> internalToChar(machine.cpu.bus.read(mutableAddress + i)) }.joinToString("")
+            assertThat(memString).isEqualTo(testString)
+
+            mutableAddress += offset
+        }
+    }
+
+    @Throws(Exception::class)
+    @Given("^I set label (.*) to registers address (.*)$")
+    fun `I set label to registers address`(label: String, regs: String) {
+        val address = CpuSteps.regsToAddress(regs)
+        val tempFile = createTempFile()
+        tempFile.writeText("$label =$address")
+        Glue.loadLabels(tempFile.absolutePathString())
+        tempFile.deleteIfExists()
+    }
+
 
     companion object {
         fun memoryHex(start: String, end: String, machine: Machine): String {
@@ -63,47 +127,6 @@ class MemorySteps {
         }
 
         private val charMap = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_".mapIndexed { i, c -> i to c }.toMap()
-    }
-
-    @Throws(Exception::class)
-    @Given("^I write word at (.*) with hex (.*)$")
-    fun `i write word at with hex`(mem: String, hex: String) {
-        if (hex.length > 4 || hex.isEmpty()) throw Exception("hex specified cannot be written to word: >$hex<")
-
-        val address = Glue.valueToInt(mem)
-
-        var nHex = hex // normalise to 2 or 4 bytes
-        if (hex.length == 1 || hex.length == 3) nHex = "0${hex}"
-        val hi = if (nHex.length == 2) 0 else nHex.substring(0, 2).toInt(16)
-        val loIndex = if (nHex.length == 4) 2 else 0
-        val lo = nHex.substring(loIndex, loIndex + 2).toInt(16)
-
-        println("MemorySteps::I write word at with hex: mem: $mem, hex: $hex, address: ${address.toString(16)}, lo: ${lo.toString(16)}, hi: ${hi.toString(16)}")
-        val machine = Glue.getMachine()
-        machine.bus.write(address, lo)
-        machine.bus.write(address+1, hi)
-    }
-
-    @Throws(Exception::class)
-    @Given("^struct at registers (.*) contains$")
-    fun `struct at registers contains`(regs: String, structData: String) {
-        var address = CpuSteps.regsToAddress(regs)
-        val machine = Glue.getMachine()
-
-        // each line contains an offset to add after the test, and a string to check at start of current address
-        // e.g.
-        // 33:ssid here
-        // 15:another string
-
-        structData.lines().forEach { line ->
-            val parts = line.split(":")
-            val offset = parts[0].trim().toInt()
-            val testString = parts[1].trim()
-            val memString = testString.indices.map { i -> internalToChar(machine.cpu.bus.read(address + i)) }.joinToString("")
-            assertThat(memString).isEqualTo(testString)
-
-            address += offset
-        }
     }
 
 }

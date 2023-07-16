@@ -412,7 +412,7 @@ Feature: IO library test
      And I expect to see daux2 equal $00
 
     # Test the return values at A/X point to a struct with correct data
-    Then struct at registers AX contains
+    Then memory at registers AX contains
     """
       33:ssid name!!
       64:the "hostname"
@@ -539,7 +539,7 @@ Feature: IO library test
      And I expect to see dunit equal $01
      And I expect to see dtimlo equal $0f
      And I expect to see dcomnd equal $e2
-     And I expect to see dstats equal $40
+     And I expect to see dstats equal $80
      And I expect to see dbytlo equal $00
      And I expect to see dbythi equal $01
      And I expect to see daux1 equal $05
@@ -547,6 +547,60 @@ Feature: IO library test
      # check DBUF points to path string
      And I expect to see dbuflo equal lo(t_msg)
      And I expect to see dbufhi equal hi(t_msg)
+
+     # check SIOV was called
+     And I expect to see $80 equal 1
+
+  ##############################################################################################################
+  Scenario: execute io_get_device_filename
+    Given basic setup test "io_get_device_filename"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+
+        org SIOV
+        ; copy buffer address into $80
+        mwa DBUFLO $80
+
+        ; copy msg into DBUF
+        ldy #16
+        mva:rpl t_msg,y ($80),y-
+
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+      
+      t_msg dta d'this is a string', $00
+    """
+     And I patch machine with file "sio-patch"
+     And I write memory at $80 with $00
+
+    # call the proc for device index 5
+    When I set register A to 5
+     And I execute the procedure at io_get_device_filename for no more than 200 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $da
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal $00
+     And I expect to see dbythi equal $01
+     And I expect to see daux1 equal $05
+     And I expect to see daux2 equal $00
+
+    When I set label response to registers address AX
+    Then memory at response contains
+    """
+      0:this is a string
+    """
+    Then I expect to see dbuflo equal lo(response)
+    Then I expect to see dbufhi equal hi(response)
 
      # check SIOV was called
      And I expect to see $80 equal 1

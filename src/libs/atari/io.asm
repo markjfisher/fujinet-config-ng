@@ -5,8 +5,8 @@
     .public io_scan_for_networks, io_get_scan_result
     .public io_get_adapter_config
     .public io_get_device_slots, io_put_device_slots
-    .public io_set_device_filename
-    ; .public io_get_device_filename, io_get_device_enabled_status
+    .public io_set_device_filename, io_get_device_filename
+    ; .public io_get_device_enabled_status
     ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
     ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
     ; .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
@@ -234,11 +234,32 @@ deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..C
 
     set_sio_defaults
     mva #$e2  DCOMND        ; Set Filename for Device Slot
-    mva #$40  DSTATS
+    mva #$80  DSTATS
     mwa #$100 DBYTLO
     mva #$00  DAUX2
 
     call_siov
+
+    rts
+    .endp
+
+; ##################################################################################
+; params: a = slot num
+; returns: a/x = lo/hi of device slot filename buffer
+.proc io_get_device_filename ( .byte a ) .reg
+    sta DAUX1
+
+    set_sio_defaults
+    mva #$da  DCOMND        ; Set Filename for Device Slot
+    mva #$40  DSTATS
+    mwa #$100 DBYTLO
+    mva #$00  DAUX2
+    mwa #response DBUFLO
+
+    call_siov
+    lda <response
+    ldx >response
+
     rts
     .endp
 
