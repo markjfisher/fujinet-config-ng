@@ -5,7 +5,8 @@
     .public io_scan_for_networks, io_get_scan_result
     .public io_get_adapter_config
     .public io_get_device_slots, io_put_device_slots
-    ; .public io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
+    .public io_set_device_filename
+    ; .public io_get_device_filename, io_get_device_enabled_status
     ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
     ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
     ; .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
@@ -36,7 +37,7 @@
 
 ; ##################################################################################
 ; sets A to 0 (and thus Z flag) if no error, 127 otherwise (not-Z)
-.proc io_error
+.proc io_error ( .byte a ) .reg
     lda DSTATS
     and #$80
     rts
@@ -116,8 +117,7 @@
 ; ##################################################################################
 ; sends SSID information to SIO.
 ; params: (A,X) contains the address of the memory structure to send
-.proc io_set_ssid
-    ; before we lose them, store A,X
+.proc io_set_ssid ( .byte a, x ) .reg
     sta DBUFLO
     stx DBUFHI
     set_sio_defaults
@@ -150,7 +150,7 @@
 ; ##################################################################################
 ; params: A = index of network to get results for
 ; returns: A/X = memory location of SSIDInfo
-.proc io_get_scan_result
+.proc io_get_scan_result ( .byte a ) .reg
     .var info SSIDInfo
 
     ; network index in A
@@ -193,7 +193,7 @@
 ; params: A = index of device slots to read
 ; differs from C implementation which passes in the array location start every time
 ; and never uses the index. We'll store the data here, and ask for an index
-.proc io_get_device_slots
+.proc io_get_device_slots ( .byte a ) .reg
     ; store the index into DAUX1
     sta      DAUX1
     mva #$00 DAUX2
@@ -220,6 +220,23 @@ deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..C
     mwa #.sizeof(DeviceSlot)*8 DBYTLO
     mwa #io_get_device_slots.deviceSlots DBUFLO
     mwa #$00 DAUX           ; unused, but let's clear it
+
+    call_siov
+    rts
+    .endp
+
+; ##################################################################################
+; params: a = slot num, x,y = pointer to path string
+.proc io_set_device_filename ( .byte a, x, y ) .reg
+    sta DAUX1
+    stx DBUFLO
+    sty DBUFHI
+
+    set_sio_defaults
+    mva #$e2  DCOMND        ; Set Filename for Device Slot
+    mva #$40  DSTATS
+    mwa #$100 DBYTLO
+    mva #$00  DAUX2
 
     call_siov
     rts

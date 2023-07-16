@@ -310,7 +310,7 @@ Feature: IO library test
       info    dta SSIDInfo
     """
      And I patch machine with file "sio-patch"
-     And I print memory from siov to siov+192
+    # And I print memory from siov to siov+192
 
     # call the proc for network number 5
     When I set register A to 5
@@ -442,7 +442,7 @@ Feature: IO library test
         rts
     """
      And I patch machine with file "sio-patch"
-     And I print memory from $1200 to $1600
+    # And I print memory from $1200 to $1600
 
     # call the proc for device index 5
     When I set register A to 5
@@ -481,7 +481,7 @@ Feature: IO library test
         rts
     """
      And I patch machine with file "sio-patch"
-     And I print memory from $1200 to $1600
+     # And I print memory from $1200 to $1600
 
     # call the proc for device index 5
     When I set register A to 5
@@ -503,6 +503,50 @@ Feature: IO library test
      # as the data is at the end of the previous proc. dodgy calculation though.
      And I expect to see dbuflo equal lo(io_put_device_slots-280)
      And I expect to see dbufhi equal hi(io_put_device_slots-280)
+
+     # check SIOV was called
+     And I expect to see $80 equal 1
+
+  ##############################################################################################################
+  Scenario: execute io_set_device_filename
+    Given basic setup test "io_set_device_filename"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+
+        org SIOV
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+      
+      t_msg dta d'this is a string'
+    """
+     And I patch machine with file "sio-patch"
+     And I write memory at $80 with $00
+
+    # call the proc for device index 5
+    When I set register A to 5
+     And I set register X to lo(t_msg)
+     And I set register Y to hi(t_msg)
+     And I execute the procedure at io_set_device_filename for no more than 100 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $e2
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal $00
+     And I expect to see dbythi equal $01
+     And I expect to see daux1 equal $05
+     And I expect to see daux2 equal $00
+     # check DBUF points to path string
+     And I expect to see dbuflo equal lo(t_msg)
+     And I expect to see dbufhi equal hi(t_msg)
 
      # check SIOV was called
      And I expect to see $80 equal 1

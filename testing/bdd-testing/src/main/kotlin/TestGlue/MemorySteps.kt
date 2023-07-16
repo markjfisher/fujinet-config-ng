@@ -92,7 +92,8 @@ class MemorySteps {
 
         // each line contains an offset to add after the test, and a string to check at start of current address
         // e.g.
-        // 33:ssid
+        // 33:ssid here
+        // 15:another string
 
         structData.lines().forEach { line ->
             val parts = line.split(":")
@@ -103,7 +104,6 @@ class MemorySteps {
 
             address += offset
         }
-
     }
 
 }
