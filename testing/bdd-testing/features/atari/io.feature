@@ -434,7 +434,6 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
 
         org SIOV
         ; mark fact we were called
@@ -442,7 +441,6 @@ Feature: IO library test
         rts
     """
      And I patch machine with file "sio-patch"
-    # And I print memory from $1200 to $1600
 
     # call the proc for device index 5
     When I set register A to 5
@@ -460,6 +458,9 @@ Feature: IO library test
      # index into device slots
      And I expect to see daux1 equal $05
      And I expect to see daux2 equal $00
+     # dbuf points to the array
+     And I expect to see dbuflo equal lo(deviceslots)
+     And I expect to see dbufhi equal hi(deviceslots)
 
      # check SIOV was called
      And I expect to see $80 equal 1
@@ -481,7 +482,6 @@ Feature: IO library test
         rts
     """
      And I patch machine with file "sio-patch"
-     # And I print memory from $1200 to $1600
 
     # call the proc for device index 5
     When I set register A to 5
@@ -499,10 +499,8 @@ Feature: IO library test
      And I expect to see daux1 equal $00
      And I expect to see daux2 equal $00
      # check DBUF points to device slots memory
-     # this is #io_put_device_slots - sizeof(deviceSlots)
-     # as the data is at the end of the previous proc. dodgy calculation though.
-     And I expect to see dbuflo equal lo(io_put_device_slots-280)
-     And I expect to see dbufhi equal hi(io_put_device_slots-280)
+     And I expect to see dbuflo equal lo(deviceslots)
+     And I expect to see dbufhi equal hi(deviceslots)
 
      # check SIOV was called
      And I expect to see $80 equal 1
@@ -594,7 +592,7 @@ Feature: IO library test
      And I expect to see daux1 equal $05
      And I expect to see daux2 equal $00
 
-    When I set label response to registers address AX
+    # When I set label response to registers address AX
     Then memory at response contains
     """
       0:this is a string
@@ -638,3 +636,156 @@ Feature: IO library test
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
       And I execute the procedure at io_disable_device for no more than 1 instructions
+
+
+  ##############################################################################################################
+  Scenario: execute io_device_slot_to_device
+    Given basic setup test "io_device_slot_to_device"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      # will fail if more than just a return implemented.
+      And I execute the procedure at io_device_slot_to_device for no more than 1 instructions
+
+  ##############################################################################################################
+  Scenario: execute io_get_host_slots
+    Given basic setup test "io_get_host_slots"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+
+        org SIOV
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I set register A to 0
+     And I execute the procedure at io_get_host_slots for no more than 30 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $f4
+     And I expect to see dstats equal $40
+     And I expect to see dbytlo equal $00
+     And I expect to see dbythi equal $01
+     And I expect to see daux1 equal $00
+     And I expect to see daux2 equal $00
+     # dbuf points to the array
+     And I expect to see dbuflo equal lo(hostslots)
+     And I expect to see dbufhi equal hi(hostslots)
+
+     # check SIOV was called
+     And I expect to see $80 equal 1
+
+  ##############################################################################################################
+  Scenario: execute io_put_host_slots
+    Given basic setup test "io_put_host_slots"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+
+        org SIOV
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I execute the procedure at io_put_host_slots for no more than 1000 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $f3
+     And I expect to see dstats equal $80
+     And I expect to see dbytlo equal $00
+     And I expect to see dbythi equal $01
+     And I expect to see daux1 equal $00
+     And I expect to see daux2 equal $00
+     # check DBUF points to device slots memory
+     And I expect to see dbuflo equal lo(hostslots)
+     And I expect to see dbufhi equal hi(hostslots)
+
+     # check SIOV was called
+     And I expect to see $80 equal 1
+
+  ##############################################################################################################
+  Scenario Outline: execute io_mount_host_slot
+    Given basic setup test "io_mount_host_slot"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+
+        org SIOV
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I write memory at $80 with $ff
+     And I set register X to <slot>
+     And I write memory at hostslots+32*<slot> with 1
+     And I execute the procedure at io_mount_host_slot for no more than 1000 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $f9
+     And I expect to see dstats equal $00
+     And I expect to see dbytlo equal $00
+     And I expect to see dbythi equal $00
+     And I expect to see daux1 equal <slot>
+     And I expect to see daux2 equal $00
+     And I expect to see dbuflo equal $00
+     And I expect to see dbufhi equal $00
+
+     # t1 should point to beginning of the correct block
+     And I expect to see t1 equal lo(<slot_add>)
+     And I expect to see t1+1 equal hi(<slot_add>)
+
+     # check SIOV was called
+     And I expect to see $80 equal 1
+
+    Examples:
+    | slot | slot_add      |
+    | 0    | hostslots     |
+    | 1    | hostslots+32  |
+    | 2    | hostslots+64  |
+
+  ##############################################################################################################
+  Scenario: execute io_mount_host_slot does not run if first byte of hostslot is 0
+    Given basic setup test "io_mount_host_slot"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+
+        org SIOV
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I write memory at $80 with $ff
+     And I set register X to 0
+     And I execute the procedure at io_mount_host_slot for no more than 1000 instructions
+
+    # check SIOV was NOT called
+    Then I expect to see $80 equal $ff

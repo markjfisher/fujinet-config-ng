@@ -25,3 +25,7 @@
     mode            .byte
     file        :33 .byte
 .ends
+
+.struct HostSlot
+    data        :32 .byte
+.ends

@@ -1,4 +1,5 @@
     .reloc
+
     .public io_init, io_error
     .public io_get_wifi_enabled, io_get_wifi_status
     .public io_get_ssid, io_set_ssid
@@ -7,12 +8,19 @@
     .public io_get_device_slots, io_put_device_slots
     .public io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
     .public io_update_devices_enabled, io_enable_device, io_disable_device
-    ; .public io_device_slot_to_device, io_get_filename_for_device_slot
-    ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
+    .public io_device_slot_to_device ; NOT DOING: io_get_filename_for_device_slot
+    .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
     ; .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
     ; .public io_set_boot_config, io_boot
     ; .public io_mount_disk_image, io_umount_disk_image
     ; .public io_create_new, io_copy_file, io_mount_all
+
+    ; Public access to buffers and arrays
+    .public response
+    .public deviceSlots
+    .public hostSlots
+
+    .extrn  t1 .byte
 
     icl "inc/antic.inc"
     icl "inc/gtia.inc"
@@ -192,7 +200,7 @@
 ; ##################################################################################
 ; params: A = index of device slots to read
 ; differs from C implementation which passes in the array location start every time
-; and never uses the index. We'll store the data here, and ask for an index
+; and never uses the index
 .proc io_get_device_slots ( .byte a ) .reg
     ; store the index into DAUX1
     sta      DAUX1
@@ -202,13 +210,11 @@
     mva #$f2 DCOMND         ; Get device slot
     mva #$40 DSTATS
     mwa #.sizeof(DeviceSlot)*8 DBYTLO
+    mwa #deviceSlots DBUFLO
 
     call_siov
     rts
 
-; TODO: how do we make this dynamic? Do we ever need more than 8?
-; NOTE: this can't be a .var at the beginning, the syntax doesn't allocate multiple
-deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..COUNT-1]
     .endp
 
 ; ##################################################################################
@@ -218,7 +224,7 @@ deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..C
     mva #$f1 DCOMND         ; Write device slot
     mva #$40 DSTATS
     mwa #.sizeof(DeviceSlot)*8 DBYTLO
-    mwa #io_get_device_slots.deviceSlots DBUFLO
+    mwa #deviceSlots DBUFLO
     mwa #$00 DAUX           ; unused, but let's clear it
 
     call_siov
@@ -250,7 +256,7 @@ deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..C
     sta DAUX1
 
     set_sio_defaults
-    mva #$da  DCOMND        ; Set Filename for Device Slot
+    mva #$da  DCOMND        ; Get Filename for Device Slot
     mva #$40  DSTATS
     mwa #$100 DBYTLO
     mva #$00  DAUX2
@@ -289,7 +295,92 @@ deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..C
     rts
     .endp
 
+; ##################################################################################
+; No-op
+.proc io_device_slot_to_device
+    rts
+    .endp
 
 ; ##################################################################################
-; buffer for transfers
+; Not going to implement this, it's only used in one place and I think
+; io_get_device_filename can be used instead
+; .proc io_get_filename_for_device_slot
+;     rts
+;     .endp
+
+; ##################################################################################
+; Get hostslots information into array
+.proc io_get_host_slots
+    set_sio_defaults
+    mva #$f4  DCOMND         ; Get hosts slot
+    mva #$40  DSTATS
+    mwa #.sizeof(HostSlot)*8 DBYTLO
+    mwa #hostSlots DBUFLO
+    mwa #$00 DAUX
+
+    call_siov
+    rts
+    .endp
+
+; ##################################################################################
+.proc io_put_host_slots
+    set_sio_defaults
+    mva #$f3  DCOMND         ; Write host slots
+    mva #$80  DSTATS
+    mwa #.sizeof(HostSlot)*8 DBYTLO
+    mwa #hostSlots DBUFLO
+    mwa #$00 DAUX
+
+    call_siov
+    rts
+    .endp
+
+; ##################################################################################
+; params: a = host slot number
+.proc io_mount_host_slot ( .byte x ) .reg
+    mwa #hostSlots t1       ; copy hostSlots location into zp
+
+    txa         ; save the slot
+    pha
+
+    ; make t1 point to specific host slot, by jumping forward x number of HostSlot entries
+    beq skip                        ; but not if x == 0
+@   adw t1 #.sizeof(HostSlot)
+    dex
+    bne @-
+
+skip
+    pla         ; restore slot back
+    tax
+
+    ldy #0
+    lda (t1), y ; first byte of host slot
+    beq out     ; don't do anything if first byte is zero
+
+    set_sio_defaults
+    mva #$f9 DCOMND         ; mount host
+    mva #$00 DSTATS
+    sta      DBYTLO
+    sta      DBYTHI
+    sta      DBUFLO
+    sta      DBUFHI
+    stx      DAUX1
+    sta      DAUX2
+
+    call_siov
+
+out
+    rts
+    .endp
+
+; ##################################################################################
+; arrays and buffer
+
+; TODO: is there a better way around this? I can't declare the array as public, but a label to it I can.
+deviceSlots: 
+deviceSlots_real dta DeviceSlot  [7]     ; 8 entries, MADS arrays are 0..COUNT
+
+hostSlots:
+hostSlots_real  dta HostSlot    [7]
+
 response :512 .byte
