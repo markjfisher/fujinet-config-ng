@@ -5,7 +5,7 @@
     .public io_scan_for_networks, io_get_scan_result
     .public io_get_adapter_config
     .public io_get_device_slots, io_put_device_slots
-    .public io_set_device_filename, io_get_device_filename
+    .public io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
     ; .public io_get_device_enabled_status
     ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
     ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
@@ -263,6 +263,12 @@ deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..C
     rts
     .endp
 
+; ##################################################################################
+.proc io_get_device_enabled_status
+    lda #$00
+    rts
+    .endp
+ 
 ; ##################################################################################
 ; buffer for transfers
 response :512 .byte

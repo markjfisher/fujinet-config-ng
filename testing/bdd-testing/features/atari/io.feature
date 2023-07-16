@@ -604,3 +604,13 @@ Feature: IO library test
 
      # check SIOV was called
      And I expect to see $80 equal 1
+
+  ##############################################################################################################
+  Scenario: execute io_get_device_filename
+    Given basic setup test "io_get_device_filename"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I set register A to 1
+      And I execute the procedure at io_get_device_enabled_status for no more than 5 instructions
+    
+     Then I expect register A equal 0
