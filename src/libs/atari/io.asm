@@ -6,8 +6,8 @@
     .public io_get_adapter_config
     .public io_get_device_slots, io_put_device_slots
     .public io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
-    ; .public io_get_device_enabled_status
-    ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
+    .public io_update_devices_enabled, io_enable_device, io_disable_device
+    ; .public io_device_slot_to_device, io_get_filename_for_device_slot
     ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
     ; .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
     ; .public io_set_boot_config, io_boot
@@ -264,11 +264,32 @@ deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..C
     .endp
 
 ; ##################################################################################
+; returns: true always on atari
 .proc io_get_device_enabled_status
-    lda #$00
+    lda #$01
     rts
     .endp
  
+; ##################################################################################
+; In C version, this sets 8 booleans to true always.
+; But nothing needs those fields on atari, so we will do nothing
+.proc io_update_devices_enabled
+    rts
+    .endp
+
+; ##################################################################################
+; No-op
+.proc io_enable_device
+    rts
+    .endp
+
+; ##################################################################################
+; No-op
+.proc io_disable_device
+    rts
+    .endp
+
+
 ; ##################################################################################
 ; buffer for transfers
 response :512 .byte

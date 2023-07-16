@@ -610,7 +610,31 @@ Feature: IO library test
     Given basic setup test "io_get_device_filename"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
-      And I set register A to 1
+      And I set register A to $aa
       And I execute the procedure at io_get_device_enabled_status for no more than 5 instructions
     
-     Then I expect register A equal 0
+     Then I expect register A equal 1
+
+  ##############################################################################################################
+  Scenario: execute io_update_devices_enabled
+    Given basic setup test "io_update_devices_enabled"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      # will fail if more than just a return implemented.
+      And I execute the procedure at io_update_devices_enabled for no more than 1 instructions
+
+  ##############################################################################################################
+  Scenario: execute io_enable_device
+    Given basic setup test "io_enable_device"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      # will fail if more than just a return implemented.
+      And I execute the procedure at io_enable_device for no more than 1 instructions
+
+  ##############################################################################################################
+  Scenario: execute io_disable_device
+    Given basic setup test "io_disable_device"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      # will fail if more than just a return implemented.
+      And I execute the procedure at io_disable_device for no more than 1 instructions
