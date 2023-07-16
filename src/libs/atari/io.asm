@@ -4,8 +4,8 @@
     .public io_get_ssid, io_set_ssid
     .public io_scan_for_networks, io_get_scan_result
     .public io_get_adapter_config
-    .public io_get_device_slots
-    ; .public io_put_device_slots, io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
+    .public io_get_device_slots, io_put_device_slots
+    ; .public io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
     ; .public io_update_devices_enabled, io_enable_device, io_disable_device, io_device_slot_to_device, io_get_filename_for_device_slot
     ; .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
     ; .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
@@ -209,6 +209,20 @@
 ; TODO: how do we make this dynamic? Do we ever need more than 8?
 ; NOTE: this can't be a .var at the beginning, the syntax doesn't allocate multiple
 deviceSlots dta DeviceSlot [7] ; sizing is weird. allocate [0..COUNT], not [0..COUNT-1]
+    .endp
+
+; ##################################################################################
+; write all 8 device slots
+.proc io_put_device_slots
+    set_sio_defaults
+    mva #$f1 DCOMND         ; Write device slot
+    mva #$40 DSTATS
+    mwa #.sizeof(DeviceSlot)*8 DBYTLO
+    mwa #io_get_device_slots.deviceSlots DBUFLO
+    mwa #$00 DAUX           ; unused, but let's clear it
+
+    call_siov
+    rts
     .endp
 
 ; ##################################################################################
