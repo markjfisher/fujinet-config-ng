@@ -1,10 +1,8 @@
 ; Load the relocatable main wherever we want 
 
       ; organise some zp vars
-      .zpvar d_src, d_dst .word = $80
       ; 2 general words for indirect usage
-      .zpvar t1, t2 .word
-      .public d_src, d_dst
+      .zpvar t1, t2 .word = $80
 
       org $3000
 

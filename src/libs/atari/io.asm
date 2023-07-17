@@ -1,5 +1,3 @@
-    .reloc
-
     .public io_init, io_error
     .public io_get_wifi_enabled, io_get_wifi_status
     .public io_get_ssid, io_set_ssid
@@ -10,17 +8,20 @@
     .public io_update_devices_enabled, io_enable_device, io_disable_device
     .public io_device_slot_to_device ; NOT DOING: io_get_filename_for_device_slot
     .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
-    ; .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
+    .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
     ; .public io_set_boot_config, io_boot
     ; .public io_mount_disk_image, io_umount_disk_image
     ; .public io_create_new, io_copy_file, io_mount_all
 
     ; Public access to buffers and arrays
-    .public response
+    .public iobuffer
     .public deviceSlots
     .public hostSlots
 
-    .extrn  t1 .byte
+    .reloc
+
+    .extrn t1, t2 .byte
+    .extrn strcpy, strappend .proc
 
     icl "inc/antic.inc"
     icl "inc/gtia.inc"
@@ -146,11 +147,11 @@
     mva #$40 DSTATS
     mwa #$04 DBYTLO
     mwa #$00 DAUX
-    mwa #response DBUFLO
+    mwa #iobuffer DBUFLO
 
     call_siov
-    ; put first byte of response into X
-    lda response
+    ; put first byte of iobuffer into X
+    lda iobuffer
 
     rts
     .endp
@@ -260,11 +261,11 @@
     mva #$40  DSTATS
     mwa #$100 DBYTLO
     mva #$00  DAUX2
-    mwa #response DBUFLO
+    mwa #iobuffer DBUFLO
 
     call_siov
-    lda <response
-    ldx >response
+    lda <iobuffer
+    ldx >iobuffer
 
     rts
     .endp
@@ -336,7 +337,7 @@
     .endp
 
 ; ##################################################################################
-; params: a = host slot number
+; params: x = host slot number
 .proc io_mount_host_slot ( .byte x ) .reg
     mwa #hostSlots t1       ; copy hostSlots location into zp
 
@@ -374,13 +375,75 @@ out
     .endp
 
 ; ##################################################################################
-; arrays and buffer
+.proc io_open_directory ( .byte hs ) .var
+    .var hs .byte       ; host slot
 
-; TODO: is there a better way around this? I can't declare the array as public, but a label to it I can.
-deviceSlots: 
+    ; is the filter set?
+    lda filter
+    beq skip
+
+    ; yes, create a dir+filter string
+    ; clear 256 bytes of iobuffer
+    ldx #$00
+    mva:rne #$00 iobuffer,x+
+
+    ; copy path+filter to iobuffer
+    strcpy    #path     #iobuffer
+    strappend #filter   #iobuffer
+    mwa       #iobuffer DBUFLO
+    jmp do_sio
+
+skip
+    mwa       #path     DBUFLO
+
+do_sio
+    set_sio_defaults
+    mva #$f7  DCOMND         ; open directory
+    mva #$80  DSTATS
+    mwa #$100 DBYTLO
+    mva hs    DAUX1
+    mva #$00  DAUX2
+
+    rts
+    .endp
+
+; ##################################################################################
+.proc io_read_directory
+
+    rts
+    .endp
+
+; ##################################################################################
+.proc io_close_directory
+
+    rts
+    .endp
+
+; ##################################################################################
+.proc io_set_directory_position
+
+    rts
+    .endp
+
+; ##################################################################################
+.proc io_build_directory
+
+    rts
+    .endp
+
+; ##################################################################################
+; arrays and buffers
+
+deviceSlots:
 deviceSlots_real dta DeviceSlot  [7]     ; 8 entries, MADS arrays are 0..COUNT
-
 hostSlots:
-hostSlots_real  dta HostSlot    [7]
+hostSlots_real   dta HostSlot    [7]
 
-response :512 .byte
+filter      :32  .byte
+src_filter  :32  .byte
+path        :224 .byte
+;src_path    :224 .byte
+;src_fname   :128 .byte
+
+; this is a general buffer we will reuse for temp data
+iobuffer    :256 .byte

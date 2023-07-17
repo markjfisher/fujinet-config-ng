@@ -10,4 +10,10 @@ class DebugSteps {
     fun `i print memory`(start: String, end: String) {
         println(MemorySteps.memoryHex(start, end, Glue.getMachine()))
     }
+
+    @Throws(Exception::class)
+    @Given("^I print ascii from (.*) to (.*)$")
+    fun `i print ascii`(start: String, end: String) {
+        println(MemorySteps.memoryHex(start, end, Glue.getMachine(), false))
+    }
 }

@@ -2,7 +2,6 @@ package TestGlue
 
 import com.loomcom.symon.machines.Machine
 import cucumber.api.java.en.Given
-import org.apache.commons.lang3.CharUtils
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createTempFile
@@ -11,12 +10,28 @@ import kotlin.io.path.writeText
 
 class MemorySteps {
     @Throws(Exception::class)
-    @Given("^I hex dump memory for (.*) bytes from property \"([^\"]*)\"\$")
-    fun `i hex dump for n bytes from property`(nBytes: String, propName: String) {
+    @Given("^I hex dump memory for (.*) bytes from property \"([^\"]*)\"$")
+    fun `i hex dump memory for n bytes from property`(nBytes: String, propName: String) {
         val startAddress = System.getProperty(propName).toInt()
         val endAddress = startAddress + nBytes.toInt()
         val hex = memoryHex("$startAddress", "$endAddress", Glue.getMachine())
         System.setProperty("test.BDD6502.lastHexDump", hex)
+    }
+
+    @Throws(Exception::class)
+    @Given("^I hex\\+ dump memory between (.*) and (.+)$")
+    fun `i hex dump memory between X and Y improved`(start: String, end: String) {
+        val hex = memoryHex(start, end, Glue.getMachine())
+        System.setProperty("test.BDD6502.lastHexDump", hex)
+        Glue.getGlue().scenario.write(hex)
+    }
+
+    @Throws(Exception::class)
+    @Given("^I hex\\+ dump ascii between (.*) and (.+)$")
+    fun `i hex dump ascii between X and Y improved`(start: String, end: String) {
+        val hex = memoryHex(start, end, Glue.getMachine(), false)
+        System.setProperty("test.BDD6502.lastHexDump", hex)
+        Glue.getGlue().scenario.write(hex)
     }
 
     @Throws(Exception::class)
@@ -78,55 +93,83 @@ class MemorySteps {
         tempFile.deleteIfExists()
     }
 
+    @Throws(Exception::class)
+    @Given("^I write string \"([^\"]*)\" as ascii to memory address (.*)$")
+    fun `i write string as ascii to memory address`(s: String, adr: String) {
+        val scenario = Glue.getGlue().scenario
+        val address = Glue.valueToInt(adr)
+        scenario.write("Writing string \"$s\" to address: 0x${address.toString(16)} as ascii")
+        // Should write (at)ascii, not internal, as space is 00, which is null terminator too!
+        val machine = Glue.getMachine()
+        s.forEachIndexed { i, c ->
+            machine.bus.write(address + i, c.code)
+        }
+        // end with nul (0) char to terminate string
+        machine.bus.write(address + s.length, 0)
+    }
+
+    @Throws(Exception::class)
+    @Given("^I write string \"([^\"]*)\" as internal to memory address (.*)$")
+    fun `i write string as internal to memory address`(s: String, adr: String) {
+        val scenario = Glue.getGlue().scenario
+        val address = Glue.valueToInt(adr)
+        scenario.write("Writing string \"$s\" to address: 0x${address.toString(16)} as internal")
+        // Should write internal, as space is 00, which is null terminator too!
+        val machine = Glue.getMachine()
+        s.forEachIndexed { i, c ->
+            machine.bus.write(address + i, charToInternal(c))
+        }
+    }
 
     companion object {
-        fun memoryHex(start: String, end: String, machine: Machine): String {
-            var addrStart: Int = Glue.valueToInt(start)
+        fun memoryHex(start: String, end: String, machine: Machine, isInternal: Boolean = true): String {
+            var currentAddress: Int = Glue.valueToInt(start)
             val addrEnd: Int = Glue.valueToInt(end)
 
             var cr = 0
             var hexOutput = ""
             var section = ""
-            while (addrStart < addrEnd) {
+            while (currentAddress < addrEnd) {
                 if (cr == 0) {
-                    hexOutput += String.format("%2s:", Integer.toHexString(addrStart).replace(' ', '0'))
+                    hexOutput += String.format("%2s:", Integer.toHexString(currentAddress).replace(' ', '0'))
                 }
                 if (cr == 8) {
                     hexOutput += " "
                 }
-                val theByte: Int = machine.bus.read(addrStart, false)
-                val hex = String.format("%2s", Integer.toHexString(theByte)).replace(' ', '0')
-                section += if (CharUtils.isAsciiPrintable(theByte.toChar())) {
-                    theByte.toChar()
-                } else {
-                    '.'
-                }
+                val v: Int = machine.bus.read(currentAddress, false)
+                val hex = String.format("%2s", Integer.toHexString(v)).replace(' ', '0')
+                section += if (isInternal) internalToChar(v) else Char(v)
                 hexOutput += " $hex"
                 cr += 1
                 if (cr >= 16) {
-                    hexOutput += " : $section"
-                    hexOutput += "\n"
+                    hexOutput += " : >$section<\n"
                     cr = 0
                     section = ""
                 }
-                addrStart += 1
+                currentAddress++
             }
 
             if (section.isNotEmpty()) {
-                hexOutput += " : $section"
+                hexOutput += " : >$section<"
             }
             return hexOutput
         }
 
         fun internalToChar(v: Int): Char {
             return when (v) {
-                in 0..63 -> charMap.getOrDefault(v, '.')
+                in 0..63 -> internalToCharMap.getOrDefault(v, '.')
                 in 97..122 -> 'a' + v - 97
                 else -> '.'
             }
         }
 
-        private val charMap = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_".mapIndexed { i, c -> i to c }.toMap()
-    }
+        fun charToInternal(c: Char): Int = charToInternalMap.getOrDefault(c, 0)
 
+        private val internalToCharMap = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_".mapIndexed { i, c -> i to c }.toMap().toMutableMap().let { m ->
+            (97 .. 122).forEach { i -> m[i] = Char(i) } // add 'a..z'
+            m
+        }.toMap()
+        private val charToInternalMap = internalToCharMap.entries.associate { (i, c) -> c to i }
+        private val defaultCode = charToInternalMap['.']!!
+    }
 }

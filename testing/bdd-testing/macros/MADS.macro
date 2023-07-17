@@ -10,7 +10,7 @@ Given perform mads compile of test.a
    And I load labels "build/tests/test.al"
 
 Given I mads-compile "*" from "*"
-  When I run the command line: mads -o:build/tests/$1.obx -t:build/tests/$1.lbl -l:build/tests/$1.lst $2
+  When I run the command line: mads -o:build/tests/$1.obx -i:build/tests -t:build/tests/$1.lbl -l:build/tests/$1.lst $2
 
 Given I build and load the application "*" from "*"
   When I run the command line: mads -s -i:build/tests -o:build/tests/$1.xex -t:build/tests/$1.lbl -l:build/tests/$1.lst $2

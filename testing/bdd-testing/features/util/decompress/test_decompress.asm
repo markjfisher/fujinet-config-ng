@@ -1,18 +1,12 @@
 ; test the decompress library
-        .zpvar d_src, d_dst .word = $80
-
-        org $3000
+        .zpvar t1, t2 .word = $f0
+        org $1000
         .link '../../../build/tests/decompress.obx'
 
 begin_test
-        mwa #z_data d_src
-        mwa #output d_dst
-        decompress
+        decompress #z_data #output
         rts
 
+; decompresses to "123451234512345"
 z_data  dta $05, $31, $32, $33, $34, $35, $87, $fb, $01, $35, $00
-
-output
-    :15 dta $00
-
-    run begin_test
+output  :15 .byte

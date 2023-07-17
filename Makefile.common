@@ -25,6 +25,7 @@ $(LIBS_OUT):
 	@$(call MKDIR,$@)
 
 TARGET_FILES := $(LIBS_OUT)/main_loop.obx \
+	$(LIBS_OUT)/util/stdlib.obx \
 	$(LIBS_OUT)/util/hex.obx \
 	$(LIBS_OUT)/run_module.obx \
 	$(LIBS_OUT)/modules/modules.obx \
@@ -54,6 +55,10 @@ $(LIBS_OUT)/modules/hosts.obx: $(LIBS)/modules/hosts.asm | $(LIBS_OUT)
 $(LIBS_OUT)/util/decompress.obx: $(LIBS)/util/decompress.asm | $(LIBS_OUT)
 	$(call MKDIR,$(LIBS_OUT)/util)
 	mads -o:$@ -i:$(BUILDDIR) -l:build/libs/util/decompress.lst -t:build/libs/util/decompress.lab $(subst build,src,$@)
+
+$(LIBS_OUT)/util/stdlib.obx: $(LIBS)/util/stdlib.asm | $(LIBS_OUT)
+	$(call MKDIR,$(LIBS_OUT)/util)
+	mads -o:$@ -i:$(BUILDDIR) -l:build/libs/util/stdlib.lst -t:build/libs/util/stdlib.lab $(subst build,src,$@)
 
 $(LIBS_OUT)/util/hex.obx: $(LIBS)/util/hex.asm | $(LIBS_OUT)
 	$(call MKDIR,$(LIBS_OUT)/util)

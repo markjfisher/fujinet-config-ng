@@ -11,7 +11,7 @@ Feature:  Decompress library test
     # compile the test application
     And I build and load the application "test_decompress" from "features/util/decompress/test_decompress.asm"
 
-    When I execute the procedure at begin_test for no more than 1000 instructions
+    When I execute the procedure at begin_test for no more than 200 instructions
 
     # returns with A = 0
     Then I expect register A equal 0

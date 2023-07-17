@@ -5,6 +5,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario Outline: execute io_error should set A
     Given basic setup test "io_error"
+    And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
     And I mads-compile "io" from "../../src/libs/atari/io.asm"
     And I build and load the application "test_io" from "features/atari/test_io.asm"
 
@@ -23,8 +24,10 @@ Feature: IO library test
       | 0x81 | 0x80 |
       | 0xff | 0x80 |
 
+  ##############################################################################################################
   Scenario: execute io_init should setup some system values
     Given basic setup test "io_init"
+    And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
     And I mads-compile "io" from "../../src/libs/atari/io.asm"
     And I build and load the application "test_io" from "features/atari/test_io.asm"
 
@@ -38,6 +41,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario Outline: execute io_get_wifi_enabled return if wifi is enabled
     Given basic setup test "io_get_wifi_enabled"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -87,6 +91,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario Outline: execute io_get_wifi_status returns status of wifi in A
     Given basic setup test "io_get_wifi_status"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -135,6 +140,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_get_ssid returns pointer to NetConfig in A/X
     Given basic setup test "get ssid"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -194,6 +200,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_set_ssid calls SIOV with correct data
     Given basic setup test "io_set_ssid"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -231,6 +238,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario Outline: execute io_scan_for_networks puts number of networks into X
     Given basic setup test "io_scan_for_networks"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -281,6 +289,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_get_scan_result returns pointer to SSIDInfo in A/X
     Given basic setup test "io_get_scan_result"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -344,6 +353,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_get_adapter_config returns pointer to SSIDInfo in A/X
     Given basic setup test "io_get_adapter_config"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -428,6 +438,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_get_device_slots
     Given basic setup test "io_get_device_slots"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -468,6 +479,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_put_device_slots
     Given basic setup test "io_put_device_slots"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -508,6 +520,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_set_device_filename
     Given basic setup test "io_set_device_filename"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -552,6 +565,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_get_device_filename
     Given basic setup test "io_get_device_filename"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -592,13 +606,12 @@ Feature: IO library test
      And I expect to see daux1 equal $05
      And I expect to see daux2 equal $00
 
-    # When I set label response to registers address AX
-    Then memory at response contains
+    Then memory at iobuffer contains
     """
       0:this is a string
     """
-    Then I expect to see dbuflo equal lo(response)
-    Then I expect to see dbufhi equal hi(response)
+    Then I expect to see dbuflo equal lo(iobuffer)
+    Then I expect to see dbufhi equal hi(iobuffer)
 
      # check SIOV was called
      And I expect to see $80 equal 1
@@ -606,6 +619,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_get_device_filename
     Given basic setup test "io_get_device_filename"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I set register A to $aa
@@ -616,6 +630,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_update_devices_enabled
     Given basic setup test "io_update_devices_enabled"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
@@ -624,6 +639,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_enable_device
     Given basic setup test "io_enable_device"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
@@ -632,6 +648,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_disable_device
     Given basic setup test "io_disable_device"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
@@ -641,6 +658,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_device_slot_to_device
     Given basic setup test "io_device_slot_to_device"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
@@ -649,6 +667,7 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_get_host_slots
     Given basic setup test "io_get_host_slots"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
@@ -685,13 +704,13 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_put_host_slots
     Given basic setup test "io_put_host_slots"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
 
         org SIOV
         ; mark fact we were called
@@ -721,13 +740,13 @@ Feature: IO library test
   ##############################################################################################################
   Scenario Outline: execute io_mount_host_slot
     Given basic setup test "io_mount_host_slot"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
 
         org SIOV
         ; mark fact we were called
@@ -737,8 +756,9 @@ Feature: IO library test
      And I patch machine with file "sio-patch"
      And I write memory at $80 with $ff
      And I set register X to <slot>
+     # first byte of particular host slot has to be non-0 to trigger a transfer
      And I write memory at hostslots+32*<slot> with 1
-     And I execute the procedure at io_mount_host_slot for no more than 1000 instructions
+     And I execute the procedure at io_mount_host_slot for no more than 100 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -769,13 +789,13 @@ Feature: IO library test
   ##############################################################################################################
   Scenario: execute io_mount_host_slot does not run if first byte of hostslot is 0
     Given basic setup test "io_mount_host_slot"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I create file "build/tests/sio-patch.asm" with
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
 
         org SIOV
         ; mark fact we were called
