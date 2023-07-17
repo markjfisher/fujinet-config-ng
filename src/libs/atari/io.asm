@@ -21,7 +21,7 @@
     .reloc
 
     .extrn t1, t2 .byte
-    .extrn strcpy, strappend .proc
+    .extrn strncpy, strncat .proc
 
     icl "inc/antic.inc"
     icl "inc/gtia.inc"
@@ -375,6 +375,8 @@ out
     .endp
 
 ; ##################################################################################
+; params: hs - host slot
+; requires filter and path to have been previously set
 .proc io_open_directory ( .byte hs ) .var
     .var hs .byte       ; host slot
 
@@ -388,8 +390,11 @@ out
     mva:rne #$00 iobuffer,x+
 
     ; copy path+filter to iobuffer
-    strcpy    #path     #iobuffer
-    strappend #filter   #iobuffer
+    strncpy   #path   #iobuffer #224
+    strncat   #filter #iobuffer
+    ; did append work? if not, a=1
+    bne error
+
     mwa       #iobuffer DBUFLO
     jmp do_sio
 
@@ -404,6 +409,11 @@ do_sio
     mva hs    DAUX1
     mva #$00  DAUX2
 
+    call_siov
+    ; return success
+    lda #$00
+
+error
     rts
     .endp
 
@@ -439,11 +449,11 @@ deviceSlots_real dta DeviceSlot  [7]     ; 8 entries, MADS arrays are 0..COUNT
 hostSlots:
 hostSlots_real   dta HostSlot    [7]
 
-filter      :32  .byte
-src_filter  :32  .byte
-path        :224 .byte
-;src_path    :224 .byte
-;src_fname   :128 .byte
+filter      :$20  .byte
+src_filter  :$20  .byte
+path        :$e0  .byte
+;src_path    :$e0  .byte
+;src_fname   :$80  .byte
 
 ; this is a general buffer we will reuse for temp data
-iobuffer    :256 .byte
+iobuffer    :$100 .byte

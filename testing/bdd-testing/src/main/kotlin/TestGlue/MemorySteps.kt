@@ -10,6 +10,19 @@ import kotlin.io.path.writeText
 
 class MemorySteps {
     @Throws(Exception::class)
+    @Given("^I fill memory from (.*) to (.*) with (.*)$")
+    fun `i fill memory from A to B with`(start: String, end: String, v: String) {
+        val startAddress = Glue.valueToInt(start)
+        val endAddress = Glue.valueToInt(end)
+        val value = Glue.valueToInt(v)
+        val count = endAddress - startAddress + 1
+
+        val machine = Glue.getMachine()
+        repeat(count) { i ->
+            machine.bus.write(startAddress + i, value)
+        }
+    }
+    @Throws(Exception::class)
     @Given("^I hex dump memory for (.*) bytes from property \"([^\"]*)\"$")
     fun `i hex dump memory for n bytes from property`(nBytes: String, propName: String) {
         val startAddress = System.getProperty(propName).toInt()

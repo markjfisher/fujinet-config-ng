@@ -319,7 +319,7 @@ Feature: IO library test
       info    dta SSIDInfo
     """
      And I patch machine with file "sio-patch"
-    # And I print memory from siov to siov+192
+     And I print memory from siov to siov+192
 
     # call the proc for network number 5
     When I set register A to 5
@@ -809,3 +809,26 @@ Feature: IO library test
 
     # check SIOV was NOT called
     Then I expect to see $80 equal $ff
+
+  ##############################################################################################################
+  Scenario: execute io_open_directory
+    Given basic setup test "io_open_directory"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I create file "build/tests/sio-patch.asm" with
+      """
+      ; stub SIOV
+        icl "../../../../src/libs/atari/inc/os.inc"
+
+        org SIOV
+        ; mark fact we were called
+        mva #$01 $80
+        rts
+    """
+     And I patch machine with file "sio-patch"
+     And I write memory at $80 with $ff
+     And I execute the procedure at io_open_directory for no more than 1000 instructions
+
+    # check SIOV was called
+    Then I expect to see $80 equal $01
