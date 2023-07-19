@@ -1,54 +1,188 @@
-# ATARI build file
-.DEFAULT_GOAL := all
-include Makefile.common
+#
+# Makefile for config
+#
+# This Makefile requires GNU make
 
-ALTIRRA := $(ALTIRRA_HOME)/Altirra64.exe
+TARGETS := atari
+PROGRAM := config
+LIBS :=
+CONFIG :=
+CFLAGS = -Os -DBUILD_ATARI
+ASFLAGS =
+BUILD_DIR = build
 
-# MSYS and MINGW cannot use "/portable" as an arg to Altirra, as the slash needs doubling up to "//portable"
-# to stop it thinking it's a path, so we define an "eXtra Slash", XS, to fix this
+LDFLAGS = $(LDFLAGS.$(TARGETS))
+LDFLAGS.atari = --mapfile $(BUILD_DIR)/config.map
+
+LDFLAGS_LIB_PATH = --lib-path /usr/local/share/cc65/lib
+LDFLAGS_INC_PATH = -I /usr/local/share/cc65/asminc
+
+SRCDIR := src
+OBJDIR := obj
+
+TARGETOBJDIR := $(OBJDIR)/$(TARGETS)
+
+STATEFILE := Makefile.options
+
+ifdef CC65_HOME
+  CC = $(CC65_HOME)/bin/cl65
+else
+  CC := cl65
+endif
+
+ifeq '$(findstring ;,$(PATH))' ';'
+    detected_OS := Windows
+else
+    detected_OS := $(shell uname 2>/dev/null || echo Unknown)
+    detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
+    detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
+    detected_OS := $(patsubst MINGW%,MSYS,$(detected_OS))
+endif
+
 XS := ""
 ifeq ($(detected_OS),$(filter $(detected_OS),MSYS MINGW))
+# need an eXtra Slash
 	XS := "/"
 endif
 
-all: $(BUILDDIR)/main.xex
+ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe $(XS)/portable $(XS)/portablealt:altirra-debug.ini $(XS)/debug
+atari_EMUCMD := $(ALTIRRA)
 
-# Atari specific includes
-TARGET_FILES += $(LIBS_OUT)/atari/dlists.obx \
-	$(LIBS_OUT)/atari/io.obx \
-	$(LIBS_OUT)/atari/copy_to_screen.obx
+ifeq ($(EMUCMD),)
+  EMUCMD = $($(CC65TARGET)_EMUCMD)
+endif
 
-$(LIBS_OUT)/atari/dlists.obx: $(LIBS)/atari/dlists.asm | $(LIBS_OUT)
-	$(call MKDIR,$(LIBS_OUT)/atari)
-	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/dlists.lst -t:build/libs/atari/dlists.lab $(subst build,src,$@)
+ifeq ($(shell echo),)
+  MKDIR = mkdir -p $1
+  RMDIR = rmdir $1
+  RMFILES = $(RM) $1
+else
+  MKDIR = mkdir $(subst /,\,$1)
+  RMDIR = rmdir $(subst /,\,$1)
+  RMFILES = $(if $1,del /f $(subst /,\,$1))
+endif
+COMMA := ,
+SPACE := $(N/A) $(N/A)
+define NEWLINE
 
-$(LIBS_OUT)/atari/io.obx: $(LIBS)/atari/io.asm | $(LIBS_OUT)
-	$(call MKDIR,$(LIBS_OUT)/atari)
-	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/io.lst -t:build/libs/atari/io.lab $(subst build,src,$@)
 
-$(LIBS_OUT)/atari/copy_to_screen.obx: $(LIBS)/atari/copy_to_screen.asm | $(LIBS_OUT)
-	$(call MKDIR,$(LIBS_OUT)/atari)
-	mads -o:$@ -i:$(BUILDDIR) -i:src/libs/atari/data -l:build/libs/atari/copy_to_screen.lst -t:build/libs/atari/copy_to_screen.lab $(subst build,src,$@)
+endef
+# Note: Do not remove any of the two empty lines above !
 
-# DEBUG in Altirra emulator
-# You need to configure altirra-debug.ini by adding roms etc in initial run.
-# and export a value for ALTIRRA_HOME
+TARGETLIST := $(subst $(COMMA),$(SPACE),$(TARGETS))
 
-debug: $(BUILDDIR)/main.xex
-	$(ALTIRRA) \
-	$(XS)/portable $(XS)/portablealt:altirra-debug.ini \
-	$(XS)/debug \
-	$(XS)/debugcmd: ".loadsym build\main.lst" \
-	$(XS)/debugcmd: ".loadsym build\main.lab" \
-	$(XS)/debugcmd: ".loadsym build\libs\atari\dlists.lst" \
-	$(XS)/debugcmd: ".loadsym build\libs\atari\dlists.lab" \
-	$(XS)/debugcmd: "bp setup_screen" \
-	build\\main.xex
+# ---------------------------------------------------------
+ifeq ($(words $(TARGETLIST)),1)
 
-## EXECUTABLE
+override PROGRAM := $(PROGRAM).com
 
-$(BUILDDIR)/main.xex: $(TARGET_FILES) | $(BUILDDIR)
-	@echo "================================================================"
-	@echo "Building $@"
-	@echo "TARGET_FILES: $(TARGET_FILES)"
-	mads -o:$@ -i:$(BUILDDIR) -l:build/main.lst -t:build/main.lab -d:BUILD_ATARI=1 src/$(notdir $(@:.xex=.asm))
+SOURCES := $(wildcard $(SRCDIR)/*.c)
+SOURCES += $(wildcard $(SRCDIR)/*.s)
+SOURCES += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.c)
+SOURCES += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.s)
+
+OBJECTS := $(addsuffix .o,$(basename $(addprefix $(TARGETOBJDIR)/,$(notdir $(SOURCES)))))
+
+DEPENDS := $(OBJECTS:.o=.d)
+LIBS += $(wildcard $(SRCDIR)/*.lib)
+LIBS += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.lib)
+CONFIG += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.cfg)
+CONFIG += $(wildcard $(SRCDIR)/*.cfg)
+
+# Select CONFIG file to use. Target specific configs have higher priority.
+ifneq ($(word 2,$(CONFIG)),)
+  CONFIG := $(firstword $(CONFIG))
+  $(info Using config file $(CONFIG) for linking)
+endif
+
+.SUFFIXES:
+.PHONY: all test clean zap
+
+all: $(PROGRAM)
+
+-include $(DEPENDS)
+-include $(STATEFILE)
+
+# If OPTIONS are given on the command line then save them to STATEFILE
+# if (and only if) they have actually changed. But if OPTIONS are not
+# given on the command line then load them from STATEFILE. Have object
+# files depend on STATEFILE only if it actually exists.
+ifeq ($(origin OPTIONS),command line)
+  ifneq ($(OPTIONS),$(_OPTIONS_))
+    ifeq ($(OPTIONS),)
+      $(info Removing OPTIONS)
+      $(shell $(RM) $(STATEFILE))
+      $(eval $(STATEFILE):)
+    else
+      $(info Saving OPTIONS=$(OPTIONS))
+      $(shell echo _OPTIONS_=$(OPTIONS) > $(STATEFILE))
+    endif
+    $(eval $(OBJECTS): $(STATEFILE))
+  endif
+else
+  ifeq ($(origin _OPTIONS_),file)
+    $(info Using saved OPTIONS=$(_OPTIONS_))
+    OPTIONS = $(_OPTIONS_)
+    $(eval $(OBJECTS): $(STATEFILE))
+  endif
+endif
+
+# Transform the abstract OPTIONS to the actual cc65 options.
+$(foreach o,$(subst $(COMMA),$(SPACE),$(OPTIONS)),$(eval $(_$o_)))
+
+# Strip potential variant suffix from the actual cc65 target.
+CC65TARGET := $(firstword $(subst .,$(SPACE),$(TARGETLIST)))
+
+$(TARGETOBJDIR):
+	$(call MKDIR,$@)
+
+$(BUILD_DIR):
+	$(call MKDIR,$@)
+
+vpath %.c $(SRCDIR)/$(TARGETLIST) $(SRCDIR)
+
+$(TARGETOBJDIR)/%.o: %.c | $(TARGETOBJDIR)
+	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) $(CFLAGS) -o $@ $<
+
+vpath %.s $(SRCDIR)/$(TARGETLIST) $(SRCDIR)
+
+$(TARGETOBJDIR)/%.o: %.s | $(TARGETOBJDIR)
+	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) $(ASFLAGS) -o $@ $<
+
+$(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS) | $(BUILD_DIR)
+	$(CC) -t $(CC65TARGET) $(LDFLAGS) -o $(BUILD_DIR)/$@ $(patsubst %.cfg,-C %.cfg,$^)
+
+test: $(PROGRAM)
+	$(PREEMUCMD)
+	$(EMUCMD) $<
+	$(POSTEMUCMD)
+
+
+dist: $(PROGRAM)
+	@echo "TODO! dist"
+
+clean:
+	$(call RMFILES,$(OBJECTS))
+	$(call RMFILES,$(DEPENDS))
+	$(call RMFILES,$(REMOVES))
+	$(call RMFILES,-r $(BUILD_DIR)/*)
+	$(call RMFILES,-r dist/)
+
+# ---------------------------------------------------------
+else # $(words $(TARGETLIST)),1
+
+all test clean:
+	$(foreach t,$(TARGETLIST),$(MAKE) TARGETS=$t $@$(NEWLINE))
+
+endif # $(words $(TARGETLIST)),1
+# ---------------------------------------------------------
+
+OBJDIRLIST := $(wildcard $(OBJDIR)/*)
+
+zap:
+	$(foreach o,$(OBJDIRLIST),-$(call RMFILES,$o/*.o $o/*.d $o/*.lst)$(NEWLINE))
+	$(foreach o,$(OBJDIRLIST),-$(call RMDIR,$o)$(NEWLINE))
+	-$(call RMDIR,$(OBJDIR))
+	-$(call RMFILES,$(basename $(PROGRAM)).* $(STATEFILE))
+
+-include *.mk

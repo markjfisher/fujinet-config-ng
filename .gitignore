@@ -1,4 +1,22 @@
-build
+# generated files
+/build/
+/target/
+/obj/
+
+a.out
+*.swp
+*.c~
+*.h~
+*.bin
+*.cas
+*.d88
+autorun.atr
+config
+config.com
+config.map
+
+# a personal altirra setup
 altirra-debug.ini
 
-bugs
+.vscode/settings.json
+.vscode/c_cpp_properties.json

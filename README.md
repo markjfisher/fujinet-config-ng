@@ -12,13 +12,8 @@ Probably other stuff I have to work out yet.
 Pick your target platform's appropriate Makefile, e.g
 
 ```shell
-$ make -f Makefile.atari clean
-$ make -f Makefile.atari
+$ make -f Makefile.atari clean all
 ```
-
-There is a default Makefile that will build a basic non-platform specific version of
-the application, "main.com". This doesn't currently do a lot, as it has no screen setup or
-drawing implementation, but is enough to compile the common code into a default application.
 
 ## Testing
 
@@ -36,5 +31,5 @@ Every platform needs to define the following procedures:
 The build can automatically debug the application through Altirra.
 
 ```shell
-$ make -f Makefile.atari clean && make -f Makefile.atari && make -f Makefile.atari debug
+$ make -f Makefile.atari clean all debug
 ```
