@@ -5,14 +5,14 @@ Feature: IO library test
   ##############################################################################################################
   Scenario Outline: execute io_error should set A
     Given basic setup test "io_error"
-    And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
-    And I mads-compile "io" from "../../src/libs/atari/io.asm"
-    And I build and load the application "test_io" from "features/atari/test_io.asm"
+      And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
+      And I mads-compile "io" from "../../src/libs/atari/io.asm"
+      And I build and load the application "test_io" from "features/atari/test_io.asm"
 
-    When I write memory at dstats with <init>
-     And I execute the procedure at io_error for no more than 50 instructions
+      And I write memory at dstats with <init>
+     When I execute the procedure at io_error for no more than 50 instructions
 
-    Then I expect register A equal <A>
+     Then I expect register A equal <A>
 
     # A should contain (init & 0x80) as simplest test if bit 7 is set.
     Examples:
@@ -811,7 +811,7 @@ Feature: IO library test
     Then I expect to see $80 equal $ff
 
   ##############################################################################################################
-  Scenario: execute io_open_directory
+  Scenario: execute io_open_directory with filter
     Given basic setup test "io_open_directory"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
@@ -828,7 +828,31 @@ Feature: IO library test
     """
      And I patch machine with file "sio-patch"
      And I write memory at $80 with $ff
-     And I execute the procedure at io_open_directory for no more than 1000 instructions
+     And I write string "/p/" as ascii to memory address path
+     And I write string "f1" as ascii to memory address filter
+     And I set register A to 3
+     And I print ascii from filter to filter+256
+
+    When I execute the procedure at io_open_directory for no more than 3000 instructions
+
+    # check the DCB values were set correctly
+    Then I expect to see ddevic equal $70
+     And I expect to see dunit equal $01
+     And I expect to see dtimlo equal $0f
+     And I expect to see dcomnd equal $f7
+     And I expect to see dstats equal $80
+     And I expect to see dbytlo equal $00
+     And I expect to see dbythi equal $01
+     And I expect to see daux1 equal 3
+     And I expect to see daux2 equal $00
+     And I expect to see dbuflo equal lo(iobuffer)
+     And I expect to see dbufhi equal hi(iobuffer)
+     And I print ascii from iobuffer to iobuffer+10
+
+    When I hex+ dump ascii between iobuffer and iobuffer+32
+    # /p/f1<00>
+    Then property "test.BDD6502.lastHexDump" must contain string ": 2f 70 2f 66 31 00"
+    Then property "test.BDD6502.lastHexDump" must contain string "/p/f1"
 
     # check SIOV was called
     Then I expect to see $80 equal $01

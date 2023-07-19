@@ -1,7 +1,8 @@
 ; a place for common standard functions from string, stdlib etc.
 
+        opt r+
         .extrn t1, t2 .byte
-        .public strncpy, strncat
+        .public strncpy, strncat, strncpy.n, strncat.n
         .reloc
 
 ; ########################################################################
@@ -33,11 +34,13 @@ start
         beq out
 fill_zeroes
         ; carry on up to n with 0s
+        ; again, opt r+ not doing much here, split the lda/sta manually
+        lda #$00
 @       iny
         cpy n
         beq out
-        mva #$00 (t1),y
-        beq @-              ; always branch
+        sta (t1),y
+        bne @-              ; always branch
 out
         rts
         .endp

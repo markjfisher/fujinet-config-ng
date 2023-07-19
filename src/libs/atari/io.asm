@@ -17,17 +17,21 @@
     .public iobuffer
     .public deviceSlots
     .public hostSlots
-
-    .reloc
+    .public path, filter
 
     .extrn t1, t2 .byte
-    .extrn strncpy, strncat .proc
+    .extrn strncpy .proc ( .word t1, t2 .byte strncpy.n ) .var
+    .extrn strncpy.n .word
+
+    .extrn strncat .proc ( .word t1, t2 .byte strncat.n ) .var
+    .extrn strncat.n .word
+
+    .reloc
 
     icl "inc/antic.inc"
     icl "inc/gtia.inc"
     icl "inc/os.inc"
     icl "../macros.mac"
-    
     icl "inc/io.inc"
 
 ; ##################################################################################
@@ -375,10 +379,11 @@ out
     .endp
 
 ; ##################################################################################
-; params: hs - host slot
+; params: a - host slot
 ; requires filter and path to have been previously set
-.proc io_open_directory ( .byte hs ) .var
-    .var hs .byte       ; host slot
+.proc io_open_directory ( .byte a ) .reg
+    ; save the host slot using self-modifying-code
+    sta smc1+1
 
     ; is the filter set?
     lda filter
@@ -387,15 +392,19 @@ out
     ; yes, create a dir+filter string
     ; clear 256 bytes of iobuffer
     ldx #$00
-    mva:rne #$00 iobuffer,x+
+    ; opt r+ doesn't stop this looping over the part that keeps setting A to 0.
+    ; so split it manually to save constantly doing LDA #$00
+    lda     #$00
+    sta:rne iobuffer,x+
 
     ; copy path+filter to iobuffer
-    strncpy   #path   #iobuffer #224
-    strncat   #filter #iobuffer
+    ; this causes $e0 bytes of iobuffer to be set, not just path.
+    strncpy #iobuffer #path #$e0
+    strncat #iobuffer #filter #$20
     ; did append work? if not, a=1
     bne error
 
-    mwa       #iobuffer DBUFLO
+    mwa #iobuffer DBUFLO
     jmp do_sio
 
 skip
@@ -406,7 +415,10 @@ do_sio
     mva #$f7  DCOMND         ; open directory
     mva #$80  DSTATS
     mwa #$100 DBYTLO
-    mva hs    DAUX1
+    ; get the host slot back
+smc1
+    lda #$00
+    sta       DAUX1
     mva #$00  DAUX2
 
     call_siov
@@ -450,7 +462,7 @@ hostSlots:
 hostSlots_real   dta HostSlot    [7]
 
 filter      :$20  .byte
-src_filter  :$20  .byte
+; src_filter  :$20  .byte
 path        :$e0  .byte
 ;src_path    :$e0  .byte
 ;src_fname   :$80  .byte

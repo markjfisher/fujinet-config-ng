@@ -5,6 +5,7 @@
         ; some zero page vars for our routines to use
         .zpvar t1, t2 .word = $f0
 
+        opt r+
         org $1000
         .link '../../build/tests/stdlib.obx'
         .link '../../build/tests/io.obx'
