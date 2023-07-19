@@ -27,7 +27,8 @@
       .link 'libs/states/done.obx'
 
       ; utils
-      ; .link 'libs/decompress.obx'
+      ; .link 'libs/util/decompress.obx'
+      .link 'libs/util/stdlib.obx'
       .link 'libs/run_module.obx'
 
 ;; SCREEN ROUTINES, platform specific
