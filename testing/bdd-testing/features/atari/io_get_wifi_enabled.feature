@@ -6,6 +6,7 @@ Feature: IO library test - io_get_wifi_enabled
   Scenario Outline: execute io_get_wifi_enabled
     Given basic atari setup test
       And I add file for compiling "../../src/atari/io_get_wifi_enabled.s"
+      And I add file for compiling "../../src/atari/io_get_wifi_status.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
       And I create file "build/tests/sio-patch.s" with
@@ -14,7 +15,7 @@ Feature: IO library test - io_get_wifi_enabled
         .include    "atari.inc"
         .export     t_v
 
-        .segment "SIOP"
+        .segment "SIOVP"
         .org SIOV
         ; Emulate SIOV call by injecting test value t_v into pointer in DBUF
         lda DBUFLO

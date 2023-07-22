@@ -5,12 +5,11 @@
         .import         io_siov
         .include        "atari.inc"
         .include        "../inc/macros.inc"
+        .include        "io_fn_indexes.inc"
 
 ; sets A=1 if wifi is enabled. 0 otherwise
 .proc io_get_wifi_enabled
-
-        ; index 0 is io_get_wifi_enabled
-        ldx #0
+        ldx #IO_FN::get_wifi_enabled
         jsr io_siov
 
         ; was it set?
@@ -24,7 +23,6 @@
         ; no
 :       lda #$00
         rts
-
 .endproc
 
 ; ------------------------------------------------------
