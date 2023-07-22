@@ -123,3 +123,27 @@ s2:
     .endif
 .endmacro
 
+.macro add_sta  arg1
+    clc
+    adc arg1
+    sta arg1
+.endmacro
+
+.macro scc_inc  arg1
+    .local skip1
+    bcc skip1
+    inc arg1
+skip1:
+.endmacro
+
+.macro sne_inc  arg1
+    .local skip1
+    bne skip1
+    inc arg1
+skip1:
+.endmacro
+
+.macro add      arg1
+    clc
+    adc arg1
+.endmacro
