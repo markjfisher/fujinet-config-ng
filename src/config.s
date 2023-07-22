@@ -2,11 +2,11 @@
 ;
 
     .export     start
-
-    .include    "atari.inc"
+    .import     setup_screen
 
 .proc start
-    ;jsr setup_screen
+    jsr setup_screen
 
+l:  jmp l
     rts
 .endproc

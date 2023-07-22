@@ -1,6 +1,8 @@
 package TestGlue
 
 import com.loomcom.symon.machines.Machine
+import cucumber.api.Scenario
+import cucumber.api.java.Before
 import cucumber.api.java.en.Given
 import xex.ABFile
 import xex.DataSection
@@ -9,6 +11,13 @@ import kotlin.io.path.absolutePathString
 import kotlin.io.path.readBytes
 
 class XEXSteps {
+
+    @Before
+    fun beforeHook(s: Scenario) {
+        xexSteps = this
+        scenario = s
+    }
+
     @Throws(Exception::class)
     @Given("^I load xex \"([^\"]*)\"$")
     fun `i load xex`(file: String) {
@@ -22,7 +31,7 @@ class XEXSteps {
         machine.cpu.programCounter = abFile.runAddress
     }
 
-    @Given("^I patch machine from obx file \"([^\"]*)\"\$")
+    @Given("^I patch machine from obx file \"([^\"]*)\"$")
     @Throws(Exception::class)
     fun `i patch machine from obx file`(f: String) {
         val cwd = Paths.get(".")
@@ -42,6 +51,11 @@ class XEXSteps {
                 machine.bus.write(ds.startAddress + i, b.toUByte().toInt())
             }
         }
+    }
+
+    companion object {
+        lateinit var xexSteps: XEXSteps
+        lateinit var scenario: Scenario
     }
 
 }

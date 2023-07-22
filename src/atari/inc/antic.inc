@@ -1,0 +1,15 @@
+; simplified versions
+DL_MODE2      = $02
+DL_MODE3      = $03
+DL_MODE4      = $04
+DL_MODE5      = $05
+DL_MODE6      = $06
+DL_MODE7      = $07
+DL_MODE8      = $08
+DL_MODE9      = $09
+DL_MODEA      = $0A
+DL_MODEB      = $0B
+DL_MODEC      = $0C
+DL_MODED      = $0D
+DL_MODEE      = $0E
+DL_MODEF      = $0F

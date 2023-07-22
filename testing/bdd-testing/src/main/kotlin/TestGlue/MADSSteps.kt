@@ -20,7 +20,7 @@ import kotlin.io.path.writeText
 
 
 class MADSSteps {
-    @Given("^I convert mads-labels file \"([^\"]*)\" to acme labels file \"([^\"]*)\"\$")
+    @Given("^I convert mads-labels file \"([^\"]*)\" to acme labels file \"([^\"]*)\"$")
     @Throws(Exception::class)
     fun `i convert mads labels to acme file`(madsLabs: String, acmeLabs: String) {
         val cwd = Paths.get(".")

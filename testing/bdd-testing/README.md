@@ -101,6 +101,8 @@ that will test the code.
 
 ### Macros
 
+TODO: update docs
+
 You can additionally create "macros" which are combinations of other steps, and place these in the [macros](macros) folder.
 For example:
 

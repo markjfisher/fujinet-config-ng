@@ -3,7 +3,6 @@ package TestGlue
 import cucumber.api.java.en.Given
 import org.assertj.core.api.Assertions.assertThat
 
-
 class CpuSteps {
     @Throws(Exception::class)
     @Given("^I expect register state (.*)$")
