@@ -8,7 +8,7 @@ Feature: IO library test - io_scan_for_networks
       And I add file for compiling "../../src/atari/io_scan_for_networks.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I stub locations for imports in "../../src/atari/io_copy_dcb.s" except for ""
+      And I stub locations for imports in "../../src/atari/io_copy_dcb.s"
       And I add file for compiling "features/atari/siov-stubs/siov-dbuflo1.s"
       And I create and load simple application
       And I write memory at $80 with $00

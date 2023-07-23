@@ -8,7 +8,7 @@ Feature: IO library test - io_set_ssid
       And I add file for compiling "../../src/atari/io_set_ssid.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I stub locations for imports in "../../src/atari/io_copy_dcb.s" except for ""
+      And I stub locations for imports in "../../src/atari/io_copy_dcb.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $00

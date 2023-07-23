@@ -11,10 +11,11 @@ import kotlin.io.path.readLines
 import kotlin.io.path.writeText
 
 class CA65Steps {
-    val compileFiles: MutableList<String> = mutableListOf()
-    var target: String = ""
-    var workDir: String = ""
-    var config: String = ""
+    private val compileFiles: MutableList<String> = mutableListOf()
+    private var target: String = ""
+    private var workDir: String = ""
+    private var config: String = ""
+    private var stubIndex: Int = 0
 
     @Before
     fun beforeHook(s: Scenario) {
@@ -155,27 +156,42 @@ al 003000 .start
 
     @Given("^I stub locations for imports in \"([^\"]*)\" except for \"([^\"]*)\"$")
     @Throws(Exception::class)
-    fun `i stub locations for imports`(f1: String, exceptionName: String) {
+    fun `i stub locations for imports except for`(f1: String, exceptionName: String) {
+        createStubSource(f1, exceptionName)
+    }
+
+    @Given("^I stub locations for imports in \"([^\"]*)\"$")
+    @Throws(Exception::class)
+    fun `i stub locations for imports`(f1: String) {
+        createStubSource(f1)
+    }
+
+    private fun createStubSource(f1: String, exceptionName: String = "") {
         val cwd = Paths.get(".")
         val wd = cwd.resolve(workDir)
         val fileWithExports = cwd.resolve(f1)
         val importLines = fileWithExports.readLines().filter { it.trim().startsWith(".import ") }
         val importNames = importLines.joinToString(",") { it.replace(".import", "").replace(" ", "") }.split(",")
-        println("All import names: $importNames")
         val withoutException = importNames.filterNot { it == exceptionName.trim() }
-        println("filtered to: $withoutException")
 
-        val exportSource = withoutException.fold("  .export ${withoutException.joinToString(", ")}\n\n") { full, name ->
-            full + "${name}: .res 1\n"
+        val stubHeader = """
+            ; stub-${stubIndex} for $f1
+                .export ${withoutException.joinToString(", ")}
+            
+        """.trimIndent()
+
+        val exportSource = withoutException.fold(stubHeader) { full, name ->
+            full + "${name}: .res 2\n"
         }
 
-        val exportFile = wd.resolve("stubs.s")
+        val exportFile = wd.resolve("stubs-${stubIndex}.s")
         exportFile.writeText(exportSource)
-        compileFiles.add("$workDir/stubs.s")
+        compileFiles.add("$workDir/stubs-${stubIndex}.s")
+        stubIndex++
     }
 
 
-        companion object {
+    companion object {
         lateinit var ca65Glue: CA65Steps
         lateinit var scenario: Scenario
     }
