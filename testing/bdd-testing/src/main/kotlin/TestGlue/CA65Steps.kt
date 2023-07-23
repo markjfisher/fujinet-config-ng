@@ -6,6 +6,7 @@ import cucumber.api.java.en.Given
 import cucumber.runtime.model.CucumberScenario
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.readLines
 import kotlin.io.path.writeText
 
@@ -89,29 +90,22 @@ al 003000 .start
                     .export _init
                     .import _main
                     
-                    ; .export __STARTUP__ : absolute = 1
                     .import __MAIN_START__, __MAIN_SIZE__
-                    ; .import copydata, zerobss, initlib, donelib
                     .include "zeropage.inc"
     
                 _init:
+                    ; setup stack pointer
                     ldx #${"$"}ff
                     txs
                     cld
                     
-                    ; stack starts on top of main
+                    ; software stack starts on top of main
                     lda #<(__MAIN_START__ + __MAIN_SIZE__)
                     sta sp
                     lda #>(__MAIN_START__ + __MAIN_SIZE__)
                     sta sp+1
                     
-                    ; jsr zerobss
-                    ; jsr copydata
-                    ; jsr initlib
-                    
                     jsr _main
-                
-                    ; jsr donelib
                     brk
     
             """.trimIndent()
@@ -159,7 +153,29 @@ al 003000 .start
         glue.i_load_labels("$workDir/main.al")
     }
 
-    companion object {
+    @Given("^I stub locations for imports in \"([^\"]*)\" except for \"([^\"]*)\"$")
+    @Throws(Exception::class)
+    fun `i stub locations for imports`(f1: String, exceptionName: String) {
+        val cwd = Paths.get(".")
+        val wd = cwd.resolve(workDir)
+        val fileWithExports = cwd.resolve(f1)
+        val importLines = fileWithExports.readLines().filter { it.trim().startsWith(".import ") }
+        val importNames = importLines.joinToString(",") { it.replace(".import", "").replace(" ", "") }.split(",")
+        println("All import names: $importNames")
+        val withoutException = importNames.filterNot { it == exceptionName.trim() }
+        println("filtered to: $withoutException")
+
+        val exportSource = withoutException.fold("  .export ${withoutException.joinToString(", ")}\n\n") { full, name ->
+            full + "${name}: .res 1\n"
+        }
+
+        val exportFile = wd.resolve("stubs.s")
+        exportFile.writeText(exportSource)
+        compileFiles.add("$workDir/stubs.s")
+    }
+
+
+        companion object {
         lateinit var ca65Glue: CA65Steps
         lateinit var scenario: Scenario
     }

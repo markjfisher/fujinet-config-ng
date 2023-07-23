@@ -5,7 +5,7 @@
         .import         io_siov
         .include        "atari.inc"
         .include        "../inc/macros.inc"
-        .include        "io_fn_indexes.inc"
+        .include        "io.inc"
 
 ; Return values are:
 ;  1: No SSID available

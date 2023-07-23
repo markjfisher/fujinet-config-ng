@@ -5,7 +5,7 @@
         .import         io_siov
         .include        "atari.inc"
         .include        "../inc/macros.inc"
-        .include        "io_fn_indexes.inc"
+        .include        "io.inc"
 
 ; sets A=1 if wifi is enabled. 0 otherwise
 .proc io_get_wifi_enabled
