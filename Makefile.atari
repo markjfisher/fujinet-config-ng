@@ -154,7 +154,7 @@ $(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS) | $(BUILD_DIR)
 
 test: $(PROGRAM)
 	$(PREEMUCMD)
-	$(EMUCMD) $<
+	$(EMUCMD) $(BUILD_DIR)\\$<
 	$(POSTEMUCMD)
 
 
