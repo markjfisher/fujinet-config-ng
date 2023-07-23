@@ -4,7 +4,7 @@ Feature: IO library test - io_get_wifi_enabled
 
   ##############################################################################################################
   Scenario Outline: execute io_get_wifi_enabled
-    Given basic atari setup test
+    Given atari simple test setup
       And I add file for compiling "../../src/atari/io_get_wifi_enabled.s"
       And I add file for compiling "../../src/atari/io_get_wifi_status.s"
       And I add file for compiling "../../src/atari/io_siov.s"
@@ -15,7 +15,7 @@ Feature: IO library test - io_get_wifi_enabled
         .include    "atari.inc"
         .export     t_v
 
-        .segment "SIOVP"
+        .segment "SIOSEG"
         .org SIOV
         ; Emulate SIOV call by injecting test value t_v into pointer in DBUF
         lda DBUFLO
@@ -34,7 +34,7 @@ Feature: IO library test - io_get_wifi_enabled
     """
 
       And I add file for compiling "build/tests/sio-patch.s"
-      And I create and load application
+      And I create and load simple application
 
     When I write memory at t_v with <sio_ret>
      And I execute the procedure at io_get_wifi_enabled for no more than 100 instructions

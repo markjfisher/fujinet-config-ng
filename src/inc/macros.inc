@@ -1,3 +1,5 @@
+; mostly various MADS macros reimplemented to make asm easier to read
+
 .macro  mwa    arg1, arg2
     .if (.match (.left (1, {arg1}), #))
         ; arg1 is immediate mode
@@ -123,27 +125,77 @@ s2:
     .endif
 .endmacro
 
-.macro add_sta  arg1
+; 'add a to arg1 and store byte into arg1'
+.macro add_sta arg1
     clc
     adc arg1
     sta arg1
 .endmacro
 
-.macro scc_inc  arg1
+; 'skip if carry clear, and do inc'
+.macro scc_inc arg1
     .local skip1
     bcc skip1
     inc arg1
 skip1:
 .endmacro
 
-.macro sne_inc  arg1
+; 'skip if not equal, and do inc'
+.macro sne_inc arg1
     .local skip1
     bne skip1
     inc arg1
 skip1:
 .endmacro
 
-.macro add      arg1
+; lest we forget to clc
+.macro add arg1
     clc
     adc arg1
+.endmacro
+
+; use CA65 function calling conventions, passing values into SP via pushax
+.macro _pushax arg1
+    .if (.match (.left (1, {arg1}), #))
+        lda     #<(.right (.tcount ({arg1})-1, {arg1}))
+        ldx     #>(.right (.tcount ({arg1})-1, {arg1}))
+        jsr     pushax
+    .else
+        lda     arg1
+        ldx     1+(arg1)
+        jsr     pushax
+    .endif
+.endmacro
+
+; push arg1 into SP from A
+.macro _pusha arg1
+    lda     arg1
+    jsr     pusha
+.endmacro
+
+; same as pushax, but without the push to SP, preparing the args directly for consumption
+.macro _setax arg1
+    .if (.match (.left (1, {arg1}), #))
+        lda     #<(.right (.tcount ({arg1})-1, {arg1}))
+        ldx     #>(.right (.tcount ({arg1})-1, {arg1}))
+    .else
+        lda     arg1
+        ldx     1+(arg1)
+    .endif
+.endmacro
+
+.macro _popax arg1
+    jsr     popax
+    sta     arg1
+    stx     1+(arg1)
+.endmacro
+
+.macro _popa arg1
+    jsr     popa
+    sta     arg1
+.endmacro
+
+.macro _getax arg1
+    sta     arg1
+    stx     1+(arg1)
 .endmacro

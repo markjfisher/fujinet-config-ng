@@ -83,13 +83,55 @@ al 003000 .start
     @Given("^I create and load application$")
     @Throws(Exception::class)
     fun `i create and load application`() {
+        // Test is required to specify a _main method to call.
         val stubApp = """
-            ; stub app that linker will use as main routine. test will call functions directly
-                .export start
-            .proc start
-                rts
-            .endproc
-        """.trimIndent()
+                ; setup basic crt0 code for testing
+                    .export _init
+                    .import _main
+                    
+                    ; .export __STARTUP__ : absolute = 1
+                    .import __MAIN_START__, __MAIN_SIZE__
+                    ; .import copydata, zerobss, initlib, donelib
+                    .include "zeropage.inc"
+    
+                _init:
+                    ldx #${"$"}ff
+                    txs
+                    cld
+                    
+                    ; stack starts on top of main
+                    lda #<(__MAIN_START__ + __MAIN_SIZE__)
+                    sta sp
+                    lda #>(__MAIN_START__ + __MAIN_SIZE__)
+                    sta sp+1
+                    
+                    ; jsr zerobss
+                    ; jsr copydata
+                    ; jsr initlib
+                    
+                    jsr _main
+                
+                    ; jsr donelib
+                    brk
+    
+            """.trimIndent()
+        createAndLoadApplication(stubApp)
+    }
+
+    @Given("^I create and load simple application$")
+    @Throws(Exception::class)
+    fun `i create and load simple application`() {
+        val stubApp = """
+                ; just a simple start, test will call directly to target function
+                    .export start
+                .proc start
+                    rts
+                .endproc
+            """.trimIndent()
+        createAndLoadApplication(stubApp)
+    }
+
+    private fun createAndLoadApplication(stubApp: String) {
         val cwd = Paths.get(".")
         val wd = cwd.resolve(workDir)
         val main = Files.createFile(wd.resolve("main.s"))

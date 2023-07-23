@@ -2,8 +2,8 @@
 ; converted to ca65
 
         .export     hex, hexb
-        .importzp   tmp1, ptr1, ptr2
         .import     popax, popa
+        .include    "../inc/macros.inc"
 
 ; ------------------------------------------------------
 ; a contains digit to convert
@@ -29,14 +29,8 @@ hex2int:
 ; ------------------------------------------------------
 ; hex(word value, word output)
 .proc   hex
-        ; A/X contain output address
-        sta out+1
-        stx out+2
-
-        ; stack A/X contains value to display
-        jsr popax
-        sta htmpw
-        stx htmpw+1
+        _getax out+1
+        _popax htmpw
 
         lda htmpw
         jsr lHex
@@ -55,6 +49,7 @@ put:
         dey
         txa
 
+        ; Self Modifying Code
 out:    sta $ffff, y
         rts
 
@@ -63,12 +58,8 @@ out:    sta $ffff, y
 ; ------------------------------------------------------
 ; hexb(word value, word output)
 .proc   hexb
-        ; A/X contain output address
-        sta hex::out+1
-        stx hex::out+2
-
-        ; stack A contains value to display
-        jsr popa
+        _getax hex::out+1
+        jsr popa        ; value to display in a
 
         jsr lHex
         ldy #$01

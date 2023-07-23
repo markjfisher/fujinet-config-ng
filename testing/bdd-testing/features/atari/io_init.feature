@@ -4,9 +4,9 @@ Feature: IO library test - io_init
 
   ##############################################################################################################
   Scenario: execute io_error should set A
-    Given basic atari setup test
+    Given atari simple test setup
       And I add file for compiling "../../src/atari/io_init.s"
-      And I create and load application
+      And I create and load simple application
 
      When I execute the procedure at io_init for no more than 30 instructions
 

@@ -3,19 +3,24 @@
 ; converted from original at http://www.retrosoftware.co.uk/forum/viewtopic.php?f=73&t=999
 ; can be used for expanding images etc into screen memory
 
-        .export decompress
-        .importzp ptr1, ptr2
+        .export   decompress
+        .importzp ptr1, ptr2, tmp1
+        .import   popax
         .include "../inc/macros.inc"
 
+; decompress(.word src, .word dst)
 .proc   decompress
+        ; move args into ptr1/2
+        _getax ptr2
+        _popax ptr1
 
         ldx #$00
 for:
         lda (ptr1, x)           ; next control byte
         beq done                ; 0 signals end of decompression
         bpl copy_raw            ; msb=0 means just copy this many bytes from source
-        add #$82               ; flip msb, then add 2, we wont request 0 or 1 as that wouldn't save anything
-        sta d_tmp               ; count of bytes to copy (>= 2)
+        add #$82                ; flip msb, then add 2, we wont request 0 or 1 as that wouldn't save anything
+        sta tmp1                ; count of bytes to copy (>= 2)
         ldy #$01                ; byte after control is offset
         lda (ptr1), y           ; offset from current t1 - 256
         tay
@@ -32,7 +37,7 @@ copy_previous:
         inc ptr2
         sne_inc ptr2+1
 
-        dec d_tmp
+        dec tmp1
         bne copy_previous
         beq for
 
@@ -53,7 +58,3 @@ done:
         rts
 
 .endproc
-
-.data
-
-d_tmp:  .res 2

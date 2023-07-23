@@ -1,12 +1,23 @@
-Given basic atari setup test
+Given common atari test setup
   Given I have a simple overclocked 6502 system
-   And I enable trace with indent
-   And I create or clear directory "build/tests"
-   And I load labels "inc/atari/atari.inc"
-   And I load labels "inc/atari/atari_gtia.inc"
-   And I load labels "inc/atari/atari_antic.inc"
-   And I load labels "inc/atari/atari_pokey.inc"
-   And I start compiling for atari in "build/tests" with config "features/atari/atari.cfg"
+    And I enable trace with indent
+    And I create or clear directory "build/tests"
+    And I load labels "inc/atari/atari.inc"
+    And I load labels "inc/atari/atari_gtia.inc"
+    And I load labels "inc/atari/atari_antic.inc"
+    And I load labels "inc/atari/atari_pokey.inc"
+
+# More complex test using SP etc
+# test asm must have _main, and test feature calls _init to run
+Given atari application test setup
+  Given common atari test setup
+    And I start compiling for atari in "build/tests" with config "features/atari/atari-app.cfg"
+
+# Simple test that does no init, sets up minimal xex for loading and testing
+# feature calls function directly
+Given atari simple test setup
+  Given common atari test setup
+    And I start compiling for atari in "build/tests" with config "features/atari/atari.cfg"
 
 Given perform mads compile of test.a
   When I run the command line: mads -s -o:build/tests/test.xex -t:build/tests/test.lbl build/tests/test.a
