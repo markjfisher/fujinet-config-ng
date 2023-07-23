@@ -8,29 +8,8 @@ Feature: IO library test - io_get_wifi_status
       And I add file for compiling "../../src/atari/io_get_wifi_status.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I stub locations for imports in "../../src/atari/io_copy_dcb.s" except for "wifi_status"
-      And I create file "build/tests/sio-patch.s" with
-      """
-      ; stub SIOV
-        .include    "atari.inc"
-        .include    "../../../../src/inc/macros.inc"
-        .export     t_v
-
-        .segment "SIOSEG"
-        .org SIOV
-        ; Emulate SIOV call by injecting test value t_v into pointer in DBUF
-        mwa DBUFLO, $80
-
-        ldy #0
-        mva t_v, {($80), y}
-        rts
-
-      ; an address for the test to write to. this is the stubbed value that will be written to by pointer at DBUF
-      t_v: .byte 0
-
-    """
-
-      And I add file for compiling "build/tests/sio-patch.s"
+      And I stub locations for imports in "../../src/atari/io_copy_dcb.s" except for ""
+      And I add file for compiling "features/atari/siov-stubs/siov-dbuflo1.s"
       And I create and load simple application
 
     When I write memory at t_v with <sio_ret>

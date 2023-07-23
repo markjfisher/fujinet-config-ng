@@ -1,8 +1,8 @@
 ; io_get_wifi_status.s
 ;
 
-        .export         io_get_wifi_status, wifi_status
-        .import         io_siov
+        .export         io_get_wifi_status
+        .import         io_siov, io_wifi_status
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
@@ -16,11 +16,6 @@
         ldx #IO_FN::get_wifi_status
         jsr io_siov
 
-        lda wifi_status
+        lda io_wifi_status
         rts
 .endproc
-
-; ------------------------------------------------------
-
-.data
-wifi_status:   .byte 0

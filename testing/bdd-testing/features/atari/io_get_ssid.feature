@@ -8,47 +8,8 @@ Feature: IO library test - io_get_ssid
       And I add file for compiling "../../src/atari/io_get_ssid.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I stub locations for imports in "../../src/atari/io_copy_dcb.s" except for "net_config"
-      And I create file "build/tests/sio-patch.s" with
-      """
-      ; stub SIOV
-        .include    "atari.inc"
-        .include    "../../../../src/inc/macros.inc"
-        .include    "../../../../src/atari/io.inc"
-
-        .segment "SIOSEG"
-        .org SIOV
-        ; Emulate SIOV call by copying ssid/pass into 
-        mwa DBUFLO, $80
-
-        ; copy ssid into nc
-        ldy #8
-      : mva {t_ssid, y}, {nc + NetConfig::ssid, y}
-        dey
-        bpl :-
-
-        ; copy pass into nc
-        ldy #8
-      : mva {t_pass, y}, {nc + NetConfig::password, y}
-        dey
-        bpl :-
-
-        ; copy NetConfig to buffer
-        ldy #.sizeof(NetConfig)-1
-      : mva {nc, y}, {($80), y}
-        dey
-        bpl :-
-
-        rts
-      
-      t_ssid: .byte "yourssid"
-      t_pass: .byte "password"
-
-      nc: .tag NetConfig
-
-    """
-
-      And I add file for compiling "build/tests/sio-patch.s"
+      And I stub locations for imports in "../../src/atari/io_copy_dcb.s" except for ""
+      And I add file for compiling "features/atari/siov-stubs/siov-netconfig.s"
       And I create and load simple application
       And I print memory from SIOV to SIOV+192
 

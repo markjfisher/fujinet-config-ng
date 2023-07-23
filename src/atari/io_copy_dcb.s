@@ -4,7 +4,7 @@
 ; and exposes a procedure to copy the base data into DCB
 
         .export         io_copy_dcb
-        .import         wifi_enabled, wifi_status, net_config, io_scan
+        .import         io_wifi_enabled, io_wifi_status, io_net_config, io_scan, io_ssidinfo
         .importzp       ptr1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -37,7 +37,8 @@
                 t_io_get_wifi_status,   \
                 t_io_get_ssid,          \
                 t_io_set_ssid,          \
-                t_io_scan_for_networks
+                t_io_scan_for_networks, \
+                t_io_get_scan_result
         .linecont -
 
 io_dcb_table_lo: .lobytes IO_Tables
@@ -54,17 +55,23 @@ io_dcb_table_hi: .hibytes IO_Tables
 ;  dbytlo / dbythi
 ;  daux1  / daux2
 
+.define NCsz .sizeof(NetConfig)
+.define SIsz .sizeof(SSIDInfo)
+
 t_io_get_wifi_enabled:
-        .byte $ea, $40, <wifi_enabled, >wifi_enabled, $0f, $00, $01,                 $00,                 $00, $00
+        .byte $ea, $40, <io_wifi_enabled, >io_wifi_enabled, $0f, $00, $01,   $00,   $00, $00
 
 t_io_get_wifi_status:
-        .byte $fa, $40, <wifi_status,  >wifi_status,  $0f, $00, $01,                 $00,                 $00, $00
+        .byte $fa, $40, <io_wifi_status,  >io_wifi_status,  $0f, $00, $01,   $00,   $00, $00
 
 t_io_get_ssid:
-        .byte $fe, $40, <net_config,   >net_config,   $0f, $00, <.sizeof(NetConfig), >.sizeof(NetConfig), $00, $00
+        .byte $fe, $40, <io_net_config,   >io_net_config,   $0f, $00, <NCsz, >NCsz, $00, $00
 
 t_io_set_ssid:
-        .byte $fb, $80, <net_config,   >net_config,   $0f, $00, <.sizeof(NetConfig), >.sizeof(NetConfig), $01, $00
+        .byte $fb, $80, <io_net_config,   >io_net_config,   $0f, $00, <NCsz, >NCsz, $01, $00
 
 t_io_scan_for_networks:
-        .byte $fd, $40, <io_scan,      >io_scan,      $0f, $00, $04,                 $00,                 $00, $00
+        .byte $fd, $40, <io_scan,         >io_scan,         $0f, $00, $04,   $00,   $00, $00
+
+t_io_get_scan_result:
+        .byte $fc, $40, <io_ssidinfo,     >io_ssidinfo,     $0f, $00, <SIsz, >SIsz, $ff, $00

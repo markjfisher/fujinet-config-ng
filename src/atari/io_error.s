@@ -6,9 +6,7 @@
         .include    "atari.inc"
 
 .proc io_error
-
         lda DSTATS
         and #$80
         rts
-
 .endproc

@@ -1,8 +1,8 @@
 ; io_get_wifi_enabled.s
 ;
 
-        .export         io_get_wifi_enabled, wifi_enabled
-        .import         io_siov
+        .export         io_get_wifi_enabled
+        .import         io_siov, io_wifi_enabled
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
@@ -13,7 +13,7 @@
         jsr io_siov
 
         ; was it set?
-        cpb wifi_enabled, #$01
+        cpb io_wifi_enabled, #$01
         bne :+
 
         ; yes
@@ -24,8 +24,3 @@
 :       lda #$00
         rts
 .endproc
-
-; ------------------------------------------------------
-
-.data
-wifi_enabled:   .byte 0

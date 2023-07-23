@@ -4,8 +4,10 @@
         get_ssid
         set_ssid
         scan_for_networks
+        get_scan_result
 .endenum
 
+; Not currently used
 .struct IO_DCB
     .org $0300
     ddevic  .byte
@@ -25,4 +27,9 @@
 .struct NetConfig
     ssid        .res 33  ; 32 + NULL
     password    .res 64
+.endstruct
+
+.struct SSIDInfo
+    ssid        .res 33  ; 32 + NULL
+    rssi        .res 1
 .endstruct

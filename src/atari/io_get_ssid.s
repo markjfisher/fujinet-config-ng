@@ -1,22 +1,17 @@
 ; io_get_ssid.s
 ;
 
-        .export         io_get_ssid, net_config
-        .import         io_siov
+        .export         io_get_ssid
+        .import         io_siov, io_net_config
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
-; read ssid to net_config and return its address via A/X
+; read ssid to io_net_config and return its address via A/X
 .proc io_get_ssid
         ldx #IO_FN::get_ssid
         jsr io_siov
 
-        _setax #net_config
+        _setax #io_net_config
         rts
 .endproc
-
-; ------------------------------------------------------
-
-.data
-net_config:   .tag NetConfig

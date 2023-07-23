@@ -9,7 +9,7 @@ Feature: IO library test - io_set_ssid
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
       And I stub locations for imports in "../../src/atari/io_copy_dcb.s" except for ""
-      And I add file for compiling "features/atari/siov-simple.s"
+      And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $00
 
@@ -24,8 +24,8 @@ Feature: IO library test - io_set_ssid
      And I expect to see DBYTLO equal 97
      And I expect to see DBYTHI equal $00
      And I expect to see DAUX1 equal $01
-     And I expect to see DBUFLO equal lo(net_config)
-     And I expect to see DBUFHI equal hi(net_config)
+     And I expect to see DBUFLO equal lo(io_net_config)
+     And I expect to see DBUFHI equal hi(io_net_config)
 
      # prove we called siov
      And I expect to see $80 equal $01
