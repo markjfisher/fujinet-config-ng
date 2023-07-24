@@ -6,6 +6,7 @@
         scan_for_networks
         get_scan_result
         get_adapter_config
+        get_device_slots
 .endenum
 
 ; Not currently used
@@ -45,4 +46,14 @@
     macAddress  .res 6
     bssid       .res 6
     fn_version  .res 15
+.endstruct
+
+.struct DeviceSlot
+    hostSlot    .res 1
+    mode        .res 1
+    file        .res 36
+.endstruct
+
+.struct HostSlot
+    data        .res 32
 .endstruct

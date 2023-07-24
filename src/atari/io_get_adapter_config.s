@@ -9,8 +9,6 @@
 
 ; SSIDInfo* io_get_scan_result(network_index)
 .proc io_get_adapter_config
-        pha     ; save index - avoiding SMC so we can go ROM later... maybe?
-
         ldx #IO_FN::get_adapter_config
         jsr io_siov
 

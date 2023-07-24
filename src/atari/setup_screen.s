@@ -45,7 +45,7 @@ do_vblank:
 
 .endproc
 
-.data
+.rodata
 main_dlist:
     ; 4 blank lines
     .byte DL_BLK4
@@ -106,6 +106,7 @@ gintop2:
     .byte $01, $ff
 
 
+.data
 
     SCREENCODE_CHARMAP
 m_l1:   .byte $80, " 123456789012345678901234567890123456 ", $80

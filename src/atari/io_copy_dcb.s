@@ -4,7 +4,8 @@
 ; and exposes a procedure to copy the base data into DCB
 
         .export         io_copy_dcb
-        .import         io_wifi_enabled, io_wifi_status, io_net_config, io_scan, io_ssidinfo, io_adapter_config
+        .import         io_wifi_enabled, io_wifi_status, io_net_config, io_scan, io_ssidinfo
+        .import         io_adapter_config, io_deviceslots
         .importzp       ptr1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -29,7 +30,7 @@
         rts
 .endproc
 
-.data
+.rodata
 
         .linecont +
         .define IO_Tables \
@@ -39,7 +40,8 @@
                 t_io_set_ssid,           \
                 t_io_scan_for_networks,  \
                 t_io_get_scan_result,    \
-                t_io_get_adapter_config
+                t_io_get_adapter_config, \
+                t_io_get_device_slots
         .linecont -
 
 io_dcb_table_lo: .lobytes IO_Tables
@@ -59,6 +61,12 @@ io_dcb_table_hi: .hibytes IO_Tables
 .define NCsz .sizeof(NetConfig)
 .define SIsz .sizeof(SSIDInfo)
 .define ACsz .sizeof(AdapterConfig)
+; I had to split this one to get it to work
+.define DS8zL .lobyte(.sizeof(DeviceSlot)*8)
+.define DS8zH .hibyte(.sizeof(DeviceSlot)*8)
+
+; TODO: could rearrange this vertically, i.e. group by DDEVIC etc to save more space
+; as 2 columns are constant. saves about 60 bytes ultimately
 
 t_io_get_wifi_enabled:
         .byte $ea, $40, <io_wifi_enabled,   >io_wifi_enabled,   $0f, $00, $01,   $00,   $00, $00
@@ -80,3 +88,7 @@ t_io_get_scan_result:
 
 t_io_get_adapter_config:
         .byte $e8, $40, <io_adapter_config, >io_adapter_config, $0f, $00, <ACsz, >ACsz, $00, $00
+
+t_io_get_device_slots:
+        .byte $f2, $40, <io_deviceslots,    >io_deviceslots,    $0f, $00, DS8zL, DS8zH, $00, $00
+
