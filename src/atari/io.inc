@@ -8,6 +8,7 @@
         get_adapter_config
         get_device_slots
         put_device_slots
+        set_device_filename
 .endenum
 
 ; Not currently used

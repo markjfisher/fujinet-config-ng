@@ -18,10 +18,7 @@
         jsr io_copy_dcb
 
         pla
-        beq do_sio              ; daux1 default is 0. if slot_offset is zero, skip setting it.
         sta IO_DCB::daux1
-
-do_sio:
         jsr SIOV
 
         setax #io_deviceslots

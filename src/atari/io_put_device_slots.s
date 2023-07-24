@@ -2,7 +2,7 @@
 ;
 
         .export         io_put_device_slots
-        .import         io_siov, io_deviceslots
+        .import         io_siov
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"

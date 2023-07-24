@@ -5,7 +5,7 @@
 
         .export         io_copy_dcb
         .import         io_wifi_enabled, io_wifi_status, io_net_config, io_scan, io_ssidinfo
-        .import         io_adapter_config, io_deviceslots
+        .import         io_adapter_config, io_deviceslots, io_buffer
         .importzp       ptr1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -34,15 +34,16 @@
 
         .linecont +
         .define IO_Tables \
-                t_io_get_wifi_enabled,   \
-                t_io_get_wifi_status,    \
-                t_io_get_ssid,           \
-                t_io_set_ssid,           \
-                t_io_scan_for_networks,  \
-                t_io_get_scan_result,    \
-                t_io_get_adapter_config, \
-                t_io_get_device_slots,   \
-                t_io_put_device_slots
+                t_io_get_wifi_enabled,     \
+                t_io_get_wifi_status,      \
+                t_io_get_ssid,             \
+                t_io_set_ssid,             \
+                t_io_scan_for_networks,    \
+                t_io_get_scan_result,      \
+                t_io_get_adapter_config,   \
+                t_io_get_device_slots,     \
+                t_io_put_device_slots,     \
+                t_io_set_device_filename
         .linecont -
 
 io_dcb_table_lo: .lobytes IO_Tables
@@ -68,6 +69,8 @@ io_dcb_table_hi: .hibytes IO_Tables
 
 ; TODO: could rearrange this vertically, i.e. group by DDEVIC etc to save more space
 ; as 2 columns are constant. saves about 60 bytes ultimately
+
+; daux1 = $ff means the value is set in the function itself, overriding this value
 
 t_io_get_wifi_enabled:
         .byte $ea, $40, <io_wifi_enabled,   >io_wifi_enabled,   $0f, $00, $01,   $00,   $00, $00
@@ -95,4 +98,7 @@ t_io_get_device_slots:
 
 t_io_put_device_slots:
         .byte $f1, $80, <io_deviceslots,    >io_deviceslots,    $0f, $00, DS8zL, DS8zH, $00, $00
+
+t_io_set_device_filename:
+        .byte $e2, $80, <io_buffer,         >io_buffer,         $0f, $00, $00,   $01,   $00, $00
 
