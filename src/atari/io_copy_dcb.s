@@ -41,7 +41,8 @@
                 t_io_scan_for_networks,  \
                 t_io_get_scan_result,    \
                 t_io_get_adapter_config, \
-                t_io_get_device_slots
+                t_io_get_device_slots,   \
+                t_io_put_device_slots
         .linecont -
 
 io_dcb_table_lo: .lobytes IO_Tables
@@ -91,4 +92,7 @@ t_io_get_adapter_config:
 
 t_io_get_device_slots:
         .byte $f2, $40, <io_deviceslots,    >io_deviceslots,    $0f, $00, DS8zL, DS8zH, $00, $00
+
+t_io_put_device_slots:
+        .byte $f1, $80, <io_deviceslots,    >io_deviceslots,    $0f, $00, DS8zL, DS8zH, $00, $00
 

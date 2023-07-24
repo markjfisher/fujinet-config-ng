@@ -10,7 +10,5 @@
 ; sends the ssid to sio.
 .proc io_set_ssid
         ldx #IO_FN::set_ssid
-        jsr io_siov
-
-        rts
+        jmp io_siov
 .endproc

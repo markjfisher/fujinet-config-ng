@@ -7,6 +7,7 @@
         get_scan_result
         get_adapter_config
         get_device_slots
+        put_device_slots
 .endenum
 
 ; Not currently used

@@ -9,6 +9,5 @@
 ;       x = index of io function
 .proc io_siov
         jsr io_copy_dcb
-        jsr SIOV
-        rts
+        jmp SIOV
 .endproc
