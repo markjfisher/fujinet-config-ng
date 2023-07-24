@@ -8,7 +8,7 @@ Feature: IO library test - io_get_wifi_enabled
       And I add file for compiling "../../src/atari/io_get_wifi_enabled.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I stub locations for imports in "../../src/atari/io_copy_dcb.s"
+      And I add file for compiling "../../src/atari/io_mem.s"
       And I add file for compiling "features/atari/siov-stubs/siov-dbuflo1.s"
       And I create and load simple application
 

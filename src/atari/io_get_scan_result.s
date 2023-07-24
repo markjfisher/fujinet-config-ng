@@ -20,7 +20,7 @@
         jsr SIOV
 
         ; set return into A/X
-        _setax #io_ssidinfo
+        setax #io_ssidinfo
 
         rts
 .endproc

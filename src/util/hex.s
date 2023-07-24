@@ -29,8 +29,8 @@ hex2int:
 ; ------------------------------------------------------
 ; hex(word value, word output)
 .proc   hex
-        _getax out+1
-        _popax htmpw
+        getax out+1
+        popax htmpw
 
         lda htmpw
         jsr lHex
@@ -58,7 +58,7 @@ out:    sta $ffff, y
 ; ------------------------------------------------------
 ; hexb(word value, word output)
 .proc   hexb
-        _getax hex::out+1
+        getax hex::out+1
         jsr popa        ; value to display in a
 
         jsr lHex

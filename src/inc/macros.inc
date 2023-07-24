@@ -155,7 +155,7 @@ skip1:
 .endmacro
 
 ; use CA65 function calling conventions, passing values into SP via pushax
-.macro _pushax arg1
+.macro pushax arg1
     .if (.match (.left (1, {arg1}), #))
         lda     #<(.right (.tcount ({arg1})-1, {arg1}))
         ldx     #>(.right (.tcount ({arg1})-1, {arg1}))
@@ -168,13 +168,13 @@ skip1:
 .endmacro
 
 ; push arg1 into SP from A
-.macro _pusha arg1
+.macro pusha arg1
     lda     arg1
     jsr     pusha
 .endmacro
 
 ; same as pushax, but without the push to SP, preparing the args directly for consumption
-.macro _setax arg1
+.macro setax arg1
     .if (.match (.left (1, {arg1}), #))
         lda     #<(.right (.tcount ({arg1})-1, {arg1}))
         ldx     #>(.right (.tcount ({arg1})-1, {arg1}))
@@ -184,18 +184,28 @@ skip1:
     .endif
 .endmacro
 
-.macro _popax arg1
+.macro popax arg1
     jsr     popax
     sta     arg1
     stx     1+(arg1)
 .endmacro
 
-.macro _popa arg1
+.macro popa arg1
     jsr     popa
     sta     arg1
 .endmacro
 
-.macro _getax arg1
+.macro getax arg1
     sta     arg1
     stx     1+(arg1)
+.endmacro
+
+; short copy <$7F bytes (uses bpl), using Y to index
+.macro copy_y arg1, arg2, arg3
+    .local L1
+    ldy arg1-1
+L1: lda arg2
+    sta arg3
+    dey
+    bpl L1
 .endmacro

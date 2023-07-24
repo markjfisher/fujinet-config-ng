@@ -5,6 +5,7 @@
         set_ssid
         scan_for_networks
         get_scan_result
+        get_adapter_config
 .endenum
 
 ; Not currently used
@@ -32,4 +33,16 @@
 .struct SSIDInfo
     ssid        .res 33  ; 32 + NULL
     rssi        .res 1
+.endstruct
+
+.struct AdapterConfig
+    ssid        .res 33
+    hostname    .res 64
+    localIP     .res 4
+    gateway     .res 4
+    netmask     .res 4
+    dnsIP       .res 4
+    macAddress  .res 6
+    bssid       .res 6
+    fn_version  .res 15
 .endstruct

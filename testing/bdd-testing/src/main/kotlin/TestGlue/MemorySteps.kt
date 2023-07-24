@@ -78,7 +78,19 @@ class MemorySteps {
         assertMemoryMatches(structData, Glue.getMachine(), Glue.valueToInt(location))
     }
 
-    private fun assertMemoryMatches(structData: String, machine: Machine, address: Int) {
+    @Throws(Exception::class)
+    @Given("^string at registers (.*) contains$")
+    fun `string at registers contains`(regs: String, structData: String) {
+        assertMemoryMatches(structData, Glue.getMachine(), CpuSteps.regsToAddress(regs), false)
+    }
+
+    @Throws(Exception::class)
+    @Given("^string at ([^\\s]*) contains$")
+    fun `string at contains`(location: String, structData: String) {
+        assertMemoryMatches(structData, Glue.getMachine(), Glue.valueToInt(location), false)
+    }
+
+    private fun assertMemoryMatches(structData: String, machine: Machine, address: Int, isInternal: Boolean = true) {
         // each line contains an offset to add after the test, and a string to check at start of current address
         // e.g.
         // 33:ssid here
@@ -89,7 +101,10 @@ class MemorySteps {
             val parts = line.split(":")
             val offset = parts[0].trim().toInt()
             val testString = parts[1].trim()
-            val memString = testString.indices.map { i -> internalToChar(machine.cpu.bus.read(mutableAddress + i)) }.joinToString("")
+            val memString = testString.indices.map { i ->
+                val mem = machine.cpu.bus.read(mutableAddress + i)
+                if (isInternal) internalToChar(mem) else Char(mem)
+            }.joinToString("")
             assertThat(memString).isEqualTo(testString)
 
             mutableAddress += offset

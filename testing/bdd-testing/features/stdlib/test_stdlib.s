@@ -6,8 +6,8 @@
 
 .proc _main
         ; args:  #dst #src count
-        _pushax  #t_dst
-        _pushax  #t_src
+        pushax  #t_dst
+        pushax  #t_src
         lda     t_c
 
         jsr strncpy

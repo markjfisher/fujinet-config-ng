@@ -136,8 +136,9 @@ al 003000 .start
         val glue = Glue.getGlue()
         (compileFiles + "$workDir/main.s").forEach { f ->
             val justName = f.substringAfterLast('/').substringBeforeLast('.')
-            println("running cl65 for $f")
-            glue.i_run_the_command_line("cl65 -t $target -c --create-dep $workDir/${justName}.d -l $workDir/${justName}.lst -o $workDir/${justName}.o $f")
+            val cmd = "cl65 -t $target -c --create-dep $workDir/${justName}.d -l $workDir/${justName}.lst -o $workDir/${justName}.o $f"
+            println("running cl65 for $f with cmd: >$cmd<")
+            glue.i_run_the_command_line(cmd)
         }
         // create the app
         var mainCmd = "cl65 -t $target -vm --mapfile $workDir/main.map -l $workDir/main.lst -Ln $workDir/main.lbl -o $workDir/main.xex -C $config $workDir/main.o "

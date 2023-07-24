@@ -12,6 +12,6 @@
         ldx #IO_FN::get_ssid
         jsr io_siov
 
-        _setax #io_net_config
+        setax #io_net_config
         rts
 .endproc

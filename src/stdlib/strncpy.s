@@ -18,8 +18,8 @@
 .proc   strncpy
         ; args: #dst, #src, count
         sta    tmp1
-        _popax ptr2
-        _popax ptr1
+        popax ptr2
+        popax ptr1
 
         ldy #0
 :       mva {(ptr2), y}, {(ptr1), y}

@@ -5,8 +5,8 @@
         .include        "../../../../../src/inc/macros.inc"
 
 .proc _main
-        _pushax #z_data
-        _setax  #output
+        pushax #z_data
+        setax  #output
         jsr decompress
         rts
 .endproc

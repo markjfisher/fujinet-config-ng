@@ -5,8 +5,8 @@
         .include        "../../../../../src/inc/macros.inc"
 
 .proc _main
-        _pushax t_vw
-        _setax #output
+        pushax t_vw
+        setax #output
 
         jsr hex
         rts

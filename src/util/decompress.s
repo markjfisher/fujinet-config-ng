@@ -11,8 +11,8 @@
 ; decompress(.word src, .word dst)
 .proc   decompress
         ; move args into ptr1/2
-        _getax ptr2
-        _popax ptr1
+        getax ptr2
+        popax ptr1
 
         ldx #$00
 for:
