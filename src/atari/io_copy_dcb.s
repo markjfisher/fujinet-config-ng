@@ -43,7 +43,8 @@
                 t_io_get_adapter_config,   \
                 t_io_get_device_slots,     \
                 t_io_put_device_slots,     \
-                t_io_set_device_filename
+                t_io_set_device_filename,  \
+                t_io_get_device_filename
         .linecont -
 
 io_dcb_table_lo: .lobytes IO_Tables
@@ -100,5 +101,8 @@ t_io_put_device_slots:
         .byte $f1, $80, <io_deviceslots,    >io_deviceslots,    $0f, $00, DS8zL, DS8zH, $00, $00
 
 t_io_set_device_filename:
-        .byte $e2, $80, <io_buffer,         >io_buffer,         $0f, $00, $00,   $01,   $00, $00
+        .byte $e2, $80, <io_buffer,         >io_buffer,         $0f, $00, $00,   $01,   $ff, $00
+
+t_io_get_device_filename:
+        .byte $da, $40, <io_buffer,         >io_buffer,         $0f, $00, $00,   $01,   $ff, $00
 
