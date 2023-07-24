@@ -5,7 +5,7 @@
 
         .export         io_copy_dcb
         .import         io_wifi_enabled, io_wifi_status, io_net_config, io_scan, io_ssidinfo
-        .import         io_adapter_config, io_deviceslots, io_buffer
+        .import         io_adapter_config, io_deviceslots, io_buffer, io_hostslots
         .importzp       ptr1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -44,7 +44,9 @@
                 t_io_get_device_slots,     \
                 t_io_put_device_slots,     \
                 t_io_set_device_filename,  \
-                t_io_get_device_filename
+                t_io_get_device_filename,  \
+                t_io_get_host_slots,       \
+                t_io_put_host_slots
         .linecont -
 
 io_dcb_table_lo: .lobytes IO_Tables
@@ -67,6 +69,8 @@ io_dcb_table_hi: .hibytes IO_Tables
 ; I had to split this one to get it to work
 .define DS8zL .lobyte(.sizeof(DeviceSlot)*8)
 .define DS8zH .hibyte(.sizeof(DeviceSlot)*8)
+.define HS8zL .lobyte(.sizeof(HostSlot)*8)
+.define HS8zH .hibyte(.sizeof(HostSlot)*8)
 
 ; TODO: could rearrange this vertically, i.e. group by DDEVIC etc to save more space
 ; as 2 columns are constant. saves about 60 bytes ultimately
@@ -105,4 +109,10 @@ t_io_set_device_filename:
 
 t_io_get_device_filename:
         .byte $da, $40, <io_buffer,         >io_buffer,         $0f, $00, $00,   $01,   $ff, $00
+
+t_io_get_host_slots:
+        .byte $f4, $40, <io_hostslots,      >io_hostslots,      $0f, $00, HS8zL, HS8zH, $00, $00
+
+t_io_put_host_slots:
+        .byte $f3, $80, <io_hostslots,      >io_hostslots,      $0f, $00, HS8zL, HS8zH, $00, $00
 

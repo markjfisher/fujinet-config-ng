@@ -10,6 +10,8 @@
         put_device_slots
         set_device_filename
         get_device_filename
+        get_host_slots
+        put_host_slots
 .endenum
 
 ; Not currently used
