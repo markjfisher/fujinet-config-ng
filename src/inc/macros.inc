@@ -209,3 +209,48 @@ L1: lda arg2
     dey
     bpl L1
 .endmacro
+
+; adw: adds word values together.
+; adw src #$40
+; adw src #$4000
+; adw a b
+; adw src #$40 dst
+; adw src #$4000 dst
+; adw a b c
+; NOTE: param 1 and 3 cannot be literal
+.macro adw arg1, arg2, arg3
+    clc
+    .if (.match (.left (1, {arg2}), #))
+        ; immediate value in arg2
+        lda     arg1
+        ; TODO - can we do a short version of this if arg2 < $100, as it's only 1 byte
+        adc     #<(.right (.tcount ({arg2})-1, {arg2}))
+        .ifnblank arg3
+            sta     arg3
+        .else
+            sta     arg1
+        .endif
+        lda     1+(arg1)
+        adc     #>(.right (.tcount ({arg2})-1, {arg2}))
+        .ifnblank arg3
+            sta     1+(arg3)
+        .else
+            sta     1+(arg1)
+        .endif
+    .else
+        lda     arg1
+        adc     arg2
+        .ifnblank arg3
+            sta     arg3
+        .else
+            sta     arg1
+        .endif
+        lda     1+(arg1)
+        adc     1+(arg2)
+        .ifnblank arg3
+            sta     1+(arg3)
+        .else
+            sta     1+(arg1)
+        .endif
+    .endif
+.endmacro

@@ -46,7 +46,8 @@
                 t_io_set_device_filename,  \
                 t_io_get_device_filename,  \
                 t_io_get_host_slots,       \
-                t_io_put_host_slots
+                t_io_put_host_slots,       \
+                t_io_mount_host_slot
         .linecont -
 
 io_dcb_table_lo: .lobytes IO_Tables
@@ -66,7 +67,6 @@ io_dcb_table_hi: .hibytes IO_Tables
 .define NCsz .sizeof(NetConfig)
 .define SIsz .sizeof(SSIDInfo)
 .define ACsz .sizeof(AdapterConfig)
-; I had to split this one to get it to work
 .define DS8zL .lobyte(.sizeof(DeviceSlot)*8)
 .define DS8zH .hibyte(.sizeof(DeviceSlot)*8)
 .define HS8zL .lobyte(.sizeof(HostSlot)*8)
@@ -115,4 +115,7 @@ t_io_get_host_slots:
 
 t_io_put_host_slots:
         .byte $f3, $80, <io_hostslots,      >io_hostslots,      $0f, $00, HS8zL, HS8zH, $00, $00
+
+t_io_mount_host_slot:
+        .byte $f9, $00, $00,                $00,                $0f, $00, $00,   $00,   $ff, $00
 

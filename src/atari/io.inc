@@ -12,6 +12,7 @@
         get_device_filename
         get_host_slots
         put_host_slots
+        mount_host_slot
 .endenum
 
 ; Not currently used
