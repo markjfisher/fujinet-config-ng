@@ -15,9 +15,9 @@
         .importzp   tmp1, ptr1, ptr2
         .include    "../inc/macros.inc"
 
+; void strcat(char *dst, char *src, int count)
 .proc   strncpy
-        ; args: #dst, #src, count
-        sta    tmp1
+        sta   tmp1
         popax ptr2
         popax ptr1
 

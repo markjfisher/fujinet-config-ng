@@ -254,3 +254,11 @@ L1: lda arg2
         .endif
     .endif
 .endmacro
+
+.macro ady arg1
+    tya
+    clc
+    adc arg1
+    sta arg1
+    scc_inc 1+(arg1)
+.endmacro

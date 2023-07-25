@@ -5,7 +5,7 @@ Feature: Stdlib library tests
   Scenario Outline: Copying strings with strncpy
     Given atari application test setup
       And I add file for compiling "../../src/stdlib/strncpy.s"
-      And I add file for compiling "features/stdlib/test_stdlib.s"
+      And I add file for compiling "features/stdlib/test_strncpy.s"
       And I create and load application
 
      And I fill memory from t_src to t_src+127 with $ff
@@ -15,7 +15,7 @@ Feature: Stdlib library tests
      And I execute the procedure at _init for no more than 200 instructions
      And I print ascii from t_src to t_src+128
 
-    # test the values in dst
+    # test the values in t_dst
     When I hex+ dump ascii between t_dst and t_dst+5
     Then property "test.BDD6502.lastHexDump" must contain string "<expected>"
 
@@ -27,28 +27,28 @@ Feature: Stdlib library tests
     | abcd         |   3   | : 61 62 63 ff ff | count < length, no implicit nul added |
     | abcde        |   3   | : 61 62 63 ff ff | count < length, no implicit nul added |
 
-  # Scenario Outline: Appending strings with strncat
-  #   Given basic atari setup test
-  #     And I add file for compiling "../../src/stdlib/strncat.s"
-  #     And I add file for compiling "features/stdlib/test_stdlib.s"
-  #     And I create and load application
+  Scenario Outline: Appending strings with strncat
+    Given atari application test setup
+      And I add file for compiling "../../src/stdlib/strncat.s"
+      And I add file for compiling "features/stdlib/test_strncat.s"
+      And I create and load application
 
-  #    And I fill memory from src to src+129 with $ff
-  #    And I write string "<dst>" as ascii to memory address dst
-  #    And I write string "<src>" as ascii to memory address src
-  #    And I print ascii from src to src+129
-  #    And I write memory at count with <count>
-  #    And I execute the procedure at begin_test_strncat for no more than 100 instructions
-  #    And I print ascii from src to src+129
+     And I fill memory from t_src to t_src+127 with $ff
+     And I write string "<dst>" as ascii to memory address t_dst
+     And I write string "<src>" as ascii to memory address t_src
+     And I print ascii from t_src to t_src+128
+     And I write memory at t_c with <count>
+     And I execute the procedure at _init for no more than 200 instructions
+     And I print ascii from t_src to t_src+128
 
-  #   # test the values in dst
-  #   When I hex+ dump ascii between dst and dst+6
-  #   Then property "test.BDD6502.lastHexDump" must contain string "<expected>"
+    # test the values in t_dst
+    When I hex+ dump ascii between t_dst and t_dst+6
+    Then property "test.BDD6502.lastHexDump" must contain string "<expected>"
 
-  #   Examples:
-  #   | src   | dst | count |   expected          | comment |
-  #   | a     | x   |   4   | : 78 61 00 ff ff ff | count > length, only copy 1 and null |
-  #   | ab    | x   |   4   | : 78 61 62 00 ff ff | count > length, copy both and null   |
-  #   | abc   | x   |   4   | : 78 61 62 63 00 ff | count > length, copy all 3 and null  |
-  #   | abcd  | x   |   4   | : 78 61 62 63 00 ff | count = length, max 4, always nul terminated |
-  #   | abcde | x   |   4   | : 78 61 62 63 00 ff | count < length, as above             |
+    Examples:
+    | src   | dst | count |   expected          | comment |
+    | a     | x   |   4   | : 78 61 00 ff ff ff | count > length, only copy 1 and null |
+    | ab    | x   |   4   | : 78 61 62 00 ff ff | count > length, copy both and null   |
+    | abc   | x   |   4   | : 78 61 62 63 00 ff | count > length, copy all 3 and null  |
+    | abcd  | x   |   4   | : 78 61 62 63 00 ff | count = length, max 4, always nul terminated |
+    | abcde | x   |   4   | : 78 61 62 63 00 ff | count < length, as above             |
