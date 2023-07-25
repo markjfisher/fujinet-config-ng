@@ -29,7 +29,7 @@ Feature:  Hex library test
       And I create and load application
 
     When I write word at t_vb with hex <input>
-     And I execute the procedure at _init for no more than 65 instructions
+     And I execute the procedure at _init for no more than 60 instructions
      And I hex+ dump ascii between output and output+2
     Then property "test.BDD6502.lastHexDump" must contain string "<output>"
 

@@ -3,6 +3,7 @@
 
         .export     hex, hexb
         .import     popax, popa
+        .importzp   ptr1, ptr2
         .include    "../inc/macros.inc"
 
 ; ------------------------------------------------------
@@ -29,15 +30,15 @@ hex2int:
 ; ------------------------------------------------------
 ; hex(word value, word output)
 .proc   hex
-        getax out+1
-        popax htmpw
+        getax ptr1
+        popax ptr2
 
-        lda htmpw
+        lda ptr2
         jsr lHex
         ldy #$03
         jsr put
 
-        lda htmpw+1
+        lda ptr2+1
         jsr lHex
         ldy #$01
         jsr put
@@ -49,8 +50,7 @@ put:
         dey
         txa
 
-        ; Self Modifying Code
-out:    sta $ffff, y
+out:    sta (ptr1), y
         rts
 
 .endproc
@@ -58,7 +58,7 @@ out:    sta $ffff, y
 ; ------------------------------------------------------
 ; hexb(word value, word output)
 .proc   hexb
-        getax hex::out+1
+        getax ptr1
         jsr popa        ; value to display in a
 
         jsr lHex
@@ -67,6 +67,3 @@ out:    sta $ffff, y
 
         rts
 .endproc
-
-.data
-htmpw:  .word 0
