@@ -1,21 +1,4 @@
-.enum   IO_FN
-        get_wifi_enabled
-        get_wifi_status
-        get_ssid
-        set_ssid
-        scan_for_networks
-        get_scan_result
-        get_adapter_config
-        get_device_slots
-        put_device_slots
-        set_device_filename
-        get_device_filename
-        get_host_slots
-        put_host_slots
-        mount_host_slot
-.endenum
-
-; Not currently used
+; mostly used to directly get daux1 address
 .struct IO_DCB
     .org $0300
     ddevic  .byte

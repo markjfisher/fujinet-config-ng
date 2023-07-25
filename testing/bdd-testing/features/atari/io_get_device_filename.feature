@@ -5,10 +5,10 @@ Feature: IO library test - io_get_device_filename
   ##############################################################################################################
   Scenario Outline: execute io_get_device_filename
     Given atari simple test setup
+      And I add file for compiling "../../src/atari/io_mem_io_buffer.s"
       And I add file for compiling "../../src/atari/io_get_device_filename.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I add file for compiling "../../src/atari/io_mem.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $00

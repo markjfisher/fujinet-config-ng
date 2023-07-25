@@ -2,7 +2,7 @@
 ;
 
         .export         io_mount_host_slot
-        .import         io_copy_dcb, io_hostslots
+        .import         io_copy_dcb, io_hostslots, pushax
         .importzp       tmp1, ptr1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -28,7 +28,7 @@ skip:
         lda (ptr1), y   ; first byte of host slot
         beq out         ; nothing to do if it's 0 (null)
 
-        ldx #IO_FN::mount_host_slot
+        pushax #t_io_mount_host_slot
         jsr io_copy_dcb
         mva tmp1, IO_DCB::daux1
         jmp SIOV
@@ -36,3 +36,8 @@ skip:
 out:
         rts
 .endproc
+
+.data
+
+t_io_mount_host_slot:
+        .byte $f9, $00, $00, $00, $0f, $00, $00, $00, $ff, $00

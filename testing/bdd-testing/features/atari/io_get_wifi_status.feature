@@ -8,12 +8,11 @@ Feature: IO library test - io_get_wifi_status
       And I add file for compiling "../../src/atari/io_get_wifi_status.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I add file for compiling "../../src/atari/io_mem.s"
       And I add file for compiling "features/atari/siov-stubs/siov-dbuflo1.s"
       And I create and load simple application
 
     When I write memory at t_v with <sio_ret>
-     And I execute the procedure at io_get_wifi_status for no more than 80 instructions
+     And I execute the procedure at io_get_wifi_status for no more than 90 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

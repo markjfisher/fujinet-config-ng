@@ -8,14 +8,10 @@ Feature: IO library test - io_get_adapter_config
       And I add file for compiling "../../src/atari/io_get_adapter_config.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I add file for compiling "../../src/atari/io_mem.s"
       And I add file for compiling "features/atari/siov-stubs/siov-adapter-config.s"
       And I create and load simple application
 
-     When I execute the procedure at io_get_adapter_config for no more than 1010 instructions
-      And I print ascii from io_wifi_enabled to io_wifi_enabled+6
-      And I print ascii from io_net_config to io_net_config+97
-      And I print ascii from io_ssidinfo to io_ssidinfo+34
+     When I execute the procedure at io_get_adapter_config for no more than 1030 instructions
       And I print ascii from io_adapter_config to io_adapter_config+144
 
     # check the DCB values were set correctly

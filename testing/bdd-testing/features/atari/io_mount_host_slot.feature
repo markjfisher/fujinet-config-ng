@@ -5,10 +5,10 @@ Feature: IO library test - io_mount_host_slot
   ##############################################################################################################
   Scenario Outline: execute io_mount_host_slot
     Given atari simple test setup
+      And I add file for compiling "../../src/atari/io_get_host_slots.s"
       And I add file for compiling "../../src/atari/io_mount_host_slot.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I add file for compiling "../../src/atari/io_mem.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $00
@@ -42,10 +42,10 @@ Feature: IO library test - io_mount_host_slot
   ##############################################################################################################
   Scenario Outline: execute io_mount_host_slot does not run SIOV if first byte is 0
     Given atari simple test setup
+      And I add file for compiling "../../src/atari/io_get_host_slots.s"
       And I add file for compiling "../../src/atari/io_mount_host_slot.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I add file for compiling "../../src/atari/io_mem.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $ff

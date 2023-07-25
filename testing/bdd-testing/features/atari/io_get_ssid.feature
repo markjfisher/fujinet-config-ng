@@ -5,10 +5,10 @@ Feature: IO library test - io_get_ssid
   ##############################################################################################################
   Scenario: execute io_get_ssid
     Given atari simple test setup
+      And I add file for compiling "../../src/atari/io_mem_io_net_config.s"
       And I add file for compiling "../../src/atari/io_get_ssid.s"
       And I add file for compiling "../../src/atari/io_siov.s"
       And I add file for compiling "../../src/atari/io_copy_dcb.s"
-      And I add file for compiling "../../src/atari/io_mem.s"
       And I add file for compiling "features/atari/siov-stubs/siov-netconfig.s"
       And I create and load simple application
       And I print memory from SIOV to SIOV+192

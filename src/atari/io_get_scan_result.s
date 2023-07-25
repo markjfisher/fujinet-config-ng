@@ -1,8 +1,5 @@
-; io_get_scan_result.s
-;
-
-        .export         io_get_scan_result
-        .import         io_copy_dcb, io_ssidinfo
+        .export         io_get_scan_result, io_ssidinfo
+        .import         io_copy_dcb, pushax
         .importzp       tmp1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -12,7 +9,7 @@
 .proc io_get_scan_result
         sta tmp1        ; save index
 
-        ldx #IO_FN::get_scan_result
+        pushax #t_io_get_scan_result
         jsr io_copy_dcb
 
         mva tmp1, IO_DCB::daux1
@@ -23,3 +20,12 @@
 
         rts
 .endproc
+
+.data
+.define SIsz .sizeof(SSIDInfo)
+
+t_io_get_scan_result:
+        .byte $fc, $40, <io_ssidinfo, >io_ssidinfo, $0f, $00, <SIsz, >SIsz, $ff, $00
+
+.bss
+io_ssidinfo:       .tag SSIDInfo

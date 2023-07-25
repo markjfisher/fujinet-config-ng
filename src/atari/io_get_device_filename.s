@@ -1,17 +1,14 @@
-; io_get_device_filename.s
-;
-
         .export         io_get_device_filename
-        .import         io_copy_dcb, io_buffer
+        .import         io_copy_dcb, io_buffer, pushax
         .importzp       tmp1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
-; char *io_get_device_filename(device_slot)
+; char* io_get_device_filename(device_slot)
 .proc io_get_device_filename
         sta tmp1        ; save device_slot
-        ldx #IO_FN::get_device_filename
+        pushax #t_io_get_device_filename
         jsr io_copy_dcb
 
         mva tmp1, IO_DCB::daux1
@@ -20,3 +17,9 @@
         setax #io_buffer
         rts
 .endproc
+
+.data
+
+t_io_get_device_filename:
+        .byte $da, $40, <io_buffer, >io_buffer, $0f, $00, $00,   $01,   $ff, $00
+

@@ -1,21 +1,26 @@
-; io_get_wifi_status.s
-;
-
         .export         io_get_wifi_status
-        .import         io_siov, io_wifi_status
-        .include        "atari.inc"
+        .import         io_siov, pushax
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
+; int io_get_wifi_status()
+;
 ; Return values are:
 ;  1: No SSID available
 ;  3: Connection Successful
 ;  4: Connect Failed
 ;  5: Connection lost
 .proc io_get_wifi_status
-        ldx #IO_FN::get_wifi_status
+        pushax #t_io_get_wifi_status
         jsr io_siov
 
         lda io_wifi_status
         rts
 .endproc
+
+.data
+t_io_get_wifi_status:
+        .byte $fa, $40, <io_wifi_status, >io_wifi_status, $0f, $00, $01, $00, $00, $00
+
+.bss
+io_wifi_status: .res 1
