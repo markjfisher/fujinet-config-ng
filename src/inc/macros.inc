@@ -262,3 +262,4 @@ L1: lda arg2
     sta arg1
     scc_inc 1+(arg1)
 .endmacro
+
