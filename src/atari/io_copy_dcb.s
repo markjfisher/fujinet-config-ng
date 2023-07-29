@@ -1,5 +1,4 @@
         .export         io_copy_dcb
-        .import         popax
         .importzp       ptr1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -9,7 +8,7 @@
 ; Sets DCB data from given table address
 ; DO NOT TRASH tmp1 IN THIS ROUTINE - callers use it
 .proc io_copy_dcb
-        popax ptr1
+        getax ptr1
 
         ; first 2 bytes always $70, $01, so we can do those manually. saves table space, and loops
         mva #$70, DCB

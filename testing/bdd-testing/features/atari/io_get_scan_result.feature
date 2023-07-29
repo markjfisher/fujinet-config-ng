@@ -13,7 +13,7 @@ Feature: IO library test - io_get_scan_result
       And I write memory at $80 with $00
 
      When I set register A to 5
-      And I execute the procedure at io_get_scan_result for no more than 275 instructions
+      And I execute the procedure at io_get_scan_result for no more than 250 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

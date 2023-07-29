@@ -64,7 +64,7 @@ error:  ; already non-zero in the error case
         rts
 
 set_dcb:
-        pushax  #t_io_get_open_directory
+        setax   #t_io_get_open_directory
         jmp     io_copy_dcb
         ; implicit rts
 

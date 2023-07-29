@@ -8,7 +8,7 @@ Feature: IO library test - io_init
       And I add file for compiling "../../src/atari/io_init.s"
       And I create and load simple application
 
-     When I execute the procedure at io_init for no more than 30 instructions
+     When I execute the procedure at io_init for no more than 20 instructions
 
      Then I expect to see NOCLIK equal $ff
       And I expect to see SHFLOK equal $00

@@ -14,7 +14,7 @@ Feature: IO library test - io_put_device_slots
       And I write memory at $80 with $00
 
      # set the slot_offset
-     When I execute the procedure at io_put_device_slots for no more than 90 instructions
+     When I execute the procedure at io_put_device_slots for no more than 75 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

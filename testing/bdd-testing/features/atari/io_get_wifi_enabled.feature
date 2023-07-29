@@ -12,7 +12,7 @@ Feature: IO library test - io_get_wifi_enabled
       And I create and load simple application
 
     When I write memory at t_v with <sio_ret>
-     And I execute the procedure at io_get_wifi_enabled for no more than 100 instructions
+     And I execute the procedure at io_get_wifi_enabled for no more than 90 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

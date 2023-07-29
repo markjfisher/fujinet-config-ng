@@ -42,7 +42,7 @@ Feature: IO library test - io_open_directory
     Then I expect to see $80 equal $01
 
   ##############################################################################################################
-  Scenario: execute io_open_directory with path only
+  Scenario: execute io_open_directory with path only short circuits copying
     Given atari simple test setup
       And I add file for compiling "../../src/atari/io_open_directory.s"
       And I add file for compiling "../../src/atari/io_mem_io_buffer.s"
@@ -56,7 +56,7 @@ Feature: IO library test - io_open_directory
       And I set register A to 4
       And I write string "/path/" as ascii to memory address dir_path
       And I write memory at dir_filter with $00
-     When I execute the procedure at io_open_directory for no more than 1000 instructions
+     When I execute the procedure at io_open_directory for no more than 70 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

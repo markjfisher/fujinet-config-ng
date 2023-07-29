@@ -13,7 +13,7 @@ Feature: IO library test - io_put_host_slots
       And I create and load simple application
       And I write memory at $80 with $00
 
-     When I execute the procedure at io_put_host_slots for no more than 90 instructions
+     When I execute the procedure at io_put_host_slots for no more than 75 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

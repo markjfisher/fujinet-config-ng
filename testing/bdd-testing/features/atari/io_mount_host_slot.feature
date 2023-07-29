@@ -14,7 +14,7 @@ Feature: IO library test - io_mount_host_slot
       And I write memory at $80 with $00
       And I set register A to <slot>
       And I write memory at io_hostslots+32*<slot> with 1
-     When I execute the procedure at io_mount_host_slot for no more than 250 instructions
+     When I execute the procedure at io_mount_host_slot for no more than 90 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70
@@ -51,7 +51,7 @@ Feature: IO library test - io_mount_host_slot
       And I write memory at $80 with $ff
       And I set register A to <slot>
       And I write memory at io_hostslots+32*<slot> with 0
-     When I execute the procedure at io_mount_host_slot for no more than 50 instructions
+     When I execute the procedure at io_mount_host_slot for no more than 30 instructions
 
      # verify SIOV was NOT called
      And I expect to see $80 equal $ff

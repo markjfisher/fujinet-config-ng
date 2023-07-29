@@ -1,5 +1,5 @@
         .export         io_get_device_slots, io_deviceslots
-        .import         io_copy_dcb, pushax
+        .import         io_copy_dcb
         .importzp       tmp1
         .include        "atari.inc"
         .include        "../inc/macros.inc"
@@ -14,13 +14,13 @@
 .proc io_get_device_slots
         sta tmp1        ; save slot_offset
 
-        pushax #t_io_get_device_slots
-        jsr io_copy_dcb
+        setax   #t_io_get_device_slots
+        jsr     io_copy_dcb
 
-        mva tmp1, IO_DCB::daux1
-        jsr SIOV
+        mva     tmp1, IO_DCB::daux1
+        jsr     SIOV
 
-        setax #io_deviceslots
+        setax   #io_deviceslots
         rts
 .endproc
 

@@ -14,7 +14,7 @@ Feature: IO library test - io_get_device_slots
 
      # set the slot_offset
      When I set register A to <slot_offset>
-      And I execute the procedure at io_get_device_slots for no more than 90 instructions
+      And I execute the procedure at io_get_device_slots for no more than 70 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

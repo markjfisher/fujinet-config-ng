@@ -6,6 +6,6 @@
 ;
 ; Sets DCB data from passed in dcb_table and calls SIOV
 .proc io_siov
-        jsr io_copy_dcb
-        jmp SIOV
+        jsr     io_copy_dcb
+        jmp     SIOV
 .endproc

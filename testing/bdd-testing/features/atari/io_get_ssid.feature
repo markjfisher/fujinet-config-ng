@@ -13,7 +13,7 @@ Feature: IO library test - io_get_ssid
       And I create and load simple application
       And I print memory from SIOV to SIOV+192
 
-     When I execute the procedure at io_get_ssid for no more than 600 instructions
+     When I execute the procedure at io_get_ssid for no more than 650 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70
