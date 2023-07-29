@@ -1,15 +1,15 @@
         .export         io_get_adapter_config, io_adapter_config
-        .import         io_siov, pushax
+        .import         io_siov
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
 ; SSIDInfo* io_get_scan_result(network_index)
 .proc io_get_adapter_config
-        pushax #t_io_get_adapter_config
-        jsr io_siov
+        setax   #t_io_get_adapter_config
+        jsr     io_siov
 
-        setax #io_adapter_config
+        setax   #io_adapter_config
         rts
 .endproc
 

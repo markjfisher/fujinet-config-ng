@@ -1,12 +1,13 @@
         .export         io_set_ssid
-        .import         io_siov, io_net_config, pushax
+        .import         io_siov, io_net_config
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
+; void  io_set_ssid()
 ; sends the ssid to sio.
 .proc io_set_ssid
-        pushax #t_io_set_ssid
-        jmp io_siov
+        setax   #t_io_set_ssid
+        jmp     io_siov
 .endproc
 
 .data

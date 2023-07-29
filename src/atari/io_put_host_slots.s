@@ -1,12 +1,12 @@
         .export         io_put_host_slots
-        .import         io_siov, pushax, io_hostslots
+        .import         io_siov, io_hostslots
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
 ; void io_put_host_slots()
 .proc io_put_host_slots
-        pushax #t_io_put_host_slots
-        jmp io_siov
+        setax   #t_io_put_host_slots
+        jmp     io_siov
 .endproc
 
 .data

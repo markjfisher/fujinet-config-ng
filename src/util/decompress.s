@@ -4,9 +4,9 @@
 ; can be used for expanding images etc into screen memory
 
         .export   decompress
-        .importzp ptr1, ptr2, tmp1
         .import   popax
-        .include "../inc/macros.inc"
+        .include  "../inc/macros.inc"
+        .include  "zeropage.inc"
 
 ; decompress(.word src, .word dst)
 .proc   decompress

@@ -1,6 +1,6 @@
         .export         io_copy_dcb
-        .importzp       ptr1
         .include        "atari.inc"
+        .include        "zeropage.inc"
         .include        "../inc/macros.inc"
 
 ; void io_copy_dcb(DCB* table)

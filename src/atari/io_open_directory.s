@@ -28,6 +28,7 @@ just_path:
         mwa     #dir_path, DBUFLO
         jsr     SIOV
         lda     #$00
+        ldx     #$00
         rts
 
 filter_set:
@@ -61,6 +62,7 @@ filter_set:
         lda     #$00    ; mark success and fall through to return
 
 error:  ; already non-zero in the error case
+        ldx     #$00
         rts
 
 set_dcb:

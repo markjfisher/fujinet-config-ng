@@ -3,8 +3,8 @@
 
         .export     hex, hexb
         .import     popax, popa
-        .importzp   ptr1, ptr2
         .include    "../inc/macros.inc"
+        .include    "zeropage.inc"
 
 ; ------------------------------------------------------
 ; a contains digit to convert

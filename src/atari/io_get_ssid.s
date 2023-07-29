@@ -1,5 +1,5 @@
         .export         io_get_ssid
-        .import         io_siov, pushax, io_net_config
+        .import         io_siov, io_net_config
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
@@ -8,10 +8,10 @@
 ;
 ; read ssid to io_net_config and return its address via A/X
 .proc io_get_ssid
-        pushax #t_io_get_ssid
-        jsr io_siov
+        setax   #t_io_get_ssid
+        jsr     io_siov
 
-        setax #io_net_config
+        setax   #io_net_config
         rts
 .endproc
 

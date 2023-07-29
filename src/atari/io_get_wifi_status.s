@@ -1,5 +1,5 @@
         .export         io_get_wifi_status
-        .import         io_siov, pushax
+        .import         io_siov
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
@@ -11,10 +11,11 @@
 ;  4: Connect Failed
 ;  5: Connection lost
 .proc io_get_wifi_status
-        pushax #t_io_get_wifi_status
-        jsr io_siov
+        setax   #t_io_get_wifi_status
+        jsr     io_siov
 
-        lda io_wifi_status
+        lda     io_wifi_status
+        ldx     #$00
         rts
 .endproc
 

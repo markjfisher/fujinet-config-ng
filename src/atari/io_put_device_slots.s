@@ -1,13 +1,13 @@
         .export         io_put_device_slots
-        .import         io_siov, pushax, io_deviceslots
+        .import         io_siov, io_deviceslots
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
 ; void io_put_device_slots()
 .proc io_put_device_slots
-        pushax #t_io_put_device_slots
-        jmp io_siov
+        setax   #t_io_put_device_slots
+        jmp     io_siov
 .endproc
 
 .data

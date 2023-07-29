@@ -1,15 +1,16 @@
         .export         io_scan_for_networks, io_scan
-        .import         io_siov, pushax
+        .import         io_siov
         .include        "../inc/macros.inc"
 
 ; int io_scan_for_netwroks()
 ;
 ; returns count of networks scanned
 .proc io_scan_for_networks
-        pushax #t_io_scan_for_networks
-        jsr io_siov
+        setax   #t_io_scan_for_networks
+        jsr     io_siov
 
-        lda io_scan
+        lda     io_scan
+        ldx     #$00
         rts
 .endproc
 

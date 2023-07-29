@@ -1,6 +1,6 @@
         .export     strncat
-        .import     popax, popa
-        .importzp   tmp1, ptr1, ptr2
+        .import     popax
+        .include    "zeropage.inc"
         .include    "../inc/macros.inc"
 
 ; int strncat(char *dst, char *src, int n)

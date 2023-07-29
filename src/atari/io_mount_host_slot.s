@@ -1,14 +1,11 @@
-; io_mount_host_slot.s
-;
-
         .export         io_mount_host_slot
         .import         io_copy_dcb, io_hostslots
-        .importzp       tmp1, ptr1
         .include        "atari.inc"
+        .include        "zeropage.inc"
         .include        "../inc/macros.inc"
         .include        "io.inc"
 
-; *HostSlots[slot_num] io_mount_host_slot(slot_num)
+; void io_mount_host_slot(slot_num)
 ; does nothing if first byte of host slot is 0
 .proc io_mount_host_slot
         sta tmp1                ; save the slot number

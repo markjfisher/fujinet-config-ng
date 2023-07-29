@@ -7,5 +7,6 @@
 .proc io_error
         lda DSTATS
         and #$80
+        ldx #$00
         rts
 .endproc

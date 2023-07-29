@@ -14,7 +14,7 @@ Feature: IO library test - io_scan_for_networks
 
      When I set register A to $aa
       And I write memory at t_v with <networks>
-      And I execute the procedure at io_scan_for_networks for no more than 80 instructions
+      And I execute the procedure at io_scan_for_networks for no more than 65 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70

@@ -12,8 +12,8 @@
 
         .export     strncpy
         .import     popax, popa
-        .importzp   tmp1, ptr1, ptr2
         .include    "../inc/macros.inc"
+        .include    "zeropage.inc"
 
 ; void strcat(char *dst, char *src, int count)
 .proc   strncpy

@@ -11,7 +11,7 @@ Feature: IO library test - io_get_adapter_config
       And I add file for compiling "features/atari/siov-stubs/siov-adapter-config.s"
       And I create and load simple application
 
-     When I execute the procedure at io_get_adapter_config for no more than 1030 instructions
+     When I execute the procedure at io_get_adapter_config for no more than 1005 instructions
       And I print ascii from io_adapter_config to io_adapter_config+144
 
     # check the DCB values were set correctly
