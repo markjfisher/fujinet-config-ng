@@ -1,14 +1,14 @@
-    .public io_init, io_error
-    .public io_get_wifi_enabled, io_get_wifi_status
-    .public io_get_ssid, io_set_ssid
-    .public io_scan_for_networks, io_get_scan_result
-    .public io_get_adapter_config
-    .public io_get_device_slots, io_put_device_slots
-    .public io_set_device_filename, io_get_device_filename, io_get_device_enabled_status
-    .public io_update_devices_enabled, io_enable_device, io_disable_device
-    .public io_device_slot_to_device ; NOT DOING: io_get_filename_for_device_slot
-    .public io_get_host_slots, io_put_host_slots, io_mount_host_slot
-    .public io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
+    .public _fn_io_init, _fn_io_error
+    .public _fn_io_get_wifi_enabled, _fn_io_get_wifi_status
+    .public _fn_io_get_ssid, _fn_io_set_ssid
+    .public _fn_io_scan_for_networks, _fn_io_get_scan_result
+    .public _fn_io_get_adapter_config
+    .public _fn_io_get_device_slots, _fn_io_put_device_slots
+    .public _fn_io_set_device_filename, _fn_io_get_device_filename, _fn_io_get_device_enabled_status
+    .public _fn_io_update_devices_enabled, _fn_io_enable_device, _fn_io_disable_device
+    .public _fn_io_device_slot_to_device ; NOT DOING: io_get_filename_for_device_slot
+    .public _fn_io_get_host_slots, _fn_io_put_host_slots, _fn_io_mount_host_slot
+    .public _fn_io_open_directory, io_read_directory, io_close_directory, io_set_directory_position, io_build_directory
     ; .public io_set_boot_config, io_boot
     ; .public io_mount_disk_image, io_umount_disk_image
     ; .public io_create_new, io_copy_file, io_mount_all
@@ -32,11 +32,11 @@
     icl "inc/gtia.inc"
     icl "inc/os.inc"
     icl "../macros.mac"
-    icl "inc/io.inc"
+    icl "inc/fn_io.inc"
 
 ; ##################################################################################
 ; some basic setup
-.proc io_init
+.proc _fn_io_init
     mva #$ff NOCLIK
     mva #$00 SHFLOK
     mva #$9f COLOR0
@@ -50,7 +50,7 @@
 
 ; ##################################################################################
 ; sets A to 0 (and thus Z flag) if no error, 127 otherwise (not-Z)
-.proc io_error ( .byte a ) .reg
+.proc _fn_io_error ( .byte a ) .reg
     lda DSTATS
     and #$80
     rts
@@ -58,7 +58,7 @@
 
 ; ##################################################################################
 ; returns A=1 if enabled (not-Z), A=0 if disabled (Z)
-.proc io_get_wifi_enabled
+.proc _fn_io_get_wifi_enabled
     .var wifi_enabled .byte
 
     set_sio_defaults
@@ -87,7 +87,7 @@
 ;  3: Connection Successful
 ;  4: Connect Failed
 ;  5: Connection lost
-.proc io_get_wifi_status
+.proc _fn_io_get_wifi_status
     .var status .byte
 
     ; TODO: C version has a 1 second delay here.
@@ -110,7 +110,7 @@
 ; ##################################################################################
 ; sets the current SSID information into memory, and returns
 ; it's address in (A,X)
-.proc io_get_ssid
+.proc _fn_io_get_ssid
     .var nc NetConfig
 
     set_sio_defaults
@@ -130,7 +130,7 @@
 ; ##################################################################################
 ; sends SSID information to SIO.
 ; params: (A,X) contains the address of the memory structure to send
-.proc io_set_ssid ( .byte a, x ) .reg
+.proc _fn_io_set_ssid ( .byte a, x ) .reg
     sta DBUFLO
     stx DBUFHI
     set_sio_defaults
@@ -145,7 +145,7 @@
 
 ; ##################################################################################
 ; returns: A = num of networks
-.proc io_scan_for_networks
+.proc _fn_io_scan_for_networks
     set_sio_defaults
     mva #$fd DCOMND         ; Scan networks
     mva #$40 DSTATS
@@ -163,7 +163,7 @@
 ; ##################################################################################
 ; params: A = index of network to get results for
 ; returns: A/X = memory location of SSIDInfo
-.proc io_get_scan_result ( .byte a ) .reg
+.proc _fn_io_get_scan_result ( .byte a ) .reg
     .var info SSIDInfo
 
     ; network index in A
@@ -185,7 +185,7 @@
 
 ; ##################################################################################
 ; returns: A/X = memory location of AdapterConfig
-.proc io_get_adapter_config
+.proc _fn_io_get_adapter_config
     .var ac AdapterConfig
 
     set_sio_defaults
@@ -206,7 +206,7 @@
 ; params: A = index of device slots to read
 ; differs from C implementation which passes in the array location start every time
 ; and never uses the index
-.proc io_get_device_slots ( .byte a ) .reg
+.proc _fn_io_get_device_slots ( .byte a ) .reg
     ; store the index into DAUX1
     sta      DAUX1
     mva #$00 DAUX2
@@ -224,7 +224,7 @@
 
 ; ##################################################################################
 ; write all 8 device slots
-.proc io_put_device_slots
+.proc _fn_io_put_device_slots
     set_sio_defaults
     mva #$f1 DCOMND         ; Write device slot
     mva #$40 DSTATS
@@ -238,7 +238,7 @@
 
 ; ##################################################################################
 ; params: a = slot num, x,y = pointer to path string
-.proc io_set_device_filename ( .byte a, x, y ) .reg
+.proc _fn_io_set_device_filename ( .byte a, x, y ) .reg
     sta DAUX1
     stx DBUFLO
     sty DBUFHI
@@ -257,7 +257,7 @@
 ; ##################################################################################
 ; params: a = slot num
 ; returns: a/x = lo/hi of device slot filename buffer
-.proc io_get_device_filename ( .byte a ) .reg
+.proc _fn_io_get_device_filename ( .byte a ) .reg
     sta DAUX1
 
     set_sio_defaults
@@ -276,7 +276,7 @@
 
 ; ##################################################################################
 ; returns: true always on atari
-.proc io_get_device_enabled_status
+.proc _fn_io_get_device_enabled_status
     lda #$01
     rts
     .endp
@@ -284,38 +284,38 @@
 ; ##################################################################################
 ; In C version, this sets 8 booleans to true always.
 ; But nothing needs those fields on atari, so we will do nothing
-.proc io_update_devices_enabled
+.proc _fn_io_update_devices_enabled
     rts
     .endp
 
 ; ##################################################################################
 ; No-op
-.proc io_enable_device
+.proc _fn_io_enable_device
     rts
     .endp
 
 ; ##################################################################################
 ; No-op
-.proc io_disable_device
+.proc _fn_io_disable_device
     rts
     .endp
 
 ; ##################################################################################
 ; No-op
-.proc io_device_slot_to_device
+.proc _fn_io_device_slot_to_device
     rts
     .endp
 
 ; ##################################################################################
 ; Not going to implement this, it's only used in one place and I think
-; io_get_device_filename can be used instead
+; _fn_io_get_device_filename can be used instead
 ; .proc io_get_filename_for_device_slot
 ;     rts
 ;     .endp
 
 ; ##################################################################################
 ; Get hostslots information into array
-.proc io_get_host_slots
+.proc _fn_io_get_host_slots
     set_sio_defaults
     mva #$f4  DCOMND         ; Get hosts slot
     mva #$40  DSTATS
@@ -328,7 +328,7 @@
     .endp
 
 ; ##################################################################################
-.proc io_put_host_slots
+.proc _fn_io_put_host_slots
     set_sio_defaults
     mva #$f3  DCOMND         ; Write host slots
     mva #$80  DSTATS
@@ -342,7 +342,7 @@
 
 ; ##################################################################################
 ; params: x = host slot number
-.proc io_mount_host_slot ( .byte x ) .reg
+.proc _fn_io_mount_host_slot ( .byte x ) .reg
     mwa #hostSlots t1       ; copy hostSlots location into zp
 
     txa         ; save the slot
@@ -381,7 +381,7 @@ out
 ; ##################################################################################
 ; params: a - host slot
 ; requires filter and path to have been previously set
-.proc io_open_directory ( .byte a ) .reg
+.proc _fn_io_open_directory ( .byte a ) .reg
     ; save the host slot using self-modifying-code
     sta smc1+1
 

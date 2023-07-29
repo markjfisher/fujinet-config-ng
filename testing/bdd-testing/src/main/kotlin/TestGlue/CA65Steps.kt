@@ -28,7 +28,7 @@ class CA65Steps {
 
 al 000082 .__ZP_START__
 al 003086 ._siov
-al 003007 .io_init
+al 003007 ._fn_io_init
 al 00302E .setup_screen
 al 003000 .start
 

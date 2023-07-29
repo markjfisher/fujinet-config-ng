@@ -1,7 +1,7 @@
 ; stub SIOV
   .include    "atari.inc"
   .include    "../../../../../src/inc/macros.inc"
-  .include    "../../../../../src/atari/io.inc"
+  .include    "../../../../../src/atari/fn_io.inc"
 
   .segment "SIOSEG"
   .org SIOV

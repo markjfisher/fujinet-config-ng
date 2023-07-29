@@ -6,7 +6,7 @@
     icl "inc/gtia.inc"
     icl "inc/os.inc"
     icl "../macros.mac"
-    .extrn io_init .proc
+    .extrn _fn_io_init .proc
 
     .public setup_screen, m_l1
     .reloc
@@ -39,7 +39,7 @@ setup_screen .proc
         ; mva s_col_2 colpf3
         ; mva #$00 colpf0
 
-        io_init
+        _fn_io_init
 
         jmp show_screen
 

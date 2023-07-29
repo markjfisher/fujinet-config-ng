@@ -3,14 +3,14 @@ Feature: IO library test
   This tests Atari io.asm library
 
   ##############################################################################################################
-  Scenario Outline: execute io_error should set A
-    Given basic setup test "io_error"
+  Scenario Outline: execute _fn_io_error should set A
+    Given basic setup test "_fn_io_error"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
 
       And I write memory at dstats with <init>
-     When I execute the procedure at io_error for no more than 50 instructions
+     When I execute the procedure at _fn_io_error for no more than 50 instructions
 
      Then I expect register A equal <A>
 
@@ -25,13 +25,13 @@ Feature: IO library test
       | 0xff | 0x80 |
 
   ##############################################################################################################
-  Scenario: execute io_init should setup some system values
-    Given basic setup test "io_init"
+  Scenario: execute _fn_io_init should setup some system values
+    Given basic setup test "_fn_io_init"
     And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
     And I mads-compile "io" from "../../src/libs/atari/io.asm"
     And I build and load the application "test_io" from "features/atari/test_io.asm"
 
-    When I execute the procedure at io_init for no more than 50 instructions
+    When I execute the procedure at _fn_io_init for no more than 50 instructions
 
     Then I expect to see noclik equal $ff
      And I expect to see shflok equal $00
@@ -39,8 +39,8 @@ Feature: IO library test
      And I expect to see sdmctl equal $00
 
   ##############################################################################################################
-  Scenario Outline: execute io_get_wifi_enabled return if wifi is enabled
-    Given basic setup test "io_get_wifi_enabled"
+  Scenario Outline: execute _fn_io_get_wifi_enabled return if wifi is enabled
+    Given basic setup test "_fn_io_get_wifi_enabled"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -63,7 +63,7 @@ Feature: IO library test
     And I patch machine with file "sio-patch"
 
     When I write memory at t_v with <sio_ret>
-     And I execute the procedure at io_get_wifi_enabled for no more than 50 instructions
+     And I execute the procedure at _fn_io_get_wifi_enabled for no more than 50 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -89,8 +89,8 @@ Feature: IO library test
     | 0xff    |  Z:1  |  0  | Not enabled    |
 
   ##############################################################################################################
-  Scenario Outline: execute io_get_wifi_status returns status of wifi in A
-    Given basic setup test "io_get_wifi_status"
+  Scenario Outline: execute _fn_io_get_wifi_status returns status of wifi in A
+    Given basic setup test "_fn_io_get_wifi_status"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -113,7 +113,7 @@ Feature: IO library test
     And I patch machine with file "sio-patch"
 
     When I write memory at t_v with <sio_ret>
-     And I execute the procedure at io_get_wifi_status for no more than 50 instructions
+     And I execute the procedure at _fn_io_get_wifi_status for no more than 50 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -138,7 +138,7 @@ Feature: IO library test
     | 5       |  5  | Connection lost       |
 
   ##############################################################################################################
-  Scenario: execute io_get_ssid returns pointer to NetConfig in A/X
+  Scenario: execute _fn_io_get_ssid returns pointer to NetConfig in A/X
     Given basic setup test "get ssid"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
@@ -147,7 +147,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the NetConfig struct
+        icl "../../../../src/libs/atari/inc/fn_io.inc" ; for the NetConfig struct
 
         org SIOV
         mwa DBUFLO $80
@@ -172,7 +172,7 @@ Feature: IO library test
      And I patch machine with file "sio-patch"
      # And I print memory from siov to siov+192
 
-    When I execute the procedure at io_get_ssid for no more than 1000 instructions
+    When I execute the procedure at _fn_io_get_ssid for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -198,8 +198,8 @@ Feature: IO library test
     Then property "test.BDD6502.lastHexDump" must contain string "password"
 
   ##############################################################################################################
-  Scenario: execute io_set_ssid calls SIOV with correct data
-    Given basic setup test "io_set_ssid"
+  Scenario: execute _fn_io_set_ssid calls SIOV with correct data
+    Given basic setup test "_fn_io_set_ssid"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -216,7 +216,7 @@ Feature: IO library test
      And I set register X to $bb
      And I write memory at $80 with $00
 
-    When I execute the procedure at io_set_ssid for no more than 50 instructions
+    When I execute the procedure at _fn_io_set_ssid for no more than 50 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -236,8 +236,8 @@ Feature: IO library test
      And I expect to see $80 equal $01
 
   ##############################################################################################################
-  Scenario Outline: execute io_scan_for_networks puts number of networks into X
-    Given basic setup test "io_scan_for_networks"
+  Scenario Outline: execute _fn_io_scan_for_networks puts number of networks into X
+    Given basic setup test "_fn_io_scan_for_networks"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -264,7 +264,7 @@ Feature: IO library test
      And I write memory at $80 with $00
 
     When I write memory at t_v with <networks>
-     And I execute the procedure at io_scan_for_networks for no more than 50 instructions
+     And I execute the procedure at _fn_io_scan_for_networks for no more than 50 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -287,8 +287,8 @@ Feature: IO library test
     | 10       |     
 
   ##############################################################################################################
-  Scenario: execute io_get_scan_result returns pointer to SSIDInfo in A/X
-    Given basic setup test "io_get_scan_result"
+  Scenario: execute _fn_io_get_scan_result returns pointer to SSIDInfo in A/X
+    Given basic setup test "_fn_io_get_scan_result"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -296,7 +296,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+        icl "../../../../src/libs/atari/inc/fn_io.inc" ; for the IO structs
 
         org SIOV
         mwa DBUFLO $80  ; copy DBUF pointers into ZP
@@ -323,7 +323,7 @@ Feature: IO library test
 
     # call the proc for network number 5
     When I set register A to 5
-     And I execute the procedure at io_get_scan_result for no more than 1000 instructions
+     And I execute the procedure at _fn_io_get_scan_result for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -351,8 +351,8 @@ Feature: IO library test
     Then property "test.BDD6502.lastHexDump" must contain string ": 69 :"
 
   ##############################################################################################################
-  Scenario: execute io_get_adapter_config returns pointer to SSIDInfo in A/X
-    Given basic setup test "io_get_adapter_config"
+  Scenario: execute _fn_io_get_adapter_config returns pointer to SSIDInfo in A/X
+    Given basic setup test "_fn_io_get_adapter_config"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -360,7 +360,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+        icl "../../../../src/libs/atari/inc/fn_io.inc" ; for the IO structs
 
         ; fake a call to get_adapter_config that returns known data
         org SIOV
@@ -408,7 +408,7 @@ Feature: IO library test
       ac      dta AdapterConfig
     """
      And I patch machine with file "sio-patch"
-     And I execute the procedure at io_get_adapter_config for no more than 1000 instructions
+     And I execute the procedure at _fn_io_get_adapter_config for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -436,8 +436,8 @@ Feature: IO library test
     """
 
   ##############################################################################################################
-  Scenario: execute io_get_device_slots
-    Given basic setup test "io_get_device_slots"
+  Scenario: execute _fn_io_get_device_slots
+    Given basic setup test "_fn_io_get_device_slots"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -455,7 +455,7 @@ Feature: IO library test
 
     # call the proc for device index 5
     When I set register A to 5
-     And I execute the procedure at io_get_device_slots for no more than 1000 instructions
+     And I execute the procedure at _fn_io_get_device_slots for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -477,8 +477,8 @@ Feature: IO library test
      And I expect to see $80 equal 1
 
   ##############################################################################################################
-  Scenario: execute io_put_device_slots
-    Given basic setup test "io_put_device_slots"
+  Scenario: execute _fn_io_put_device_slots
+    Given basic setup test "_fn_io_put_device_slots"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -486,7 +486,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+        icl "../../../../src/libs/atari/inc/fn_io.inc" ; for the IO structs
 
         org SIOV
         ; mark fact we were called
@@ -497,7 +497,7 @@ Feature: IO library test
 
     # call the proc for device index 5
     When I set register A to 5
-     And I execute the procedure at io_put_device_slots for no more than 1000 instructions
+     And I execute the procedure at _fn_io_put_device_slots for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -518,8 +518,8 @@ Feature: IO library test
      And I expect to see $80 equal 1
 
   ##############################################################################################################
-  Scenario: execute io_set_device_filename
-    Given basic setup test "io_set_device_filename"
+  Scenario: execute _fn_io_set_device_filename
+    Given basic setup test "_fn_io_set_device_filename"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -527,7 +527,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+        icl "../../../../src/libs/atari/inc/fn_io.inc" ; for the IO structs
 
         org SIOV
         ; mark fact we were called
@@ -543,7 +543,7 @@ Feature: IO library test
     When I set register A to 5
      And I set register X to lo(t_msg)
      And I set register Y to hi(t_msg)
-     And I execute the procedure at io_set_device_filename for no more than 100 instructions
+     And I execute the procedure at _fn_io_set_device_filename for no more than 100 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -563,8 +563,8 @@ Feature: IO library test
      And I expect to see $80 equal 1
 
   ##############################################################################################################
-  Scenario: execute io_get_device_filename
-    Given basic setup test "io_get_device_filename"
+  Scenario: execute _fn_io_get_device_filename
+    Given basic setup test "_fn_io_get_device_filename"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -572,7 +572,7 @@ Feature: IO library test
       """
       ; stub SIOV
         icl "../../../../src/libs/atari/inc/os.inc"
-        icl "../../../../src/libs/atari/inc/io.inc" ; for the IO structs
+        icl "../../../../src/libs/atari/inc/fn_io.inc" ; for the IO structs
 
         org SIOV
         ; copy buffer address into $80
@@ -593,7 +593,7 @@ Feature: IO library test
 
     # call the proc for device index 5
     When I set register A to 5
-     And I execute the procedure at io_get_device_filename for no more than 200 instructions
+     And I execute the procedure at _fn_io_get_device_filename for no more than 200 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -617,56 +617,56 @@ Feature: IO library test
      And I expect to see $80 equal 1
 
   ##############################################################################################################
-  Scenario: execute io_get_device_filename
-    Given basic setup test "io_get_device_filename"
+  Scenario: execute _fn_io_get_device_filename
+    Given basic setup test "_fn_io_get_device_filename"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       And I set register A to $aa
-      And I execute the procedure at io_get_device_enabled_status for no more than 5 instructions
+      And I execute the procedure at _fn_io_get_device_enabled_status for no more than 5 instructions
     
      Then I expect register A equal 1
 
   ##############################################################################################################
-  Scenario: execute io_update_devices_enabled
-    Given basic setup test "io_update_devices_enabled"
+  Scenario: execute _fn_io_update_devices_enabled
+    Given basic setup test "_fn_io_update_devices_enabled"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
-      And I execute the procedure at io_update_devices_enabled for no more than 1 instructions
+      And I execute the procedure at _fn_io_update_devices_enabled for no more than 1 instructions
 
   ##############################################################################################################
-  Scenario: execute io_enable_device
-    Given basic setup test "io_enable_device"
+  Scenario: execute _fn_io_enable_device
+    Given basic setup test "_fn_io_enable_device"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
-      And I execute the procedure at io_enable_device for no more than 1 instructions
+      And I execute the procedure at _fn_io_enable_device for no more than 1 instructions
 
   ##############################################################################################################
-  Scenario: execute io_disable_device
-    Given basic setup test "io_disable_device"
+  Scenario: execute _fn_io_disable_device
+    Given basic setup test "_fn_io_disable_device"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
-      And I execute the procedure at io_disable_device for no more than 1 instructions
+      And I execute the procedure at _fn_io_disable_device for no more than 1 instructions
 
 
   ##############################################################################################################
-  Scenario: execute io_device_slot_to_device
-    Given basic setup test "io_device_slot_to_device"
+  Scenario: execute _fn_io_device_slot_to_device
+    Given basic setup test "_fn_io_device_slot_to_device"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
       # will fail if more than just a return implemented.
-      And I execute the procedure at io_device_slot_to_device for no more than 1 instructions
+      And I execute the procedure at _fn_io_device_slot_to_device for no more than 1 instructions
 
   ##############################################################################################################
-  Scenario: execute io_get_host_slots
-    Given basic setup test "io_get_host_slots"
+  Scenario: execute _fn_io_get_host_slots
+    Given basic setup test "_fn_io_get_host_slots"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -682,7 +682,7 @@ Feature: IO library test
     """
      And I patch machine with file "sio-patch"
      And I set register A to 0
-     And I execute the procedure at io_get_host_slots for no more than 30 instructions
+     And I execute the procedure at _fn_io_get_host_slots for no more than 30 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -702,8 +702,8 @@ Feature: IO library test
      And I expect to see $80 equal 1
 
   ##############################################################################################################
-  Scenario: execute io_put_host_slots
-    Given basic setup test "io_put_host_slots"
+  Scenario: execute _fn_io_put_host_slots
+    Given basic setup test "_fn_io_put_host_slots"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -718,7 +718,7 @@ Feature: IO library test
         rts
     """
      And I patch machine with file "sio-patch"
-     And I execute the procedure at io_put_host_slots for no more than 1000 instructions
+     And I execute the procedure at _fn_io_put_host_slots for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -738,8 +738,8 @@ Feature: IO library test
      And I expect to see $80 equal 1
 
   ##############################################################################################################
-  Scenario Outline: execute io_mount_host_slot
-    Given basic setup test "io_mount_host_slot"
+  Scenario Outline: execute _fn_io_mount_host_slot
+    Given basic setup test "_fn_io_mount_host_slot"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -758,7 +758,7 @@ Feature: IO library test
      And I set register X to <slot>
      # first byte of particular host slot has to be non-0 to trigger a transfer
      And I write memory at hostslots+32*<slot> with 1
-     And I execute the procedure at io_mount_host_slot for no more than 100 instructions
+     And I execute the procedure at _fn_io_mount_host_slot for no more than 100 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
@@ -787,8 +787,8 @@ Feature: IO library test
     | 2    | hostslots+64  |
 
   ##############################################################################################################
-  Scenario: execute io_mount_host_slot does not run if first byte of hostslot is 0
-    Given basic setup test "io_mount_host_slot"
+  Scenario: execute _fn_io_mount_host_slot does not run if first byte of hostslot is 0
+    Given basic setup test "_fn_io_mount_host_slot"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -805,14 +805,14 @@ Feature: IO library test
      And I patch machine with file "sio-patch"
      And I write memory at $80 with $ff
      And I set register X to 0
-     And I execute the procedure at io_mount_host_slot for no more than 1000 instructions
+     And I execute the procedure at _fn_io_mount_host_slot for no more than 1000 instructions
 
     # check SIOV was NOT called
     Then I expect to see $80 equal $ff
 
   ##############################################################################################################
-  Scenario: execute io_open_directory with filter
-    Given basic setup test "io_open_directory"
+  Scenario: execute _fn_io_open_directory with filter
+    Given basic setup test "_fn_io_open_directory"
       And I mads-compile "stdlib" from "../../src/libs/util/stdlib.asm"
       And I mads-compile "io" from "../../src/libs/atari/io.asm"
       And I build and load the application "test_io" from "features/atari/test_io.asm"
@@ -833,7 +833,7 @@ Feature: IO library test
      And I set register A to 3
      And I print ascii from filter to filter+256
 
-    When I execute the procedure at io_open_directory for no more than 3000 instructions
+    When I execute the procedure at _fn_io_open_directory for no more than 3000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see ddevic equal $70
