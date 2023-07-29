@@ -18,7 +18,7 @@
         rts
 .endproc
 
-.data
+.rodata
 
 t_io_get_device_filename:
         .byte $da, $40, <io_buffer, >io_buffer, $0f, $00, $00,   $01,   $ff, $00

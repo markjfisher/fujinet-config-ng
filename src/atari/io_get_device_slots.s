@@ -24,7 +24,7 @@
         rts
 .endproc
 
-.data
+.rodata
 .define DS8zL .lobyte(.sizeof(DeviceSlot)*8)
 .define DS8zH .hibyte(.sizeof(DeviceSlot)*8)
 

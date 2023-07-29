@@ -13,7 +13,7 @@
         rts
 .endproc
 
-.data
+.rodata
 .define ACsz .sizeof(AdapterConfig)
 
 t_io_get_adapter_config:

@@ -15,7 +15,7 @@
         rts
 .endproc
 
-.data
+.rodata
 .define NCsz .sizeof(NetConfig)
 
 t_io_get_ssid:

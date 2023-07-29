@@ -72,8 +72,7 @@ set_dcb:
 
 .endproc
 
-.data
-
+.rodata
 t_io_get_open_directory:
         .byte $f7, $80, <io_buffer, >io_buffer, $0f, $00, $00, $01, $ff, $00
 

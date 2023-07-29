@@ -14,8 +14,7 @@
         rts
 .endproc
 
-.data
-
+.rodata
 t_io_scan_for_networks:
         .byte $fd, $40, <io_scan, >io_scan, $0f, $00, $04, $00, $00, $00
 

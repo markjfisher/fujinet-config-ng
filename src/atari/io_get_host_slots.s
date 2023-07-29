@@ -9,7 +9,7 @@
         jmp     io_siov
 .endproc
 
-.data
+.rodata
 .define HS8zL .lobyte(.sizeof(HostSlot)*8)
 .define HS8zH .hibyte(.sizeof(HostSlot)*8)
 

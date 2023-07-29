@@ -19,7 +19,7 @@
         rts
 .endproc
 
-.data
+.rodata
 t_io_get_wifi_status:
         .byte $fa, $40, <io_wifi_status, >io_wifi_status, $0f, $00, $01, $00, $00, $00
 

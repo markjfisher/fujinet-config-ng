@@ -19,7 +19,6 @@
         jmp     SIOV
 .endproc
 
-.data
-
+.rodata
 t_io_set_device_filename:
         .byte $e2, $80, <io_buffer, >io_buffer, $0f, $00, $00, $01, $ff, $00

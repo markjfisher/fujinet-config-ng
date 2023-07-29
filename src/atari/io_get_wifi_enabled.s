@@ -26,8 +26,7 @@
         rts
 .endproc
 
-.data
-
+.rodata
 t_io_get_wifi_enabled:
         .byte $ea, $40, <io_wifi_enabled,   >io_wifi_enabled,   $0f, $00, $01,   $00,   $00, $00
 

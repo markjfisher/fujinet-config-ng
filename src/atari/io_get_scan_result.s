@@ -21,7 +21,7 @@
         rts
 .endproc
 
-.data
+.rodata
 .define SIsz .sizeof(SSIDInfo)
 
 t_io_get_scan_result:

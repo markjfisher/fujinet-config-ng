@@ -10,8 +10,7 @@
         jmp     io_siov
 .endproc
 
-.data
-
+.rodata
 .define NCsz .sizeof(NetConfig)
 
 t_io_set_ssid:
