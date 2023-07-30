@@ -9,8 +9,8 @@ Feature: IO library test - _fn_io_open_directory
       And I add file for compiling "../../src/atari/fn_io_mem_io_buffer.s"
       And I add file for compiling "../../src/atari/fn_io_siov.s"
       And I add file for compiling "../../src/atari/fn_io_copy_dcb.s"
-      And I add file for compiling "../../src/stdlib/strncpy.s"
-      And I add file for compiling "../../src/stdlib/strncat.s"
+      And I add file for compiling "../../src/stdlib/fn_strncpy.s"
+      And I add file for compiling "../../src/stdlib/fn_strncat.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $ff
@@ -48,8 +48,8 @@ Feature: IO library test - _fn_io_open_directory
       And I add file for compiling "../../src/atari/fn_io_mem_io_buffer.s"
       And I add file for compiling "../../src/atari/fn_io_siov.s"
       And I add file for compiling "../../src/atari/fn_io_copy_dcb.s"
-      And I add file for compiling "../../src/stdlib/strncpy.s"
-      And I add file for compiling "../../src/stdlib/strncat.s"
+      And I add file for compiling "../../src/stdlib/fn_strncpy.s"
+      And I add file for compiling "../../src/stdlib/fn_strncat.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $ff

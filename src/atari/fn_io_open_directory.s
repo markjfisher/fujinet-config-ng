@@ -1,6 +1,6 @@
         .export     _fn_io_open_directory, fn_dir_path, fn_dir_filter
         .import     _fn_io_copy_dcb, fn_io_buffer
-        .import     pushax, strncat, strncpy
+        .import     pushax, _fn_strncat, _fn_strncpy
         .include    "atari.inc"
         .include    "../inc/macros.inc"
         .include    "fn_io.inc"
@@ -9,7 +9,7 @@
 ;
 ; returns 0 for success.
 .proc _fn_io_open_directory
-        pha                     ; store the host_slot. can't use tmp1 it's trashed by strncpy/cat
+        pha                     ; store the host_slot. can't use tmp1 it's trashed by _fn_strncpy/cat
 
         lda     fn_dir_filter      ; if filter set, we need to copy/cat
         bne     filter_set
@@ -42,14 +42,14 @@ filter_set:
         pushax  #fn_io_buffer
         pushax  #fn_dir_path
         lda     #$e0
-        jsr     strncpy
+        jsr     _fn_strncpy
 
         pushax  #fn_io_buffer
         pushax  #fn_dir_filter
         lda     #$20
-        jsr     strncat
+        jsr     _fn_strncat
 
-        ; check if the strncat worked, errors if there was NO end-of-string (0) in path.
+        ; check if the _fn_strncat worked, errors if there was NO end-of-string (0) in path.
         bne     error
 
         jsr     set_dcb

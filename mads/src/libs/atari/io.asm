@@ -20,11 +20,11 @@
     .public path, filter
 
     .extrn t1, t2 .byte
-    .extrn strncpy .proc ( .word t1, t2 .byte strncpy.n ) .var
-    .extrn strncpy.n .word
+    .extrn _fn_strncpy .proc ( .word t1, t2 .byte _fn_strncpy.n ) .var
+    .extrn _fn_strncpy.n .word
 
-    .extrn strncat .proc ( .word t1, t2 .byte strncat.n ) .var
-    .extrn strncat.n .word
+    .extrn _fn_strncat .proc ( .word t1, t2 .byte _fn_strncat.n ) .var
+    .extrn _fn_strncat.n .word
 
     .reloc
 
@@ -399,8 +399,8 @@ out
 
     ; copy path+filter to iobuffer
     ; this causes $e0 bytes of iobuffer to be set, not just path.
-    strncpy #iobuffer #path #$e0
-    strncat #iobuffer #filter #$20
+    _fn_strncpy #iobuffer #path #$e0
+    _fn_strncat #iobuffer #filter #$20
     ; did append work? if not, a=1
     bne error
 

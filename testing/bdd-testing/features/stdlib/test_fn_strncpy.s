@@ -1,6 +1,6 @@
 ; test the stdlib library
 
-        .import         strncat, pusha, pushax
+        .import         _fn_strncpy, pusha, pushax
         .export         _main, t_src, t_dst, t_c
         .include        "../../../../src/inc/macros.inc"
 
@@ -10,7 +10,7 @@
         pushax  #t_src
         lda     t_c
 
-        jsr strncat
+        jsr _fn_strncpy
         rts
 .endproc
 

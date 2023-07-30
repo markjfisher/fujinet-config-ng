@@ -2,11 +2,11 @@
 
         opt r+
         .extrn t1, t2 .byte
-        .public strncpy, strncat, strncpy.n, strncat.n
+        .public _fn_strncpy, _fn_strncat, _fn_strncpy.n, _fn_strncat.n
         .reloc
 
 ; ########################################################################
-; strncpy
+; _fn_strncpy
 ; Copies the first n characters of source to destination. If the end of the
 ; source C string (which is signaled by a null-character) is found before num
 ; characters have been copied, destination is padded with zeros until a total
@@ -17,11 +17,11 @@
 ; null terminated C string (reading it as such would overflow).
 ;
 ; Example:
-;    strncpy #src #dst #10
+;    _fn_strncpy #src #dst #10
 ; src :32 .byte
 ; dst :32 .byte
 
-.proc strncpy ( .word t1, t2 .byte n ) .var
+.proc _fn_strncpy ( .word t1, t2 .byte n ) .var
         .var n .byte    ; count of chars to copy
 
 start
@@ -46,8 +46,8 @@ out
         .endp
 
 ; ########################################################################
-; strncat
-; The strncat function appends not more than n characters of the string
+; _fn_strncat
+; The _fn_strncat function appends not more than n characters of the string
 ; pointed to by t2 to the end of the string pointed to by t1. The terminating
 ; null character at the end of s1 is overwritten. A terminating null character
 ; is appended to the result, even if not all of s2 is appended to s1.
@@ -55,11 +55,11 @@ out
 ; returns a = 0 if no error, 1 otherwise (didn't find nul in dst) 
 ;
 ; Example:
-;    strncat #src #dst #10
+;    _fn_strncat #src #dst #10
 ; src :32  .byte
 ; dst :256 .byte
 
-.proc strncat ( .word t1, t2 .byte n ) .var
+.proc _fn_strncat ( .word t1, t2 .byte n ) .var
         .var n .byte
 
         ; find first nul char in dst (t1)

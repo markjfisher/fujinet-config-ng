@@ -2,10 +2,10 @@ Feature: Stdlib library tests
 
   This tests stdlib library.
 
-  Scenario Outline: Copying strings with strncpy
+  Scenario Outline: Copying strings with _fn_strncpy
     Given atari application test setup
-      And I add file for compiling "../../src/stdlib/strncpy.s"
-      And I add file for compiling "features/stdlib/test_strncpy.s"
+      And I add file for compiling "../../src/stdlib/fn_strncpy.s"
+      And I add file for compiling "features/stdlib/test_fn_strncpy.s"
       And I create and load application
 
      And I fill memory from t_src to t_src+127 with $ff
@@ -27,10 +27,10 @@ Feature: Stdlib library tests
     | abcd         |   3   | : 61 62 63 ff ff | count < length, no implicit nul added |
     | abcde        |   3   | : 61 62 63 ff ff | count < length, no implicit nul added |
 
-  Scenario Outline: Appending strings with strncat
+  Scenario Outline: Appending strings with _fn_strncat
     Given atari application test setup
-      And I add file for compiling "../../src/stdlib/strncat.s"
-      And I add file for compiling "features/stdlib/test_strncat.s"
+      And I add file for compiling "../../src/stdlib/fn_strncat.s"
+      And I add file for compiling "features/stdlib/test_fn_strncat.s"
       And I create and load application
 
      And I fill memory from t_src to t_src+127 with $ff
