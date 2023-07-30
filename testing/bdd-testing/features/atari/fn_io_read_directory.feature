@@ -2,7 +2,7 @@ Feature: IO library test - _fn_io_read_directory
 
   This tests Atari _fn_io_read_directory
 
-  Scenario: execute _fn_io_read_directory with filter and path
+  Scenario: execute _fn_io_read_directory
     Given atari application test setup
       And I add file for compiling "../../src/atari/fn_io_read_directory.s"
       And I add file for compiling "../../src/atari/fn_io_mem_io_buffer.s"
