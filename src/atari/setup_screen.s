@@ -1,12 +1,10 @@
-; setup_screen.s
-;
-
-        .export     setup_screen
+        .export     _setup_screen, main_dlist
         .include    "atari.inc"
         .include    "inc/antic.inc"
         .include    "../inc/macros.inc"
 
-.proc setup_screen
+; void setup_screen()
+.proc _setup_screen
 
         jsr init_screen
         mwa #do_vblank,  VVBLKI
@@ -15,8 +13,7 @@
         mva #$02, CHACTL
         mva #$3c, PACTL
 
-
-        jmp show_screen         ; always
+        jmp show_screen
 
 init_screen:
         mva #$00, NMIEN
@@ -45,7 +42,7 @@ do_vblank:
 
 .endproc
 
-.rodata
+.segment "DLIST"
 main_dlist:
     ; 4 blank lines
     .byte DL_BLK4

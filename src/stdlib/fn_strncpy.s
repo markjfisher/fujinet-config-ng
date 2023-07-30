@@ -1,5 +1,8 @@
-; _fn_strncpy.s
-;
+        .export     _fn_strncpy
+        .import     popax, popa
+        .include    "../inc/macros.inc"
+        .include    "zeropage.inc"
+
 ; This is a cutdown version of strncpy for use on strings up to 256 characters.
 ;
 ; From various docs:
@@ -11,11 +14,6 @@
 ; No null-character is implicitly appended at the end of destination if source
 ; is longer than n. Thus, in this case, destination shall not be considered a
 ; null terminated C string (reading it as such would overflow).
-
-        .export     _fn_strncpy
-        .import     popax, popa
-        .include    "../inc/macros.inc"
-        .include    "zeropage.inc"
 
 ; void strcat(char *dst, char *src, uint8 count)
 .proc   _fn_strncpy

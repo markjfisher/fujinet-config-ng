@@ -42,10 +42,16 @@ endif
 XS := ""
 ifeq ($(detected_OS),$(filter $(detected_OS),MSYS MINGW))
 # need an eXtra Slash for altirra things
-	XS := "/"
+	XS := /
 endif
 
-ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe $(XS)/portable $(XS)/portablealt:altirra-debug.ini $(XS)/debug $(XS)/debugcmd: ".loadsym build\config.lst"
+ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
+  $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
+  $(XS)/debug \
+  $(XS)/debugcmd: ".loadsym build\config.lst" \
+  $(XS)/debugcmd: "bp start"
+
+
 atari_EMUCMD := $(ALTIRRA)
 
 ifeq ($(EMUCMD),)

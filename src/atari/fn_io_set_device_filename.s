@@ -1,6 +1,3 @@
-; _fn_io_put_device_slots.s
-;
-
         .export         _fn_io_set_device_filename
         .import         _fn_io_copy_dcb, fn_io_buffer
         .importzp       tmp1
