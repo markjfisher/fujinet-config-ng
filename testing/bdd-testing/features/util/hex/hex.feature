@@ -15,8 +15,7 @@ Feature:  Hex library test
 
     Examples:
     | input | output          | comment                              |
-    | 0000  | : 30 30 30 30 : | digits 0-9 = 30-39 in ascii          |
-    | 1234  | : 31 32 33 34 : |                                      |
+    | 0012  | : 30 30 31 32 : | digits 0-9 = 30-39 in ascii          |
     | 3456  | : 33 34 35 36 : |                                      |
     | 7890  | : 37 38 39 30 : |                                      |
     | abcd  | : 41 42 43 44 : | A-F hex caps = 41-46                 |

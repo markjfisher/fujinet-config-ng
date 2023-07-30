@@ -4,6 +4,16 @@
   .include    "../../../../../src/atari/fn_io.inc"
   .export     ac
 
+; short copy <$7F bytes (uses bpl), using Y to index
+.macro copy_y arg1, arg2, arg3
+    .local L1
+    ldy arg1-1
+L1: lda arg2
+    sta arg3
+    dey
+    bpl L1
+.endmacro
+
   .segment "SIOSEG"
   .org SIOV
   ; Emulate SIOV call by copying ssid/pass into 

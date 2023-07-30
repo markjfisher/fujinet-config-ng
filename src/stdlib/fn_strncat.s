@@ -29,7 +29,14 @@
         bne :-
 
 found:
-        ady     ptr1
+        ; add y to ptr1
+        tya
+        clc
+        adc     ptr1
+        sta     ptr1
+        bcc :+
+        inc     ptr1+1
+:
 
         ; copy the string to location found
         ; can only copy n chars max, including a nul

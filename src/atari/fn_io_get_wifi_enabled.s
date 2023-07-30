@@ -12,7 +12,8 @@
         jsr     _fn_io_siov
 
         ; was it set?
-        cpb     fn_io_wifi_enabled, #$01
+        lda     fn_io_wifi_enabled
+        cmp     #$01
         bne :+
 
         ; yes

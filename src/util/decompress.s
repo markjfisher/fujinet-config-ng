@@ -19,15 +19,19 @@ for:
         lda (ptr1, x)           ; next control byte
         beq done                ; 0 signals end of decompression
         bpl copy_raw            ; msb=0 means just copy this many bytes from source
-        add #$82                ; flip msb, then add 2, we wont request 0 or 1 as that wouldn't save anything
+        clc
+        adc #$82                ; flip msb, then add 2, we wont request 0 or 1 as that wouldn't save anything
         sta tmp1                ; count of bytes to copy (>= 2)
         ldy #$01                ; byte after control is offset
         lda (ptr1), y           ; offset from current t1 - 256
         tay
 
         lda #$02                ; advance t1 past the control byte and offset
-        add_sta ptr1
-        scc_inc ptr1+1
+        clc
+        adc ptr1
+        sta ptr1
+        bcc copy_previous
+        inc ptr1+1
 
 copy_previous:
         dec ptr2+1
@@ -35,9 +39,10 @@ copy_previous:
         inc ptr2+1
         sta (ptr2,x)
         inc ptr2
-        sne_inc ptr2+1
+        bne :+
+        inc ptr2+1
 
-        dec tmp1
+:       dec tmp1
         bne copy_previous
         beq for
 
@@ -46,13 +51,15 @@ copy_raw:
 
 copy:
         inc ptr1
-        sne_inc ptr1+1
-        dey
+        bne :+
+        inc ptr1+1
+:       dey
         bmi for
         mva {(ptr1,x)}, {(ptr2,x)}
         inc ptr2
-        sne_inc ptr2+1
-        bne copy
+        bne :+
+        inc ptr2+1
+:       bne copy        ; always unless high byte rolled over from FF to 00, which would mean wrapping around memory
 
 done:
         rts

@@ -14,8 +14,8 @@ BUILD_DIR = build
 LDFLAGS = $(LDFLAGS.$(TARGETS))
 LDFLAGS.atari = --mapfile $(BUILD_DIR)/config.map
 
-LDFLAGS_LIB_PATH = --lib-path /usr/local/share/cc65/lib
-LDFLAGS_INC_PATH = -I /usr/local/share/cc65/asminc
+LDFLAGS_LIB_PATH =
+LDFLAGS_INC_PATH =
 
 SRCDIR := src
 OBJDIR := obj
@@ -41,11 +41,11 @@ endif
 
 XS := ""
 ifeq ($(detected_OS),$(filter $(detected_OS),MSYS MINGW))
-# need an eXtra Slash
+# need an eXtra Slash for altirra things
 	XS := "/"
 endif
 
-ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe $(XS)/portable $(XS)/portablealt:altirra-debug.ini $(XS)/debug
+ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe $(XS)/portable $(XS)/portablealt:altirra-debug.ini $(XS)/debug $(XS)/debugcmd: ".loadsym build\config.lst"
 atari_EMUCMD := $(ALTIRRA)
 
 ifeq ($(EMUCMD),)
@@ -80,6 +80,10 @@ SOURCES := $(wildcard $(SRCDIR)/*.c)
 SOURCES += $(wildcard $(SRCDIR)/*.s)
 SOURCES += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.c)
 SOURCES += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.s)
+SOURCES += $(wildcard $(SRCDIR)/stdlib/*.c)
+SOURCES += $(wildcard $(SRCDIR)/stdlib/*.s)
+SOURCES += $(wildcard $(SRCDIR)/util/*.c)
+SOURCES += $(wildcard $(SRCDIR)/util/*.s)
 
 OBJECTS := $(addsuffix .o,$(basename $(addprefix $(TARGETOBJDIR)/,$(notdir $(SOURCES)))))
 
@@ -139,18 +143,20 @@ $(TARGETOBJDIR):
 $(BUILD_DIR):
 	$(call MKDIR,$@)
 
-vpath %.c $(SRCDIR)/$(TARGETLIST) $(SRCDIR)
+SRC_INC_DIRS = $(SRCDIR)/stdlib $(SRCDIR)/atari $(SRCDIR)/util
+
+vpath %.c $(SRC_INC_DIRS) $(SRCDIR)
 
 $(TARGETOBJDIR)/%.o: %.c | $(TARGETOBJDIR)
 	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) $(CFLAGS) -o $@ $<
 
-vpath %.s $(SRCDIR)/$(TARGETLIST) $(SRCDIR)
+vpath %.s $(SRC_INC_DIRS) $(SRCDIR)
 
 $(TARGETOBJDIR)/%.o: %.s | $(TARGETOBJDIR)
-	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) -l $(@:.o=.lst) $(ASFLAGS) -o $@ $<
+	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) -l $(@:.o=.lst) --add-source $(ASFLAGS) -o $@ $<
 
 $(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS) | $(BUILD_DIR)
-	$(CC) -t $(CC65TARGET) $(LDFLAGS) -l $(BUILD_DIR)/$(@:.com=.lst) -Ln $(BUILD_DIR)/$(@:.com=.lbl) -o $(BUILD_DIR)/$@ $(patsubst %.cfg,-C %.cfg,$^)
+	$(CC) -t $(CC65TARGET) $(LDFLAGS) -Ln $(BUILD_DIR)/$(@:.com=.lbl) -l $(BUILD_DIR)/$(@:.com=.lst) -o $(BUILD_DIR)/$@ $(patsubst %.cfg,-C %.cfg,$^)
 
 test: $(PROGRAM)
 	$(PREEMUCMD)

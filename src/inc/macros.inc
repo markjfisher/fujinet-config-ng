@@ -101,58 +101,25 @@
     .endrepeat
 .endmacro
 
-.macro cpb arg1, arg2
-    lda arg1
-    cmp arg2
-.endmacro
-
-.macro cpw arg1, arg2
-    .local s1, s2
-    .if (.match (.left (1, {arg2}), #))
-        lda     1+(arg1)
-        cmp     #>(.right (.tcount ({arg2})-1, {arg2}))
-        bne     s1
-        lda     arg1
-        cmp     #<(.right (.tcount ({arg2})-1, {arg2}))
-s1:
-    .else
-        lda     1+(arg1)
-        cmp     1+(arg2)
-        bne     s2
-        lda     arg1
-        cmp     arg2
-s2:
-    .endif
-.endmacro
-
-; 'add a to arg1 and store byte into arg1'
-.macro add_sta arg1
-    clc
-    adc arg1
-    sta arg1
-.endmacro
-
-; 'skip if carry clear, and do inc'
-.macro scc_inc arg1
-    .local skip1
-    bcc skip1
-    inc arg1
-skip1:
-.endmacro
-
-; 'skip if not equal, and do inc'
-.macro sne_inc arg1
-    .local skip1
-    bne skip1
-    inc arg1
-skip1:
-.endmacro
-
-; lest we forget to clc
-.macro add arg1
-    clc
-    adc arg1
-.endmacro
+;; If I ever need this, write a test first!
+; .macro cpw arg1, arg2
+;     .local s1, s2
+;     .if (.match (.left (1, {arg2}), #))
+;         lda     1+(arg1)
+;         cmp     #>(.right (.tcount ({arg2})-1, {arg2}))
+;         bne     s1
+;         lda     arg1
+;         cmp     #<(.right (.tcount ({arg2})-1, {arg2}))
+; s1:
+;     .else
+;         lda     1+(arg1)
+;         cmp     1+(arg2)
+;         bne     s2
+;         lda     arg1
+;         cmp     arg2
+; s2:
+;     .endif
+; .endmacro
 
 ; use CA65 function calling conventions, passing values into SP via pushax
 .macro pushax arg1
@@ -200,16 +167,6 @@ skip1:
     stx     1+(arg1)
 .endmacro
 
-; short copy <$7F bytes (uses bpl), using Y to index
-.macro copy_y arg1, arg2, arg3
-    .local L1
-    ldy arg1-1
-L1: lda arg2
-    sta arg3
-    dey
-    bpl L1
-.endmacro
-
 ; adw: adds word values together.
 ; adw src #$40
 ; adw src #$4000
@@ -217,8 +174,15 @@ L1: lda arg2
 ; adw src #$40 dst
 ; adw src #$4000 dst
 ; adw a b c
-; NOTE: param 1 and 3 cannot be literal
 .macro adw arg1, arg2, arg3
+    ; ensure arg1/arg3 don't have immediate values. They are always locations.
+    .if (.match (.left (1, {arg1}), #))
+        .error "adw: arg1 cannot be literal"
+    .endif
+    .if (.match (.left (1, {arg3}), #))
+        .error "adw: arg3 cannot be literal"
+    .endif
+
     clc
     .if (.match (.left (1, {arg2}), #))
         ; immediate value in arg2
@@ -255,11 +219,12 @@ L1: lda arg2
     .endif
 .endmacro
 
-.macro ady arg1
-    tya
+.macro ada arg1
+    .local l1
     clc
     adc arg1
     sta arg1
-    scc_inc 1+(arg1)
+    bcc l1
+    inc 1+(arg1)
+l1:
 .endmacro
-
