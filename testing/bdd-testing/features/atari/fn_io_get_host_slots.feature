@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_get_host_slots
 
   This tests Atari _fn_io_get_host_slots
 
-  ##############################################################################################################
   Scenario: execute _fn_io_get_host_slots
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_host_slots.s"

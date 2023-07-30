@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_get_device_slots
 
   This tests Atari _fn_io_get_device_slots
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_get_device_slots
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_device_slots.s"

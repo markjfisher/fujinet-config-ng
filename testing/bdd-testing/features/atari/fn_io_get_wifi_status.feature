@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_get_wifi_status
 
   This tests Atari _fn_io_get_wifi_status
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_get_wifi_status
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_wifi_status.s"

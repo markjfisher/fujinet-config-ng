@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_open_directory
 
   This tests Atari _fn_io_open_directory
 
-  ##############################################################################################################
   Scenario: execute _fn_io_open_directory with filter and path
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_open_directory.s"
@@ -41,7 +40,6 @@ Feature: IO library test - _fn_io_open_directory
     # check SIOV was called
     Then I expect to see $80 equal $01
 
-  ##############################################################################################################
   Scenario: execute _fn_io_open_directory with path only short circuits copying
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_open_directory.s"

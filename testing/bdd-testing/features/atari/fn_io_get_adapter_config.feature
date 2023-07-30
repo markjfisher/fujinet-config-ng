@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_get_adapter_config
 
   This tests Atari _fn_io_get_adapter_config
 
-  ##############################################################################################################
   Scenario: execute _fn_io_get_adapter_config
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_adapter_config.s"

@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_mount_host_slot
 
   This tests Atari _fn_io_mount_host_slot
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_mount_host_slot
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_host_slots.s"
@@ -39,7 +38,6 @@ Feature: IO library test - _fn_io_mount_host_slot
     | 1    |
     | 2    |
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_mount_host_slot does not run SIOV if first byte is 0
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_host_slots.s"

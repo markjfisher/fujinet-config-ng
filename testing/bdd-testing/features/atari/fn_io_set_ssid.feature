@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_set_ssid
 
   This tests Atari _fn_io_set_ssid
 
-  ##############################################################################################################
   Scenario: execute _fn_io_set_ssid
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_mem_io_net_config.s"

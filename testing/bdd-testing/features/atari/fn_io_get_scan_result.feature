@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_get_scan_result
 
   This tests Atari _fn_io_get_scan_result
 
-  ##############################################################################################################
   Scenario: execute _fn_io_get_scan_result
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_scan_result.s"

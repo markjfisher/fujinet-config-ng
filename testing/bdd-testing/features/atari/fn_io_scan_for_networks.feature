@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_scan_for_networks
 
   This tests Atari _fn_io_scan_for_networks
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_scan_for_networks
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_scan_for_networks.s"

@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_error
 
   This tests Atari _fn_io_error
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_error should set A
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_error.s"

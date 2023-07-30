@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_get_device_filename
 
   This tests Atari _fn_io_get_device_filename
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_get_device_filename
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_mem_io_buffer.s"

@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_disable_device
 
   This tests Atari _fn_io_disable_device
 
-  ##############################################################################################################
   Scenario: execute _fn_io_disable_device should set A
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_disable_device.s"

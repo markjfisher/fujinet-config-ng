@@ -2,7 +2,6 @@ Feature: IO library test - _fn_io_get_wifi_enabled
 
   This tests Atari _fn_io_get_wifi_enabled
 
-  ##############################################################################################################
   Scenario Outline: execute _fn_io_get_wifi_enabled
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_get_wifi_enabled.s"
