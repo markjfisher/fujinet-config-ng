@@ -1,8 +1,8 @@
 Feature: IO library test - _fn_io_enable_device
 
-  This tests Atari _fn_io_enable_device
+  This tests Atari _fn_io_enable_device is a NO-OP
 
-  Scenario: execute _fn_io_enable_device should set A
+  Scenario: execute _fn_io_enable_device
     Given atari simple test setup
       And I add file for compiling "../../src/atari/fn_io_enable_device.s"
       And I create and load simple application
