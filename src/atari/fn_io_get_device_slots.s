@@ -1,7 +1,7 @@
-        .export         _fn_io_get_device_slots, fn_io_deviceslots
-        .import         _fn_io_copy_dcb
-        .importzp       tmp1
+        .export         _fn_io_get_device_slots
+        .import         _fn_io_copy_dcb, fn_io_deviceslots
         .include        "atari.inc"
+        .include    "zeropage.inc"
         .include        "../inc/macros.inc"
         .include        "fn_io.inc"
 
@@ -30,6 +30,3 @@
 
 fn_t_io_get_device_slots:
         .byte $f2, $40, <fn_io_deviceslots, >fn_io_deviceslots, $0f, $00, DS8zL, DS8zH, $00, $00
-
-.bss
-fn_io_deviceslots:    .res 8 * .sizeof(DeviceSlot)

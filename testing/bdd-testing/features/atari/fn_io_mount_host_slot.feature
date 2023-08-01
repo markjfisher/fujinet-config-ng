@@ -4,10 +4,9 @@ Feature: IO library test - _fn_io_mount_host_slot
 
   Scenario Outline: execute _fn_io_mount_host_slot
     Given atari simple test setup
+      And I add common io files
       And I add file for compiling "../../src/atari/fn_io_get_host_slots.s"
       And I add file for compiling "../../src/atari/fn_io_mount_host_slot.s"
-      And I add file for compiling "../../src/atari/fn_io_siov.s"
-      And I add file for compiling "../../src/atari/fn_io_copy_dcb.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $00
@@ -40,10 +39,9 @@ Feature: IO library test - _fn_io_mount_host_slot
 
   Scenario Outline: execute _fn_io_mount_host_slot does not run SIOV if first byte is 0
     Given atari simple test setup
+      And I add common io files
       And I add file for compiling "../../src/atari/fn_io_get_host_slots.s"
       And I add file for compiling "../../src/atari/fn_io_mount_host_slot.s"
-      And I add file for compiling "../../src/atari/fn_io_siov.s"
-      And I add file for compiling "../../src/atari/fn_io_copy_dcb.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $ff

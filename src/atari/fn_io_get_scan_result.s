@@ -1,6 +1,6 @@
         .export         _fn_io_get_scan_result, fn_io_ssidinfo
         .import         _fn_io_copy_dcb
-        .importzp       tmp1
+        .include        "zeropage.inc"
         .include        "atari.inc"
         .include        "../inc/macros.inc"
         .include        "fn_io.inc"

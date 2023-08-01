@@ -14,14 +14,15 @@
 ; is appended to the result, even if not all of src is appended to dst.
 ;
 ; returns a = 0 if no error, 1 otherwise (didn't find terminating byte in dst)
-
+;
+; ; THIS FUNCTION TRASHES tmp4, ptr3, ptr4
 .proc _fn_strncat
-        sta     tmp1      ; n
-        popax   ptr2      ; src
-        popax   ptr1      ; dst
+        sta     tmp4      ; n
+        popax   ptr4      ; src
+        popax   ptr3      ; dst
 
         ldy     #$00
-:       lda     (ptr1), y
+:       lda     (ptr3), y
         beq     found
         iny
 
@@ -32,26 +33,26 @@ found:
         ; add y to ptr1
         tya
         clc
-        adc     ptr1
-        sta     ptr1
+        adc     ptr3
+        sta     ptr3
         bcc :+
-        inc     ptr1+1
+        inc     ptr3+1
 :
 
         ; copy the string to location found
         ; can only copy n chars max, including a nul
         ; subtract 1 from n, as we will only copy 1 less chars if possible
-        dec     tmp1
+        dec     tmp4
 
         ldy     #$00
-:       mva     {(ptr2),y}, {(ptr1),y}
+:       mva     {(ptr4),y}, {(ptr3),y}
         beq     out             ; we copied a nul before n reached, we can end now
         iny
-        cpy     tmp1
+        cpy     tmp4
         bne :-              ; haven't reached n yet
 
         ; add the nul, as we didn't encounter one, but reached max
-        mva     #$00, {(ptr1),y}
+        mva     #$00, {(ptr3),y}
 out:
         ldx     #$00
         lda     #$00

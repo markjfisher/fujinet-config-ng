@@ -1,7 +1,7 @@
         .export         _fn_io_get_device_filename
         .import         _fn_io_copy_dcb, fn_io_buffer
-        .importzp       tmp1
         .include        "atari.inc"
+        .include        "zeropage.inc"
         .include        "../inc/macros.inc"
         .include        "fn_io.inc"
 

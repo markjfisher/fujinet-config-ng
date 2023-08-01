@@ -4,9 +4,8 @@ Feature: IO library test - _fn_io_get_scan_result
 
   Scenario: execute _fn_io_get_scan_result
     Given atari simple test setup
+      And I add common io files
       And I add file for compiling "../../src/atari/fn_io_get_scan_result.s"
-      And I add file for compiling "../../src/atari/fn_io_siov.s"
-      And I add file for compiling "../../src/atari/fn_io_copy_dcb.s"
       And I add file for compiling "features/atari/siov-stubs/siov-ssid-info.s"
       And I create and load simple application
       And I write memory at $80 with $00

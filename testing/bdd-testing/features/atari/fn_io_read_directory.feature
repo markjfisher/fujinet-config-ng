@@ -4,10 +4,8 @@ Feature: IO library test - _fn_io_read_directory
 
   Scenario: execute _fn_io_read_directory
     Given atari application test setup
+      And I add common io files
       And I add file for compiling "../../src/atari/fn_io_read_directory.s"
-      And I add file for compiling "../../src/atari/fn_io_mem_io_buffer.s"
-      And I add file for compiling "../../src/atari/fn_io_siov.s"
-      And I add file for compiling "../../src/atari/fn_io_copy_dcb.s"
       And I add file for compiling "features/atari/test-apps/test_fn_io_read_directory.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load application

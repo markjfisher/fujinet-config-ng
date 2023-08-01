@@ -1,5 +1,5 @@
-        .export     _fn_io_open_directory, fn_dir_path, fn_dir_filter
-        .import     _fn_io_copy_dcb, fn_io_buffer
+        .export     _fn_io_open_directory
+        .import     _fn_io_copy_dcb, fn_io_buffer, fn_dir_path, fn_dir_filter
         .import     pushax, _fn_strncat, _fn_strncpy
         .include    "atari.inc"
         .include    "../inc/macros.inc"
@@ -75,8 +75,3 @@ set_dcb:
 .rodata
 t_io_open_directory:
         .byte $f7, $80, <fn_io_buffer, >fn_io_buffer, $0f, $00, $00, $01, $ff, $00
-
-.bss
-; 256 bytes temp area for storing filter and path
-fn_dir_filter: .res $20
-fn_dir_path:   .res $e0

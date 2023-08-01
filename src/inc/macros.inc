@@ -101,25 +101,24 @@
     .endrepeat
 .endmacro
 
-;; If I ever need this, write a test first!
-; .macro cpw arg1, arg2
-;     .local s1, s2
-;     .if (.match (.left (1, {arg2}), #))
-;         lda     1+(arg1)
-;         cmp     #>(.right (.tcount ({arg2})-1, {arg2}))
-;         bne     s1
-;         lda     arg1
-;         cmp     #<(.right (.tcount ({arg2})-1, {arg2}))
-; s1:
-;     .else
-;         lda     1+(arg1)
-;         cmp     1+(arg2)
-;         bne     s2
-;         lda     arg1
-;         cmp     arg2
-; s2:
-;     .endif
-; .endmacro
+.macro cpw arg1, arg2
+    .local s1, s2
+    .if (.match (.left (1, {arg2}), #))
+        lda     1+(arg1)
+        cmp     #>(.right (.tcount ({arg2})-1, {arg2}))
+        bne     s1
+        lda     arg1
+        cmp     #<(.right (.tcount ({arg2})-1, {arg2}))
+s1:
+    .else
+        lda     1+(arg1)
+        cmp     1+(arg2)
+        bne     s2
+        lda     arg1
+        cmp     arg2
+s2:
+    .endif
+.endmacro
 
 ; use CA65 function calling conventions, passing values into SP via pushax
 .macro pushax arg1

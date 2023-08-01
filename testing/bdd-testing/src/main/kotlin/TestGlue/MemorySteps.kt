@@ -67,6 +67,18 @@ class MemorySteps {
     }
 
     @Throws(Exception::class)
+    @Given("^I write word at (.*) with value (.*)$")
+    fun `i write word at with value`(mem: String, v: String) {
+        val address = Glue.valueToInt(mem)
+        val value = v.toInt()
+        val lo = value % 256
+        val hi = value / 256
+        val machine = Glue.getMachine()
+        machine.bus.write(address, lo)
+        machine.bus.write(address+1, hi)
+    }
+
+    @Throws(Exception::class)
     @Given("^memory at registers (.*) contains$")
     fun `memory at registers contains`(regs: String, structData: String) {
         assertMemoryMatches(structData, Glue.getMachine(), CpuSteps.regsToAddress(regs))

@@ -16,16 +16,18 @@
 ; null terminated C string (reading it as such would overflow).
 
 ; void strcat(char *dst, char *src, uint8 count)
+;
+; THIS FUNCTION TRASHES tmp4, ptr3, ptr4
 .proc   _fn_strncpy
-        sta     tmp1
-        popax   ptr2
-        popax   ptr1
+        sta     tmp4
+        popax   ptr4
+        popax   ptr3
 
         ldy     #$00
-:       mva     {(ptr2), y}, {(ptr1), y}
+:       mva     {(ptr4), y}, {(ptr3), y}
         beq     fill_zeroes ; hit end of string
         iny
-        cpy     tmp1
+        cpy     tmp4
         bne :-
         beq     out
 
@@ -33,9 +35,9 @@ fill_zeroes:
         ; fill to count with 0
         lda     #$00
 :       iny
-        cpy     tmp1
+        cpy     tmp4
         beq     out
-        sta     (ptr1), y
+        sta     (ptr3), y
         bne :-
 
 out:    rts

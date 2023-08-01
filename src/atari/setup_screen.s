@@ -83,6 +83,7 @@ main_dlist:
     .byte DL_JVB
     .addr main_dlist
 
+.rodata
 gbk:
     .repeat 40
         .byte $ff
