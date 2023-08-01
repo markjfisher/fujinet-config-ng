@@ -1,13 +1,18 @@
-; config.s
-;
-
     .export     start
-    .import     _setup_screen
+    .import     _main
+    .import     __MAIN_START__, __MAIN_SIZE__
+
+    .include    "zeropage.inc"
+    .include    "inc/macros.inc"
 
 .proc start
-    ; do we need to worry about an init, and setting up the bss data here?
-    jsr _setup_screen
+    ; mini crt0, setup real stack and software stack
+    ldx     #$ff
+    txs
+    cld
+    mwa     #(__MAIN_START__+__MAIN_SIZE__), sp
 
-l:  jmp l
+    jsr     _main
     rts
+
 .endproc

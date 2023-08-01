@@ -34,7 +34,14 @@ show_screen:
         mva #$40, NMIEN
         mva #$22, SDMCTL
         sta       DMACTL
-        jmp wait_scan1          ; always
+        jsr wait_scan1
+
+        ; dark red central area, brigher outside
+        mva #$06, COLPF1    ; glyph pixel luma
+        mva #$30, COLPF2    ; b/g
+        mva #$00, COLBK     ; border
+
+        rts
 
 do_vblank:
         plr
@@ -44,8 +51,8 @@ do_vblank:
 
 .segment "DLIST"
 main_dlist:
-    ; 4 blank lines
-    .byte DL_BLK4
+    ; blank lines in head
+    .byte DL_BLK8, DL_BLK8
 
     ; 2 spacers (40 x $ff)
     LMS DL_MODEF, gbk, 2

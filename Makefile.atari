@@ -1,8 +1,3 @@
-#
-# Makefile for config
-#
-# This Makefile requires GNU make
-
 TARGETS := atari
 PROGRAM := config
 LIBS :=
