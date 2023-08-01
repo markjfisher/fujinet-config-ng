@@ -10,7 +10,7 @@
         sta     tmp1    ; dst_slot
         popa    tmp2    ; src_slot
 
-        setax   #fn_t_io_copy_file
+        setax   #t_io_copy_file
         jsr     _fn_io_copy_dcb
 
         ;  fujinet tracks 1-8, we do 0-7, so need to increment both values
@@ -23,5 +23,5 @@
 
 .rodata
 
-fn_t_io_copy_file:
+t_io_copy_file:
         .byte $d8, $80, <fn_io_buffer, >fn_io_buffer, $fe, $00, $00, $01, $ff, $ff

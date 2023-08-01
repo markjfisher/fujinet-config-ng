@@ -25,7 +25,7 @@ skip:
         lda     (ptr1), y   ; first byte of host slot
         beq     out         ; nothing to do if it's 0 (null)
 
-        setax   #fn_t_io_mount_host_slot
+        setax   #t_io_mount_host_slot
         jsr     _fn_io_copy_dcb
         mva     tmp1, IO_DCB::daux1
         jmp     SIOV
@@ -35,5 +35,5 @@ out:
 .endproc
 
 .rodata
-fn_t_io_mount_host_slot:
+t_io_mount_host_slot:
         .byte $f9, $00, $00, $00, $0f, $00, $00, $00, $ff, $00

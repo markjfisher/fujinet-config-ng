@@ -6,7 +6,7 @@
 ;
 ; returns count of networks scanned
 .proc _fn_io_scan_for_networks
-        setax   #fn_t_io_scan_for_networks
+        setax   #t_io_scan_for_networks
         jsr     _fn_io_siov
 
         lda     fn_io_scan
@@ -15,7 +15,7 @@
 .endproc
 
 .rodata
-fn_t_io_scan_for_networks:
+t_io_scan_for_networks:
         .byte $fd, $40, <fn_io_scan, >fn_io_scan, $0f, $00, $04, $00, $00, $00
 
 .bss

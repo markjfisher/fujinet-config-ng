@@ -6,7 +6,7 @@
 
 ; void _fn_io_put_device_slots()
 .proc _fn_io_put_device_slots
-        setax   #fn_t_io_put_device_slots
+        setax   #t_io_put_device_slots
         jmp     _fn_io_siov
 .endproc
 
@@ -14,5 +14,5 @@
 .define DS8zL .lobyte(.sizeof(DeviceSlot)*8)
 .define DS8zH .hibyte(.sizeof(DeviceSlot)*8)
 
-fn_t_io_put_device_slots:
+t_io_put_device_slots:
         .byte $f1, $80, <fn_io_deviceslots, >fn_io_deviceslots, $0f, $00, DS8zL, DS8zH, $00, $00

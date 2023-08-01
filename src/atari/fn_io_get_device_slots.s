@@ -14,7 +14,7 @@
 .proc _fn_io_get_device_slots
         sta tmp1        ; save slot_offset
 
-        setax   #fn_t_io_get_device_slots
+        setax   #t_io_get_device_slots
         jsr     _fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
@@ -28,5 +28,5 @@
 .define DS8zL .lobyte(.sizeof(DeviceSlot)*8)
 .define DS8zH .hibyte(.sizeof(DeviceSlot)*8)
 
-fn_t_io_get_device_slots:
+t_io_get_device_slots:
         .byte $f2, $40, <fn_io_deviceslots, >fn_io_deviceslots, $0f, $00, DS8zL, DS8zH, $00, $00

@@ -9,7 +9,7 @@
 .proc _fn_io_get_scan_result
         sta     tmp1        ; save index
 
-        setax   #fn_t_io_get_scan_result
+        setax   #t_io_get_scan_result
         jsr     _fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
@@ -24,7 +24,7 @@
 .rodata
 .define SIsz .sizeof(SSIDInfo)
 
-fn_t_io_get_scan_result:
+t_io_get_scan_result:
         .byte $fc, $40, <fn_io_ssidinfo, >fn_io_ssidinfo, $0f, $00, <SIsz, >SIsz, $ff, $00
 
 .bss
