@@ -2,7 +2,7 @@
 
         .import         hexb, pusha
         .export         _main, output, t_vb
-        .include        "../../../../../src/inc/fn_macros.inc"
+        .include        "fn_macros.inc"
 
 .proc _main
         pusha t_vb

@@ -132,7 +132,7 @@ al 003000 .start
         (compileFiles + "$workDir/main.s").forEach { f ->
             val justName = f.substringAfterLast('/').substringBeforeLast('.')
             val cmd = "cl65 -t $target -c --create-dep $workDir/${justName}.d $options -l $workDir/${justName}.lst -o $workDir/${justName}.o $f"
-            // println("running cl65 for $f with cmd: >$cmd<")
+            println("running cl65 for $f with cmd: >$cmd<")
             glue.i_run_the_command_line(cmd)
         }
         // create the app
@@ -141,7 +141,7 @@ al 003000 .start
             val justName = f.substringAfterLast('/').substringBeforeLast('.')
             "$workDir/${justName}.o"
         }
-        // println("running cl65 for main with cmd: >$mainCmd<")
+        println("running cl65 for main with cmd: >$mainCmd<")
         glue.i_run_the_command_line(mainCmd)
 
         val xexSteps = XEXSteps.xexSteps

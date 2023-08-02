@@ -2,7 +2,7 @@
 
         .import         hex, pushax
         .export         _main, output, t_vw
-        .include        "../../../../../src/inc/fn_macros.inc"
+        .include        "fn_macros.inc"
 
 .proc _main
         pushax t_vw

@@ -1,0 +1,38 @@
+Given common atari test setup
+  Given I have a simple overclocked 6502 system
+    And I enable trace with indent
+    And I create or clear directory "build/tests"
+    # These are required for tests to see atari constants
+    And I load labels "inc/atari/atari.inc"
+    And I load labels "inc/atari/atari_gtia.inc"
+    And I load labels "inc/atari/atari_antic.inc"
+    And I load labels "inc/atari/atari_pokey.inc"
+
+# More complex test using SP etc
+# test asm must have _main, and test feature calls _init to run
+Given atari application test setup
+  Given common atari test setup
+    And I start compiling for atari in "build/tests" with config "features/atari/atari-app.cfg"
+    And I add compiler option "--asm-include-dir ../../src/inc"
+
+# Simple test that does no init, sets up minimal xex for loading and testing
+# feature calls function directly
+Given atari simple test setup
+  Given common atari test setup
+    And I start compiling for atari in "build/tests" with config "features/atari/atari.cfg"
+    And I add compiler option "--asm-include-dir ../../src/inc"
+
+Given I add common io files
+  And I add atari src file "io/fn_io_mem_dir_filter.s"
+  And I add atari src file "io/fn_io_mem_dir_path.s"
+  And I add atari src file "io/fn_io_mem_io_buffer.s"
+  And I add atari src file "io/fn_io_mem_io_net_config.s"
+  And I add atari src file "io/fn_io_mem_io_deviceslots.s"
+  And I add atari src file "io/fn_io_siov.s"
+  And I add atari src file "io/fn_io_copy_dcb.s"
+  And I add common src file "stdlib/fn_strncpy.s"
+  And I add common src file "stdlib/fn_strncat.s"
+  And I add compiler option "--asm-include-dir ../../src/atari/io"
+
+Given I add * src file "*"
+  And I add file for compiling "../../src/$1/$2"
