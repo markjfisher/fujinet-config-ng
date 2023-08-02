@@ -3,7 +3,7 @@
         .import     pushax, _fn_strncat, _fn_strncpy
         .include    "atari.inc"
         .include    "fn_macros.inc"
-        .include    "fn_io.inc"
+        .include    "../inc/dcb.inc"
 
 ; int _fn_io_open_directory(host_slot)
 ;

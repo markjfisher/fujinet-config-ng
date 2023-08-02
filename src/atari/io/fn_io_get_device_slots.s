@@ -1,9 +1,10 @@
         .export         _fn_io_get_device_slots
         .import         _fn_io_copy_dcb, fn_io_deviceslots
         .include        "atari.inc"
-        .include    "zeropage.inc"
+        .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
+        .include         "../inc/dcb.inc"
 
 ; *DeviceSlot[0] _fn_io_get_device_slots(slot_offset)
 ;

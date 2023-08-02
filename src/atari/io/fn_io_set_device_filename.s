@@ -3,7 +3,7 @@
         .include        "zeropage.inc"
         .include        "atari.inc"
         .include        "fn_macros.inc"
-        .include        "fn_io.inc"
+        .include        "../inc/dcb.inc"
 
 ; void _fn_io_set_device_filename(device_slot)
 .proc _fn_io_set_device_filename

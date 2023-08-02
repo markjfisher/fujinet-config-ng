@@ -3,7 +3,7 @@
         .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
-        .include    "fn_io.inc"
+        .include    "../inc/dcb.inc"
         .import     _fn_io_copy_dcb, fn_io_buffer, popa
 
 ; char *fn_io_read_directory(unsigned char maxlen, unsigned char aux2)
