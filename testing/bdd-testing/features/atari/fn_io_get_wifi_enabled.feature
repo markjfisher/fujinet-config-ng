@@ -5,7 +5,7 @@ Feature: IO library test - _fn_io_get_wifi_enabled
   Scenario Outline: execute _fn_io_get_wifi_enabled
     Given atari simple test setup
       And I add common io files
-      And I add file for compiling "../../src/atari/fn_io_get_wifi_enabled.s"
+      And I add atari src file "fn_io_get_wifi_enabled.s"
       And I add file for compiling "features/atari/siov-stubs/siov-dbuflo1.s"
       And I create and load simple application
 

@@ -4,7 +4,7 @@ Feature:  Decompress library test
 
   Scenario: Decompressing Compressed Text
     Given atari application test setup
-      And I add file for compiling "../../src/util/decompress.s"
+      And I add util src file "decompress.s"
       And I add file for compiling "features/util/decompress/test_decompress.s"
       And I create and load application
 

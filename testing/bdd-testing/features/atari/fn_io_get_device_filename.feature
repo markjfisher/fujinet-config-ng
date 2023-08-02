@@ -5,7 +5,7 @@ Feature: IO library test - _fn_io_get_device_filename
   Scenario Outline: execute _fn_io_get_device_filename
     Given atari simple test setup
       And I add common io files
-      And I add file for compiling "../../src/atari/fn_io_get_device_filename.s"
+      And I add atari src file "fn_io_get_device_filename.s"
       And I add file for compiling "features/atari/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $00

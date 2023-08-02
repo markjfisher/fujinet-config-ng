@@ -4,6 +4,6 @@ Feature: IO library test - _fn_io_build_directory
 
   Scenario: execute _fn_io_build_directory
     Given atari simple test setup
-      And I add file for compiling "../../src/atari/fn_io_build_directory.s"
+      And I add atari src file "fn_io_build_directory.s"
       And I create and load simple application
       And I execute the procedure at _fn_io_build_directory for no more than 1 instructions

@@ -4,7 +4,7 @@ Feature: Stdlib library tests
 
   Scenario Outline: Copying strings with _fn_strncpy
     Given atari application test setup
-      And I add file for compiling "../../src/stdlib/fn_strncpy.s"
+      And I add stdlib src file "fn_strncpy.s"
       And I add file for compiling "features/stdlib/test_fn_strncpy.s"
       And I create and load application
 
@@ -29,7 +29,7 @@ Feature: Stdlib library tests
 
   Scenario Outline: Appending strings with _fn_strncat
     Given atari application test setup
-      And I add file for compiling "../../src/stdlib/fn_strncat.s"
+      And I add stdlib src file "fn_strncat.s"
       And I add file for compiling "features/stdlib/test_fn_strncat.s"
       And I create and load application
 
