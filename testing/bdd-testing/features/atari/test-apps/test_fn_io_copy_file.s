@@ -1,6 +1,6 @@
         .import         pusha, _fn_io_copy_file
         .export         _main, t_src, t_dst
-        .include        "../../../../../src/inc/macros.inc"
+        .include        "../../../../../src/inc/fn_macros.inc"
 
 .proc _main
         ; args: host_slot (uint8), device_slot (uint8), size (uint16)

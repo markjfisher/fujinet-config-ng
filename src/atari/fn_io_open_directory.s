@@ -2,7 +2,7 @@
         .import     _fn_io_copy_dcb, fn_io_buffer, fn_dir_path, fn_dir_filter
         .import     pushax, _fn_strncat, _fn_strncpy
         .include    "atari.inc"
-        .include    "../inc/macros.inc"
+        .include    "fn_macros.inc"
         .include    "fn_io.inc"
 
 ; int _fn_io_open_directory(host_slot)

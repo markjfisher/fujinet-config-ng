@@ -1,7 +1,7 @@
         .export         _fn_io_get_adapter_config, fn_io_adapter_config
         .import         _fn_io_siov
         .include        "atari.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; SSIDInfo* _fn_io_get_scan_result(network_index)

@@ -5,7 +5,7 @@
 
         .export   decompress
         .import   popax
-        .include  "../inc/macros.inc"
+        .include  "fn_macros.inc"
         .include  "zeropage.inc"
 
 ; decompress(.word src, .word dst)

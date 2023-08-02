@@ -1,7 +1,7 @@
         .export         _fn_io_get_ssid
         .import         _fn_io_siov, fn_io_net_config
         .include        "atari.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; NetConfig* io_get_netconfig()

@@ -1,7 +1,7 @@
         .export         _fn_io_copy_dcb
         .include        "atari.inc"
         .include        "zeropage.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
 
 ; void _fn_io_copy_dcb(DCB* table)
 ;

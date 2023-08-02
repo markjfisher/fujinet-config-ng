@@ -1,6 +1,6 @@
         .import         pusha, _fn_io_unmount_disk_image
         .export         _main, t_slot
-        .include        "../../../../../src/inc/macros.inc"
+        .include        "../../../../../src/inc/fn_macros.inc"
 
 .proc _main
         ; args:  slot

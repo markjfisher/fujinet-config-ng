@@ -1,6 +1,6 @@
         .export         _fn_io_get_wifi_status
         .import         _fn_io_siov
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; int _fn_io_get_wifi_status()

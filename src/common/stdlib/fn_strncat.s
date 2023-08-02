@@ -1,7 +1,7 @@
         .export     _fn_strncat
         .import     popax
         .include    "zeropage.inc"
-        .include    "../inc/macros.inc"
+        .include    "fn_macros.inc"
 
 ; int _fn_strncat(char *dst, char *src, uint8 n)
 ;

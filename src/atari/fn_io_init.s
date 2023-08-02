@@ -1,6 +1,6 @@
         .export     _fn_io_init
         .include    "atari.inc"
-        .include    "../inc/macros.inc"
+        .include    "fn_macros.inc"
 
 ; void _fn_io_init()
 .proc _fn_io_init

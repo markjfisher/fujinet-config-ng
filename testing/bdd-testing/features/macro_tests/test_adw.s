@@ -1,5 +1,5 @@
 ; test adw macro
-    .include    "../../../../src/inc/macros.inc"
+    .include    "../../../../src/inc/fn_macros.inc"
 
     .export test_adw
     .export t_t1, t_t2, t_t3, t_t4

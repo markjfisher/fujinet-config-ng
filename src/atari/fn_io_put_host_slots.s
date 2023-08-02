@@ -1,6 +1,6 @@
         .export         _fn_io_put_host_slots
         .import         _fn_io_siov, fn_io_hostslots
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; void _fn_io_put_host_slots()

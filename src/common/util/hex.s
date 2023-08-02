@@ -3,7 +3,7 @@
 
         .export     hex, hexb
         .import     popax, popa
-        .include    "../inc/macros.inc"
+        .include    "fn_macros.inc"
         .include    "zeropage.inc"
 
 ; ------------------------------------------------------

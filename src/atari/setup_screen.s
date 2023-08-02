@@ -1,7 +1,7 @@
         .export     _setup_screen, main_dlist
         .include    "atari.inc"
         .include    "inc/antic.inc"
-        .include    "../inc/macros.inc"
+        .include    "fn_macros.inc"
 
 ; void setup_screen()
 .proc _setup_screen

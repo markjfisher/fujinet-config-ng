@@ -1,6 +1,6 @@
         .import         _fn_io_close_directory
         .export         _main, t_host_slot
-        .include        "../../../../../src/inc/macros.inc"
+        .include        "../../../../../src/inc/fn_macros.inc"
 
 .proc _main
         ; args:  host_slot

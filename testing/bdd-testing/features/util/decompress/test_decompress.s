@@ -2,7 +2,7 @@
 
         .import         decompress, pushax
         .export         _main, output
-        .include        "../../../../../src/inc/macros.inc"
+        .include        "../../../../../src/inc/fn_macros.inc"
 
 .proc _main
         pushax #z_data

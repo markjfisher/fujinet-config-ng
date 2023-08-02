@@ -3,7 +3,7 @@
     .import     __MAIN_START__, __MAIN_SIZE__
 
     .include    "zeropage.inc"
-    .include    "inc/macros.inc"
+    .include    "fn_macros.inc"
 
 .proc start
     ; mini crt0, setup real stack and software stack

@@ -2,7 +2,7 @@
         .import         _fn_io_siov
         .include        "atari.inc"
         .include        "zeropage.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; uint8 _fn_io_mount_all(void)

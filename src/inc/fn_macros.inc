@@ -1,4 +1,5 @@
-; mostly various MADS macros reimplemented to make asm easier to read
+; various MADS macros reimplemented to make asm easier to read
+; and push/pop arg macros for CA65
 
 .macro  mwa    arg1, arg2
     .if (.match (.left (1, {arg1}), #))

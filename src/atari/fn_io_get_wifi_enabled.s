@@ -1,7 +1,7 @@
         .export         _fn_io_get_wifi_enabled
         .import         _fn_io_siov
         .include        "atari.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; int _fn_io_get_wifi_enabled()

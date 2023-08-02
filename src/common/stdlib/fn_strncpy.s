@@ -1,6 +1,6 @@
         .export     _fn_strncpy
         .import     popax, popa
-        .include    "../inc/macros.inc"
+        .include    "fn_macros.inc"
         .include    "zeropage.inc"
 
 ; This is a cutdown version of strncpy for use on strings up to 256 characters.

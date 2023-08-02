@@ -2,7 +2,7 @@
         .import         _fn_io_copy_dcb, fn_io_hostslots
         .include        "atari.inc"
         .include        "zeropage.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; void _fn_io_mount_host_slot(slot_num)

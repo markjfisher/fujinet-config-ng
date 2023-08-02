@@ -1,12 +1,12 @@
-TARGETS := atari
+TARGET := atari
 PROGRAM := config
 LIBS :=
 CONFIG :=
-CFLAGS = -Os -DBUILD_ATARI
-ASFLAGS =
+CFLAGS = -Os -DBUILD_ATARI -I src/inc
+ASFLAGS = --asm-include-dir src/inc
 BUILD_DIR = build
 
-LDFLAGS = $(LDFLAGS.$(TARGETS))
+LDFLAGS = $(LDFLAGS.$(TARGET))
 LDFLAGS.atari = --mapfile $(BUILD_DIR)/config.map
 
 LDFLAGS_LIB_PATH =
@@ -15,7 +15,7 @@ LDFLAGS_INC_PATH =
 SRCDIR := src
 OBJDIR := obj
 
-TARGETOBJDIR := $(OBJDIR)/$(TARGETS)
+TARGETOBJDIR := $(OBJDIR)/$(TARGET)
 
 STATEFILE := Makefile.options
 
@@ -70,29 +70,29 @@ define NEWLINE
 endef
 # Note: Do not remove any of the two empty lines above !
 
-TARGETLIST := $(subst $(COMMA),$(SPACE),$(TARGETS))
-
-# ---------------------------------------------------------
-ifeq ($(words $(TARGETLIST)),1)
-
 override PROGRAM := $(PROGRAM).com
 
-SOURCES := $(wildcard $(SRCDIR)/*.c)
-SOURCES += $(wildcard $(SRCDIR)/*.s)
-SOURCES += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.c)
-SOURCES += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.s)
-SOURCES += $(wildcard $(SRCDIR)/stdlib/*.c)
-SOURCES += $(wildcard $(SRCDIR)/stdlib/*.s)
-SOURCES += $(wildcard $(SRCDIR)/util/*.c)
-SOURCES += $(wildcard $(SRCDIR)/util/*.s)
+rwildcard=$(wildcard $1$2)$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
-OBJECTS := $(addsuffix .o,$(basename $(addprefix $(TARGETOBJDIR)/,$(notdir $(SOURCES)))))
+SOURCES := $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.c)
+SOURCES += $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.s)
+SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.c)
+SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.s)
+
+SOURCES := $(strip $(SOURCES))
+
+#OBJECTS := $(addsuffix .o,$(basename $(addprefix $(TARGETOBJDIR)/,$(notdir $(SOURCES)))))
+#OBJECTS := $(pathsubst %.c,%.o,$(pathsubst %.s,%.o,$(SOURCES)))
+OBJ1 := $(SOURCES:.c=.o)
+OBJECTS := $(OBJ1:.s=.o)
+OBJECTS := $(OBJECTS:$(SRCDIR)/%=$(OBJDIR)/%)
+
 
 DEPENDS := $(OBJECTS:.o=.d)
-LIBS += $(wildcard $(SRCDIR)/*.lib)
-LIBS += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.lib)
-CONFIG += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.cfg)
-CONFIG += $(wildcard $(SRCDIR)/*.cfg)
+LIBS += $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.lib)
+LIBS += $(call rwildcard,$(SRCDIR)/common/,*.lib)
+CONFIG += $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.cfg)
+CONFIG += $(call rwildcard,$(SRCDIR)/common/,*.cfg)
 
 # Select CONFIG file to use. Target specific configs have higher priority.
 ifneq ($(word 2,$(CONFIG)),)
@@ -136,7 +136,7 @@ endif
 $(foreach o,$(subst $(COMMA),$(SPACE),$(OPTIONS)),$(eval $(_$o_)))
 
 # Strip potential variant suffix from the actual cc65 target.
-CC65TARGET := $(firstword $(subst .,$(SPACE),$(TARGETLIST)))
+CC65TARGET := $(firstword $(subst .,$(SPACE),$(TARGET)))
 
 $(TARGETOBJDIR):
 	$(call MKDIR,$@)
@@ -144,7 +144,11 @@ $(TARGETOBJDIR):
 $(BUILD_DIR):
 	$(call MKDIR,$@)
 
-SRC_INC_DIRS = $(SRCDIR)/stdlib $(SRCDIR)/atari $(SRCDIR)/util
+SRC_INC_DIRS = $(sort $(dir $(wildcard $(SRCDIR)/$(TARGET)/*))) $(sort $(dir $(wildcard $(SRCDIR)/common/*)))
+
+$(info $$SOURCES = ${SOURCES})
+$(info $$OBJECTS = ${OBJECTS})
+$(info $$SRC_INC_DIRS = ${SRC_INC_DIRS})
 
 vpath %.c $(SRC_INC_DIRS) $(SRCDIR)
 
@@ -153,7 +157,8 @@ $(TARGETOBJDIR)/%.o: %.c | $(TARGETOBJDIR)
 
 vpath %.s $(SRC_INC_DIRS) $(SRCDIR)
 
-$(TARGETOBJDIR)/%.o: %.s | $(TARGETOBJDIR)
+$(OBJDIR)/%.o: %.s | $(TARGETOBJDIR)
+	@$(call MKDIR,$(dir $@))
 	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) -l $(@:.o=.lst) --add-source $(ASFLAGS) -o $@ $<
 
 $(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS) | $(BUILD_DIR)
@@ -164,25 +169,13 @@ test: $(PROGRAM)
 	$(EMUCMD) $(BUILD_DIR)\\$<
 	$(POSTEMUCMD)
 
-
 dist: $(PROGRAM)
 	@echo "TODO! dist"
 
 clean:
-	$(call RMFILES,$(OBJECTS))
-	$(call RMFILES,$(DEPENDS))
-	$(call RMFILES,$(REMOVES))
 	$(call RMFILES,-r $(BUILD_DIR)/*)
-	$(call RMFILES,-r dist/)
-
-# ---------------------------------------------------------
-else # $(words $(TARGETLIST)),1
-
-all test clean:
-	$(foreach t,$(TARGETLIST),$(MAKE) TARGETS=$t $@$(NEWLINE))
-
-endif # $(words $(TARGETLIST)),1
-# ---------------------------------------------------------
+	$(call RMFILES,-r $(OBJDIR)/*)
+	$(call RMFILES,-r dist/*)
 
 OBJDIRLIST := $(wildcard $(OBJDIR)/*)
 

@@ -1,6 +1,6 @@
         .import         _fn_io_set_directory_position
         .export         _main, t_pos
-        .include        "../../../../../src/inc/macros.inc"
+        .include        "../../../../../src/inc/fn_macros.inc"
 
 .proc _main
         ; args:  pos (int)

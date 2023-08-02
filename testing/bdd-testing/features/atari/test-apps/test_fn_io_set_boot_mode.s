@@ -1,6 +1,6 @@
         .import         _fn_io_set_boot_mode
         .export         _main, t_mode
-        .include        "../../../../../src/inc/macros.inc"
+        .include        "../../../../../src/inc/fn_macros.inc"
 
 .proc _main
         ; args:  mode (uint8)

@@ -1,6 +1,6 @@
         .export         _fn_io_scan_for_networks, fn_io_scan
         .import         _fn_io_siov
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
 
 ; int _fn_io_scan_for_netwroks()
 ;

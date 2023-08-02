@@ -4,7 +4,7 @@
 
         .include    "atari.inc"
         .include    "zeropage.inc"
-        .include    "../inc/macros.inc"
+        .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .import     _fn_io_siov, _fn_strncpy
         .import     fn_io_deviceslots, fn_io_deviceslot_mode, fn_dir_path

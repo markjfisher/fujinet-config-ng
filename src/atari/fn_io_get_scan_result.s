@@ -2,7 +2,7 @@
         .import         _fn_io_copy_dcb
         .include        "zeropage.inc"
         .include        "atari.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; SSIDInfo* _fn_io_get_scan_result(network_index)

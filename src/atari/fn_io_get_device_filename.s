@@ -2,7 +2,7 @@
         .import         _fn_io_copy_dcb, fn_io_buffer
         .include        "atari.inc"
         .include        "zeropage.inc"
-        .include        "../inc/macros.inc"
+        .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
 ; char* _fn_io_get_device_filename(device_slot)
