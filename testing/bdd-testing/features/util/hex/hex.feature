@@ -4,7 +4,7 @@ Feature:  Hex library test
 
   Scenario Outline: Using hex to output words
     Given atari application test setup
-      And I add util src file "hex.s"
+      And I add common/util src file "hex.s"
       And I add file for compiling "features/util/hex/test_hex_word.s"
       And I create and load application
 
@@ -23,7 +23,7 @@ Feature:  Hex library test
 
   Scenario Outline: Using hexb to output bytes
     Given atari application test setup
-      And I add util src file "hex.s"
+      And I add common/util src file "hex.s"
       And I add file for compiling "features/util/hex/test_hex_byte.s"
       And I create and load application
 

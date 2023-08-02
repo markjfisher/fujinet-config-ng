@@ -1,3 +1,11 @@
+# config makefile
+#
+# This is mostly target independent, just change TARGET and *FLAGS
+# and Altirra emulator parts.
+
+# I've only tested this on windows with MSYS2, but should work on linux.
+# Haven't tested windows native.
+
 TARGET := atari
 PROGRAM := config
 LIBS :=
@@ -5,12 +13,12 @@ CONFIG :=
 CFLAGS = -Os -DBUILD_ATARI -I src/inc
 ASFLAGS = --asm-include-dir src/inc
 BUILD_DIR = build
-
-LDFLAGS = $(LDFLAGS.$(TARGET))
 LDFLAGS.atari = --mapfile $(BUILD_DIR)/config.map
 
 LDFLAGS_LIB_PATH =
 LDFLAGS_INC_PATH =
+
+LDFLAGS = $(LDFLAGS.$(TARGET))
 
 SRCDIR := src
 OBJDIR := obj
@@ -74,11 +82,15 @@ override PROGRAM := $(PROGRAM).com
 
 rwildcard=$(wildcard $1$2)$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
-SOURCES := $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.c)
+# root 'src' dir, mainly config.s
+SOURCES := $(wildcard $(SRCDIR)/*.s)
+SOURCES += $(wildcard $(SRCDIR)/*.c)
+# add subdirs of $TARGET and "common"
 SOURCES += $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.s)
-SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.c)
+SOURCES += $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.c)
 SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.s)
-
+SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.c)
+# remove trailing and leading spaces.
 SOURCES := $(strip $(SOURCES))
 
 #OBJECTS := $(addsuffix .o,$(basename $(addprefix $(TARGETOBJDIR)/,$(notdir $(SOURCES)))))
@@ -138,7 +150,7 @@ $(foreach o,$(subst $(COMMA),$(SPACE),$(OPTIONS)),$(eval $(_$o_)))
 # Strip potential variant suffix from the actual cc65 target.
 CC65TARGET := $(firstword $(subst .,$(SPACE),$(TARGET)))
 
-$(TARGETOBJDIR):
+$(OBJDIR):
 	$(call MKDIR,$@)
 
 $(BUILD_DIR):
@@ -146,18 +158,20 @@ $(BUILD_DIR):
 
 SRC_INC_DIRS = $(sort $(dir $(wildcard $(SRCDIR)/$(TARGET)/*))) $(sort $(dir $(wildcard $(SRCDIR)/common/*)))
 
-$(info $$SOURCES = ${SOURCES})
-$(info $$OBJECTS = ${OBJECTS})
-$(info $$SRC_INC_DIRS = ${SRC_INC_DIRS})
+#$(info $$SOURCES = ${SOURCES})
+#$(info $$OBJECTS = ${OBJECTS})
+#$(info $$SRC_INC_DIRS = ${SRC_INC_DIRS})
 
 vpath %.c $(SRC_INC_DIRS) $(SRCDIR)
 
-$(TARGETOBJDIR)/%.o: %.c | $(TARGETOBJDIR)
+# C compilation hasn't been tested yet.
+$(OBJDIR)/%.o: %.c | $(OBJDIR)
+	@$(call MKDIR,$(dir $@))
 	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) $(CFLAGS) -o $@ $<
 
 vpath %.s $(SRC_INC_DIRS) $(SRCDIR)
 
-$(OBJDIR)/%.o: %.s | $(TARGETOBJDIR)
+$(OBJDIR)/%.o: %.s | $(OBJDIR)
 	@$(call MKDIR,$(dir $@))
 	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) -l $(@:.o=.lst) --add-source $(ASFLAGS) -o $@ $<
 

@@ -2,6 +2,7 @@ Given common atari test setup
   Given I have a simple overclocked 6502 system
     And I enable trace with indent
     And I create or clear directory "build/tests"
+    # These are required for tests to see atari constants
     And I load labels "inc/atari/atari.inc"
     And I load labels "inc/atari/atari_gtia.inc"
     And I load labels "inc/atari/atari_antic.inc"
@@ -12,12 +13,14 @@ Given common atari test setup
 Given atari application test setup
   Given common atari test setup
     And I start compiling for atari in "build/tests" with config "features/atari/atari-app.cfg"
+    And I add compiler option "--asm-include-dir ../../src/inc"
 
 # Simple test that does no init, sets up minimal xex for loading and testing
 # feature calls function directly
 Given atari simple test setup
   Given common atari test setup
     And I start compiling for atari in "build/tests" with config "features/atari/atari.cfg"
+    And I add compiler option "--asm-include-dir ../../src/inc"
 
 Given I add common io files
   And I add atari src file "fn_io_mem_dir_filter.s"
@@ -27,8 +30,8 @@ Given I add common io files
   And I add atari src file "fn_io_mem_io_deviceslots.s"
   And I add atari src file "fn_io_siov.s"
   And I add atari src file "fn_io_copy_dcb.s"
-  And I add stdlib src file "fn_strncpy.s"
-  And I add stdlib src file "fn_strncat.s"
+  And I add common/stdlib src file "fn_strncpy.s"
+  And I add common/stdlib src file "fn_strncat.s"
 
 Given I add * src file "*"
   And I add file for compiling "../../src/$1/$2"

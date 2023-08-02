@@ -3,19 +3,17 @@ package TestGlue
 import cucumber.api.Scenario
 import cucumber.api.java.Before
 import cucumber.api.java.en.Given
-import cucumber.runtime.model.CucumberScenario
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.io.path.absolutePathString
 import kotlin.io.path.readLines
 import kotlin.io.path.writeText
 
 class CA65Steps {
     private val compileFiles: MutableList<String> = mutableListOf()
+    private val compilerOptions: MutableList<String> = mutableListOf()
     private var target: String = ""
     private var workDir: String = ""
     private var config: String = ""
-    private var stubIndex: Int = 0
 
     @Before
     fun beforeHook(s: Scenario) {
@@ -54,24 +52,12 @@ al 003000 .start
         acmeFile.writeText(outputString)
     }
 
-    // When I create stub atari application for "io_test" in "build/tests" compiling <list>
-    @Given("^I create stub (.*) application for \"([^\"]*)\" in \"([^\"]*)\" compiling$")
-    @Throws(Exception::class)
-    fun `i create stub application for`(target: String, appName: String, workDir: String, filesToCompile: String) {
-        val glue = Glue.getGlue()
-        filesToCompile.lines().forEach { f ->
-            // cl65 -t atari -c --create-dep build/tests/$1.d -l build/tests/$1.lst -o build/tests/$1.o $2
-            glue.i_run_the_command_line("cl65 -t $target -c --create-dep $workDir/${appName}.d -l $workDir/${appName}.lst -o $workDir/${appName}.o ${f.trim()}")
-        }
-        // cl65 -t atari -vm --mapfile build/tests/$1.map -l build/tests/$1.lst -Ln build/tests/$1.lbl -o build/tests/$1.com -C ../../src/atari/atari.cfg $3 build/tests/$1.o
-        glue.i_run_the_command_line("")
-    }
-
     @Given("^I start compiling for (.*) in \"([^\"]*)\" with config \"([^\"]*)\"$")
     @Throws(Exception::class)
     fun `i start compiling for target T in W with config C`(t: String, w: String, c: String) {
         target = t
         compileFiles.clear()
+        compilerOptions.clear()
         workDir = w
         config = c
     }
@@ -81,6 +67,13 @@ al 003000 .start
     fun `i add file for compiling`(fileToCompile: String) {
         compileFiles.add(fileToCompile.trim())
     }
+
+    @Given("^I add compiler option \"([^\"]*)\"$")
+    @Throws(Exception::class)
+    fun `i add compiler option`(option: String) {
+        compilerOptions.add(option.trim())
+    }
+
 
     @Given("^I create and load application$")
     @Throws(Exception::class)
@@ -132,21 +125,23 @@ al 003000 .start
         val main = Files.createFile(wd.resolve("main.s"))
         main.writeText(stubApp)
 
+        val options = compilerOptions.joinToString(" ")
+
         // compile each file
         val glue = Glue.getGlue()
         (compileFiles + "$workDir/main.s").forEach { f ->
             val justName = f.substringAfterLast('/').substringBeforeLast('.')
-            val cmd = "cl65 -t $target -c --create-dep $workDir/${justName}.d -l $workDir/${justName}.lst -o $workDir/${justName}.o $f"
-            println("running cl65 for $f with cmd: >$cmd<")
+            val cmd = "cl65 -t $target -c --create-dep $workDir/${justName}.d $options -l $workDir/${justName}.lst -o $workDir/${justName}.o $f"
+            // println("running cl65 for $f with cmd: >$cmd<")
             glue.i_run_the_command_line(cmd)
         }
         // create the app
-        var mainCmd = "cl65 -t $target -vm --mapfile $workDir/main.map -l $workDir/main.lst -Ln $workDir/main.lbl -o $workDir/main.xex -C $config $workDir/main.o "
+        var mainCmd = "cl65 -t $target -vm --mapfile $workDir/main.map $options -l $workDir/main.lst -Ln $workDir/main.lbl -o $workDir/main.xex -C $config $workDir/main.o "
         mainCmd += compileFiles.joinToString(" ") { f ->
             val justName = f.substringAfterLast('/').substringBeforeLast('.')
             "$workDir/${justName}.o"
         }
-        println("running cl65 for main with cmd: >$mainCmd<")
+        // println("running cl65 for main with cmd: >$mainCmd<")
         glue.i_run_the_command_line(mainCmd)
 
         val xexSteps = XEXSteps.xexSteps
@@ -154,43 +149,6 @@ al 003000 .start
         `i convert vice-labels to acme file`("$workDir/main.lbl", "$workDir/main.al")
         glue.i_load_labels("$workDir/main.al")
     }
-
-    @Given("^I stub locations for imports in \"([^\"]*)\" except for \"([^\"]*)\"$")
-    @Throws(Exception::class)
-    fun `i stub locations for imports except for`(f1: String, exceptionName: String) {
-        createStubSource(f1, exceptionName)
-    }
-
-    @Given("^I stub locations for imports in \"([^\"]*)\"$")
-    @Throws(Exception::class)
-    fun `i stub locations for imports`(f1: String) {
-        createStubSource(f1)
-    }
-
-    private fun createStubSource(f1: String, exceptionName: String = "") {
-        val cwd = Paths.get(".")
-        val wd = cwd.resolve(workDir)
-        val fileWithExports = cwd.resolve(f1)
-        val importLines = fileWithExports.readLines().filter { it.trim().startsWith(".import ") }
-        val importNames = importLines.joinToString(",") { it.replace(".import", "").replace(" ", "") }.split(",")
-        val withoutException = importNames.filterNot { it == exceptionName.trim() }
-
-        val stubHeader = """
-            ; stub-${stubIndex} for $f1
-                .export ${withoutException.joinToString(", ")}
-            
-        """.trimIndent()
-
-        val exportSource = withoutException.fold(stubHeader) { full, name ->
-            full + "${name}: .res 2\n"
-        }
-
-        val exportFile = wd.resolve("stubs-${stubIndex}.s")
-        exportFile.writeText(exportSource)
-        compileFiles.add("$workDir/stubs-${stubIndex}.s")
-        stubIndex++
-    }
-
 
     companion object {
         lateinit var ca65Glue: CA65Steps
