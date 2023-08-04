@@ -251,5 +251,11 @@ l1:
         pushax  argS
         ldx     argX
         ldy     argY
-        jsr     put_s
+        jsr     _fn_put_s
+.endmacro
+
+.macro put_help argNum, arg40StrInternal
+        setax   arg40StrInternal
+        ldy     argNum
+        jsr     _fn_put_help
 .endmacro

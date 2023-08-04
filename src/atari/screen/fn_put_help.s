@@ -1,11 +1,11 @@
-        .export     put_help
+        .export     _fn_put_help
         .import     getax, mhlp1
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
 ; a/x point to internal-coded string, y = which help line (0, 1, 2, ...) - use zero base for ease
 ; Assumes all 40 bytes to be copied
-.proc put_help
+.proc _fn_put_help
         sty     tmp1            ; which help line
         getax   ptr1            ; save char* s
 

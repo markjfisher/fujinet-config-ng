@@ -1,16 +1,16 @@
-        .export     put_s
+        .export     _fn_put_s
         .import     get_scrloc, popax
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; void put_s(char *s, X, Y)
+; void _fn_put_s(char *s, X, Y)
 ; X, Y contain coordinates for string
 ; S is on call stack
 ;
 ; print a char at the screen location x, y accounting for boundaries
 ; x and y are in 36x16 grid, so can assume under these values (i.e. bmi ok)
 ; no protection against x,y or the char to process being bad.
-.proc put_s
+.proc _fn_put_s
         stx     tmp1            ; save x
         sty     tmp2            ; save y
         popax   ptr1            ; save char* s

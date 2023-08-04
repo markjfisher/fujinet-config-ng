@@ -27,7 +27,7 @@ m_l1:   .repeat 16
 sline1: SPACES_40
 sline2: SPACES_40
 
-; we need the addresses for DL, but they also need to be continuous for put_help which only needs first address
+; we need the addresses for DL, but they also need to be continuous for _fn_put_help which only needs first address
 mhlp1:  SPACES_40
 mhlp2:  SPACES_40
 ; TODO: add more help lines as needed

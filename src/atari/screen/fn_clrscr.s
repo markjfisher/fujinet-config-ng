@@ -1,10 +1,10 @@
-        .export     clrscr
+        .export     _fn_clrscr
         .import     get_scrloc
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
 ; clears the internal screen of our 36x16 display
-.proc clrscr
+.proc _fn_clrscr
         ldx     #$00
         ldy     #$00
         jsr     get_scrloc

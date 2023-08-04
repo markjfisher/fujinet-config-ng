@@ -1,6 +1,6 @@
         .export     mod_init
         .import     _fn_io_get_host_slots, _fn_io_get_wifi_enabled, _fn_io_get_wifi_status, _fn_io_get_ssid
-        .import     pushax, put_s, _setup_screen, mod_current
+        .import     pushax, _fn_put_s, _setup_screen, mod_current
         .include    "zeropage.inc"
         .include    "fn_io.inc"
         .include    "fn_macros.inc"

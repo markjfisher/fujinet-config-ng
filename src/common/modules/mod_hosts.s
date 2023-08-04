@@ -1,20 +1,15 @@
         .export     mod_hosts
         .import     _fn_io_get_host_slots, fn_io_hostslots
-        .import     pusha, pushax, put_digit, put_s, clrscr, put_help
+        .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _cgetc, _fn_put_char
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
 
 ;  handle HOST LIST
 .proc mod_hosts
-        jsr     clrscr
-        setax   #s_hosts_h1
-        ldy     #0
-        jsr     put_help
-
-        setax   #s_hosts_h2
-        ldy     #1
-        jsr     put_help
+        jsr     _fn_clrscr
+        put_help 0, #s_hosts_h1
+        put_help 1, #s_hosts_h2
 
         ; do we have hosts data read?
         lda     hosts_fetched
@@ -42,15 +37,23 @@ display_hosts:
         ldx     #$01            ; x coord
         lda     host_index      ; digit
         adc     #$01            ; index is 0 based, need to increment for screen. C is clear already
-        jsr     put_digit
+        jsr     _fn_put_digit
 
         ; --------- print host string
+        lda     ptr1
+        
+;        beq     display_empty   ; if the host string is null, display <Empty> instead
         pushax  ptr1
+;         jmp     :+
 
+; display_empty:
+;         pushax  #s_empty
+
+:
         ldx     #$03
         pla                     ; restore current y
         tay
-        jsr     put_s
+        jsr     _fn_put_s
 
         ; repeat for all 8 hosts
         adw     ptr1, #.sizeof(HostSlot)
@@ -60,17 +63,38 @@ display_hosts:
         bne     :-
 
         ; we will grab keyboard now...
+        ; jsr     _cgetc
+        
+        ; jsr     _fn_put_char
+
+        ; 1-8        = Set current HOST
+        ; Up/Down    = move between host selections (no wrap)
+        ; Enter      = Edit current
+        ; 
+        ; Also global key shortcuts
+        ; RIGHT/LEFT = move to Next/Previous Module (Devices/Wifi)
+        ; OPTION     = Mount & Boot
+        ; Ctrl-L     = Lobby
+        ; 
+
 :       jmp :-
 
         rts
 .endproc
 
 .rodata
+
+; should display the options, e.g.
+; <1-8> Slot, <E>dit, <Return> Browse, <L>obby
+;  <C>onfig, <tab> Drive Slots, <option> Boot
+
 s_hosts_h1:     SCREENCODE_INVERT_40_SPACES
 
                 SCREENCODE_INVERT_CHARMAP
 s_hosts_h2:     .byte "        Press keys to do stuff!         "
                 NORMAL_CHARMAP
+
+s_empty:        .byte "<Emtpy>", 0
 
 .bss
 host_index:     .res 1
