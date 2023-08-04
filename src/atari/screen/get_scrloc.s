@@ -7,7 +7,7 @@
 ; X = x coord, Y = y coord
 ;
 ; the coordinates allowable are 36x16 grid, which is inside a larger frame of 40x18
-
+; TRASHES ptr4, tmp4. Y
 .proc get_scrloc
         stx     tmp4            ; x coord
 

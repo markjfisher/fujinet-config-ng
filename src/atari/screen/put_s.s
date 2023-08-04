@@ -25,13 +25,16 @@
 
         jsr     get_scrloc      ; use X,Y to get screen location in ptr4
 
-        ; print characters from s, 1 by 1 until hit a 0, or hit x=36 in boundary
+do_string:
+        ; print characters from s in ptr1, 1 by 1 until hit a 0, or hit x=36 in boundary
         ldy     #$00            ; the n'th character
 
 next_char:
         lda     (ptr1), y       ; char to print in A
         beq     exit            ; end of string
 
+        ; for known strings, we just encode them internally instead of converting to avoid translating
+        ; this is only really needed for externally sourced strings
         ; ---------------------------------
         ; ascii char to screen code from cc65/libsrc/atari/cputc.s
         asl     a               ; shift out the inverse bit

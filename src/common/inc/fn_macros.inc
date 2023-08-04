@@ -102,6 +102,24 @@
     .endrepeat
 .endmacro
 
+.macro INVERT_ATASCII
+    ; end of string stays same
+    .charmap 0, 0
+    ; add $80 for chars $01-$7F
+    .repeat $7E, i
+        .charmap i+1, i+1+$80
+    .endrepeat
+.endmacro
+
+; for screen display, 36 spaces inverted
+.macro SCREENCODE_INVERT_40_SPACES
+        SCREENCODE_INVERT_CHARMAP
+        .repeat 40
+          .byte " "
+        .endrepeat
+        NORMAL_CHARMAP
+.endmacro
+
 .macro cpw arg1, arg2
     .local s1, s2
     .if (.match (.left (1, {arg2}), #))
@@ -227,4 +245,11 @@ s2:
     bcc l1
     inc 1+(arg1)
 l1:
+.endmacro
+
+.macro put_s argX, argY, argS
+        pushax  argS
+        ldx     argX
+        ldy     argY
+        jsr     put_s
 .endmacro

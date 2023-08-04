@@ -48,3 +48,10 @@
     size1440    = 10
     sizeCustom  = 12
 .endenum
+
+.enum WifiStatus
+    no_ssid_available   = 1
+    connected           = 3
+    connect_failed      = 4
+    connection_lost     = 5
+.endenum
