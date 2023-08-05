@@ -1,5 +1,5 @@
         .export     _fn_put_s
-        .import     get_scrloc, popax
+        .import     _fn_get_scrloc, popax
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
@@ -13,7 +13,7 @@
 .proc _fn_put_s
         stx     tmp1            ; save x
         sty     tmp2            ; save y
-        popax   ptr1            ; save char* s
+        popax   ptr3            ; save char* s
 
         ; check x,y boundary, can't do this before popax
         ldx     tmp1
@@ -23,14 +23,14 @@
         cpy     #16
         bcs     exit
 
-        jsr     get_scrloc      ; use X,Y to get screen location in ptr4
+        jsr     _fn_get_scrloc      ; use X,Y to get screen location in ptr4
 
 do_string:
-        ; print characters from s in ptr1, 1 by 1 until hit a 0, or hit x=36 in boundary
+        ; print characters from s in ptr3, 1 by 1 until hit a 0, or hit x=36 in boundary
         ldy     #$00            ; the n'th character
 
 next_char:
-        lda     (ptr1), y       ; char to print in A
+        lda     (ptr3), y       ; char to print in A
         beq     exit            ; end of string
 
         ; for known strings, we just encode them internally instead of converting to avoid translating

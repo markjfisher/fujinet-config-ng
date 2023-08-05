@@ -4,7 +4,7 @@
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
-        .include         "../inc/dcb.inc"
+        .include         "fn_dcb.inc"
 
 ; *DeviceSlot[0] _fn_io_get_device_slots(slot_offset)
 ;

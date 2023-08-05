@@ -1,12 +1,13 @@
         .export     mod_hosts
         .import     _fn_io_get_host_slots, fn_io_hostslots
-        .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _cgetc, _fn_put_char
+        .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _cgetc, _fn_put_c
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
 
 ;  handle HOST LIST
 .proc mod_hosts
+
         jsr     _fn_clrscr
         put_help 0, #s_hosts_h1
         put_help 1, #s_hosts_h2
@@ -28,8 +29,8 @@ display_hosts:
         mwa     #fn_io_hostslots, ptr1
         mva     #$00, host_index
 
-:       lda     host_index
-        clc
+        ; A has host_index at this point
+:       clc
         adc     #$01
         pha                     ; save current y coord
         tay                     ; y coord
@@ -40,16 +41,17 @@ display_hosts:
         jsr     _fn_put_digit
 
         ; --------- print host string
-        lda     ptr1
-        
-;        beq     display_empty   ; if the host string is null, display <Empty> instead
+        ldy     #0
+        lda     (ptr1), y
+        beq     display_empty   ; if the host string is null, display <Empty> instead
+
         pushax  ptr1
-;         jmp     :+
+        jmp     j1
 
-; display_empty:
-;         pushax  #s_empty
+display_empty:
+        pushax  #s_empty
 
-:
+j1:
         ldx     #$03
         pla                     ; restore current y
         tay
@@ -65,7 +67,7 @@ display_hosts:
         ; we will grab keyboard now...
         ; jsr     _cgetc
         
-        ; jsr     _fn_put_char
+        ; jsr     _fn_put_c
 
         ; 1-8        = Set current HOST
         ; Up/Down    = move between host selections (no wrap)
@@ -94,7 +96,7 @@ s_hosts_h1:     SCREENCODE_INVERT_40_SPACES
 s_hosts_h2:     .byte "        Press keys to do stuff!         "
                 NORMAL_CHARMAP
 
-s_empty:        .byte "<Emtpy>", 0
+s_empty:        .byte "<Empty>", 0
 
 .bss
 host_index:     .res 1

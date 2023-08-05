@@ -11,7 +11,7 @@ PROGRAM := config
 LIBS :=
 CONFIG :=
 CFLAGS = -Os -DBUILD_ATARI -I src/common/inc
-ASFLAGS = --asm-include-dir src/common/inc
+ASFLAGS = --asm-include-dir src/common/inc --asm-include-dir src/$(TARGET)/inc
 BUILD_DIR = build
 LDFLAGS.atari = --mapfile $(BUILD_DIR)/config.map
 

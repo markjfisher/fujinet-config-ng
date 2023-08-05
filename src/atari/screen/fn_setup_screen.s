@@ -1,14 +1,14 @@
-        .export     _setup_screen, main_dlist
-        .import     m_l1, sline1, sline2, mhlp1, mhlp2
+        .export     _fn_setup_screen, main_dlist
+        .import     m_l1, sline1, sline2, mhlp1, mhlp2, vbl_main, _wait_scan1
         .include    "atari.inc"
-        .include    "inc/antic.inc"
+        .include    "fn_antic.inc"
         .include    "fn_macros.inc"
 
-; void setup_screen()
-.proc _setup_screen
+; void _fn_setup_screen()
+.proc _fn_setup_screen
 
         jsr init_screen
-        mwa #do_vblank,  VVBLKI
+        mwa #vbl_main,   VVBLKI
         mwa #main_dlist, DLISTL
 
         mva #$02, CHACTL
@@ -18,42 +18,34 @@
 
 init_screen:
         mva #$00, NMIEN
-        jsr wait_scan1
+        jsr _wait_scan1
         mva #$00, SDMCTL
         sta       GRACTL
         sta       DMACTL
-
-wait_scan1:
-:       lda VCOUNT
-        bne :-
-
-:       lda VCOUNT
-        beq :-
+        ; jmp _wait_scan1
         rts
 
 show_screen:
         mva #$40, NMIEN
         mva #$22, SDMCTL
         sta       DMACTL
-        jsr wait_scan1
 
+        ; TODO: move this out elsewhere
         ; dark red central area, brigher outside
-        mva #$06, COLPF1    ; glyph pixel luma
+        mva #$0a, COLPF1    ; glyph pixel luma
         mva #$30, COLPF2    ; b/g
         mva #$00, COLBK     ; border
 
+        ; above or below colors?
+        jsr _wait_scan1
+
         rts
-
-do_vblank:
-        plr
-        rti
-
 .endproc
 
 .segment "DLIST"
 main_dlist:
     ; blank lines in head
-    .byte DL_BLK8, DL_BLK8
+    .byte DL_BLK8, DL_BLK4
 
     ; 2 spacers (40 x $ff)
     LMS DL_MODEF, gbk, 2

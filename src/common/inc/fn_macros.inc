@@ -259,3 +259,10 @@ l1:
         ldy     argNum
         jsr     _fn_put_help
 .endmacro
+
+.macro put_c aC, aX, aY
+        lda     aC
+        ldx     aX
+        ldy     aY
+        jsr     _fn_put_c
+.endmacro

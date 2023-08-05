@@ -3,7 +3,7 @@
         .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
-        .include    "../inc/dcb.inc"
+        .include    "fn_dcb.inc"
         .import     _fn_io_copy_dcb
 
 ; void io_close_directory(uint8 host_slot)

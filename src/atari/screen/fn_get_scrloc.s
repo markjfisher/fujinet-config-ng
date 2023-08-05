@@ -1,4 +1,4 @@
-        .export     get_scrloc
+        .export     _fn_get_scrloc
         .import     m_l1
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -8,11 +8,11 @@
 ;
 ; the coordinates allowable are 36x16 grid, which is inside a larger frame of 40x18
 ; TRASHES ptr4, tmp4. Y
-.proc get_scrloc
+.proc _fn_get_scrloc
         stx     tmp4            ; x coord
 
         mwa     #m_l1, ptr4     ; start of screen memory
-        adw     ptr4, #$02      ; shift inside boundary
+        adw     ptr4, #$02      ; shift inside border
 
         ; add x coordinate to ptr4
         lda     ptr4

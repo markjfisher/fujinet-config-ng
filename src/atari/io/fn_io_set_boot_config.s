@@ -3,7 +3,7 @@
         .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
-        .include    "../inc/dcb.inc"
+        .include    "fn_dcb.inc"
         .import     _fn_io_copy_dcb
 
 ; void fn_io_set_boot_config(uint8 toggle)

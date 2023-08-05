@@ -1,19 +1,19 @@
-        .export     _fn_put_char
-        .import     get_scrloc
+        .export     _fn_put_c
+        .import     _fn_get_scrloc
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; void _fn_put_char(c, x, y)
+; void _fn_put_c(c, x, y)
 ;
 ; INTERNAL FUNCTION: called with A=ascii char, X=x, Y=y.
 ; DOES NOT USE STACK PARAMS to reduce cycles.
 ;
-; print a char at the screen location x, y accounting for boundaries
+; print a char at the screen location x, y accounting for 2x2 border
 ; x and y are in 36x16 grid, so can assume under these values (i.e. bmi ok)
 ; no protection against x,y or the char to process being bad.
-.proc _fn_put_char
+.proc _fn_put_c
         pha                     ; save the char
-        jsr     get_scrloc      ; use X,Y to get screen location in ptr4
+        jsr     _fn_get_scrloc      ; use X,Y to get screen location in ptr4
         pla
 
         ; from cc65/libsrc/atari/cputc.s

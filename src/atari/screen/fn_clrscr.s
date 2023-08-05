@@ -1,5 +1,5 @@
         .export     _fn_clrscr
-        .import     get_scrloc
+        .import     _fn_get_scrloc
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
@@ -7,7 +7,7 @@
 .proc _fn_clrscr
         ldx     #$00
         ldy     #$00
-        jsr     get_scrloc
+        jsr     _fn_get_scrloc
 
         ldx     #15     ; rows-1
 ycol:   ldy     #35     ; cols-1, yeah, we need Y as the index for x col...
