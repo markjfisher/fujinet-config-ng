@@ -29,7 +29,7 @@
 
 .rodata
 t_io_get_wifi_enabled:
-        .byte $ea, $40, <fn_io_wifi_enabled,   >fn_io_wifi_enabled,   $0f, $00, $01,   $00,   $00, $00
+        .byte $ea, $40, <fn_io_wifi_enabled,   >fn_io_wifi_enabled,   $0f, $00, $01, $00, $00, $00
 
 .bss
 fn_io_wifi_enabled: .res 1

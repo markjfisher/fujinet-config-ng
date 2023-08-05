@@ -1,4 +1,5 @@
         .export         _fn_io_copy_dcb
+        .import         _fn_show_dcb
         .include        "atari.inc"
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
@@ -20,5 +21,8 @@
 :       mva {(ptr4), y}, {DCB+2, y}
         dey
         bpl :-
+
+        jsr _fn_show_dcb
+
         rts
 .endproc

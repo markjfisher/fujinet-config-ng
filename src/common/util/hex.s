@@ -28,10 +28,10 @@ hex2int:
 .endproc
 
 ; ------------------------------------------------------
-; hex(word value, word output)
+; void hex(uint16 value, char *dst)
 .proc   hex
-        getax ptr1
-        popax ptr2
+        getax ptr1      ; dst
+        popax ptr2      ; value
 
         lda ptr2
         jsr lHex
@@ -56,9 +56,9 @@ out:    sta (ptr1), y
 .endproc
 
 ; ------------------------------------------------------
-; hexb(word value, word output)
+; hexb(uint8 value, char *dst)
 .proc   hexb
-        getax ptr1
+        getax ptr1      ; dst
         jsr popa        ; value to display in a
 
         jsr lHex

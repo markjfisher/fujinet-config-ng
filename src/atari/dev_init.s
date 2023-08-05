@@ -1,5 +1,5 @@
         .export   _dev_init
-        .import   _fn_setup_screen, _fn_get_scrloc, _fn_pause, _fn_put_s, pushax
+        .import   _fn_setup_screen, _fn_get_scrloc, _fn_pause, _fn_put_s, pushax, _fn_io_reset
         .include    "fn_macros.inc"
         .include    "zeropage.inc"
 
@@ -14,14 +14,14 @@ show_init:
         ldy     #7
         jsr     _fn_get_scrloc      ; ptr4 set to screen location where 'initialized' string is
         
-        ; A small delay with animation. Trying to let FN have time to start?
+        ; A small delay with animation, invert the string letter by letter, looks like progress bar.
 
         ; fill over each letter with its inverse every N blanks
         ldy     #$00
-:       lda     #$01
-        jsr     _fn_pause       ; pause n jiffies, does not trash Y or ptr4
+:       lda     #$05            ; pause time in jiffies
+        jsr     _fn_pause       ; pause! does not trash Y or ptr4
         lda     (ptr4), y       ; get current letter
-        ora     #$80            ; inverse
+        ora     #$80            ; inverse it
         sta     (ptr4), y       ; write to screen
         iny
         cpy     #15
