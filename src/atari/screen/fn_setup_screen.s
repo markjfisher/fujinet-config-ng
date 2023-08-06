@@ -1,5 +1,5 @@
         .export     _fn_setup_screen, main_dlist
-        .import     m_l1, sline1, sline2, mhlp1, mhlp2, _wait_scan1
+        .import     m_l1, sline1, sline2, mhlp1, mhlp2, _wait_scan1, _fn_pause
         .include    "atari.inc"
         .include    "fn_antic.inc"
         .include    "fn_macros.inc"
@@ -8,7 +8,6 @@
 .proc _fn_setup_screen
 
         jsr init_screen
-        ; this fixed the HSIO errors, don't use HW reg, and don't do custom vblanks
         mwa #main_dlist, SDLSTL
 
         mva #$02, CHACTL
@@ -22,7 +21,7 @@ init_screen:
         mva #$00, SDMCTL
         sta       GRACTL
         sta       DMACTL
-        ; jmp _wait_scan1
+        jsr _wait_scan1
         rts
 
 show_screen:
@@ -37,6 +36,8 @@ show_screen:
         mva #$00, COLOR4    ; border
 
         ; above or below colors?
+        lda #2
+        jsr _fn_pause
         jsr _wait_scan1
 
         rts

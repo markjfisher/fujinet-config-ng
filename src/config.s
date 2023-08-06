@@ -12,7 +12,13 @@
     cld
     mwa     #(__MAIN_START__+__MAIN_SIZE__), sp
 
-    jsr     _main
-    rts
+    ; clear 256 bytes from SP - simple routine, we currently only need 1 page of Stack.
+    ldy     #$00
+    lda     #$00
+:   sta     (sp), y
+    iny
+    bne     :-
+    
+    jmp     _main
 
 .endproc
