@@ -13,14 +13,18 @@ Given common atari test setup
 Given atari application test setup
   Given common atari test setup
     And I start compiling for atari in "build/tests" with config "features/atari/atari-app.cfg"
+    # These must come after the "start compiling"
     And I add compiler option "--asm-include-dir ../../src/common/inc"
+    And I add compiler option "--asm-include-dir ../../src/atari/inc"
 
 # Simple test that does no init, sets up minimal xex for loading and testing
 # feature calls function directly
 Given atari simple test setup
   Given common atari test setup
     And I start compiling for atari in "build/tests" with config "features/atari/atari.cfg"
+    # These must come after the "start compiling"
     And I add compiler option "--asm-include-dir ../../src/common/inc"
+    And I add compiler option "--asm-include-dir ../../src/atari/inc"
 
 Given I add common io files
   And I add atari src file "io/fn_io_mem_dir_filter.s"
@@ -32,7 +36,6 @@ Given I add common io files
   And I add atari src file "io/fn_io_copy_dcb.s"
   And I add common src file "stdlib/fn_strncpy.s"
   And I add common src file "stdlib/fn_strncat.s"
-  # And I add compiler option "--asm-include-dir ../../src/atari/io"
 
 Given I add * src file "*"
   And I add file for compiling "../../src/$1/$2"
