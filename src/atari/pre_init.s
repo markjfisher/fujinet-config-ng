@@ -13,7 +13,8 @@
         ; setup reset handler
         mwa     DOSINI, _reset_handler+1
         mwa     #_reset_handler, DOSINI
-        mva     #$01, BOOTQ                     ; stops RESET going to Self Test every other push of button.
+        ; this was required before fixing picoboot.bin in CONFIG, by adding equivalent change.
+        ; mva     #$01, BOOTQ                     ; stops RESET going to Self Test every other push of button.
 
         lda     #$c0        ; check if ramtop is already ok
         cmp     RAMTOP

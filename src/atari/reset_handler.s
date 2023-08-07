@@ -10,9 +10,6 @@
 .proc _reset_handler
         jsr     $ffff       ; overwritten by original DOSINI address
 
-        mva     #$00, COLDST
-        mva     #$01, WARMST
-
         ; reset all modules state, and clear old screen data
         mwa     #Mod::init, mod_current
         mwa     #$00, hosts_fetched

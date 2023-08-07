@@ -6,6 +6,8 @@
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
 
+; void mod_init()
+
 ; First Module to load when application starts.
 ; Calls out to device specific initialisation.
 ; Nothing in these modules should be machine specific.
@@ -27,7 +29,7 @@
         lda     (ptr1), y               ; get first char from ssid of SSIDInfo
         beq     set_wifi                ; if it's 0, there's no SSID information available, so need to setup wifi
 
-        ; fall through to connect wifi
+        ; fall through to wifi (this is "connect wifi", but same module as "set wifi" - maybe simplify logic, as ssid doesn't matter here)
         mva     #Mod::wifi, mod_current
         rts
 
