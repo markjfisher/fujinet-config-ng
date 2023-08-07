@@ -1,6 +1,6 @@
         .export     mod_hosts, hosts_fetched
         .import     _fn_io_get_host_slots, fn_io_hostslots
-        .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _cgetc, _fn_put_c
+        .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _fn_put_c
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"

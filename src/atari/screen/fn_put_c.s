@@ -13,10 +13,10 @@
 ; no protection against x,y or the char to process being bad.
 .proc _fn_put_c
         pha                     ; save the char
-        jsr     _fn_get_scrloc      ; use X,Y to get screen location in ptr4
+        jsr     _fn_get_scrloc  ; use X,Y to get screen location in ptr4
         pla
 
-        ; from cc65/libsrc/atari/cputc.s
+        ; from cc65/libsrc/atari/cputc.s, convert ascii to internal
         asl     a               ; shift out the inverse bit
         adc     #$c0            ; grab the inverse bit; convert ATASCII to screen code
         bpl     codeok          ; screen code ok?
