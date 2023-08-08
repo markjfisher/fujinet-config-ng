@@ -21,6 +21,29 @@
 
 over:
         jsr     display_hosts
+
+        ; we will grab keyboard now...
+        ; eventually some key event will cause us to shift module, reboot etc
+
+kb_get:
+        jsr     _fn_input_ucase
+        cmp     #$00
+        beq     kb_get          ; simple loop if no key pressed
+        sta     current_key
+
+        ; print the char on screen to see it
+        ldx     #30
+        ldy     #15
+        jsr     _fn_put_c
+
+        ; check inputs
+        ; press arrow right to change to devices
+        
+
+        ; and reloop if we didn't leave this module
+        clc
+        bcc     kb_get
+
         rts
 
 display_hosts:
@@ -64,22 +87,6 @@ j1:
         cmp     #8
         bne     :-
 
-        ; we will grab keyboard now...
-        ; eventually some key event will cause us to shift module, reboot etc
-
-kb_get:
-        jsr     _fn_input_ucase
-        cmp     #$00
-        beq     kb_get
-
-        ; print the char on screen to see it
-        ldx     #30
-        ldy     #15
-        jsr     _fn_put_c
-
-        clc
-        bcc     kb_get
-
         rts
 .endproc
 
@@ -99,6 +106,7 @@ s_empty:        .byte "<Empty>", 0
 
 .bss
 host_index:     .res 1
+current_key:    .res 1
 
 .data
 hosts_fetched:  .byte 0
