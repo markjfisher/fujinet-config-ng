@@ -11,7 +11,7 @@ Feature: Screen Functions test - _fn_put_help
       And I create and load application
       And I write memory at t_y with 0
       And I write encoded string "{inv}       super amazing help message       {inv}" to t_s
-      And I execute the procedure at _init for no more than 350 instructions
+      And I execute the procedure at _init for no more than 200 instructions
     
      Then screen memory at mhlp1 contains ascii
      """
@@ -33,7 +33,7 @@ Feature: Screen Functions test - _fn_put_help
       And I create and load application
       And I write memory at t_y with 1
       And I write encoded string "{inv}      another amazing help message      {inv}" to t_s
-      And I execute the procedure at _init for no more than 350 instructions
+      And I execute the procedure at _init for no more than 200 instructions
     
      Then screen memory at mhlp1 contains ascii
      """
