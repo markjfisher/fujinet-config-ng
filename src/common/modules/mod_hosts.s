@@ -1,6 +1,6 @@
         .export     mod_hosts, hosts_fetched
         .import     _fn_io_get_host_slots, fn_io_hostslots
-        .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _fn_put_c
+        .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _fn_put_c, _fn_input_ucase
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
@@ -65,21 +65,20 @@ j1:
         bne     :-
 
         ; we will grab keyboard now...
-        ; jsr     _cgetc
-        
-        ; jsr     _fn_put_c
+        ; eventually some key event will cause us to shift module, reboot etc
 
-        ; 1-8        = Set current HOST
-        ; Up/Down    = move between host selections (no wrap)
-        ; Enter      = Edit current
-        ; 
-        ; Also global key shortcuts
-        ; RIGHT/LEFT = move to Next/Previous Module (Devices/Wifi)
-        ; OPTION     = Mount & Boot
-        ; Ctrl-L     = Lobby
-        ; 
+kb_get:
+        jsr     _fn_input_ucase
+        cmp     #$00
+        beq     kb_get
 
-:       jmp :-
+        ; print the char on screen to see it
+        ldx     #30
+        ldy     #15
+        jsr     _fn_put_c
+
+        clc
+        bcc     kb_get
 
         rts
 .endproc
