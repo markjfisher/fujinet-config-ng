@@ -1,9 +1,13 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CukesServer" type="JetRunConfigurationType">
+    <envs>
+      <env name="Path" value="C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\OpenSSH\;C:\Program Files\Microsoft VS Code\bin;C:\ProgramData\chocolatey\bin;C:\Program Files\usbipd-win\;C:\Program Files\dotnet\;C:\Program Files\PowerShell\7\;c:\msys64\ucrt64\bin;c:\msys64\bin;c:\msys64\usr\bin;c:\msys64\usr\local\bin;C:\Users\markj\AppData\Local\Microsoft\WindowsApps;C:\Users\markj\AppData\Local\JetBrains\Toolbox\scripts;C:\Users\markj\.dotnet\tools;C:\FPC\3.2.2\bin\i386-Win32;C:\msys64\usr\local\cc65\bin" />
+    </envs>
+    <output_file path="$PROJECT_DIR$/../../../../../../../../../tmp/bdd.log" is_save="true" />
     <option name="MAIN_CLASS_NAME" value="MainKt" />
     <module name="bdd-testing.main" />
     <shortenClasspath name="NONE" />
-    <option name="VM_PARAMETERS" value="-Dbdd6502.trace=true -Dcom.replicanet.cukesplus.server.featureEditor --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED" />
+    <option name="VM_PARAMETERS" value="-Dbdd6502.trace=false -Dcom.replicanet.cukesplus.server.featureEditor --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

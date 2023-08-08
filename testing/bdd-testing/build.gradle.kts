@@ -71,7 +71,7 @@ application {
     // Run the main server, then connect to the webpage to run tests etc.
     mainClass.set("MainKt")
     applicationDefaultJvmArgs = listOf(
-        "-Dbdd6502.trace=true",
+        "-Dbdd6502.trace=false",
         "-Dcom.replicanet.cukesplus.server.featureEditor",
         // "-Dcom.replicanet.ACEServer.debug.requests=", // enable this to get more debug output from server
         "--add-opens", "java.base/java.util=ALL-UNNAMED",

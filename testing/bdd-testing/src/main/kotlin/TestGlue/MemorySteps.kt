@@ -163,7 +163,7 @@ class MemorySteps {
     }
 
     @Throws(Exception::class)
-    @Given("^screen memory at .* contains ascii$")
+    @Given("^screen memory at (.*) contains ascii$")
     fun `screen memory at X contains ascii data`(adr: String, s: String) {
         val scenario = Glue.getGlue().scenario
         val address = Glue.valueToInt(adr)
@@ -172,8 +172,21 @@ class MemorySteps {
 
         // loop through all the tokens generated from the given string and match their codes to what's in memory
         var currentLocation = address
-        toTokens(s).forEach { t ->
-            assertThat(machine.bus.read(currentLocation++)).isEqualTo(t.code())
+        // need 4 backslashes to reduce to 1!
+        // Remove any continuation + (CR)LF so we can have strings over multiple lines in test, but treat as continuous
+        val removedCRs = s.replace("\\\\\r?\n".toRegex(), "")
+        val tokens = toTokens(removedCRs)
+        val tokensString = tokens.joinToString(", ")
+        // scenario.write("Tokens in s: >$removedCRs<, tokens: $tokensString")
+        tokens.forEach { t ->
+            val sV = machine.bus.read(currentLocation)
+            val sA = internalToChar(sV)
+            val tC = t.code()
+            val tA = internalToChar(tC)
+            if (sV != tC) {
+                throw Exception("Failed to match location $currentLocation.\nFound screen code: $sV (ascii: $sA)\nExpected code: $tC (ascii: $tA)")
+            }
+            currentLocation++
         }
     }
 
