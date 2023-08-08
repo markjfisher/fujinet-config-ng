@@ -5,7 +5,7 @@ Feature:  Decompress library test
   Scenario: Decompressing Compressed Text
     Given atari application test setup
       And I add common/util src file "decompress.s"
-      And I add file for compiling "features/util/decompress/test_decompress.s"
+      And I add file for compiling "features/common/util/decompress/test_decompress.s"
       And I create and load application
 
      When I execute the procedure at _init for no more than 210 instructions

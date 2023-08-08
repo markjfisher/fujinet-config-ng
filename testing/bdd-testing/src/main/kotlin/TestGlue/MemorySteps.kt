@@ -3,6 +3,7 @@ package TestGlue
 import com.loomcom.symon.machines.Machine
 import cucumber.api.java.en.Given
 import org.assertj.core.api.Assertions.assertThat
+import util.*
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createTempFile
 import kotlin.io.path.deleteIfExists
@@ -161,6 +162,21 @@ class MemorySteps {
         }
     }
 
+    @Throws(Exception::class)
+    @Given("^screen memory at .* contains ascii$")
+    fun `screen memory at X contains ascii data`(adr: String, s: String) {
+        val scenario = Glue.getGlue().scenario
+        val address = Glue.valueToInt(adr)
+        scenario.write("Reading ascii screen from address: 0x${address.toString(16)}")
+        val machine = Glue.getMachine()
+
+        // loop through all the tokens generated from the given string and match their codes to what's in memory
+        var currentLocation = address
+        toTokens(s).forEach { t ->
+            assertThat(machine.bus.read(currentLocation++)).isEqualTo(t.code())
+        }
+    }
+
     companion object {
         fun memoryHex(start: String, end: String, machine: Machine, isInternal: Boolean = true): String {
             var currentAddress: Int = Glue.valueToInt(start)
@@ -194,6 +210,92 @@ class MemorySteps {
             }
             return hexOutput
         }
+
+        fun toTokens(s: String): List<ScreenToken> {
+            // break s up into ScreenTokens
+
+            // Using altirra encoding of screen data.
+            // {inv} toggles inverse mode
+            // {^}   marks next char as ctrl- (always lower case after if letter, e.g. {^}a for t-bar char)
+            // {esc} escapes the next token
+            // e.g.
+            // {esc}{esc}{inv}{esc}{^}2{inv}a{^}ab
+            // is
+            // <ESC char>, <inverse on>, <esc>ctrl-2 (the curly arrow up-left), <inverse off>, a, ctrl-a, b
+
+            val tokens = mutableListOf<ScreenToken>()
+
+            var readingMode = false
+            var modeString = ""
+            var isInverse = false
+            var isEscape = false
+            var isCtl = false
+
+            s.forEach { c ->
+                when(c) {
+                    '{' -> {
+                        if (readingMode) throw Exception("Found '{' before a matching '}' from previous open.")
+                        // start reading a mode string
+                        readingMode = true
+                        modeString = ""
+                    }
+                    '}' -> {
+                        // finished reading mode string. process it.
+                        readingMode = false
+                        when (modeString) {
+                            "esc" -> {
+                                if (isEscape) {
+                                    // double escape, add the token
+                                    tokens += EscEsc
+                                }
+                                isEscape = !isEscape
+                            }
+                            "inv" -> isInverse = !isInverse
+                            "^" -> isCtl = !isCtl
+                            "up", "down", "right", "left", "del", "ins" -> {
+                                if (!isEscape) throw Exception("received {$modeString} but not after {esc} - don't know what to print")
+                                isEscape = false
+                                when (modeString) {
+                                    "up" -> tokens += UpArrow
+                                    "down" -> tokens += DownArrow
+                                    "left" -> tokens += LeftArrow
+                                    "right" -> tokens += RightArrow
+                                    "del" -> tokens += Delete
+                                    "ins" -> tokens += Insert
+                                }
+                            }
+                            else -> throw Exception("Unknown mode: $modeString")
+                        }
+                    }
+                    else -> {
+                        // a normal character pressed
+                        if (readingMode) {
+                            // keep building the mode string up until hit closing curly brace char
+                            modeString = "${modeString}$c"
+                        } else {
+                            if (isEscape) {
+                                if (isCtl && c == '2') {
+                                    tokens += InvEsc
+                                    isEscape = false
+                                    isCtl = false
+                                } else {
+                                    // this is an error, we don't have any {esc} + char we can process other than ctrl-2, they are all {esc} + another mode, e.g. {esc}{up}
+                                    throw Exception("In escape mode, and received normal character: $c, should not be possible")
+                                }
+                            } else {
+                                // Add our character and any current Inverse or Ctrl mode
+                                tokens += ScreenChar(c, isInverse, isCtl)
+                                // ctl is always 1 char, but inverse is sticky
+                                isCtl = false
+                            }
+                        }
+                    }
+                }
+            }
+
+            return tokens
+        }
+
 
         fun internalToChar(v: Int): Char {
             return when (v) {

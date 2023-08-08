@@ -31,16 +31,16 @@ class XEXSteps {
         machine.cpu.programCounter = abFile.runAddress
     }
 
-    @Given("^I patch machine from obx file \"([^\"]*)\"$")
+    @Given("^I patch machine from bin file \"([^\"]*)\"$")
     @Throws(Exception::class)
-    fun `i patch machine from obx file`(f: String) {
+    fun `i patch machine from bin file`(f: String) {
         val cwd = Paths.get(".")
-        val obx = cwd.resolve("${f}.obx")
+        val bin = cwd.resolve("${f}.obx")
         val lbl = cwd.resolve("${f}.al")
         val machine = Glue.getMachine()
 
         // the obx file needs to be xex format, not mads relocatable (FFFE etc)
-        val abFile = ABFile(obx.toFile().readBytes())
+        val abFile = ABFile(bin.toFile().readBytes())
         copyToMachine(abFile, machine)
         Glue.loadLabels(lbl.absolutePathString())
     }
