@@ -5,7 +5,9 @@
 
 ; void _fn_put_s(char *s, X, Y)
 ; X, Y contain coordinates for string
-; S is on call stack
+; char *S is on call stack
+;
+; TODO: Fix to use standard calling convention so it can be used from C
 ;
 ; print a char at the screen location x, y accounting for boundaries
 ; x and y are in 36x16 grid, so can assume under these values (i.e. bmi ok)

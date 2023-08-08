@@ -19,6 +19,7 @@ Feature: Screen Functions test - _fn_put_c
       # Validate screen code written to our location
       And I expect to see t_loc equal <internal>
 
+  # This was written before the screen testing code was added, but is convenient as it runs multiple tests
   Examples:
   | x  | y  | c  | char | internal |
   | 1  | 2  | A  | $41  | $21      |
