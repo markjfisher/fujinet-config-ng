@@ -13,7 +13,7 @@
 ; no protection against x,y or the digit to process.
 .proc _fn_put_digit
         pha                     ; save the digit
-        jsr     _fn_get_scrloc      ; use X,Y to get screen location in ptr4
+        jsr     _fn_get_scrloc  ; use X,Y to get screen location in ptr4
 
         pla
         adc     #$10            ; screen code for digit is $10 + digit
