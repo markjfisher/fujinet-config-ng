@@ -33,7 +33,7 @@ class MemorySteps {
     }
 
     @Throws(Exception::class)
-    @Given("^I hex\\+ dump memory between (.*) and (.+)$")
+    @Given("^I hex\\+ dump memory between (.*) and (.*)$")
     fun `i hex dump memory between X and Y improved`(start: String, end: String) {
         val hex = memoryHex(start, end, Glue.getMachine())
         System.setProperty("test.BDD6502.lastHexDump", hex)
@@ -41,7 +41,7 @@ class MemorySteps {
     }
 
     @Throws(Exception::class)
-    @Given("^I hex\\+ dump ascii between (.*) and (.+)$")
+    @Given("^I hex\\+ dump ascii between (.*) and (.*)$")
     fun `i hex dump ascii between X and Y improved`(start: String, end: String) {
         val hex = memoryHex(start, end, Glue.getMachine(), false)
         System.setProperty("test.BDD6502.lastHexDump", hex)
@@ -163,6 +163,18 @@ class MemorySteps {
     }
 
     @Throws(Exception::class)
+    @Given("^I write encoded string \"([^\"]*)\" to (.*)$")
+    fun `i write encoded string to`(s: String, adr: String) {
+        // no bounds checking done, so write tests carefully
+        val address = Glue.valueToInt(adr)
+        val machine = Glue.getMachine()
+        val tokens = toTokens(s)
+        tokens.forEachIndexed { i, token ->
+            machine.bus.write(address + i, token.code())
+        }
+    }
+
+    @Throws(Exception::class)
     @Given("^screen memory at (.*) contains ascii$")
     fun `screen memory at X contains ascii data`(adr: String, s: String) {
         val scenario = Glue.getGlue().scenario
@@ -174,17 +186,21 @@ class MemorySteps {
         var currentLocation = address
         // need 4 backslashes to reduce to 1!
         // Remove any continuation + (CR)LF so we can have strings over multiple lines in test, but treat as continuous
-        val removedCRs = s.replace("\\\\\r?\n".toRegex(), "")
-        val tokens = toTokens(removedCRs)
-        val tokensString = tokens.joinToString(", ")
-        // scenario.write("Tokens in s: >$removedCRs<, tokens: $tokensString")
+        val tokens = toTokens(s)
         tokens.forEach { t ->
             val sV = machine.bus.read(currentLocation)
             val sA = internalToChar(sV)
             val tC = t.code()
             val tA = internalToChar(tC)
             if (sV != tC) {
-                throw Exception("Failed to match location $currentLocation.\nFound screen code: $sV (ascii: $sA)\nExpected code: $tC (ascii: $tA)")
+                val l = currentLocation - address
+                val x = l % 40
+                val y = l / 40
+                throw Exception("""
+                    Failed to match location ${currentLocation.toString(16)}, offset: ${l.toString(16)} (x: $x, y: $y)
+                    Found screen code: $sV (ascii: $sA)
+                        Expected code: $tC (ascii: $tA)
+                """.trimIndent())
             }
             currentLocation++
         }
@@ -225,7 +241,8 @@ class MemorySteps {
         }
 
         fun toTokens(s: String): List<ScreenToken> {
-            // break s up into ScreenTokens
+            // remove any line extensions (backslash followed by CR/LF) so we can use multiple lines in test but access continuous memory
+            val crRemoved = s.replace("\\\\\r?\n".toRegex(), "")
 
             // Using altirra encoding of screen data.
             // {inv} toggles inverse mode
@@ -244,7 +261,7 @@ class MemorySteps {
             var isEscape = false
             var isCtl = false
 
-            s.forEach { c ->
+            crRemoved.forEach { c ->
                 when(c) {
                     '{' -> {
                         if (readingMode) throw Exception("Found '{' before a matching '}' from previous open.")

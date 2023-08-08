@@ -3,6 +3,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
+; TODO: fix calling convention to use it with C
 ; a/x point to internal-coded string, y = which help line (0, 1, 2, ...) - use zero base for ease
 ; Assumes all 40 bytes to be copied
 .proc _fn_put_help
