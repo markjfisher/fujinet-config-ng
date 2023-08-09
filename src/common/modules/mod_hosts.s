@@ -1,7 +1,8 @@
-        .export     mod_hosts, hosts_fetched
-        .import     _fn_io_get_host_slots, fn_io_hostslots
+        .export     mod_hosts, hosts_fetched, _host_selected
+        .import     _fn_io_get_host_slots, fn_io_hostslots, _dev_highlight_host
         .import     pusha, pushax, _fn_put_digit, _fn_put_s, _fn_clrscr, _fn_put_help, _fn_put_c, _fn_input_ucase
         .include    "zeropage.inc"
+        .include    "atari.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
 
@@ -39,18 +40,58 @@ kb_get:
         ldy     #15
         jsr     _fn_put_c
 
-        ; check inputs
-        ; press arrow right to change to devices
+        ; ----------------------------------------------------------
+        ; KEYBOARD HANDLING SWITCH STATEMENT
+        ; ----------------------------------------------------------
 
+        lda current_key
 
+        ; -------------------------------------------------
+        ; up
+        cmp     #'-'
+        beq     do_up
+        cmp     #ATURW
+        beq     do_up
+        bne     :+
+
+do_up:
+        lda     _host_selected
+        cmp     #0
+        beq     out
+        dec     _host_selected
+        jsr     highlight_host
+        beq     kb_get
+
+:
+        ; -------------------------------------------------
+        ; down
+        cmp     #'='
+        beq     do_down
+        cmp     #ATDRW
+        beq     do_down
+        bne     :+
+
+do_down:
+        lda     _host_selected
+        cmp     #7
+        bcs     out
+        inc     _host_selected
+        jsr     highlight_host
+        beq     kb_get
+
+:
+
+out:
         ; and reloop if we didn't leave this module
+        ; this may need to change to jmp if there are too many cases
         clc
         bcc     kb_get
 
         rts
 
 highlight_host:
-        ; 
+        ; call device specific routine to show host, this must return 0 in A,X for simple BEQ
+        jmp     _dev_highlight_host
 
 display_hosts:
         ; fn_io_hostslots is an array of 8 strings up to 32 bytes each, representing the strings of the hosts to display
@@ -116,4 +157,4 @@ current_key:    .res 1
 
 .data
 hosts_fetched:  .byte 0
-host_selected:  .byte 0
+_host_selected:  .byte 0

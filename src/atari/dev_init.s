@@ -17,11 +17,9 @@
         ; do we want a full reboot on pressing RESET? Setting 1 causes that here.
         ; mva #$01, COLDST
         mva #$00, COLDST
-        mva #$00, SDMCTL
 
         ; setup main Display List, and screen layout
         jsr     _fn_setup_screen
 
         rts
-
 .endproc

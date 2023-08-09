@@ -21,8 +21,6 @@ init_screen:
         mva #$00, NMIEN
         jsr _wait_scan1
         mva #$00, SDMCTL
-        ; sta       GRACTL
-        ; sta       DMACTL
         jsr _bar_setup
         jsr _bar_clear
         jsr _wait_scan1
@@ -30,8 +28,7 @@ init_screen:
 
 show_screen:
         mva #$40, NMIEN
-        mva #$22, SDMCTL
-        ; sta       DMACTL
+        mva #$2e, SDMCTL
 
         ; TODO: move this out elsewhere
         ; dark red central area, brigher outside - also, USE SHADOWs!
