@@ -22,9 +22,12 @@
 over:
         jsr     display_hosts
 
-        ; we will grab keyboard now...
-        ; eventually some key event will cause us to shift module, reboot etc
+        ; highlight current host
+        jsr     highlight_host
 
+
+        ; handle keyboard
+        ; eventually some key event will cause us to shift module, reboot etc        
 kb_get:
         jsr     _fn_input_ucase
         cmp     #$00
@@ -38,13 +41,16 @@ kb_get:
 
         ; check inputs
         ; press arrow right to change to devices
-        
+
 
         ; and reloop if we didn't leave this module
         clc
         bcc     kb_get
 
         rts
+
+highlight_host:
+        ; 
 
 display_hosts:
         ; fn_io_hostslots is an array of 8 strings up to 32 bytes each, representing the strings of the hosts to display
@@ -54,11 +60,11 @@ display_hosts:
 
         ; A has host_index at this point
 :       clc
-        adc     #$01
+        adc     #$02
         pha                     ; save current y coord
         tay                     ; y coord
 
-        ldx     #$01            ; x coord
+        ldx     #$04            ; x coord
         lda     host_index      ; digit
         adc     #$01            ; index is 0 based, need to increment for screen. C is clear already
         jsr     _fn_put_digit
@@ -75,7 +81,7 @@ display_empty:
         pushax  #s_empty
 
 j1:
-        ldx     #$03
+        ldx     #$06
         pla                     ; restore current y
         tay
         jsr     _fn_put_s
@@ -110,3 +116,4 @@ current_key:    .res 1
 
 .data
 hosts_fetched:  .byte 0
+host_selected:  .byte 0
