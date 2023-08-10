@@ -27,7 +27,7 @@
         ; handle keyboard
         pusha   #7              ; only 8 entries on screen
         pusha   #Mod::hosts     ; previous
-        pusha   #Mod::hosts     ; next
+        pusha   #Mod::done      ; next
         pushax  #device_selected   ; our current host
         setax   #mod_devices_kb
         jmp     mod_kb          ; rts from this will drop out of module

@@ -1,4 +1,4 @@
-        .export     _fn_input, _fn_input_ucase
+        .export     _fn_input, _fn_input_ucase, _fn_is_option
         .import     _kbhit
 
         .include    "fn_macros.inc"
@@ -47,5 +47,25 @@ no_key:
         and     #$df    ; remove bit 5
 
 out:
+        rts
+.endproc
+
+; CONSOL codes:
+;      |Key        Value    0    1    2    3    4    5    6    7    |
+;      +------------------------------------------------------------+
+;      |OPTION              X    X    X    X                        |
+;      |SELECT              X    X              X    X              |
+;      |START               X         X         X         X         |
+
+; bool fn_is_option()
+; 1 is true, 0 is false
+.proc _fn_is_option
+        ldx     #00
+        lda     CONSOL
+        cmp     #$03    ; option on its own
+        beq     yes
+        lda     #$00
+        .byte   $2c     ; BIT, causes next 2 bytes to be ignored
+yes:    lda     #$01
         rts
 .endproc

@@ -26,5 +26,13 @@
 
 .rodata
 
+; offsets for starting rows:
+; row 0: $18
+; row 1: $1c
+; row 2: $20
+;  i.e. $04 per row, starting at $18
+
+; the offset for each module (see Mod enum), i.e. host, device, ...
+; with host and device having first row of information at y = 2 (3rd row) down screen
 mod_highlight_offsets:
-        .byte   $20, $20, 0, 0
+        .byte   $20, $20, $18, $18, $18, $00, $00, $00

@@ -1,6 +1,6 @@
         .export     mod_init
         .import     _fn_io_get_wifi_enabled, _fn_io_get_wifi_status, _fn_io_get_ssid, _dev_init
-        .import     mod_current, host_selected, current_line, device_selected
+        .import     mod_current, host_selected, current_line, device_selected, done_is_booting
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
@@ -19,6 +19,7 @@
         mva     #$00, host_selected
         sta     device_selected
         sta     current_line
+        sta     done_is_booting
 
         ; Start getting information from FN to decide what module to load next
         jsr     _fn_io_get_wifi_enabled

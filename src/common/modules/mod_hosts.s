@@ -32,7 +32,7 @@
 
         ; handle keyboard
         pusha   #7              ; only 8 entries on screen
-        pusha   #Mod::devices   ; prev
+        pusha   #Mod::done   ; prev
         pusha   #Mod::devices   ; next
         pushax  #host_selected  ; our current host
         setax   #mod_hosts_kb

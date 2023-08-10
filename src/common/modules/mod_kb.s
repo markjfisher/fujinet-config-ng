@@ -1,6 +1,6 @@
         .export     mod_kb, current_line, p_current_line
         .import     popa, popax
-        .import     mod_current, _fn_put_c, _fn_input_ucase, _dev_highlight_line
+        .import     mod_current, _fn_put_c, _fn_input_ucase, _dev_highlight_line, _fn_is_option, done_is_booting
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -32,6 +32,17 @@
         mva     {(ptr1), y}, current_line
 
 start_kb_get:
+
+        ; check for option to boot
+        jsr     _fn_is_option
+        beq     not_option
+        ; set done module with a flag to say boot
+        mva     #$01, done_is_booting
+        mva     Mod::done, mod_current
+        rts
+
+
+not_option:
         jsr     _fn_input_ucase
         cmp     #$00
         beq     start_kb_get          ; simple loop if no key pressed
