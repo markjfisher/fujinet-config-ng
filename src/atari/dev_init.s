@@ -1,15 +1,15 @@
-        .export   _dev_init
+        .export   _dev_init, mod_highlight_offsets
         .import   _fn_setup_screen
-        .include  "fn_macros.inc"
-        .include  "zeropage.inc"
         .include  "atari.inc"
+        .include  "zeropage.inc"
+        .include  "fn_macros.inc"
+        .include  "fn_mods.inc"
 
 ; void _dev_init()
 ;
 ; Device Specific initialisation routine.
 ; Setup display, any reset handling, etc.
 .proc _dev_init
-
         ; a few bits of setup from the old C routines
         mva #$ff, NOCLIK
         mva #$00, SHFLOK
@@ -23,3 +23,8 @@
 
         rts
 .endproc
+
+.rodata
+
+mod_highlight_offsets:
+        .byte   $20, $20, 0, 0

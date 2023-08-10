@@ -1,9 +1,9 @@
         .export     mod_init
         .import     _fn_io_get_wifi_enabled, _fn_io_get_wifi_status, _fn_io_get_ssid, _dev_init
-        .import     mod_current, host_selected, current_line
+        .import     mod_current, host_selected, current_line, device_selected
         .include    "zeropage.inc"
-        .include    "fn_io.inc"
         .include    "fn_macros.inc"
+        .include    "fn_io.inc"
         .include    "fn_mods.inc"
 
 ; void mod_init()
@@ -17,6 +17,7 @@
 
         ; initialise some module values
         mva     #$00, host_selected
+        sta     device_selected
         sta     current_line
 
         ; Start getting information from FN to decide what module to load next

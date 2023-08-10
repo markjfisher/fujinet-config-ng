@@ -52,11 +52,9 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\config.lst" \
-  $(XS)/debugcmd: "bp _reset_handler" \
-  $(XS)/debugcmd: "bp pre_init" \
-  $(XS)/debugcmd: "bp c2c6" \
   $(XS)/debugcmd: "bp start"
 
+#  $(XS)/debugcmd: "bp show_list" \
 
 atari_EMUCMD := $(ALTIRRA)
 

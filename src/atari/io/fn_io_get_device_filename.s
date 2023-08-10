@@ -3,7 +3,7 @@
         .include        "atari.inc"
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
-        .include        "fn_dcb.inc"
+        .include        "fn_structs.inc"
  
 ; char* _fn_io_get_device_filename(device_slot)
 .proc _fn_io_get_device_filename

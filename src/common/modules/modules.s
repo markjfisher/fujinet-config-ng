@@ -11,12 +11,12 @@
 
 
 mod_table:
-        .addr (mod_init - 1)
         .addr (mod_hosts - 1)
         .addr (mod_devices - 1)
         .addr (mod_wifi - 1)
         .addr (mod_info - 1)
         .addr (mod_done - 1)
+        .addr (mod_init - 1)
 
 ; -------------------------------------------------------------------------------
 .data

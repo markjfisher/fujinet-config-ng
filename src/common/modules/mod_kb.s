@@ -1,4 +1,4 @@
-        .export     mod_kb, current_line
+        .export     mod_kb, current_line, p_current_line
         .import     popa, popax
         .import     mod_current, _fn_put_c, _fn_input_ucase, _dev_highlight_line
 
@@ -25,9 +25,6 @@
         popa    next_mod
         popa    prev_mod
         popa    selected_max
-
-        ; how do we src this?
-        ; popa    highlight_offset
 
         ; save current_line from ptr to its module specific verson.
         ldy     #$00
@@ -132,7 +129,7 @@ do_mod_kb:
 ; write current line back to the module's version
 save_current_line:
         ldy     #$00
-        mwa     #p_current_line, ptr1       ; need to see if anything ever changes ptr1, to make this more efficient
+        mwa     p_current_line, ptr1       ; need to see if anything ever changes ptr1, to make this more efficient
         mva     current_line, {(ptr1), y}
         rts
 

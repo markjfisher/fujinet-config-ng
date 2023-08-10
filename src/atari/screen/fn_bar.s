@@ -51,14 +51,15 @@
         sta     PCOLR3
 .endproc
 
-; void bar_show(uint8 y)
+; void bar_show(uint8 line, uint8 offset)
 .proc _bar_show
+        stx     ptr1    ; highlight offset for currently viewed module, forces PMG down screen a bit as we don't always start on first line.
         sec
         adc     #$00    ; get it 1 based
 
         asl     a       ; row x 2
         asl     a       ; row x 4
-        adc     #$20    ; adjustment fudge, this positions the bar over current item
+        adc     ptr1    ; adjustment fudge, this positions the bar over current item
         pha             ; save a
         jsr     _wait_scan1
         jsr     _bar_clear

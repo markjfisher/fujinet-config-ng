@@ -1,5 +1,6 @@
         .export     m_l1, sline1, sline2, sline3, mhlp1, mhlp2, mhlp3, mhlp4
         .export     gbk, gintop1, gintop2, gouttop1, gouttop2
+        .export     s_empty, s_hosts_h1, s_hosts_h2, s_hosts_h3
         .include    "fn_macros.inc"
 
 .segment "SDATA"
@@ -71,3 +72,13 @@ gouttop2:
         .byte $ff
     .endrepeat
     .byte $ff, $fc
+
+s_empty:
+    .byte "<Empty>", 0
+
+s_hosts_h1:     SCREENCODE_INVERT_40_SPACES
+
+                SCREENCODE_INVERT_CHARMAP
+s_hosts_h2:     .byte "   ", 94, "INFO, ", 95,"DEVICES ", 92, 93, " HOST, OPT BOOT    "
+s_hosts_h3:     .byte "  L Lobby                               "     
+                NORMAL_CHARMAP

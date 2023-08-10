@@ -1,28 +1,13 @@
-        .export         _fn_io_get_device_slots
-        .import         _fn_io_copy_dcb, fn_io_deviceslots
-        .include        "atari.inc"
-        .include        "zeropage.inc"
+        .export         _fn_io_get_device_slots, t_io_get_device_slots
+        .import         _fn_io_siov, fn_io_deviceslots
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
-        .include         "fn_dcb.inc"
 
-; *DeviceSlot[0] _fn_io_get_device_slots(slot_offset)
+; void _fn_io_get_device_slots()
 ;
-; returns pointer to entire array of fn_io_deviceslots
-; slot_offset is:
-;   $00: Device slots 0-7
-;   $10: Tape slot
 .proc _fn_io_get_device_slots
-        sta tmp1        ; save slot_offset
-
         setax   #t_io_get_device_slots
-        jsr     _fn_io_copy_dcb
-
-        mva     tmp1, IO_DCB::daux1
-        jsr     SIOV
-
-        setax   #fn_io_deviceslots
-        rts
+        jmp     _fn_io_siov
 .endproc
 
 .rodata
