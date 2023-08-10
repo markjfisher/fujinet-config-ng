@@ -51,6 +51,7 @@
         sta     PCOLR1
         sta     PCOLR2
         sta     PCOLR3
+        rts
 .endproc
 
 ; void bar_show(uint8 line, uint8 offset)
@@ -69,8 +70,9 @@
         tax
 
         ldy     #$04
-:       lda     #$0f        ; shape data in A, these 2 shorten the PM at start and end to be within border
+:       lda     #$bf    ; shape data in A, these 2 shorten the PM at start and end to be within border
         sta     __PMG_START__+$180, x
+        lda     #$7f
         sta     __PMG_START__+$200, x
         lda     #$ff
         sta     __PMG_START__+$280, x
