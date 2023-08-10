@@ -12,9 +12,9 @@
 ;  handle HOST LIST
 .proc mod_hosts
         jsr     _fn_clrscr
-        put_help 0, #s_hosts_h1
-        put_help 1, #s_hosts_h2
-        put_help 2, #s_hosts_h3
+        put_help #0, #s_hosts_h1
+        put_help #1, #s_hosts_h2
+        put_help #2, #s_hosts_h3
 
         ; do we have hosts data read?
         lda     hosts_fetched

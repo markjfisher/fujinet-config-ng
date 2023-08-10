@@ -42,14 +42,58 @@ start_kb_get:
         ldy     #15
         jsr     _fn_put_c
 
-        ; ----------------------------------------------------------
-        ; KEYBOARD HANDLING SWITCH STATEMENT
-        ; ----------------------------------------------------------
+; ----------------------------------------------------------
+; KEYBOARD HANDLING SWITCH STATEMENT
+; ----------------------------------------------------------
 
         pla     ; restore it
 
-        ; -------------------------------------------------
-        ; up
+; -------------------------------------------------
+; right - set next module, and exit mod_kb
+        cmp     #'*'
+        beq     do_right
+        cmp     #ATRRW
+        beq     do_right
+        bne     :+
+
+do_right:
+        mva     next_mod, mod_current
+        rts
+
+:
+; -------------------------------------------------
+; left - set prev module, and exit mod_kb
+        cmp     #'+'
+        beq     do_left
+        cmp     #ATLRW
+        beq     do_left
+        bne     :+
+
+do_left:
+        mva     prev_mod, mod_current
+        rts
+
+:
+; -------------------------------------------------
+; 1-8
+        cmp     #'1'
+        bcs     one_or_over
+        bcc     :+
+one_or_over:
+        cmp     #'9'
+        bcs     :+
+
+        ; in range 1-8
+        sec
+        sbc     #'1' ; convert from ascii for 1-8 to index 0-7
+        sta     current_line
+        jsr     save_current_line
+        jsr     _dev_highlight_line
+        jmp     start_kb_get
+
+:
+; -------------------------------------------------
+; up
         cmp     #'-'
         beq     do_up
         cmp     #ATURW
@@ -63,11 +107,11 @@ do_up:
         dec     current_line
         jsr     save_current_line
         jsr     _dev_highlight_line
-        beq     start_kb_get
+        jmp     start_kb_get
 
 :
-        ; -------------------------------------------------
-        ; down
+; -------------------------------------------------
+; down
         cmp     #'='
         beq     do_down
         cmp     #ATDRW
@@ -81,35 +125,7 @@ do_down:
         inc     current_line
         jsr     save_current_line
         jsr     _dev_highlight_line
-        beq     start_kb_get
-
-:
-
-        ; -------------------------------------------------
-        ; right - set next module, and exit mod_kb
-        cmp     #'*'
-        beq     do_right
-        cmp     #ATRRW
-        beq     do_right
-        bne     :+
-
-do_right:
-        mva     next_mod, mod_current
-        rts
-
-:
-
-        ; -------------------------------------------------
-        ; left - set prev module, and exit mod_kb
-        cmp     #'+'
-        beq     do_left
-        cmp     #ATLRW
-        beq     do_left
-        bne     :+
-
-do_left:
-        mva     prev_mod, mod_current
-        rts
+        jmp     start_kb_get
 
 :
 
