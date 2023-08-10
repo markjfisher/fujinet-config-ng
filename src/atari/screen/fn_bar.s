@@ -29,16 +29,18 @@
 .endproc
 
 .proc _bar_clear
-        ; clear __PMG_START__ for 1024 bytes, which is 4 pages
-        ldx     #$04
-        mwa     #__PMG_START__, ptr1
+        ; clear __PMG_START__ for 1024 bytes
+        mwa     #__PMG_START__,     ptr1
+        mwa     #__PMG_START__+256, ptr2
+        mwa     #__PMG_START__+512, ptr3
+        mwa     #__PMG_START__+768, ptr4
         lda     #$00
         ldy     #$00
 :       sta     (ptr1), y
+        sta     (ptr2), y
+        sta     (ptr3), y
+        sta     (ptr4), y
         iny
-        bne     :-
-        inc     ptr1+1
-        dex
         bne     :-
         rts
 .endproc
