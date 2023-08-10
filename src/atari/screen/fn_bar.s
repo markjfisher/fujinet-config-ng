@@ -1,4 +1,4 @@
-        .export     _bar_setup, _bar_clear, _bar_setcolor, _bar_up, _bar_down, _bar_show
+        .export     _bar_setup, _bar_clear, _bar_setcolor, _bar_show
         .import     __PMG_START__, _wait_scan1
 
         .include    "atari.inc"
@@ -49,14 +49,6 @@
         sta     PCOLR1
         sta     PCOLR2
         sta     PCOLR3
-.endproc
-
-.proc _bar_up
-        rts
-.endproc
-
-.proc _bar_down
-        rts
 .endproc
 
 ; void bar_show(uint8 y)
