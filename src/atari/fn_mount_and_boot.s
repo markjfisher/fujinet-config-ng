@@ -1,6 +1,6 @@
         .export     _fn_mount_and_boot
         .import     _fn_io_get_device_slots, _fn_io_get_host_slots, _fn_io_mount_all, _fn_io_set_boot_config
-        .import     _fn_pause, _fn_put_s, _bar_clear, pushax
+        .import     _fn_pause, _fn_put_s, _bar_clear, pushax, _wait_scan1
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -9,35 +9,29 @@
 ; void fn_mount_and_boot()
 .proc _fn_mount_and_boot
 
-        ; INTERNAL DEBATE! Should this function do the display? Or the done module before it calls us?
-
         ; clear the selection bar
         jsr     _bar_clear
-        ; put a message on screen
-        pushax  #boot_1s
-        ldx     #8
-        ldy     #6
-        jsr     _fn_put_s
 
-        lda     #$1
-        jsr     _fn_pause       ; force screen refresh
+        jsr     _wait_scan1
+        put_s   #10, #5, #boot_anim_1_1
+        put_s   #10, #6, #boot_anim_1_2
+        put_s   #10, #7, #boot_anim_1_3
 
         ; re-read the devices/hosts, the WebUI might have changed them etc.
         jsr     _fn_io_get_device_slots
         jsr     _fn_io_get_host_slots
+        pause   #10         ; small pause to allow screen to continue showing "Mounting all" briefly
 
         ; MOUNT!
         jsr     _fn_io_mount_all
         cmp     #$01
         bne     error
 
-        pushax  #boot_2s
-        ldx     #4
-        ldy     #8
-        jsr     _fn_put_s
+        ; tell the user we're booting. Box is same, so only need to show "Booting" part
+        put_s   #12, #6, #boot_anim_2_1
 
-        lda     #$40
-        jsr     _fn_pause       ; courtesy pause for user
+        ; courtesy pause to catch the message for half a second
+        pause   #$20
 
         ; CHARGE!
         ; turn off boot config, and cold start
@@ -51,5 +45,11 @@ error:
 .endproc
 
 .segment "SDATA"
-boot_1s:    .byte "Mounting Images...", 0
-boot_2s:    .byte "Successful Mount, Booting!", 0
+
+; Mounting All - in box
+boot_anim_1_1: .byte $11, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $05, 0
+boot_anim_1_2: .byte $7C, $99, $CD, $EF, $F5, $EE, $F4, $E9, $EE, $E7, $A0, $C1, $EC, $EC, $19, $7C, 0
+boot_anim_1_3: .byte $1A, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $03, 0
+
+; Booting!
+boot_anim_2_1: .byte $A0, $A0, $C2, $EF, $EF, $F4, $E9, $EE, $E7, $A1, $A0, $A0, 0

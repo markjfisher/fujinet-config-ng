@@ -272,3 +272,8 @@ l1:
         ldy     aY
         jsr     _fn_get_scrloc
 .endmacro
+
+.macro pause j
+        lda     j
+        jsr     _fn_pause
+.endmacro
