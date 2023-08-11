@@ -38,9 +38,8 @@ start_kb_get:
         beq     not_option
         ; set done module with a flag to say boot
         mva     #$01, done_is_booting
-        mva     Mod::done, mod_current
+        mva     #Mod::done, mod_current
         rts
-
 
 not_option:
         jsr     _fn_input_ucase
