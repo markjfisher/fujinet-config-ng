@@ -94,6 +94,12 @@ one_or_over:
         bcs     :+
 
         ; in range 1-8
+        ; check we are on hosts/devices (0, 1). don't trash A it still holds the key pressed
+        ldx     mod_current
+        cpx     #2
+        bcs     out
+
+        ; yes, we are hosts/devices
         sec
         sbc     #'1' ; convert from ascii for 1-8 to index 0-7
         sta     current_line

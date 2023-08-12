@@ -14,3 +14,9 @@
     daux1   .byte
     daux2   .byte
 .endstruct
+
+; show_list constants for screen coordinate starting points etc.
+SL_X        := 2
+SL_Y        := 2
+SL_DX       := 3
+SL_COUNT    := 8

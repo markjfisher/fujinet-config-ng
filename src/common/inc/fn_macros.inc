@@ -267,7 +267,7 @@ l1:
         jsr     _fn_put_c
 .endmacro
 
-.macro do_scr_loc aX, aY
+.macro get_scrloc aX, aY
         ldx     aX
         ldy     aY
         jsr     _fn_get_scrloc

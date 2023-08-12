@@ -1,6 +1,6 @@
         .export     mod_hosts, hosts_fetched, host_selected
         .import     _fn_io_get_host_slots, fn_io_hostslots, _dev_highlight_line, mod_kb, current_line
-        .import     pusha, pushax, show_list
+        .import     pusha, pushax, show_list, _dev_edit_hosts_entry
         .import     _fn_clrscr, _fn_put_help
         .import     s_empty, s_hosts_h1, s_hosts_h2, s_hosts_h3
         .include    "atari.inc"
@@ -32,10 +32,10 @@
 
         ; handle keyboard
         pusha   #7              ; only 8 entries on screen
-        pusha   #Mod::done   ; prev
+        pusha   #Mod::done      ; prev
         pusha   #Mod::devices   ; next
-        pushax  #host_selected  ; our current host
-        setax   #mod_hosts_kb
+        pushax  #host_selected  ; memory address of our current host so it can be updated
+        setax   #mod_hosts_kb   ; hosts kb handler
         jmp     mod_kb          ; rts from this will drop out of module
 
 display_hosts:
@@ -46,6 +46,16 @@ display_hosts:
 
 ; the local module's keyboard handling routines
 mod_hosts_kb:
+        ; A contains the key pressed
+        cmp     #'E'    ; Edit current field
+        bne     :+
+
+        ; matched "E", so edit current entry
+        jsr     _dev_edit_hosts_entry
+
+:
+
+        ; all module specific codes checked, return to main kb handler
         rts
 
 .endproc

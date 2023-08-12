@@ -3,7 +3,7 @@
         .include        "atari.inc"
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
-        .include         "fn_structs.inc"
+        .include         "fn_data.inc"
 
 ; uint8 _fn_io_mount_all(void)
 ;

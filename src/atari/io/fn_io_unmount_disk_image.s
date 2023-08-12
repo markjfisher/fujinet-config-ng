@@ -3,7 +3,7 @@
         .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
-        .include    "fn_structs.inc"
+        .include    "fn_data.inc"
         .import     _fn_io_copy_dcb
 
 ; void _fn_io_unmount_disk_image(uint8 slot)

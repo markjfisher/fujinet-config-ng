@@ -8,6 +8,7 @@
 ;
 ; the coordinates allowable are 36x16 grid, which is inside a larger frame of 40x18
 ; TRASHES ptr4, tmp4. Y
+; DO NOT TRASH OTHER ZP VALUES. for efficiency and to reduce memory usage.
 .proc _fn_get_scrloc
         stx     tmp4            ; x coord
 

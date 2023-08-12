@@ -14,7 +14,7 @@
         lda     done_is_booting
         beq     not_booting
 
-        ; booting chosen, go to mount/boot
+        ; booting chosen, go to mount/boot - device specific
         jsr     _fn_mount_and_boot
         ; if there was an error, it will come back here, else it would have cold start
         ; we rts out which will cause the mod screen to be reload, but first need to turn off booting, else the above will loop.
@@ -36,13 +36,8 @@ not_booting:
         setax   #mod_done_kb
         jmp     mod_kb          ; rts from this will drop out of module
 
-        ;; This was done() from C version. when do we do this?
-        ; lda     #$00    ; disable config
-        ; jsr     _fn_io_set_boot_config
-        ; mva     #Mod::exit, mod_current
-
 display_done:
-        ; need some screen stuff here
+        ; need some screen stuff here, display 
         rts
 
 mod_done_kb:

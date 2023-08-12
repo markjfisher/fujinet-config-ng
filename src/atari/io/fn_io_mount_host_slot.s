@@ -4,7 +4,7 @@
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
-        .include         "fn_structs.inc"
+        .include         "fn_data.inc"
 
 ; void _fn_io_mount_host_slot(slot_num)
 ; does nothing if first byte of host slot is 0

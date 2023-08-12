@@ -57,5 +57,6 @@ codeok: lsr     a               ; undo the shift
         bcc     next_char
 
 exit:
+        setax   ptr4            ; exit with screen location of initial byte in A/X
         rts
 .endproc

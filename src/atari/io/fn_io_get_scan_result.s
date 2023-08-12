@@ -4,7 +4,7 @@
         .include        "atari.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
-        .include         "fn_structs.inc"
+        .include         "fn_data.inc"
 
 ; SSIDInfo* _fn_io_get_scan_result(network_index)
 .proc _fn_io_get_scan_result

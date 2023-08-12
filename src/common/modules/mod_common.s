@@ -4,6 +4,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
+        .include    "fn_data.inc"
         .include    "fn_mods.inc"
 
 ; void show_list(uint8 dataSize, void * ptrToData)
@@ -13,24 +14,17 @@
         getax   ptr1            ; ptrToData, the string to display's location
         popa    sl_size         ; how much to move down each data block
 
-        ; thought these would be params. Keeping them commented in case they need to be
-        ; mva     #$04, sl_x
-        ; mva     #$02, sl_y
-        ; mva     #$08, sl_count
-
         mva     #$00, sl_index
 
         ; A has sl_index at this point
 l_all:  clc
-        ; adc     sl_y
-        adc     #$02
+        adc     #SL_Y
         pha                     ; save current y coord
 
         ; --------- print digit
         tay                     ; y coord for fn_put_digit
-        ; ldx     sl_x            ; x coord for fn_put_digit
-        ldx     #$04            ; x coord for fn_put_digit
-        lda     sl_index        ; digit to display
+        ldx     #SL_X           ; x coord for fn_put_digit
+        lda     sl_index        ; digit to display, C is 0 already
         adc     #$01            ; index is 0 based, need to increment for screen. C is clear already
         jsr     _fn_put_digit
 
@@ -47,11 +41,11 @@ display_empty:
         pushax  #s_empty
 
 j1:
-        ; x+2 for start of the string to display in x coordinate
-        ; ldx     sl_x
-        ; inx
-        ; inx
-        ldx     #$06
+        ; x + DX for start of the string to display in x coordinate
+        lda     #SL_X
+        clc
+        adc     #SL_DX
+        tax                     ; x coordinate of the string to display
 
         pla                     ; restore current y
         tay
@@ -67,8 +61,7 @@ j1:
 
 :       inc     sl_index
         lda     sl_index
-        ; cmp     sl_count
-        cmp     #$08
+        cmp     #SL_COUNT
         ; repeat for all N items in list
         bne     l_all
 
@@ -78,6 +71,3 @@ j1:
 .bss
 sl_index:   .res 1
 sl_size:    .res 1
-sl_x:       .res 1
-sl_y:       .res 1
-sl_count:   .res 1
