@@ -56,8 +56,23 @@ not_option:
 ; KEYBOARD HANDLING SWITCH STATEMENT
 ; ----------------------------------------------------------
 
-        pla     ; restore it
+        pla             ; get keyboard ascii code into A
+        ldx     #$00    ; status of module keyboard handler set in x on return
 
+        ; use module specific keyboard handler first, so we can override default handling, e.g. L/R arrow keys may not move modules
+        jsr     do_mod_kb
+
+        ; if X=0, then we use global kb handler, as key wasn't processed, A is still keycode
+        cpx     #$00
+        beq     global_kb
+
+        cpx     #$01    ; if X=1, processed key, and we can reloop
+        beq     start_kb_get
+
+        ; anything else was a code to say we want to exit the keyboard routine altogether
+        rts
+
+global_kb:
 ; -------------------------------------------------
 ; right - set next module, and exit mod_kb
         cmp     #'*'
@@ -144,13 +159,6 @@ do_down:
         jmp     start_kb_get
 
 :
-        ; run the module's kb routines, we need jsr so we can continue after indirect call
-        jsr     do_mod_kb
-
-        ; if A=0, then we can carry on looping, otherwise module's kb handler wants us to exit kb routine to change module
-        beq     cont_kb
-        rts
-
 ; may need to move this to middle of the cases so they can branch to it easily, or change to jmps
 cont_kb:
         ; and reloop if we didn't leave this routine through a kb option

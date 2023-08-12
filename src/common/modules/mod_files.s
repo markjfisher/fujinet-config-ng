@@ -79,8 +79,8 @@ dir_end:
         lda     host_selected
         jsr     _fn_io_close_directory
 
+; need to handle keyboard
 
-; need to handle keyboard. just going to stop for now
 
 
 

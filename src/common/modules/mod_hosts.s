@@ -54,7 +54,7 @@ mod_hosts_kb:
         cmp     #'E'
         bne     not_edit
         jsr     _dev_edit_hosts_entry
-        lda     #$00    ; tell main kb handler it can re-loop
+        ldx     #$01    ; tell main kb handler it can re-loop
         rts
 
 not_edit:
@@ -68,12 +68,13 @@ not_edit:
         lda     #Mod::files
         sta     mod_current
 
-        lda     #$01    ; flag main kb handler to exit
+        ldx     #$02    ; flag main kb handler to exit
         rts
 
 
 not_eol:
 
+        ldx     #$00    ; flag main kb handler it should test this key
         ; all module specific codes checked, return to main kb handler
         rts
 
