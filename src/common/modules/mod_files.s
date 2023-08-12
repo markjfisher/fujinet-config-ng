@@ -2,8 +2,9 @@
         .import     mod_current, host_selected, _fn_io_close_directory, fn_dir_path, fn_dir_filter
         .import     pusha, pushax, _fn_put_c, _fn_put_s, _fn_strlen, _fn_memclr, _fn_clrscr
         .import     _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory, _fn_io_error, _fn_io_mount_host_slot
-        .import     _bar_clear
+        .import     _bar_clear, _dev_highlight_line, current_line, mod_kb
         .include    "zeropage.inc"
+        .include    "atari.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
 
@@ -79,17 +80,19 @@ dir_end:
         lda     host_selected
         jsr     _fn_io_close_directory
 
-; need to handle keyboard
 
+        ; reshow the bar at row 0, as this is a new page load
+        mva     #$00, mf_selected
+        mva     mf_selected, current_line
+        jsr     _dev_highlight_line
 
-
-
-
-
-
-:       jmp     :-
-
-        rts
+        ; handle keyboard
+        pusha   #15             ; all 16 lines can be used
+        pusha   #Mod::files     ; L/R arrow keys will be overridden by local kb handler
+        pusha   #Mod::files     ; L/R arrow keys this will be overridden by local kb handler
+        pushax  #mf_selected    ; memory address of our current host so it can be updated
+        setax   #mod_files_kb   ; hosts kb handler
+        jmp     mod_kb          ; rts from this will drop out of module
 
 error:
         rts
@@ -124,7 +127,6 @@ print_entry:
         ; is this a dir? last char of name is '/' - ASSUMPTION - string never 0 length
         setax   ptr1
         jsr     _fn_strlen
-        sta     mf_dir_len
         tay
         dey
         lda     (ptr1), y       ; the last character of string
@@ -139,6 +141,50 @@ skip_show_dir_char:
         put_s   #$02, mf_entry_index, ptr1
         rts
 
+mod_files_kb:
+; -------------------------------------------------
+; right - next page of results if there are any
+        cmp     #'*'
+        beq     do_right
+        cmp     #ATRRW
+        beq     do_right
+        bne     :+
+
+do_right:
+
+        ldx     #$01    ; tell main kb handler it can re-loop
+        rts
+:
+; -------------------------------------------------
+; left - prev page of results if there are any
+        cmp     #'+'
+        beq     do_left
+        cmp     #ATLRW
+        beq     do_left
+        bne     :+
+
+do_left:
+
+        ldx     #$01    ; tell main kb handler it can re-loop
+        rts
+:
+; --------------------------------------------------------------------------
+; ESC
+        cmp     #ATESC
+        bne     :+
+
+        ; ESC for files means return to HOSTS list
+        mva     #Mod::hosts, mod_current
+        ldx     #$02    ; main kb handler exit
+        rts
+
+:
+; -------------------------------------------------
+; NOT HANDLED
+
+        ldx     #$00    ; flag main kb handler it should handle this code, still in A
+        rts
+
 .endproc
 
 .segment "SDATA"
@@ -148,5 +194,7 @@ mf_dir_char:    .byte "X"       ; TODO: change to our custom font when it's done
 .bss
 ; the current directory position value while browsing
 mf_dir_pos:     .res 2
+; a place to hold the loop index for files being shown on screen
 mf_entry_index: .res 1
-mf_dir_len:     .res 1
+; currently highlighted option
+mf_selected:    .res 1

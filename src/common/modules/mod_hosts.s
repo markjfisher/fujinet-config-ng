@@ -44,21 +44,21 @@ display_hosts:
         jmp     show_list
         ; implicit rts
 
-; the local module's keyboard handling routines
-; A contains the key pressed
+; ----------------------------------------------------------------------
+; HOSTS KB HANDLER
+; ----------------------------------------------------------------------
 mod_hosts_kb:
-
 ; ----------------------------------------------------------------------
 ; E - EDIT
 ; ----------------------------------------------------------------------
         cmp     #'E'
         bne     not_edit
         jsr     _dev_edit_hosts_entry
-        ldx     #$01    ; tell main kb handler it can re-loop
+
+        ldx     #KB_HANDLER::RELOOP
         rts
 
 not_edit:
-
 ; ----------------------------------------------------------------------
 ; RETURN - Browse Disk Images of selected HOST
 ; ----------------------------------------------------------------------
@@ -68,14 +68,14 @@ not_edit:
         lda     #Mod::files
         sta     mod_current
 
-        ldx     #$02    ; flag main kb handler to exit
+        ldx     #KB_HANDLER::EXIT
         rts
 
-
 not_eol:
-
-        ldx     #$00    ; flag main kb handler it should test this key
-        ; all module specific codes checked, return to main kb handler
+; ----------------------------------------------------------------------
+; EXIT - didn't handle it
+; ----------------------------------------------------------------------
+        ldx     #KB_HANDLER::NOT_HANDLED
         rts
 
 .endproc

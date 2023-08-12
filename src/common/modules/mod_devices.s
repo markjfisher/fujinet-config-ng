@@ -40,6 +40,7 @@ display_devices:
 
 ; the local module's keyboard handling routines
 mod_devices_kb:
+        ldx     #KB_HANDLER::NOT_HANDLED
         rts
 
 .endproc

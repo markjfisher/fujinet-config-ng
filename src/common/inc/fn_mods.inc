@@ -12,3 +12,9 @@
     init    ; the initial module to load, runs all module initialisation before moving to appropriate next module, e.g. wifi if no wifi selected, or hosts if there is
     exit    ; this is a marker to exit application
 .endenum
+
+.enum KB_HANDLER
+    NOT_HANDLED     ; not handled by module, try in global handler
+    RELOOP          ; handled by module, start main handler loop again
+    EXIT            ; main kb handler should exit
+.endenum
