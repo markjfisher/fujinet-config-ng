@@ -2,6 +2,7 @@
         .import     _fn_io_copy_dcb, fn_io_buffer, fn_dir_path, fn_dir_filter
         .import     pushax, _fn_strncat, _fn_strncpy
         .include    "atari.inc"
+        .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
 
@@ -9,9 +10,10 @@
 ;
 ; returns 0 for success.
 .proc _fn_io_open_directory
-        pha                     ; store the host_slot. can't use tmp1 it's trashed by _fn_strncpy/cat
+        ; save the host_slot
+        sta     tmp1
 
-        lda     fn_dir_filter      ; if filter set, we need to copy/cat
+        lda     fn_dir_filter    ; if filter set, we need to copy/cat
         bne     filter_set
 
         ; with no filter, we can simply use the fn_dir_path directly, which is the
@@ -20,9 +22,8 @@
 just_path:
         jsr     set_dcb
 
-        pla
         ; set the host_slot into DAUX1
-        sta     IO_DCB::daux1
+        mva     tmp1, IO_DCB::daux1
 
         ; and use path in call to open_directory
         mwa     #fn_dir_path, DBUFLO
@@ -32,11 +33,11 @@ just_path:
         rts
 
 filter_set:
-        lda #$00            ; clear the buffer
-        ldx #$00
-:       sta fn_io_buffer, x
+        lda     #$00            ; clear the buffer
+        ldx     #$00
+:       sta     fn_io_buffer, x
         inx
-        bne :-
+        bne     :-
 
         ; merge path and filter
         pushax  #fn_io_buffer
@@ -54,10 +55,9 @@ filter_set:
 
         jsr     set_dcb
 
-        pla     ; set the host_slot into DAUX1
-        sta     IO_DCB::daux1
-        ; set the location of the path and filter
-        mwa     #fn_io_buffer, DBUFLO
+        ; set the host_slot into DAUX1
+        mva     tmp1, IO_DCB::daux1
+
         jsr     SIOV
         lda     #$00    ; mark success and fall through to return
 

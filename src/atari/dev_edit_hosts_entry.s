@@ -9,9 +9,9 @@
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 
-; int dev_edit_entry()
+; void dev_edit_hosts_entry()
 ;
-; user input in current 
+; user input in current hosts entry
 .proc _dev_edit_hosts_entry
         ; get screen location for current edit position
         ldx     #(SL_X + SL_DX)
@@ -221,9 +221,7 @@ can_ins:
         inc     sl_buffer_len
 
 no_extra:
-
         jsr     refresh_line
-
         jmp     l1
 
 not_insert:

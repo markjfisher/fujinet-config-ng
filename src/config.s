@@ -1,6 +1,6 @@
     .export     start
     .import     _main
-    .import     __MAIN_START__, __MAIN_SIZE__
+    .import     __MAIN_START__, __MAIN_SIZE__, _fn_memclr_page, setax
 
     .include    "zeropage.inc"
     .include    "fn_macros.inc"
@@ -12,13 +12,11 @@
     cld
     mwa     #(__MAIN_START__+__MAIN_SIZE__), sp
 
-    ; clear 256 bytes from SP - simple routine, we currently only need 1 page of Stack.
-    ldy     #$00
-    lda     #$00
-:   sta     (sp), y
-    iny
-    bne     :-
-    
+    ; clear 256 bytes from SP
+    setax   sp
+    jsr     _fn_memclr_page
+
+    ; GO!
     jmp     _main
 
 .endproc

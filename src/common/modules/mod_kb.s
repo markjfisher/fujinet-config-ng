@@ -97,7 +97,7 @@ one_or_over:
         ; check we are on hosts/devices (0, 1). don't trash A it still holds the key pressed
         ldx     mod_current
         cpx     #2
-        bcs     out
+        bcs     cont_kb
 
         ; yes, we are hosts/devices
         sec
@@ -119,7 +119,7 @@ one_or_over:
 do_up:
         lda     current_line
         cmp     #0
-        beq     out
+        beq     cont_kb
         dec     current_line
         jsr     save_current_line
         jsr     _dev_highlight_line
@@ -137,19 +137,22 @@ do_up:
 do_down:
         lda     current_line
         cmp     selected_max
-        bcs     out
+        bcs     cont_kb
         inc     current_line
         jsr     save_current_line
         jsr     _dev_highlight_line
         jmp     start_kb_get
 
 :
-
         ; run the module's kb routines, we need jsr so we can continue after indirect call
         jsr     do_mod_kb
 
+        ; if A=0, then we can carry on looping, otherwise module's kb handler wants us to exit kb routine to change module
+        beq     cont_kb
+        rts
+
 ; may need to move this to middle of the cases so they can branch to it easily, or change to jmps
-out:
+cont_kb:
         ; and reloop if we didn't leave this routine through a kb option
         jmp     start_kb_get
 

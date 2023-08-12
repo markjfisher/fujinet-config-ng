@@ -4,7 +4,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
-        .import     _fn_io_copy_dcb, fn_io_buffer, popa
+        .import     _fn_io_copy_dcb, fn_io_buffer, popa, _fn_memclr_page
 
 ; char *fn_io_read_directory(unsigned char maxlen, unsigned char aux2)
 ;
@@ -13,19 +13,9 @@
         sta     tmp1    ; aux2 param
         popa    tmp2    ; maxlen
 
-        ; clear buffer for maxlen bytes (still in A)
-        beq     no_zero
+        setax   #fn_io_buffer           ; clear io_buffer, which is 256 bytes long
+        jsr     _fn_memclr_page
 
-clear_buffer:
-        tay
-        mwa     #fn_io_buffer, ptr1
-        lda     #$00
-:       dey
-        sta     (ptr1), y
-        cpy     #$00
-        bne     :-
-
-no_zero:
         setax   #t_io_read_directory
         jsr     _fn_io_copy_dcb
 

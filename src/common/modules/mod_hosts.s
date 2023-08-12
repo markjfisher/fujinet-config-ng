@@ -1,6 +1,6 @@
         .export     mod_hosts, hosts_fetched, host_selected
         .import     _fn_io_get_host_slots, fn_io_hostslots, _dev_highlight_line, mod_kb, current_line
-        .import     pusha, pushax, show_list, _dev_edit_hosts_entry
+        .import     pusha, pushax, show_list, _dev_edit_hosts_entry, mod_current
         .import     _fn_clrscr, _fn_put_help
         .import     s_empty, s_hosts_h1, s_hosts_h2, s_hosts_h3
         .include    "atari.inc"
@@ -45,15 +45,34 @@ display_hosts:
         ; implicit rts
 
 ; the local module's keyboard handling routines
+; A contains the key pressed
 mod_hosts_kb:
-        ; A contains the key pressed
-        cmp     #'E'    ; Edit current field
-        bne     :+
 
-        ; matched "E", so edit current entry
+; ----------------------------------------------------------------------
+; E - EDIT
+; ----------------------------------------------------------------------
+        cmp     #'E'
+        bne     not_edit
         jsr     _dev_edit_hosts_entry
+        lda     #$00    ; tell main kb handler it can re-loop
+        rts
 
-:
+not_edit:
+
+; ----------------------------------------------------------------------
+; RETURN - Browse Disk Images of selected HOST
+; ----------------------------------------------------------------------
+        cmp     #ATEOL
+        bne     not_eol
+        ; set module to 'files' to show entries of chosen host
+        lda     #Mod::files
+        sta     mod_current
+
+        lda     #$01    ; flag main kb handler to exit
+        rts
+
+
+not_eol:
 
         ; all module specific codes checked, return to main kb handler
         rts

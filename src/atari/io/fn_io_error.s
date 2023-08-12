@@ -5,8 +5,8 @@
 ;
 ; sets A=0 (and Z=1) if there is no error, 127 ($80) otherwise
 .proc _fn_io_error
+        ldx #$00
         lda DSTATS
         and #$80
-        ldx #$00
         rts
 .endproc
