@@ -89,7 +89,18 @@ l1:     jsr     _fn_input
         ; escape pressed, reshow current host at this position
         ; but first write 32 blanks to clear any editing
         put_s   {#(SL_X + SL_DX)}, sl_y_coord, #blank_field32
+
+        ; re-write emtpy if there's no string set in host
+        mwa     host_loc_save, ptr1
+        ldy     #$00
+        lda     (ptr1), y
+        beq     esc_show_empty
+
         put_s   {#(SL_X + SL_DX)}, sl_y_coord, host_loc_save
+        rts
+
+esc_show_empty:
+        put_s   {#(SL_X + SL_DX)}, sl_y_coord, #s_empty
         rts
 
 not_esc:
