@@ -1,15 +1,18 @@
         .export     pre_init
-        .import     _reset_handler
+        .import     _reset_handler, detect_banks
         .include    "atari.inc"
         .include    "fn_macros.inc"
 
 ; https://www.wudsn.com/index.php/productions-atari800/tutorials/tips
 
 ; this segment is loaded during disk load before dlist and main are loaded
-; the memory location will be written over by later blocks, which is fine, it's only needed to switch off basic
+; the memory location will be written over by later blocks, which is fine, it's only needed for one time initial setup
 
 .segment "PREINIT"
 .proc pre_init
+        ; detect banked values for NMIEN for up to MAX_BANKS (defined in detect_banks.s)
+        jsr     detect_banks
+
         ; setup reset handler
         mwa     DOSINI, _reset_handler+1
         mwa     #_reset_handler, DOSINI

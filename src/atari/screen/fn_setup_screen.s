@@ -9,40 +9,25 @@
 ; void _fn_setup_screen()
 .proc _fn_setup_screen
 
-        jsr init_screen
+        ; Screen is already off in the pre_init stage.
+        mva #$00, NMIEN
+        jsr _bar_setup
+        jsr _bar_clear
+
         mwa #main_dlist, SDLSTL
 
         mva #$02, CHACTL
         mva #$3c, PACTL
 
-        jmp show_screen
-
-init_screen:
-        mva #$00, NMIEN
-        jsr _wait_scan1
-        mva #$00, SDMCTL
-        jsr _bar_setup
-        jsr _bar_clear
-        jsr _wait_scan1
-        rts
-
-show_screen:
-        mva #$40, NMIEN
-        mva #$2e, SDMCTL
-
-        ; TODO: move this out elsewhere
-        ; dark red central area, brigher outside - also, USE SHADOWs!
-        ; mva #$0d, COLOR1    ; glyph pixel luma
-        ; mva #$50, COLOR2    ; b/g
-        ; mva #$50, COLOR4    ; border
+        ; setup some colors
         mva #$0d, COLOR1    ; glyph pixel luma
         mva #$00, COLOR2    ; b/g
         mva #$00, COLOR4    ; border
+        jsr _wait_scan1     ; at top of screen, everything is now setup
 
-        ; above or below colors?
-        lda #2
-        jsr _fn_pause
-        jsr _wait_scan1
+        ; turn screen and interrupts back on with DMA enabled for PMG
+        mva #$40, NMIEN
+        mva #$2e, SDMCTL
 
         rts
 .endproc
