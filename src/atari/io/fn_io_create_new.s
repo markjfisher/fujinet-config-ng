@@ -7,7 +7,7 @@
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .import     _fn_io_siov, _fn_strncpy
-        .import     fn_io_deviceslots, fn_io_deviceslot_mode, fn_dir_path
+        .import     fn_io_deviceslots, fn_dir_path
         .import     popax, popa, pushax
 
 ; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size)
@@ -65,27 +65,25 @@ s1440:  ldy     #DiskSize::size1440
         mva     tmp2, {fn_new_disk + NewDisk::hostSlot}
 
         ; copy path into newdisk.filename
-        pushax  #fn_new_disk+NewDisk::filename   ; dst
-        pushax  #fn_dir_path                        ; src
-        lda     #$e0                                ; max length
+        pushax  #fn_new_disk+NewDisk::filename  ; dst
+        pushax  #fn_dir_path                    ; src
+        lda     #$e0                            ; max length
         jsr     _fn_strncpy
 
-        ; WHY? This feels out of place: TODO - move this to more appropriate place
+;         ; WHY? This feels out of place: TODO - move this to more appropriate place
+;         ; set the mode of the specific deviceslot
+;         ; make ptr1 start at specific entry
+;         mwa     #fn_io_deviceslots, ptr1
+;         ldx     tmp1
+;         beq     skip        ; nothing to add, we're on deviceslots[0]
 
-        ; set the mode of the specific deviceslot
-        ; make ptr1 start at specific entry
-        mwa     #fn_io_deviceslots, ptr1
-        ldx     tmp1
-        beq     skip        ; nothing to add, we're on deviceslots[0]
+; :       adw     ptr1, #.sizeof(DeviceSlot)
+;         dex
+;         bne     :-
 
-:       adw     ptr1, #.sizeof(DeviceSlot)
-        dex
-        bne     :-
-
-skip:
-        ldy     #DeviceSlot::mode
-        mva     fn_io_deviceslot_mode, {(ptr1), y}
-
+; skip:
+;         ldy     #DeviceSlot::mode
+;         mva     fn_io_deviceslot_mode, {(ptr1), y}
         ; END: WHY?
 
         ; finally setup DCB and call SIOV

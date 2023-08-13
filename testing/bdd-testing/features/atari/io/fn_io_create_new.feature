@@ -13,7 +13,7 @@ Feature: IO library test - _fn_io_create_new
       And I write memory at t_host_slot with <host_slot>
       And I write memory at t_device_slot with <device_slot>
       And I write word at t_size with value <size>
-      And I write memory at fn_io_deviceslot_mode with <mode>
+      #And I write memory at fn_io_deviceslot_mode with <mode>
       And I write string "<path>" as ascii to memory address fn_dir_path
      When I execute the procedure at _init for no more than 1400 instructions
 
@@ -37,7 +37,7 @@ Feature: IO library test - _fn_io_create_new
     #  And I print memory from fn_io_deviceslots to fn_io_deviceslots+37
     #  And I print memory from fn_io_deviceslots+38 to fn_io_deviceslots+75
     #  And I print memory from fn_io_deviceslots+76 to fn_io_deviceslots+113
-     And I expect to see fn_io_deviceslots+38*<device_slot>+1 equal <mode>
+     # And I expect to see fn_io_deviceslots+38*<device_slot>+1 equal <mode>
 
      # check SIOV was called
      And I expect to see $80 equal $01

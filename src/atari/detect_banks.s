@@ -34,6 +34,11 @@ MAX_BANKS   := 8
         ldx     #$00
 test_lp1:
         stx     PORTB
+        lda     $4000
+        sta     save_table, x
+        lda     $4001
+        sta     save_table+256, x
+
         txa
         sta     $4000
         clc
@@ -65,6 +70,16 @@ not_same:
         bne     test_lp2
 
 finish:
+        ldx     #0
+restore:
+        stx     PORTB
+        lda     save_table, x
+        sta     $4000
+        lda     save_table+256, x
+        sta     $4001
+        inx
+        bne     restore
+
         pla
         sta     PORTB
         pla
@@ -81,7 +96,13 @@ pause_vcount1:
         beq :-
         rts
 
+
+
 .endproc
+
+; don't store it in the file
+.segment "PREINIT2"
+save_table:     .res 512
 
 .segment "LOWDATA"
 bank_table:     .byte 0, 0, 0, 0, 0, 0, 0, 0

@@ -49,5 +49,5 @@ mod_devices_kb:
 host_index:     .res 1
 
 .data
-devices_fetched:   .byte 0
-device_selected:  .byte 0
+devices_fetched:        .byte 0
+device_selected:        .byte 0
