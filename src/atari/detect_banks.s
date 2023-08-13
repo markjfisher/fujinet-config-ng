@@ -5,104 +5,128 @@
 
 .segment "PREINIT"
 
-MAX_BANKS   := 8
+MAX_BANKS       := 8
+ext_b           := $4000
 
+; adapted from http://atariki.krap.pl/index.php/Obs%C5%82uga_standardowego_rozszerzenia_pami%C4%99ci_RAM
+
+; void detect_banks()
 .proc detect_banks
-
-        ; rts
-
-        ; cut down detection of banks. we just want up to 8 (16kb x 8 = 128kb) for paging dir structures etc.
-
-        ; courtesy of FJC
-        ; https://forums.atariage.com/topic/150125-challenge-determining-amount-of-ram-in-800xl/?do=findComment&comment=1832615
-
         mva     #$00, SDMCTL
 
         ; wait for screen to refresh x 2 so it's fully black and get no corruption. It will come back on later
         jsr     pause_vcount1
         jsr     pause_vcount1
 
-        sei
-        lda     NMIEN
-        pha                     ; save NMIEN
-        mva     #$00, NMIEN     ; turn off interrupts
         lda     PORTB
-        pha                     ; save PORTB
+        pha
+        lda     #$ff
+        sta     PORTB
+        lda     ext_b
+        pha
 
-        ; try values in PORTB and then check which caused us to write the X value and read it back indicating a valid PORTB for new bank
+        ldx     #$0f       ; save ext bytes (from 16 64k blocks) 
+_p0:    jsr     setpb
+        lda     ext_b
+        sta     bsav,x
+        dex
+        bpl     _p0
 
-        ldx     #$00
-test_lp1:
-        stx     PORTB
-        lda     $4000
-        sta     save_table, x
-        lda     $4001
-        sta     save_table+256, x
+        ldx     #$0f       ; reset them (w separate loop, because it is not known 
+_p1:    jsr     setpb      ; which PORTB bit combinations select the same banks) 
+        lda     #$00
+        sta     ext_b
+        dex
+        bpl     _p1
 
-        txa
-        sta     $4000
-        clc
-        adc     #$04
-        sta     $4001
-        inx
-        bne     test_lp1
+        stx     PORTB      ; eliminate core memory (X=$FF) 
+        stx     ext_b
+        stx     $00        ; necessary for some extensions up to 256k
 
-        ldy     #0
-test_lp2:
-        stx     PORTB
-        cpx     $4000
-        bne     not_same
-        txa
-        clc
-        adc     #$04
-        cmp     $4001
-        bne     not_same
-        txa
-        cmp     #$ff            ; ignore main bank $ff
-        beq     not_same
-        sta     bank_table, y
+        ldy     #$00       ; block counting loop 64k
+        ldx     #$0f
+_p2:    jsr     setpb
+        lda     ext_b      ; if ext_b is non-zero, block 64k already counted
+        bne     _n2
+
+        dec     ext_b      ; otherwise mark as counted 
+
+        lda     ext_b      ; check if it is marked; if not -> something wrong with the hardware
+        bpl     _n2
+
+        lda     PORTB      ; enter the value of PORTB into the array for bank 0
+        sta     banks,y
+        eor     #%00000100 ; fill in values ​​for banks 1, 2, 3 
+        sta     banks+1,y
+        eor     #%00001100
+        sta     banks+2,y
+        eor     #%00000100
+        sta     banks+3,y
         iny
-        cpy     #MAX_BANKS      ; MAX BANK COUNT
-        beq     finish
+        iny
+        iny
+        iny
 
-not_same:
-        inx
-        bne     test_lp2
+_n2:    dex
+        bpl     _p2
 
-finish:
-        ldx     #0
-restore:
-        stx     PORTB
-        lda     save_table, x
-        sta     $4000
-        lda     save_table+256, x
-        sta     $4001
-        inx
-        bne     restore
+        ldx     #$0f       ; restore content ext
+_p3:    jsr     setpb
+        lda     bsav,x
+        sta     ext_b
+        dex
+        bpl     _p3
+
+        stx     PORTB      ; X = $FF
+
+        pla
+        sta     ext_b
 
         pla
         sta     PORTB
-        pla
-        sta     NMIEN
-        cli
 
+        ; copy MAX_BANKS from banks into bank_table, which is permanent memory
+        ldx     #$00
+:       lda     banks, x
+        beq     finished
+        sta     bank_table, x
+        inx
+        cpx     #MAX_BANKS
+        bne     :-
+
+finished:
+        stx     bank_count
+
+        rts
+
+; subroutines
+setpb:  txa     ; change bit order: %0000dcba -> %cba000d0
+        lsr            
+        ror
+        ror
+        ror
+        adc     #$01 ; set bit 1 depending on state C
+        ora     #$01 ; set OS ROM control bit to default value [1]
+        ; and    #$fe ; alternate version if OS ROM should be DISABLED
+        sta     PORTB
         rts
 
 pause_vcount1:
-:       lda VCOUNT
-        bne :-
+:       lda     VCOUNT
+        bne     :-
 
-:       lda VCOUNT
-        beq :-
+:       lda     VCOUNT
+        beq     :-
         rts
-
 
 
 .endproc
 
-; don't store it in the file
+; don't store it in the file, just some memory that will be overwritten after routine finished
 .segment "PREINIT2"
-save_table:     .res 512
+bsav:   .res 16
+banks:  .res 64
 
 .segment "LOWDATA"
+bank_count:     .byte 0
 bank_table:     .byte 0, 0, 0, 0, 0, 0, 0, 0
