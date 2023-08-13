@@ -2,7 +2,7 @@
         .import     mod_current, host_selected, _fn_io_close_directory, fn_dir_path, fn_dir_filter
         .import     pusha, pushax, _fn_put_c, _fn_put_s, _fn_strlen, _fn_memclr, _fn_clrscr
         .import     _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory, _fn_io_error, _fn_io_mount_host_slot
-        .import     _bar_clear, _dev_highlight_line, current_line, mod_kb
+        .import     _bar_clear, _dev_highlight_line, current_line, mod_kb, _fn_io_read_directory_block
         .include    "zeropage.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
@@ -52,12 +52,16 @@ no_error2:
         jsr     _fn_io_set_directory_position
 
 no_set_dir_pos:
-        mva     #$00, mf_entry_index
 
+        mva     #$00, mf_entry_index
 l_entries:
-        pusha   #36             ; aka DIR_MAX_LEN, the max length of each line for directory/file names
-        lda     #$00            ; special aux2 param
-        jsr     _fn_io_read_directory
+        ; pusha   #36             ; aka DIR_MAX_LEN, the max length of each line for directory/file names
+        ; lda     #$00            ; special aux2 param
+        ; jsr     _fn_io_read_directory
+
+        pusha   #36
+        lda     #$4    ; 4x256 bytes MU HA HA
+        jsr     _fn_io_read_directory_block
 
         ; A/X contain pointer to the data just read (which is also just fn_io_buffer)
         ; an end of dir is 0x7f, 0x7f
@@ -68,13 +72,12 @@ l_entries:
         cmp     #$7f            ; magic marker
         beq     dir_end
 
-        ; TODO: handle longer file names? seems a lot of work
-        jsr     print_entry
+        jsr     print_entry_block
 
-        inc     mf_entry_index
-        lda     mf_entry_index
-        cmp     #$10            ; 16 entries per page
-        bcc     l_entries
+        ; inc     mf_entry_index
+        ; lda     mf_entry_index
+        ; cmp     #$10            ; 16 entries per page
+        ; bcc     l_entries
 
 dir_end:
         lda     host_selected
@@ -140,6 +143,12 @@ print_entry:
 skip_show_dir_char:
         put_s   #$02, mf_entry_index, ptr1
         rts
+
+
+print_entry_block:
+        ; show the entire block
+        rts
+
 
 mod_files_kb:
 ; -------------------------------------------------
