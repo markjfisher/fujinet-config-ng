@@ -1,11 +1,9 @@
         .export     _fn_io_set_directory_position
+        .import     _fn_io_copy_dcb, _fn_io_dosiov
 
-        .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
-        .import     _fn_io_copy_dcb
-
 
 ; void fn_io_set_directory_position(int pos)
 .proc _fn_io_set_directory_position
@@ -15,7 +13,7 @@
         jsr     _fn_io_copy_dcb
 
         mwa     tmp1, IO_DCB::daux1
-        jmp     SIOV
+        jmp     _fn_io_dosiov
 .endproc
 
 .rodata

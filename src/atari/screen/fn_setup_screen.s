@@ -2,9 +2,26 @@
         .import     m_l1, sline1, sline2, sline3, mhlp1, mhlp2, mhlp3, mhlp4
         .import     gbk, gintop1, gintop2, gouttop1, gouttop2
         .import     _fn_pause, _wait_scan1, _bar_setup, _bar_clear
+
         .include    "atari.inc"
-        .include    "fn_antic.inc"
         .include    "fn_macros.inc"
+
+; Convenience defines
+
+DL_MODE2      = $02
+DL_MODE3      = $03
+DL_MODE4      = $04
+DL_MODE5      = $05
+DL_MODE6      = $06
+DL_MODE7      = $07
+DL_MODE8      = $08
+DL_MODE9      = $09
+DL_MODEA      = $0A
+DL_MODEB      = $0B
+DL_MODEC      = $0C
+DL_MODED      = $0D
+DL_MODEE      = $0E
+DL_MODEF      = $0F
 
 ; void _fn_setup_screen()
 .proc _fn_setup_screen

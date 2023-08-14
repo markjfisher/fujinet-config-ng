@@ -1,7 +1,7 @@
         .export         _fn_io_set_device_filename
-        .import         _fn_io_copy_dcb, fn_io_buffer
+        .import         _fn_io_copy_dcb, fn_io_buffer, _fn_io_dosiov
+
         .include        "zeropage.inc"
-        .include        "atari.inc"
         .include        "fn_macros.inc"
         .include        "fn_data.inc"
 
@@ -13,7 +13,7 @@
         jsr     _fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
-        jmp     SIOV
+        jmp     _fn_io_dosiov
 .endproc
 
 .rodata

@@ -1,6 +1,6 @@
         .export     mod_hosts, hosts_fetched, host_selected
-        .import     _fn_io_get_host_slots, fn_io_hostslots, _dev_highlight_line, mod_kb, current_line
-        .import     pusha, pushax, show_list, _dev_edit_hosts_entry, mod_current
+        .import     _fn_io_get_host_slots, fn_io_hostslots, _fn_highlight_line, mod_kb, current_line
+        .import     pusha, pushax, show_list, _fn_edit_hosts_entry, mod_current
         .import     _fn_clrscr, _fn_put_help
         .import     s_empty, s_hosts_h1, s_hosts_h2, s_hosts_h3
         .include    "atari.inc"
@@ -28,7 +28,7 @@
 
         ; highlight current host entry
         mva     host_selected, current_line
-        jsr     _dev_highlight_line
+        jsr     _fn_highlight_line
 
         ; handle keyboard
         pusha   #7              ; only 8 entries on screen
@@ -53,7 +53,7 @@ mod_hosts_kb:
 ; ----------------------------------------------------------------------
         cmp     #'E'
         bne     not_edit
-        jsr     _dev_edit_hosts_entry
+        jsr     _fn_edit_hosts_entry
 
         ldx     #KB_HANDLER::RELOOP
         rts

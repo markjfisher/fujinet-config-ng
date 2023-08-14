@@ -1,6 +1,6 @@
         .export     mod_done, done_is_booting
         .import     pusha, pushax
-        .import     mod_current, _fn_io_set_boot_config, mod_kb, _fn_clrscr, current_line, _dev_highlight_line, _fn_mount_and_boot
+        .import     mod_current, _fn_io_set_boot_config, mod_kb, _fn_clrscr, current_line, _fn_highlight_line, _fn_mount_and_boot
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
@@ -26,7 +26,7 @@ not_booting:
 
         ; highlight current option
         mva     done_selected, current_line
-        jsr     _dev_highlight_line
+        jsr     _fn_highlight_line
 
         ; handle keyboard
         pusha   #$f             ; all the lines!

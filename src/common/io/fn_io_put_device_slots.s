@@ -1,6 +1,6 @@
         .export         _fn_io_put_device_slots
         .import         _fn_io_siov, fn_io_deviceslots
-        .include        "atari.inc"
+
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
 

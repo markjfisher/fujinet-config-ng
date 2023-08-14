@@ -2,7 +2,6 @@
         ; for exposing in Altirra:
         .export     fn_new_disk, t_disk_num_sectors, t_disk_sector_sizes, t_io_create_new
 
-        .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"

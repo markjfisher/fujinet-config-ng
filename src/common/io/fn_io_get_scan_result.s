@@ -1,10 +1,9 @@
         .export         _fn_io_get_scan_result, fn_io_ssidinfo
-        .import         _fn_io_copy_dcb
+        .import         _fn_io_copy_dcb, _fn_io_dosiov
         .include        "zeropage.inc"
-        .include        "atari.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
-        .include         "fn_data.inc"
+        .include        "fn_data.inc"
 
 ; SSIDInfo* _fn_io_get_scan_result(network_index)
 .proc _fn_io_get_scan_result
@@ -14,7 +13,7 @@
         jsr     _fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
-        jsr     SIOV
+        jsr     _fn_io_dosiov
 
         ; set return into A/X
         setax   #fn_io_ssidinfo

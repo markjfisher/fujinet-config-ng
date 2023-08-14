@@ -1,10 +1,9 @@
         .export     _fn_io_unmount_disk_image
+        .import     _fn_io_copy_dcb, _fn_io_dosiov
 
-        .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
-        .import     _fn_io_copy_dcb
 
 ; void _fn_io_unmount_disk_image(uint8 slot)
 .proc _fn_io_unmount_disk_image
@@ -14,7 +13,7 @@
         jsr     _fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
-        jmp     SIOV
+        jmp     _fn_io_dosiov
 .endproc
 
 .rodata

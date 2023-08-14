@@ -1,6 +1,6 @@
         .export     mod_kb, current_line, p_current_line
         .import     popa, popax
-        .import     mod_current, fn_put_c, _fn_input_ucase, _dev_highlight_line, _fn_is_option, done_is_booting
+        .import     mod_current, fn_put_c, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -119,7 +119,7 @@ one_or_over:
         sbc     #'1' ; convert from ascii for 1-8 to index 0-7
         sta     current_line
         jsr     save_current_line
-        jsr     _dev_highlight_line
+        jsr     _fn_highlight_line
         jmp     start_kb_get
 
 :
@@ -137,7 +137,7 @@ do_up:
         beq     cont_kb
         dec     current_line
         jsr     save_current_line
-        jsr     _dev_highlight_line
+        jsr     _fn_highlight_line
         jmp     start_kb_get
 
 :
@@ -155,7 +155,7 @@ do_down:
         bcs     cont_kb
         inc     current_line
         jsr     save_current_line
-        jsr     _dev_highlight_line
+        jsr     _fn_highlight_line
         jmp     start_kb_get
 
 :

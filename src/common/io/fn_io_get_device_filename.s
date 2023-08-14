@@ -1,6 +1,5 @@
         .export         _fn_io_get_device_filename
-        .import         _fn_io_copy_dcb, fn_io_buffer
-        .include        "atari.inc"
+        .import         _fn_io_copy_dcb, fn_io_buffer, _fn_io_dosiov
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_data.inc"
@@ -12,7 +11,7 @@
         jsr     _fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
-        jsr     SIOV
+        jsr     _fn_io_dosiov
 
         setax   #fn_io_buffer
         rts

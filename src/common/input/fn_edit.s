@@ -9,7 +9,7 @@
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
-        .include    "fn_keymap.inc"
+        .include    "fn_data.inc"
 
 ; bool fn_edit()
 ;

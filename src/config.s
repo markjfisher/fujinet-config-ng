@@ -12,7 +12,7 @@
     cld
     mwa     #(__MAIN_START__+__MAIN_SIZE__), sp
 
-    ; clear 256 bytes from SP
+    ; clear 256 bytes from SP, not really required, but useful to ensure no data is in stack
     setax   sp
     jsr     _fn_memclr_page
 

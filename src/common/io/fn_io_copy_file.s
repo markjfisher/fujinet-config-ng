@@ -1,6 +1,5 @@
         .export         _fn_io_copy_file
-        .import         _fn_io_copy_dcb, fn_io_buffer, popa
-        .include        "atari.inc"
+        .import         _fn_io_copy_dcb, fn_io_buffer, popa, _fn_io_dosiov
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include         "fn_data.inc"
@@ -18,7 +17,7 @@
         inc     tmp2
         mva     tmp2, IO_DCB::daux1
         mva     tmp1, IO_DCB::daux2
-        jmp     SIOV
+        jmp     _fn_io_dosiov
 .endproc
 
 .rodata

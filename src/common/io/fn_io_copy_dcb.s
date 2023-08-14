@@ -1,7 +1,8 @@
         .export         _fn_io_copy_dcb
-        .include        "atari.inc"
+
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
+        .include        "fn_data.inc"
 
 ; void _fn_io_copy_dcb(DCB* table)
 ;
@@ -12,12 +13,12 @@
         getax ptr4
 
         ; first 2 bytes always $70, $01, so we can do those manually. saves table space, and loops
-        mva #$70, DCB
-        mva #$01, DCB+1
+        mva #$70, IO_DCB::ddevic
+        mva #$01, IO_DCB::dunit
 
         ; copy 10 bytes of table into DCB
         ldy #9
-:       mva {(ptr4), y}, {DCB+2, y}
+:       mva {(ptr4), y}, {IO_DCB::dcomnd, y}
         dey
         bpl :-
 

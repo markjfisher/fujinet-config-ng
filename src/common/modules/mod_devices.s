@@ -1,5 +1,5 @@
         .export     mod_devices, devices_fetched, device_selected
-        .import     _fn_io_get_device_slots, fn_io_deviceslots, _dev_highlight_line, mod_kb, current_line
+        .import     _fn_io_get_device_slots, fn_io_deviceslots, _fn_highlight_line, mod_kb, current_line
         .import     pusha, pushax, show_list
         .import     _fn_clrscr, _fn_put_help
         .include    "zeropage.inc"
@@ -22,7 +22,7 @@
 
         ; highlight current device
         mva     device_selected, current_line
-        jsr     _dev_highlight_line
+        jsr     _fn_highlight_line
 
         ; handle keyboard
         pusha   #7              ; only 8 entries on screen

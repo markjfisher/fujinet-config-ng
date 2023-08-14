@@ -1,6 +1,6 @@
         .export         _fn_io_mount_all
         .import         _fn_io_siov
-        .include        "atari.inc"
+
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include         "fn_data.inc"

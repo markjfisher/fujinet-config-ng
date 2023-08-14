@@ -1,6 +1,6 @@
         .export         _fn_io_mount_host_slot
-        .import         _fn_io_copy_dcb, fn_io_hostslots
-        .include        "atari.inc"
+        .import         _fn_io_copy_dcb, fn_io_hostslots, _fn_io_dosiov
+
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
@@ -29,7 +29,7 @@ skip:
         setax   #t_io_mount_host_slot
         jsr     _fn_io_copy_dcb
         mva     tmp1, IO_DCB::daux1
-        jmp     SIOV
+        jmp     _fn_io_dosiov
 
 out:
         rts

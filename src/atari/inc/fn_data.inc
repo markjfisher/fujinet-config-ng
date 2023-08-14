@@ -1,4 +1,15 @@
-; mostly used to directly get daux1 address
+; ATARI SPECIFIC VALUES
+;
+; This file must be replicated for each device
+
+; stop double loading
+.ifndef ATESC
+    .include    "atari.inc"
+.endif
+
+; The location where IO_DCB exists on Atari.
+; This structure is used to set the location of parameters that eventually get sent to FN device.
+; I assume all devices have similar.
 .struct IO_DCB
     .org $0300
     ddevic  .byte
@@ -15,8 +26,27 @@
     daux2   .byte
 .endstruct
 
+; Atari specific values for Screen Display bits
 ; show_list constants for screen coordinate starting points etc.
 SL_X        := 2
 SL_Y        := 2
 SL_DX       := 3
 SL_COUNT    := 8
+
+; KEYBOARD codes
+; defines for fn_edit to use for various key codes
+; to allow fn_edit to be device agnostic
+; For other platforms that don't support any of these keys, use 0 for their value so fn_edit skips it.
+
+FNK_ESC     = ATESC         ; Escape
+FNK_ENTER   = ATEOL         ; Return/Enter
+FNK_BS      = ATRUB         ; Backspace
+FNK_DEL     = ATDEL         ; Delete
+FNK_INS     = ATINS         ; Insert
+FNK_LEFT    = ATLRW         ; Left Arrow
+FNK_RIGHT   = ATRRW         ; Right Arrow
+FNK_ASCIIL  = $20           ; Lowest ASCII code inclusive considered normal key press
+FNK_ASCIIH  = $7D           ; Highest ASCII code inclusive considered normal key press
+FNK_HOME    = $01           ; ctrl-a, start of line char
+FNK_END     = $05           ; ctrl-e, end of line char
+FNK_KILL    = $0B           ; ctrl-k, kill to end of line

@@ -1,4 +1,4 @@
-        .export     _dev_edit_hosts_entry
+        .export     _fn_edit_hosts_entry
 
         .import     pushax
         .import     _fn_edit
@@ -16,7 +16,7 @@
 ; void dev_edit_hosts_entry()
 ;
 ; user input in current hosts entry
-.proc _dev_edit_hosts_entry
+.proc _fn_edit_hosts_entry
         ; get screen location for current edit position
         ldx     #(SL_X + SL_DX)
         lda     host_selected

@@ -1,6 +1,6 @@
         .export         _fn_io_get_ssid
         .import         _fn_io_siov, fn_io_net_config
-        .include        "atari.inc"
+
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
@@ -19,4 +19,4 @@
 .define NCsz .sizeof(NetConfig)
 
 t_io_get_ssid:
-        .byte $fe, $40, <fn_io_net_config,     >fn_io_net_config,     $0f, $00, <NCsz, >NCsz, $00, $00
+        .byte $fe, $40, <fn_io_net_config, >fn_io_net_config, $0f, $00, <NCsz, >NCsz, $00, $00

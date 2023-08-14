@@ -1,7 +1,8 @@
         .export     _fn_io_open_directory
-        .import     _fn_io_copy_dcb, fn_io_buffer, fn_dir_path, fn_dir_filter
+
+        .import     _fn_io_copy_dcb, fn_io_buffer, fn_dir_path, fn_dir_filter, _fn_io_dosiov
         .import     pushax, _fn_strncat, _fn_strncpy
-        .include    "atari.inc"
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
@@ -26,8 +27,8 @@ just_path:
         mva     tmp1, IO_DCB::daux1
 
         ; and use path in call to open_directory
-        mwa     #fn_dir_path, DBUFLO
-        jsr     SIOV
+        mwa     #fn_dir_path, IO_DCB::dbuflo
+        jsr     _fn_io_dosiov
         lda     #$00
         ldx     #$00
         rts
@@ -58,7 +59,7 @@ filter_set:
         ; set the host_slot into DAUX1
         mva     tmp1, IO_DCB::daux1
 
-        jsr     SIOV
+        jsr     _fn_io_dosiov
         lda     #$00    ; mark success and fall through to return
 
 error:  ; already non-zero in the error case
