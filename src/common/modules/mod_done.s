@@ -1,6 +1,6 @@
         .export     mod_done, done_is_booting
         .import     pusha, pushax
-        .import     mod_current, _fn_io_set_boot_config, mod_kb, _fn_clrscr, current_line, _fn_highlight_line, _fn_mount_and_boot
+        .import     mod_current, _fn_io_set_boot_config, kb_global, _fn_clrscr, current_line, _fn_highlight_line, _fn_mount_and_boot
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
@@ -34,7 +34,7 @@ not_booting:
         pusha   #Mod::hosts     ; next
         pushax  #done_selected  ; our current selection
         setax   #mod_done_kb
-        jmp     mod_kb          ; rts from this will drop out of module
+        jmp     kb_global          ; rts from this will drop out of module
 
 display_done:
         ; need some screen stuff here, display 

@@ -4,7 +4,7 @@ Feature: IO library test - _fn_io_error
 
   Scenario Outline: execute _fn_io_error should set A
     Given atari simple test setup
-      And I add atari src file "io/fn_io_error.s"
+      And I add common src file "io/fn_io_error.s"
       And I create and load simple application
 
      When I write memory at DSTATS with <init>

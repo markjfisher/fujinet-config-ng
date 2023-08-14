@@ -5,7 +5,7 @@ Feature: IO library test - _fn_io_set_directory_position
   Scenario: execute _fn_io_set_directory_position
     Given atari application test setup
       And I add common io files
-      And I add atari src file "io/fn_io_set_directory_position.s"
+      And I add common src file "io/fn_io_set_directory_position.s"
       And I add file for compiling "features/atari/io/test-apps/test_fn_io_set_directory_position.s"
       And I add file for compiling "features/atari/io/siov-stubs/siov-simple.s"
       And I create and load application

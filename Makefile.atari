@@ -94,12 +94,9 @@ SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.c)
 # remove trailing and leading spaces.
 SOURCES := $(strip $(SOURCES))
 
-#OBJECTS := $(addsuffix .o,$(basename $(addprefix $(TARGETOBJDIR)/,$(notdir $(SOURCES)))))
-#OBJECTS := $(pathsubst %.c,%.o,$(pathsubst %.s,%.o,$(SOURCES)))
 OBJ1 := $(SOURCES:.c=.o)
 OBJECTS := $(OBJ1:.s=.o)
 OBJECTS := $(OBJECTS:$(SRCDIR)/%=$(OBJDIR)/%)
-
 
 DEPENDS := $(OBJECTS:.o=.d)
 LIBS += $(call rwildcard,$(SRCDIR)/$(TARGET)/,*.lib)
@@ -159,6 +156,7 @@ $(BUILD_DIR):
 
 SRC_INC_DIRS = $(sort $(dir $(wildcard $(SRCDIR)/$(TARGET)/*))) $(sort $(dir $(wildcard $(SRCDIR)/common/*)))
 
+# debug:
 #$(info $$SOURCES = ${SOURCES})
 #$(info $$OBJECTS = ${OBJECTS})
 #$(info $$SRC_INC_DIRS = ${SRC_INC_DIRS})

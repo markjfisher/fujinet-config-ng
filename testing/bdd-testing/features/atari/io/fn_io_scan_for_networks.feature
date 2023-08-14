@@ -5,7 +5,7 @@ Feature: IO library test - _fn_io_scan_for_networks
   Scenario Outline: execute _fn_io_scan_for_networks
     Given atari simple test setup
       And I add common io files
-      And I add atari src file "io/fn_io_scan_for_networks.s"
+      And I add common src file "io/fn_io_scan_for_networks.s"
       And I add file for compiling "features/atari/io/siov-stubs/siov-dbuflo1.s"
       And I create and load simple application
       And I write memory at $80 with $00

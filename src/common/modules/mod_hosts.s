@@ -1,5 +1,5 @@
         .export     mod_hosts, hosts_fetched, host_selected
-        .import     _fn_io_get_host_slots, fn_io_hostslots, _fn_highlight_line, mod_kb, current_line
+        .import     _fn_io_get_host_slots, fn_io_hostslots, _fn_highlight_line, kb_global, current_line
         .import     pusha, pushax, show_list, _fn_edit_hosts_entry, mod_current
         .import     _fn_clrscr, _fn_put_help
         .import     s_empty, s_hosts_h1, s_hosts_h2, s_hosts_h3
@@ -36,7 +36,7 @@
         pusha   #Mod::devices   ; next
         pushax  #host_selected  ; memory address of our current host so it can be updated
         setax   #mod_hosts_kb   ; hosts kb handler
-        jmp     mod_kb          ; rts from this will drop out of module
+        jmp     kb_global          ; rts from this will drop out of module
 
 display_hosts:
         pusha   #.sizeof(HostSlot)

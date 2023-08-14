@@ -4,8 +4,9 @@ Feature: Screen Functions test - fn_put_c
 
   Scenario Outline: Running fn_put_c writes internal code to given screen coordinates
     Given atari application test setup
-      And I add atari/screen src file "fn_put_c.s"
-      And I add file for compiling "features/atari/screen/testfn_put_c.s"
+      And I add atari src file "screen/fn_put_c.s"
+      And I add atari src file "screen/fn_put_s.s"
+      And I add file for compiling "features/atari/screen/test_fn_put_c.s"
       And I create and load application
       And I write memory at t_x with <x>
       And I write memory at t_y with <y>

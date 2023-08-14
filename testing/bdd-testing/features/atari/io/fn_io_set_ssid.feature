@@ -5,7 +5,7 @@ Feature: IO library test - _fn_io_set_ssid
   Scenario: execute _fn_io_set_ssid
     Given atari simple test setup
       And I add common io files
-      And I add atari src file "io/fn_io_set_ssid.s"
+      And I add common src file "io/fn_io_set_ssid.s"
       And I add file for compiling "features/atari/io/siov-stubs/siov-simple.s"
       And I create and load simple application
       And I write memory at $80 with $00

@@ -1,4 +1,4 @@
-        .export     mod_kb, current_line, p_current_line
+        .export     kb_global, current_line, p_current_line
         .import     popa, popax
         .import     mod_current, fn_put_c, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
 
@@ -7,19 +7,19 @@
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
 
-; void mod_kb(uint8 offset, uint8 current, uint8 max, uint8 prevMod, uint8 nextMod, void * mod_kb_proc)
+; void kb_global(uint8 offset, uint8 current, uint8 max, uint8 prevMod, uint8 nextMod, void * kb_global_proc)
 ;      offset:  the adjustment for line high lighting for current module, e.g. $20 is for devices/hosts
 ;     current:  the current selected line (zero based)
 ;         max:  the largest index - 1
 ;     prevmod:  which mod to go to if press left key
 ;     nextmod:  which mod to go to if press right key
-; mod_kb_proc:  the module specific keyboard routine to check current keypress for. e.g. pressing enter is mod specific
+; kb_global_proc:  the module specific keyboard routine to check current keypress for. e.g. pressing enter is mod specific
 ;
 ; handle keyboard on modules
-; common up/down/left/right/option/etc routines in here, then calls mod_kb_proc to handle specific module keyboard input
-.proc mod_kb
+; common up/down/left/right/option/etc routines in here, then calls kb_global_proc to handle specific module keyboard input
+.proc kb_global
         ; save the specific module's kb handler
-        getax   mod_kb_proc
+        getax   kb_global_proc
         ; and pop other params
         popax   p_current_line
         popa    next_mod
@@ -60,7 +60,7 @@ not_option:
         ldx     #$00    ; status of module keyboard handler set in x on return
 
         ; use module specific keyboard handler first, so we can override default handling, e.g. L/R arrow keys may not move modules
-        jsr     do_mod_kb
+        jsr     do_kb_global
 
         ; if X=0, then we use global kb handler, as key wasn't processed, A is still keycode
         cpx     #$00
@@ -74,7 +74,7 @@ not_option:
 
 global_kb:
 ; -------------------------------------------------
-; right - set next module, and exit mod_kb
+; right - set next module, and exit kb_global
         cmp     #'*'
         beq     do_right
         cmp     #ATRRW
@@ -87,7 +87,7 @@ do_right:
 
 :
 ; -------------------------------------------------
-; left - set prev module, and exit mod_kb
+; left - set prev module, and exit kb_global
         cmp     #'+'
         beq     do_left
         cmp     #ATLRW
@@ -165,8 +165,8 @@ cont_kb:
         jmp     start_kb_get
 
 
-do_mod_kb:
-        jmp     (mod_kb_proc)
+do_kb_global:
+        jmp     (kb_global_proc)
         ; rts is implicit in the jmp
 
 ; write current line back to the module's version
@@ -181,7 +181,7 @@ save_current_line:
 .bss
 p_current_line: .res 2
 current_line:   .res 1
-mod_kb_proc:    .res 2
+kb_global_proc:    .res 2
 selected_max:   .res 1
 next_mod:       .res 1
 prev_mod:       .res 1

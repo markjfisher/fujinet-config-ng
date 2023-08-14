@@ -5,7 +5,7 @@ Feature: IO library test - _fn_io_close_directory
   Scenario: execute fn_io_close_directory with filter and path
     Given atari application test setup
       And I add common io files
-      And I add atari src file "io/fn_io_close_directory.s"
+      And I add common src file "io/fn_io_close_directory.s"
       And I add file for compiling "features/atari/io/test-apps/test_fn_io_close_directory.s"
       And I add file for compiling "features/atari/io/siov-stubs/siov-simple.s"
       And I create and load application

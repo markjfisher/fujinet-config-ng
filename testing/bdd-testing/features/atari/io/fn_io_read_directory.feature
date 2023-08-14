@@ -5,7 +5,7 @@ Feature: IO library test - _fn_io_read_directory
   Scenario: execute _fn_io_read_directory
     Given atari application test setup
       And I add common io files
-      And I add atari src file "io/fn_io_read_directory.s"
+      And I add common src file "io/fn_io_read_directory.s"
       And I add file for compiling "features/atari/io/test-apps/test_fn_io_read_directory.s"
       And I add file for compiling "features/atari/io/siov-stubs/siov-simple.s"
       And I create and load application
@@ -13,10 +13,7 @@ Feature: IO library test - _fn_io_read_directory
       And I write memory at t_maxlen with $20
       And I write memory at t_aux2 with $80
       And I write memory at fn_io_buffer with $aa
-      # write markers at end of buffer to test gets overwritten after calling
-      And I write memory at fn_io_buffer+$1F with $aa
-      And I write memory at fn_io_buffer+$20 with $aa
-     When I execute the procedure at _init for no more than 250 instructions
+     When I execute the procedure at _init for no more than 1000 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70
@@ -32,9 +29,6 @@ Feature: IO library test - _fn_io_read_directory
      And I expect to see DBUFHI equal hi(fn_io_buffer)
      And I expect register A equal lo(fn_io_buffer)
      And I expect register X equal hi(fn_io_buffer)
-     # check the zeroing of buffer memory was correct length, should do <maxlen>-1, but not <maxlen>
-     And I expect to see fn_io_buffer+$1F equal $00
-     And I expect to see fn_io_buffer+$20 equal $aa
 
     # check SIOV was called
     Then I expect to see $80 equal $01

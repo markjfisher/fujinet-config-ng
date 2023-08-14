@@ -1,5 +1,5 @@
         .export     mod_devices, devices_fetched, device_selected
-        .import     _fn_io_get_device_slots, fn_io_deviceslots, _fn_highlight_line, mod_kb, current_line
+        .import     _fn_io_get_device_slots, fn_io_deviceslots, _fn_highlight_line, kb_global, current_line
         .import     pusha, pushax, show_list
         .import     _fn_clrscr, _fn_put_help
         .include    "zeropage.inc"
@@ -30,7 +30,7 @@
         pusha   #Mod::done      ; next
         pushax  #device_selected   ; our current host
         setax   #mod_devices_kb
-        jmp     mod_kb          ; rts from this will drop out of module
+        jmp     kb_global          ; rts from this will drop out of module
 
 
 display_devices:

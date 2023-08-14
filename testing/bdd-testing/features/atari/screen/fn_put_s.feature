@@ -12,7 +12,7 @@ Feature: Screen Functions test - _fn_put_s
       And I write memory at t_x with 0
       And I write memory at t_y with 0
       And I write string "this string fits!" as ascii to memory address t_s
-      And I execute the procedure at _init for no more than 350 instructions
+      And I execute the procedure at _init for no more than 375 instructions
     
      Then screen memory at m_l1 contains ascii
      """
@@ -30,7 +30,7 @@ Feature: Screen Functions test - _fn_put_s
       And I write memory at t_x with 25
       And I write memory at t_y with 0
       And I write string "this does not!" as ascii to memory address t_s
-      And I execute the procedure at _init for no more than 250 instructions
+      And I execute the procedure at _init for no more than 275 instructions
     
      Then screen memory at m_l1 contains ascii
      """

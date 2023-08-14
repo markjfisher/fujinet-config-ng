@@ -2,7 +2,7 @@
         .import     mod_current, host_selected, _fn_io_close_directory, fn_dir_path, fn_dir_filter
         .import     pusha, pushax, fn_put_c, _fn_put_s, _fn_strlen, _fn_memclr, _fn_clrscr
         .import     _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory, _fn_io_error, _fn_io_mount_host_slot
-        .import     _bar_clear, _fn_highlight_line, current_line, mod_kb, _fn_io_read_directory_block
+        .import     _bar_clear, _fn_highlight_line, current_line, kb_global, _fn_io_read_directory_block
         .include    "zeropage.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
@@ -95,7 +95,7 @@ dir_end:
         pusha   #Mod::files     ; L/R arrow keys this will be overridden by local kb handler
         pushax  #mf_selected    ; memory address of our current host so it can be updated
         setax   #mod_files_kb   ; hosts kb handler
-        jmp     mod_kb          ; rts from this will drop out of module
+        jmp     kb_global          ; rts from this will drop out of module
 
 error:
         rts
