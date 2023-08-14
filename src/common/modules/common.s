@@ -7,9 +7,13 @@
         .include    "fn_data.inc"
         .include    "fn_mods.inc"
 
+; --------------------------------------------
+; code common to multiple modules
+; --------------------------------------------
+
 ; void show_list(uint8 dataSize, void * ptrToData)
 ;
-; common code for hosts and devices that show 8 strings on screen in list fashion.
+; show 8 strings on screen in list fashion, used on hosts and devices.
 .proc show_list
         getax   ptr1            ; ptrToData, the string to display's location
         popa    sl_size         ; how much to move down each data block

@@ -22,7 +22,7 @@ do_kb:  lda     KEYBDV+5
 
 ; char fn_input()
 ;
-; non blocking keyboard fetch of single char
+; non blocking keyboard fetch of single char, returns 0 in A if no key, otherwise atascii code
 .proc _fn_input
         jsr     _kbhit
         beq     no_key

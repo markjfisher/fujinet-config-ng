@@ -264,7 +264,7 @@ l1:
         lda     aC
         ldx     aX
         ldy     aY
-        jsr     _fn_put_c
+        jsr     fn_put_c
 .endmacro
 
 .macro get_scrloc aX, aY

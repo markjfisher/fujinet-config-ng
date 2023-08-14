@@ -1,6 +1,6 @@
         .export     mod_files
         .import     mod_current, host_selected, _fn_io_close_directory, fn_dir_path, fn_dir_filter
-        .import     pusha, pushax, _fn_put_c, _fn_put_s, _fn_strlen, _fn_memclr, _fn_clrscr
+        .import     pusha, pushax, fn_put_c, _fn_put_s, _fn_strlen, _fn_memclr, _fn_clrscr
         .import     _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory, _fn_io_error, _fn_io_mount_host_slot
         .import     _bar_clear, _dev_highlight_line, current_line, mod_kb, _fn_io_read_directory_block
         .include    "zeropage.inc"
@@ -138,7 +138,7 @@ print_entry:
         ldx     #$00
         ldy     mf_entry_index
         lda     mf_dir_char
-        jsr     _fn_put_c
+        jsr     fn_put_c
 
 skip_show_dir_char:
         put_s   #$02, mf_entry_index, ptr1

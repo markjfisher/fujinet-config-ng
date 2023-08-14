@@ -1,6 +1,6 @@
         .export         _main, _fn_get_scrloc
         .export         t_loc, t_x, t_y, t_c, t_save_x, t_save_y
-        .import         _fn_put_c
+        .import         fn_put_c
 
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
@@ -11,7 +11,7 @@
         ldx     t_x
         ldy     t_y
         lda     t_c
-        jmp     _fn_put_c
+        jmp     fn_put_c
 .endproc
 
 ; -----------------------------------------

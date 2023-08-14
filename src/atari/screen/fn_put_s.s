@@ -1,5 +1,7 @@
-        .export     _fn_put_s
+        .export     _fn_put_s, ascii_to_code
+
         .import     _fn_get_scrloc, popax
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
@@ -35,19 +37,8 @@ next_char:
         lda     (ptr3), y       ; char to print in A
         beq     exit            ; end of string
 
-        ; for known strings, we just encode them internally instead of converting to avoid translating
-        ; this is only really needed for externally sourced strings
-        ; ---------------------------------
-        ; ascii char to screen code from cc65/libsrc/atari/cputc.s
-        asl     a               ; shift out the inverse bit
-        adc     #$c0            ; grab the inverse bit; convert ATASCII to screen code
-        bpl     codeok          ; screen code ok?
-        eor     #$40            ; needs correction
-codeok: lsr     a               ; undo the shift
-        bcc     :+
-        eor     #$80            ; restore the inverse bit
-        ; ---------------------------------
-:       sta     (ptr4), y       ; print char
+        jsr     ascii_to_code
+        sta     (ptr4), y       ; print char
 
         inc     tmp1            ; x+1, small numbers so no need to check C
         lda     tmp1
@@ -59,4 +50,17 @@ codeok: lsr     a               ; undo the shift
 exit:
         setax   ptr4            ; exit with screen location of initial byte in A/X
         rts
+.endproc
+
+; common routine to convert ascii code in A into internal code for screen
+; from cc65/libsrc/atari/cputc.s
+.proc   ascii_to_code
+        asl     a               ; shift out the inverse bit
+        adc     #$c0            ; grab the inverse bit; convert ATASCII to screen code
+        bpl     codeok          ; screen code ok?
+        eor     #$40            ; needs correction
+codeok: lsr     a               ; undo the shift
+        bcc     :+
+        eor     #$80            ; restore the inverse bit
+:       rts
 .endproc

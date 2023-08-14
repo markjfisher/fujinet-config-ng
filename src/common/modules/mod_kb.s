@@ -1,6 +1,6 @@
         .export     mod_kb, current_line, p_current_line
         .import     popa, popax
-        .import     mod_current, _fn_put_c, _fn_input_ucase, _dev_highlight_line, _fn_is_option, done_is_booting
+        .import     mod_current, fn_put_c, _fn_input_ucase, _dev_highlight_line, _fn_is_option, done_is_booting
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -50,7 +50,7 @@ not_option:
         ; print the char on screen to see it (debug - TODO: remove)
         ldx     #35
         ldy     #15
-        jsr     _fn_put_c
+        jsr     fn_put_c
 
 ; ----------------------------------------------------------
 ; KEYBOARD HANDLING SWITCH STATEMENT

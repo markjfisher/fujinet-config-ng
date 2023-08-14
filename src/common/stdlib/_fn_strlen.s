@@ -4,8 +4,8 @@
 
 ; uint8 fn_strlen(char *p)
 ;
-; returns string length (max 255) of string pointed at by p
-; if no null was found, returns 0
+; returns string length (max 254) of string pointed at by p
+; if no null was found, returns $ff as error
 .proc _fn_strlen
         getax   ptr4        ; store p in ZP
 
@@ -13,9 +13,12 @@
 :       lda     (ptr4), y
         beq     out
         iny
-        beq     out     ; rolled over to 0, exit
+        beq     err     ; rolled over to 0, exit with err
         bne     :-      ; always
-
+err:
+        lda #$ff
+        ldx #$00
+        rts
 out:
         ldx     #$00
         tya

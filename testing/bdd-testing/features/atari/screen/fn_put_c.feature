@@ -1,11 +1,11 @@
-Feature: Screen Functions test - _fn_put_c
+Feature: Screen Functions test - fn_put_c
 
-  This tests Atari screen function _fn_put_c to place a character within the display area
+  This tests Atari screen function fn_put_c to place a character within the display area
 
-  Scenario Outline: Running _fn_put_c writes internal code to given screen coordinates
+  Scenario Outline: Running fn_put_c writes internal code to given screen coordinates
     Given atari application test setup
       And I add atari/screen src file "fn_put_c.s"
-      And I add file for compiling "features/atari/screen/test_fn_put_c.s"
+      And I add file for compiling "features/atari/screen/testfn_put_c.s"
       And I create and load application
       And I write memory at t_x with <x>
       And I write memory at t_y with <y>
