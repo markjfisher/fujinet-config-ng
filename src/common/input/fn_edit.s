@@ -1,9 +1,7 @@
         .export     _fn_edit
-        .export     fe_max_len, fe_screen_loc, fe_str, fe_buf_len, fe_crs_idx, s_copy
 
         .import     s_empty     ; the "<Empty>" string
         .import     popax, pushax
-        .import     _fn_put_s
         .import     _fn_strncpy
         .import     _fn_strlen
         .import     _fn_input
@@ -49,10 +47,10 @@ err:
         lda     #$00
         rts
 
-        ; record the initial length, and set that as cursor position. Note, cursor will be 1 char after string
-        ; as string is from 0..length-1, so at length, the cursor is 1 past the string.
+        ; record the initial length, and set that as cursor position
 :       sta     fe_buf_len
         sta     fe_crs_idx
+        jsr     cap_cursor      ; ensure the cursor doesn't start beyond bounds if initial string is at maxlen already
 
         ; copy string into buffer
         pushax  #s_copy         ; the memory location of buffer
@@ -69,10 +67,12 @@ err:
         beq     :+              ; skip the double set of ptr4
 
 not_empty:
-        ; initial cursor at end of string
+        ; initial cursor at end of string - cursor either 1 past, or on last character (if string is max size)
         mwa     fe_screen_loc, ptr4
 :       ldy     fe_crs_idx
-        mva     #$80, {(ptr4), y}
+        lda     (ptr4), y
+        eor     #$80
+        sta     (ptr4), y
 
         mwa     #s_copy, ptr3
 
@@ -212,11 +212,12 @@ can_ins:
         sta     (ptr3), y
         dey
         dey
+        bmi     :+              ; were we editing at position 0? TODO: will this break with long strings?
         cpy     fe_crs_idx
         bcs     :-
 
         ; put space at our current location, y is 1 less than cursor location at moment
-        iny
+:       iny
         lda     #' '
         sta     (ptr3), y
 
@@ -279,6 +280,48 @@ not_left:
         jmp     keyboard_loop
 
 not_right:
+
+; --------------------------------------------------------------------------
+; HOME
+        cmp     #FNK_HOME
+        bne     not_home
+
+        ; set cursor to 0
+        mva     #$00, fe_crs_idx
+        jsr     refresh_line
+        jmp     keyboard_loop
+
+not_home:
+
+; --------------------------------------------------------------------------
+; END
+        cmp     #FNK_END
+        bne     not_end_key
+
+        ; set cursor to buf len (end of editing buffer)
+        mva     fe_buf_len, fe_crs_idx
+        jsr     cap_cursor
+
+:       jsr     refresh_line
+        jmp     keyboard_loop
+
+not_end_key:
+
+; --------------------------------------------------------------------------
+; KILL
+        cmp     #FNK_KILL ; kill text to end of buffer
+        bne     not_kill
+
+        lda     #$00
+:       sta     (ptr3), y       ; current cursor position forward should become 0s
+        iny
+        cpy     fe_max_len
+        bcc     :-
+
+        jsr     refresh_line
+        jmp     keyboard_loop
+
+not_kill:
 
 ; --------------------------------------------------------------------------
 ; ATASCII CHAR (between FNK_ASCIIL and FNK_ASCIIH inclusive)
@@ -480,6 +523,16 @@ non_space2:
 end_trimming:
         rts
 
+cap_cursor:
+        ; if we're at max-1, put us at max-2 as can't move cursor into last byte
+        ldx     fe_max_len
+        dex
+        cpx     fe_crs_idx
+        bne     :+
+        dex
+        stx     fe_crs_idx
+
+:       rts
 .endproc
 
 .bss

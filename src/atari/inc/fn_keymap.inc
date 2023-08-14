@@ -15,6 +15,6 @@ FNK_LEFT    = ATLRW         ; Left Arrow
 FNK_RIGHT   = ATRRW         ; Right Arrow
 FNK_ASCIIL  = $20           ; Lowest ASCII code inclusive considered normal key press
 FNK_ASCIIH  = $7D           ; Highest ASCII code inclusive considered normal key press
-FNK_START   = $01           ; ctrl-a, start of line char
+FNK_HOME    = $01           ; ctrl-a, start of line char
 FNK_END     = $05           ; ctrl-e, end of line char
 FNK_KILL    = $0B           ; ctrl-k, kill to end of line
