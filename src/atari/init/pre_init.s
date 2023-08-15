@@ -8,7 +8,7 @@
 ; this segment is loaded during disk load before dlist and main are loaded
 ; the memory location will be written over by later blocks, which is fine, it's only needed for one time initial setup
 
-.segment "PREINIT"
+.segment "INIT"
 .proc pre_init
         ; detect banked values for NMIEN for up to MAX_BANKS (defined in detect_banks.s)
         jsr     detect_banks

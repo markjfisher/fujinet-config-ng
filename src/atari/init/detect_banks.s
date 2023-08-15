@@ -3,7 +3,7 @@
         .include    "atari.inc"
         .include    "fn_macros.inc"
 
-.segment "PREINIT"
+.segment "INIT"
 
 MAX_BANKS       := 8
 ext_b           := $4000
@@ -123,10 +123,10 @@ pause_vcount1:
 .endproc
 
 ; don't store it in the file, just some memory that will be overwritten after routine finished
-.segment "PREINIT2"
+.segment "INIT_NS"
 bsav:   .res 16
 banks:  .res 64
 
-.segment "LOWDATA"
+.segment "LOW_DATA"
 bank_count:     .byte 0
 bank_table:     .byte 0, 0, 0, 0, 0, 0, 0, 0

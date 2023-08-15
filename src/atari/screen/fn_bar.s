@@ -12,11 +12,11 @@
         mva     #>__PMG_START__, PMBASE
         mva     #$03, GRACTL    ; turn on players and missiles
 
-        mva     #$ff, M0PL
-        sta           M1PL
-        sta           M2PL
-        sta           M3PL
-        sta           P0PL
+        mva     #$ff, SIZEP0
+        sta           SIZEP1
+        sta           SIZEP2
+        sta           SIZEP3
+        sta           SIZEM
 
         ; set positions M0PF to P3PF from bar_positions table
         mwa     #bar_positions, ptr1
@@ -29,14 +29,14 @@
 .endproc
 
 .proc _bar_clear
-        ; clear __PMG_START__ for 1024 bytes
-        mwa     #__PMG_START__,     ptr1
-        mwa     #__PMG_START__+256, ptr2
+        ; clear __PMG_START__ for from 384+28 to 1024 bytes
+        ; The extra 28 come from the fact the PMG is not shown in first 7 lines (4 bytes per line)
+        mwa     #__PMG_START__+412, ptr2        ; slight overlap here, but really doesn't matter
         mwa     #__PMG_START__+512, ptr3
         mwa     #__PMG_START__+768, ptr4
         lda     #$00
         ldy     #$00
-:       sta     (ptr1), y
+:
         sta     (ptr2), y
         sta     (ptr3), y
         sta     (ptr4), y
