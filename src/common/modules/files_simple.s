@@ -1,12 +1,13 @@
         .export     files_simple
+        .export     debug
 
         ; debug only
         .export     mf_dir_pos, mf_entry_index, mf_selected
 
         .import     mod_current, host_selected, kb_global
-        .import     pusha, pushax, fn_put_c, _fn_strlen, _fn_memclr, _fn_put_s, _fn_clr_highlight, _fn_clrscr
+        .import     pusha, pushax, fn_put_c, _fn_strlen, _fn_memclr, _fn_put_s, _fn_clr_highlight, _fn_clrscr, _fn_strncat
         .import     _fn_highlight_line, current_line
-        .import     fn_dir_path, fn_dir_filter
+        .import     fn_dir_path, fn_dir_filter, fn_io_buffer
         .import     _fn_io_close_directory, _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory
         .import     _fn_io_error, _fn_io_mount_host_slot
 
@@ -64,14 +65,16 @@ no_error2:
         setax   mf_dir_pos
         jsr     _fn_io_set_directory_position
 
-
 ; --------------------------------------------------------------------------
 ; SHOW PAGE OF ENTRIES
 ; --------------------------------------------------------------------------
         mva     #$00, mf_entry_index
         jsr     _fn_clrscr      ; left as late as possible before we start redisplaying entries
 l_entries:
-        pusha   #35             ; aka DIR_MAX_LEN, the max length of each line for directory/file names
+        ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
+        mva     #$00, mf_dir_or_file
+
+        pusha   #DIR_MAX_LEN    ; the max length of each line for directory/file names
         lda     #$00            ; special aux2 param
         jsr     _fn_io_read_directory
 
@@ -138,7 +141,7 @@ do_right:
         bcc     exit_reloop
 
         mva     #$00, mf_selected
-        adw     mf_dir_pos, #$10
+        adw     mf_dir_pos, #$10 ; TODO: FIX MACRO TO USE #DIR_PG_CNT
         jmp     l_files
 
 not_right:
@@ -157,7 +160,7 @@ do_left:
 
         ; set selected to first, reduce dir_pos by page count and reload dirs
         mva     #$00, mf_selected
-        sbw     mf_dir_pos, #$10
+        sbw     mf_dir_pos, #$10    ; TODO: FIX THIS TO USE #DIR_PG_CNT IN MACROS
         jmp     l_files
 
 ; -------------------------------------------------
@@ -188,7 +191,7 @@ do_up:
 
         ; valid up, reduce by page count, but set our cursor on last line to look cool
         mva     #(DIR_PG_CNT-1), mf_selected
-        sbw     mf_dir_pos, #$10
+        sbw     mf_dir_pos, #$10        ; TODO: FIX THIS TO USE #DIR_PG_CNT 
         jmp     l_files
 
         ; otherwise pass back to the global to process generic UP as though we didn't handle it at all
@@ -220,7 +223,7 @@ do_down:
 
         ; valid down, increase by page count, but set our cursor on first line to look cool
         mva     #$00, mf_selected
-        adw     mf_dir_pos, #$10
+        adw     mf_dir_pos, #$10    ; TODO: FIX MACRO SO CAN USE #DIR_PG_CNT
         jmp     l_files
 
         ; otherwise pass back to the global to process generic DOWN
@@ -247,12 +250,22 @@ not_down:
         bne     :+
         ; go into the dir, or choose the file
 
-        ; we are highlighting a DIR if
+        ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
+        ldx     mf_selected
+        lda     mf_dir_or_file, x
 
+        ; 0 is a file, 1 is a dir
+        beq     enter_is_file
+
+        ; we're a directory, so go into it, and restart directory listing.
+        jsr     _fn_clr_highlight
+        jsr     enter_dir
+        mva     #$00, mf_selected
+        jmp     l_files
 
 enter_is_file:
-        ; move to devices module
-        mwa     #Mod::devices, mod_current
+        ; move to 'select host slot' module
+        mwa     #Mod::select_host_slot, mod_current
 
         ldx     #$02
         rts
@@ -303,6 +316,10 @@ print_entry:
         bne     skip_show_dir_char
         ldx     #$00
         ldy     mf_entry_index
+
+        ; save the fact this is a dir
+        mva     #$01, {mf_dir_or_file, y} 
+
         lda     #DIR_CHAR
         jsr     fn_put_c
 
@@ -310,6 +327,46 @@ skip_show_dir_char:
         put_s   #$02, mf_entry_index, ptr1
         rts
 
+enter_dir:
+        jsr     debug
+        ; open dir for current path, grab the full name of this selected path, and append it to current path string.
+        lda     host_selected
+        jsr     _fn_io_open_directory
+
+        ; set the directory position to top + highlighted
+        lda     mf_selected
+        sta     tmp1
+        mva     #$00, tmp2
+        adw     mf_dir_pos, tmp1, tmp3      ; pretend tmp1 is word value, and save result in tmp3/4
+
+        setax   tmp3                        ; store this in A/X for call
+        jsr     _fn_io_set_directory_position
+
+        ; read the selected directory for as many bytes as we are able given current path value, and append path with it.
+        setax   #fn_dir_path        
+        jsr     _fn_strlen
+        sta     tmp1
+
+        lda     #$e0            ; max length of path
+        sec
+        sbc     tmp1            ; subtract current path length
+        sta     mf_entry_index  ; save it in our safe temp variable used for looping elsewhere
+        jsr     pusha           ; store the reduced length on stack for call
+        lda     #$00            ; special aux2 param
+        jsr     _fn_io_read_directory
+
+        ; fn_io_buffer contains the dir name we need to append to the path
+
+        pushax  #fn_dir_path     ; dst, where we will apend the path to.
+        pushax  #fn_io_buffer    ; src, which has a trailing slash conveniently
+        lda     mf_entry_index  ; the free space in path
+        jmp     _fn_strncat
+        ; implicit rts
+.endproc
+
+; easy to spot in altirra
+.proc   debug
+        rts
 .endproc
 
 .bss
@@ -321,3 +378,6 @@ mf_entry_index: .res 1
 mf_selected:    .res 1
 ; the total number of entries on the current screen
 mf_entries_cnt: .res 1
+
+
+mf_dir_or_file: .res DIR_PG_CNT
