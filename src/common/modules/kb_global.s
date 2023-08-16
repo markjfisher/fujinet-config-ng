@@ -6,20 +6,21 @@
         .include    "atari.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
+        .include    "fn_data.inc"
 
-; void kb_global(uint8 offset, uint8 current, uint8 max, uint8 prevMod, uint8 nextMod, void * kb_global_proc)
+; void kb_global(uint8 offset, uint8 current, uint8 max, uint8 prevMod, uint8 nextMod, void * kb_mod_proc)
 ;      offset:  the adjustment for line high lighting for current module, e.g. $20 is for devices/hosts
 ;     current:  the current selected line (zero based)
 ;         max:  the largest index - 1
 ;     prevmod:  which mod to go to if press left key
 ;     nextmod:  which mod to go to if press right key
-; kb_global_proc:  the module specific keyboard routine to check current keypress for. e.g. pressing enter is mod specific
+; kb_mod_proc:  the module specific keyboard routine to check current keypress for. e.g. pressing enter is mod specific
 ;
 ; handle keyboard on modules
-; common up/down/left/right/option/etc routines in here, then calls kb_global_proc to handle specific module keyboard input
+; common up/down/left/right/option/etc routines in here, then calls kb_mod_proc to handle specific module keyboard input
 .proc kb_global
         ; save the specific module's kb handler
-        getax   kb_global_proc
+        getax   kb_mod_proc
         ; and pop other params
         popax   p_current_line
         popa    next_mod
@@ -60,7 +61,7 @@ not_option:
         ldx     #$00    ; status of module keyboard handler set in x on return
 
         ; use module specific keyboard handler first, so we can override default handling, e.g. L/R arrow keys may not move modules
-        jsr     do_kb_global
+        jsr     do_kb_module
 
         ; if X=0, then we use global kb handler, as key wasn't processed, A is still keycode
         cpx     #$00
@@ -75,9 +76,9 @@ not_option:
 global_kb:
 ; -------------------------------------------------
 ; right - set next module, and exit kb_global
-        cmp     #'*'
+        cmp     #FNK_RIGHT
         beq     do_right
-        cmp     #ATRRW
+        cmp     #FNK_RIGHT2
         beq     do_right
         bne     :+
 
@@ -88,9 +89,9 @@ do_right:
 :
 ; -------------------------------------------------
 ; left - set prev module, and exit kb_global
-        cmp     #'+'
+        cmp     #FNK_LEFT
         beq     do_left
-        cmp     #ATLRW
+        cmp     #FNK_LEFT2
         beq     do_left
         bne     :+
 
@@ -125,9 +126,9 @@ one_or_over:
 :
 ; -------------------------------------------------
 ; up
-        cmp     #'-'
+        cmp     #FNK_UP
         beq     do_up
-        cmp     #ATURW
+        cmp     #FNK_UP2
         beq     do_up
         bne     :+
 
@@ -143,9 +144,9 @@ do_up:
 :
 ; -------------------------------------------------
 ; down
-        cmp     #'='
+        cmp     #FNK_DOWN
         beq     do_down
-        cmp     #ATDRW
+        cmp     #FNK_DOWN2
         beq     do_down
         bne     :+
 
@@ -165,8 +166,8 @@ cont_kb:
         jmp     start_kb_get
 
 
-do_kb_global:
-        jmp     (kb_global_proc)
+do_kb_module:
+        jmp     (kb_mod_proc)
         ; rts is implicit in the jmp
 
 ; write current line back to the module's version
@@ -181,7 +182,7 @@ save_current_line:
 .bss
 p_current_line: .res 2
 current_line:   .res 1
-kb_global_proc:    .res 2
+kb_mod_proc:    .res 2
 selected_max:   .res 1
 next_mod:       .res 1
 prev_mod:       .res 1

@@ -28,10 +28,14 @@
 
 ; Atari specific values for Screen Display bits
 ; show_list constants for screen coordinate starting points etc.
-SL_X        := 2
-SL_Y        := 2
-SL_DX       := 3
-SL_COUNT    := 8
+SL_X        := 2    ; the top right corner X posisition to start printing the list
+SL_Y        := 2    ; the top left corner Y position to start printing the list
+SL_DX       := 3    ; The X value to add to the index position before printing the string
+SL_COUNT    := 8    ; how many entries are in a Screen List
+
+
+; Directory ASCII Character Code
+DIR_CHAR    := $58  ; 'X' until I do the fonts
 
 ; KEYBOARD codes
 ; defines for fn_edit to use for various key codes
@@ -44,7 +48,13 @@ FNK_BS      = ATRUB         ; Backspace
 FNK_DEL     = ATDEL         ; Delete
 FNK_INS     = ATINS         ; Insert
 FNK_LEFT    = ATLRW         ; Left Arrow
+FNK_LEFT2   = $2B           ; Left Arrow   Alt "+"
 FNK_RIGHT   = ATRRW         ; Right Arrow
+FNK_RIGHT2  = $2A           ; Right Arrow  Alt "*" 
+FNK_UP      = ATURW         ; Up Arrow
+FNK_UP2     = $2D           ; Up Arrow     Alt "-"
+FNK_DOWN    = ATDRW         ; Down Arrow
+FNK_DOWN2   = $3D           ; Down Arrow   Alt "="
 FNK_ASCIIL  = $20           ; Lowest ASCII code inclusive considered normal key press
 FNK_ASCIIH  = $7D           ; Highest ASCII code inclusive considered normal key press
 FNK_HOME    = $01           ; ctrl-a, start of line char
