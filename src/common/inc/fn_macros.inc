@@ -185,14 +185,15 @@ s2:
     stx     1+(arg1)
 .endmacro
 
-; adw: adds word values together.
-; adw src #$40
-; adw src #$4000
-; adw a b
-; adw src #$40 dst
-; adw src #$4000 dst
-; adw a b c
+; adw: adds word values together, or immediate bytes.
+; adw src, #$40
+; adw src, #$4000
+; adw a, b
+; adw src, #$40, dst
+; adw src, #$4000, dst
+; adw a, b, c
 .macro adw arg1, arg2, arg3
+    .local l1_a, l1_b
     ; ensure arg1/arg3 don't have immediate values. They are always locations.
     .if (.match (.left (1, {arg1}), #))
         .error "adw: arg1 cannot be literal"
@@ -205,19 +206,36 @@ s2:
     .if (.match (.left (1, {arg2}), #))
         ; immediate value in arg2
         lda     arg1
-        ; TODO - can we do a short version of this if arg2 < $100, as it's only 1 byte
         adc     #<(.right (.tcount ({arg2})-1, {arg2}))
         .ifnblank arg3
             sta     arg3
         .else
             sta     arg1
         .endif
-        lda     1+(arg1)
-        adc     #>(.right (.tcount ({arg2})-1, {arg2}))
-        .ifnblank arg3
-            sta     1+(arg3)
+
+        .if .hibyte (.right (.tcount ({arg2})-1, {arg2})) = 0
+            .ifnblank arg3
+                ; must store high byte of arg1 in arg3 still, and adjust if carry set
+                lda 1+(arg1)
+                sta 1+(arg3)
+                bcc l1_a
+                inc 1+(arg3)
+l1_a:
+            .else
+                ; the literal was only a byte, so only need to check carry
+                bcc l1_b
+                inc 1+(arg1)
+l1_b:
+            .endif
         .else
-            sta     1+(arg1)
+            ; full add of 2nd byte of constant
+            lda     1+(arg1)
+            adc     #>(.right (.tcount ({arg2})-1, {arg2}))
+            .ifnblank arg3
+                sta     1+(arg3)
+            .else
+                sta     1+(arg1)
+            .endif
         .endif
     .else
         lda     arg1
@@ -236,6 +254,72 @@ s2:
         .endif
     .endif
 .endmacro
+
+; sbw: subtracts word values together, or immediate bytes.
+; complement of adw
+.macro sbw arg1, arg2, arg3
+    .local l1_a, l1_b
+    ; ensure arg1/arg3 don't have immediate values. They are always locations.
+    .if (.match (.left (1, {arg1}), #))
+        .error "sbw: arg1 cannot be literal"
+    .endif
+    .if (.match (.left (1, {arg3}), #))
+        .error "sbw: arg3 cannot be literal"
+    .endif
+
+    sec
+    .if (.match (.left (1, {arg2}), #))
+        ; immediate value in arg2
+        lda     arg1
+        sbc     #<(.right (.tcount ({arg2})-1, {arg2}))
+        .ifnblank arg3
+            sta     arg3
+        .else
+            sta     arg1
+        .endif
+
+        .if .hibyte (.right (.tcount ({arg2})-1, {arg2})) = 0
+            .ifnblank arg3
+                ; must store high byte of arg1 in arg3 still, and adjust if carry set
+                lda 1+(arg1)
+                sta 1+(arg3)
+                bcs l1_a
+                dec 1+(arg3)
+l1_a:
+            .else
+                ; the literal was only a byte, so only need to check carry
+                bcs l1_b
+                dec 1+(arg1)
+l1_b:
+            .endif
+        .else
+            ; full add of 2nd byte of constant
+            lda     1+(arg1)
+            sbc     #>(.right (.tcount ({arg2})-1, {arg2}))
+            .ifnblank arg3
+                sta     1+(arg3)
+            .else
+                sta     1+(arg1)
+            .endif
+        .endif
+    .else
+        lda     arg1
+        sbc     arg2
+        .ifnblank arg3
+            sta     arg3
+        .else
+            sta     arg1
+        .endif
+        lda     1+(arg1)
+        sbc     1+(arg2)
+        .ifnblank arg3
+            sta     1+(arg3)
+        .else
+            sta     1+(arg1)
+        .endif
+    .endif
+.endmacro
+
 
 .macro ada arg1
     .local l1

@@ -36,6 +36,7 @@ SL_COUNT    := 8    ; how many entries are in a Screen List
 
 ; Directory ASCII Character Code
 DIR_CHAR    := $58  ; 'X' until I do the fonts
+DIR_PG_CNT  := $10  ; Number of entries to display on a page in the file listing
 
 ; KEYBOARD codes
 ; defines for fn_edit to use for various key codes
