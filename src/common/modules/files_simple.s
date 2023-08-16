@@ -1,5 +1,5 @@
         .export     files_simple
-        .export     debug
+        .export     debug, mf_dir_or_file
 
         ; debug only
         .export     mf_dir_pos, mf_entry_index, mf_selected
@@ -72,7 +72,8 @@ no_error2:
         jsr     _fn_clrscr      ; left as late as possible before we start redisplaying entries
 l_entries:
         ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
-        mva     #$00, mf_dir_or_file
+        ldx     mf_entry_index
+        mva     #$00, {mf_dir_or_file, x}
 
         pusha   #DIR_MAX_LEN    ; the max length of each line for directory/file names
         lda     #$00            ; special aux2 param
@@ -250,6 +251,7 @@ not_down:
         bne     :+
         ; go into the dir, or choose the file
 
+        jsr     debug
         ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
         ldx     mf_selected
         lda     mf_dir_or_file, x
@@ -317,6 +319,7 @@ print_entry:
         ldx     #$00
         ldy     mf_entry_index
 
+        jsr     debug
         ; save the fact this is a dir
         mva     #$01, {mf_dir_or_file, y} 
 
@@ -328,7 +331,6 @@ skip_show_dir_char:
         rts
 
 enter_dir:
-        jsr     debug
         ; open dir for current path, grab the full name of this selected path, and append it to current path string.
         lda     host_selected
         jsr     _fn_io_open_directory
