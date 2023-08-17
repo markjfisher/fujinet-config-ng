@@ -169,7 +169,7 @@ do_left:
 ; exit back to main KB handler with a reloop. this was a key movement we are ignoring but want to continue in files module.
 ; Code is in the middle so all branches can reach it
 exit_reloop:
-        ldx     #$01
+        ldx     #KBH::RELOOP
         rts
 
 
@@ -198,7 +198,7 @@ do_up:
 
         ; otherwise pass back to the global to process generic UP as though we didn't handle it at all
 :       lda     #FNK_UP         ; reload the key into A
-        ldx     #$00
+        ldx     #KBH::NOT_HANDLED
         rts
 
 not_up:
@@ -230,7 +230,7 @@ do_down:
 
         ; otherwise pass back to the global to process generic DOWN
 :       lda     #FNK_DOWN         ; reload the key into A
-        ldx     #$00
+        ldx     #KBH::NOT_HANDLED
         rts
 
 
@@ -242,7 +242,7 @@ not_down:
 
         ; ESC for files means return to HOSTS list
         mva     #Mod::hosts, mod_current
-        ldx     #$02    ; main kb handler exit
+        ldx     #KBH::EXIT    ; main kb handler exit
         rts
 
 not_esc:
@@ -267,10 +267,10 @@ not_esc:
         jmp     l_files
 
 enter_is_file:
-        ; move to 'select host slot' module
-        mwa     #Mod::select_host_slot, mod_current
+        ; move to 'select device slot' module
+        mwa     #Mod::select_device_slot, mod_current
 
-        ldx     #$02
+        ldx     #KBH::EXIT
         rts
 
 not_enter:
@@ -310,7 +310,7 @@ not_enter:
 not_parent:
 ; -------------------------------------------------
 ; NOT HANDLED
-        ldx     #$00    ; flag main kb handler it should handle this code, still in A
+        ldx     #KBH::NOT_HANDLED    ; flag main kb handler it should handle this code, still in A
         rts
 
 ; -----------------------------------------------------

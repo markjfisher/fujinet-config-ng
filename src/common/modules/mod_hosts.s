@@ -55,7 +55,7 @@ mod_hosts_kb:
         bne     not_edit
         jsr     _fn_edit_hosts_entry
 
-        ldx     #KB_HANDLER::RELOOP
+        ldx     #KBH::RELOOP
         rts
 
 not_edit:
@@ -68,14 +68,14 @@ not_edit:
         lda     #Mod::files
         sta     mod_current
 
-        ldx     #KB_HANDLER::EXIT
+        ldx     #KBH::EXIT
         rts
 
 not_eol:
 ; ----------------------------------------------------------------------
 ; EXIT - didn't handle it
 ; ----------------------------------------------------------------------
-        ldx     #KB_HANDLER::NOT_HANDLED
+        ldx     #KBH::NOT_HANDLED
         rts
 
 .endproc

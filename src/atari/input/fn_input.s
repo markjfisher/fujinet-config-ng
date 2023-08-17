@@ -10,7 +10,7 @@
 .proc get_key
         mva     #12, ICAX1Z     ; ensure calling KEYBDV directly will work
         jsr     do_kb
-        ldx     #0
+        ldx     #$00
         rts
 
 do_kb:  lda     KEYBDV+5
@@ -60,7 +60,7 @@ out:
 ; bool fn_is_option()
 ; 1 is true, 0 is false
 .proc _fn_is_option
-        ldx     #00
+        ldx     #$00
         lda     CONSOL
         cmp     #$03    ; option on its own
         beq     yes

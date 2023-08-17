@@ -13,6 +13,15 @@ ASFLAGS = --asm-include-dir src/common/inc --asm-include-dir src/$(TARGET)/inc $
 BUILD_DIR = build
 LDFLAGS = --mapfile $(BUILD_DIR)/config.map
 
+# This isn't quite working. Putting .ifndef in the source files isn't reacting to the flags here. Need to investigate.
+PREPROC_FLAGS_400 = -D NO_FONTS -D SIMPLE_FILES -D NO_BANKS
+
+ifneq ($(SUBTARGET),)
+ASFLAGS += $(PREPROC_FLAGS_$(SUBTARGET))
+CFLAGS += $(PREPROC_FLAGS_$(SUBTARGET))
+endif
+
+
 SRCDIR := src
 OBJDIR := obj
 

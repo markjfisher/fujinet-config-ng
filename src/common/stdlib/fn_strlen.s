@@ -16,8 +16,8 @@
         beq     err     ; rolled over to 0, exit with err
         bne     :-      ; always
 err:
-        lda #$ff
-        ldx #$00
+        ldx     #$00
+        lda     #$ff
         rts
 out:
         ldx     #$00

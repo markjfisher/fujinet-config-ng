@@ -14,13 +14,13 @@
 ; -----------------------------------------
 ; mock the external functions
 .proc _fn_io_get_wifi_enabled
-        ldx #0
-        lda t_wifi_enabled
+        ldx     #0
+        lda     t_wifi_enabled
         rts
 .endproc
 
 .proc _fn_io_get_wifi_status
-        lda t_wifi_status
+        lda     t_wifi_status
         rts
 .endproc
 
