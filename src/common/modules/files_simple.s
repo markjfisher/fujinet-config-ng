@@ -351,7 +351,9 @@ print_entry:
         lda     (ptr1), y       ; the last character of string
         cmp     #'/'
         bne     skip_show_dir_char
-        ldx     #$00
+        ; unset the final '/' in string, we don't need to display it as we have a dir char
+        mva     #$00, {(ptr1), y}
+        ldx     #$00            ; x coordinate for dir
         ldy     mf_entry_index
 
         ; save the fact this is a dir
