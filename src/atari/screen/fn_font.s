@@ -58,7 +58,7 @@ all_fonts:
 fn_font_data:   .res $400
 
 .segment "SCREEN"
-; character changes. First byte is the offset (x8) into font data + 8 bytes to define char
+; character changes. First byte is the offset (x8) into font data, then 8 bytes to define char
 font_update:
     .byte $40, $00, $70, $8e, $fe, $fe, $fe, $fe, $00   ; dir symbol (ascii 0   = $00)
     .byte $41, $03, $07, $07, $07, $07, $07, $07, $03   ; L ender    (ascii 1   = $01)
