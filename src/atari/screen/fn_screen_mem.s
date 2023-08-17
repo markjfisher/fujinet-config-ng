@@ -3,7 +3,7 @@
         .export     s_empty, s_hosts_h1, s_hosts_h2, s_hosts_h3
         .include    "fn_macros.inc"
 
-.segment "SDATA"
+.segment "SCREEN"
 
 ; inverse space + 38 spaces + inverse space.
 .macro SCREEN_BLANK_LINE

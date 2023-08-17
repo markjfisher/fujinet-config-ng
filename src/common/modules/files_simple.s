@@ -1,9 +1,10 @@
         .export     files_simple
-        .export     debug, mf_dir_or_file
+        .export     mf_dir_or_file
 
         ; debug only
         .export     mf_dir_pos, mf_entry_index, mf_selected
 
+        .import     debug
         .import     mod_current, host_selected, kb_global
         .import     pusha, pushax, fn_put_c, _fn_strlen, _fn_memclr, _fn_put_s, _fn_clr_highlight, _fn_clrscr, _fn_strncat
         .import     _fn_highlight_line, current_line
@@ -237,21 +238,21 @@ not_down:
 ; --------------------------------------------------------------------------
 ; ESC
         cmp     #FNK_ESC
-        bne     :+
+        bne     not_esc
 
         ; ESC for files means return to HOSTS list
         mva     #Mod::hosts, mod_current
         ldx     #$02    ; main kb handler exit
         rts
 
-:
+not_esc:
 ; --------------------------------------------------------------------------
 ; ENTER
         cmp     #FNK_ENTER
-        bne     :+
+        bne     not_enter
         ; go into the dir, or choose the file
+        ; TODO ".." parent dir handling
 
-        jsr     debug
         ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
         ldx     mf_selected
         lda     mf_dir_or_file, x
@@ -272,7 +273,41 @@ enter_is_file:
         ldx     #$02
         rts
 
-:
+not_enter:
+; --------------------------------------------------------------------------
+; < PARENT DIR
+        cmp     #FNK_PARENT
+        bne     not_parent
+
+        ; get the current path's length
+        setax   #fn_dir_path
+        jsr     _fn_strlen
+
+        ; check if path already just "/", and if so ignore this. ESC returns you to HOSTS list
+        cmp     #$01
+        beq     not_parent
+
+        ; A is length of path, so look for '/' before this. There will always be one as '/' is root
+        tax
+        dex     ; drop one to make it 0 index based (as length is 1 based, so we'd accidentally detect the final / every time)
+:       dex
+        lda     fn_dir_path, x
+        cmp     #'/'
+        bne     :-
+        
+        ; X = position in path where parent '/' is, so replace everything after it up to path length ($e0) with 0
+        lda     #$00
+:       inx
+        sta     fn_dir_path, x
+        cpx     #$df
+        bne     :-
+
+        ; set selected to 0, pos to 0, and go back to the top
+        mva     #$00, mf_selected
+        mwa     #$00, mf_dir_pos
+        jmp     l_files
+
+not_parent:
 ; -------------------------------------------------
 ; NOT HANDLED
         ldx     #$00    ; flag main kb handler it should handle this code, still in A
@@ -319,7 +354,6 @@ print_entry:
         ldx     #$00
         ldy     mf_entry_index
 
-        jsr     debug
         ; save the fact this is a dir
         mva     #$01, {mf_dir_or_file, y} 
 
@@ -327,7 +361,7 @@ print_entry:
         jsr     fn_put_c
 
 skip_show_dir_char:
-        put_s   #$02, mf_entry_index, ptr1
+        put_s   #$01, mf_entry_index, ptr1
         rts
 
 enter_dir:
@@ -364,11 +398,6 @@ enter_dir:
         lda     mf_entry_index  ; the free space in path
         jmp     _fn_strncat
         ; implicit rts
-.endproc
-
-; easy to spot in altirra
-.proc   debug
-        rts
 .endproc
 
 .bss

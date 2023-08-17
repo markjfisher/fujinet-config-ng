@@ -44,7 +44,7 @@ error:
 
 .endproc
 
-.segment "SDATA"
+.segment "SCREEN"
 
 ; Mounting All - in box
 boot_anim_1_1: .byte $11, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $05, 0

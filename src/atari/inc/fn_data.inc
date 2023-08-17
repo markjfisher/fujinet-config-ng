@@ -35,9 +35,9 @@ SL_COUNT    := 8    ; how many entries are in a Screen List
 
 
 ; Directory ASCII Character Code
-DIR_CHAR    := $58  ; 'X' until I do the fonts
+DIR_CHAR    := $00  ; directory character
 DIR_PG_CNT  := $10  ; Number of entries to display on a page in the file listing
-DIR_MAX_LEN := 35   ; old config was 36, but we don't quite have space on screen for 36 with borders.
+DIR_MAX_LEN := 36   ; old config was 36, but we don't quite have space on screen for 36 with borders.
 
 ; KEYBOARD codes
 ; defines for fn_edit to use for various key codes
@@ -62,3 +62,4 @@ FNK_ASCIIH  = $7D           ; Highest ASCII code inclusive considered normal key
 FNK_HOME    = $01           ; ctrl-a, start of line char
 FNK_END     = $05           ; ctrl-e, end of line char
 FNK_KILL    = $0B           ; ctrl-k, kill to end of line
+FNK_PARENT  = $3C           ; "<" used in files to go to parent dir

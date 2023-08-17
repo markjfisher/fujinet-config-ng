@@ -1,5 +1,5 @@
         .export   _dev_init
-        .import   _fn_setup_screen
+        .import   _fn_setup_screen, fn_font, debug
         .include  "atari.inc"
         .include  "zeropage.inc"
         .include  "fn_macros.inc"
@@ -21,5 +21,7 @@
         ; setup main Display List, and screen layout
         jsr     _fn_setup_screen
 
-        rts
+        ; load fonts
+        jmp     fn_font
+
 .endproc
