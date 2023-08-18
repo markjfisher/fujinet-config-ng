@@ -1,13 +1,16 @@
         .export     _fn_io_create_new
         ; for exposing in Altirra:
-        .export     fn_new_disk, t_disk_num_sectors, t_disk_sector_sizes, t_io_create_new
+        .export     t_disk_num_sectors, t_disk_sector_sizes, t_io_create_new
 
-        .import     _fn_io_siov, _fn_strncpy, fn_dir_path
+        .import     _fn_strncpy, fn_dir_path
         .import     popa, pushax
+        .import     _fn_io_copy_dcb, _fn_io_dosiov
+        .import     _malloc, _free
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
+        .include    "fn_data.inc"
 
 ; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size)
 .proc _fn_io_create_new
@@ -16,6 +19,9 @@
         popa    tmp2    ; host_slot (byte)
 
         ; TODO: MALLOC FOR fn_new_disk into ptr2
+        lda     #.sizeof(NewDisk)
+        jsr     _malloc
+        axinto  ptr2
 
         ; convert selected_size into DiskSize index
         cpw     ptr1, #90
@@ -32,48 +38,82 @@
         beq     s1440
 
         ; TODO CUSTOM 999, for now just return as error
-        ; TODO: FREE
-        rts
+        jmp     cleanup
+        ; implicit rts
 
-s90:    ldy     #DiskSize::size90
+s90:    ldx     #DiskSize::size90
         .byte   $2c     ; BIT
-s130:   ldy     #DiskSize::size130
+s130:   ldx     #DiskSize::size130
         .byte   $2c     ; BIT
-s180:   ldy     #DiskSize::size180
+s180:   ldx     #DiskSize::size180
         .byte   $2c     ; BIT
-s360:   ldy     #DiskSize::size360
+s360:   ldx     #DiskSize::size360
         .byte   $2c     ; BIT
-s720:   ldy     #DiskSize::size720
+s720:   ldx     #DiskSize::size720
         .byte   $2c     ; BIT
-s1440:  ldy     #DiskSize::size1440
+s1440:  ldx     #DiskSize::size1440
 
         ; Y now holds index of numSectors/sectorSize values to read from tables below
 
-        ; copy num_sectors param into newdisk
-        ; TODO: FIX TO USE ptr2 INSTEAD OF fn_new_disk
-        mwa     #t_disk_num_sectors, ptr1
-        mva     {(ptr1), y}, {fn_new_disk + NewDisk::numSectors}
-        iny
-        mva     {(ptr1), y}, {fn_new_disk + NewDisk::numSectors + 1}
-        dey     ; reset y to index
+        ; I have no doubt there's a better way to do this.
+        ; Storing num_sectors L/H values into allocated memory structure
+        ; we are using y as ptr offset, but have to keep swapping it between load and set
 
-        ; copy sector_size param into newdisk
-        mwa     #t_disk_sector_sizes, ptr1
-        mva     {(ptr1), y}, {fn_new_disk + NewDisk::sectorSize}
-        iny
-        mva     {(ptr1), y}, {fn_new_disk + NewDisk::sectorSize + 1}
+        ; ----------------------------------------------------------------------
+        ; numSectors
+        lda     t_disk_num_sectors, x
+        ldy     #NewDisk::numSectors
+        sta     (ptr2), y
 
-        ; set the newdisk.hostSlot and deviceSlot
-        mva     tmp1, {fn_new_disk + NewDisk::deviceSlot}
-        mva     tmp2, {fn_new_disk + NewDisk::hostSlot}
+        ; HIGH byte
+        inx
 
-        ; copy path into newdisk.filename
-        pushax  #fn_new_disk+NewDisk::filename  ; dst
-        pushax  #fn_dir_path                    ; src
-        lda     #$e0                            ; max length
+        lda     t_disk_num_sectors, x
+        ldy     #NewDisk::numSectors + 1
+        sta     (ptr2), y
+
+        dex     ; reset x to index
+
+        ; ----------------------------------------------------------------------
+        ; sectorSize
+        lda     t_disk_sector_sizes, x
+        ldy     #NewDisk::sectorSize
+        sta     (ptr2), y
+
+        ; HIGH byte
+        inx
+
+        lda     t_disk_sector_sizes, x
+        ldy     #NewDisk::sectorSize + 1
+        sta     (ptr2), y
+
+        ; ----------------------------------------------------------------------
+        ; deviceSlot
+        lda     tmp1
+        ldy     #NewDisk::deviceSlot
+        sta     (ptr2), y
+
+        ; ----------------------------------------------------------------------
+        ; hostSlot
+        lda     tmp2
+        ldy     #NewDisk::hostSlot
+        sta     (ptr2), y
+
+        ; ----------------------------------------------------------------------
+        ; filename - need location of this for strncpy
+        ; ptr2 points to allocated area, we need to add offset to the filename
+        adw     ptr2, #NewDisk::filename
+
+        ; and copy the string there
+        pushax  ptr2            ; dst
+        pushax  #fn_dir_path    ; src
+        lda     #$e0            ; max length
         jsr     _fn_strncpy
 
-;         ; WHY? This feels out of place: TODO work out who needs this
+        ; restore ptr2 to start of malloc location
+        sbw     ptr2, #NewDisk::filename
+
+;         ; THIS CODE IS FROM ORIGINAL C, but I don't think it's in the right place.
 ;         ; set the mode of the specific deviceslot
 ;         ; make ptr1 start at specific entry
 ;         mwa     #fn_io_deviceslots, ptr1
@@ -89,16 +129,15 @@ s1440:  ldy     #DiskSize::size1440
 ;         mva     fn_io_deviceslot_mode, {(ptr1), y}
 
         ; finally setup DCB and call SIOV
+        mwa     ptr2, IO_DCB::dbuflo
         setax   #t_io_create_new
-        jsr     _fn_io_siov
+        jsr     _fn_io_dosiov
 
-        ; TODO FREE
-
+cleanup:
+        setax   ptr2
+        jsr     _free
         rts
 .endproc
-
-.bss
-fn_new_disk:    .res 2  ; pointer to malloc data
 
 .rodata
 t_disk_num_sectors:
@@ -109,4 +148,4 @@ t_disk_sector_sizes:
 .define NDsz .sizeof(NewDisk)
 
 t_io_create_new:
-        .byte $e7, $80, <fn_new_disk, >fn_new_disk, $fe, $00, <NDsz, >NDsz, $00, $00
+        .byte $e7, $80, $ff, $ff, $fe, $00, <NDsz, >NDsz, $00, $00
