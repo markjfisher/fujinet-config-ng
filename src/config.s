@@ -16,7 +16,7 @@
     ; Stack works DOWNWARDS! So need to add the stack size here
     mwa     {#(__STACK_START__ + __STACK_SIZE__)}, sp
 
-    ; call library initialisers - only have malloc installed
+    ; call library initialisers - only have malloc installed. sets up heap for malloc.
     jsr     initlib
 
     ; GO!

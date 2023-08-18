@@ -6,7 +6,8 @@
         .import     _fn_strlen
         .import     _fn_input
         .import     ascii_to_code
-        .import     _malloc
+        .import     _malloc, _free
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -48,23 +49,27 @@ err:
         lda     #$00
         rts
 
-:       ; allocate memory for s_copy
-        lda     #38
-        jsr     _malloc
-
-        ; record the initial length, and set that as cursor position
+:       ; record the initial length, and set that as cursor position
         sta     fe_buf_len
         sta     fe_crs_idx
         jsr     cap_cursor      ; ensure the cursor doesn't start beyond bounds if initial string is at maxlen already
 
+        ; allocate memory for s_copy
+        lda     #38
+        ldx     #$00
+        jsr     _malloc
+        getax   s_copy          ; save the location
+        getax   ptr1            ; and in ZP for using indirectly
+
         ; copy string into buffer
-        pushax  #s_copy         ; the memory location of buffer
+        pushax  ptr1            ; pointer to the memory location of buffer
         pushax  fe_str          ; ptr to original string
         lda     fe_max_len
         jsr     _fn_strncpy     ; this fills up to max with 0s if string is short (or no string at all)
 
         ; if current String is empty (0 in first byte), clear the Edit box in case it has filler text
-        lda     s_copy
+        ldy     #$00
+        lda     (ptr1), y
         bne     not_empty
 
         mwa     fe_screen_loc, ptr4
@@ -79,7 +84,7 @@ not_empty:
         eor     #$80
         sta     (ptr4), y
 
-        mwa     #s_copy, ptr3
+        mwa     ptr1, ptr3
 
         ; THESE 2 SHOULD BE CONSISTENT THROUGH ENTIRE ROUTINE
         ; ptr3 = s_copy
@@ -482,6 +487,9 @@ tmp1_as_len_min_2:
 ; Sets ptr2 to first non-space from the start
 ; Sets tmp1 to the offset amount from start to first non-space (i.e. ptr3 - ptr2)
 trim_whitespace:
+        ; in case the entire string is empty, set ptr2 to ptr3
+        mwa     ptr3, ptr2
+
         ; reset leading trim to 0
         mva     #$00, tmp1
 
@@ -490,8 +498,7 @@ trim_whitespace:
         dey
 
 :       dey
-        cpy     #$ff
-        beq     end_trimming            ; went past the end, so everything was 0's
+        bmi     end_trimming            ; went past the end, so everything was 0's
         lda     (ptr3), y               ; is our current byte 0?
         beq     :-                      ; yes, so loop
 
@@ -549,7 +556,8 @@ cap_cursor:
 
 cleanup:
         ; FREE s_copy
-
+        setax   s_copy
+        jsr     _free
         ; set A=0 so our callers can beq away
         lda     #$00
         rts

@@ -37,14 +37,10 @@ kb_handler:
 
 .endproc
 
-
-
 .bss
 sds_selected:   .res 1
 
-
 .segment "SCREEN"
-
         INVERT_ATASCII
 sds_msg:
         .byte "Select Device Slot", 0
