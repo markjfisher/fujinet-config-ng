@@ -1,8 +1,7 @@
     .export     start
     .import     _main
     .import     __STACK_START__, __STACK_SIZE__
-    .import     _fn_memclr_page
-    .import     setax
+    .import     initlib
 
     .include    "zeropage.inc"
     .include    "fn_macros.inc"
@@ -17,9 +16,8 @@
     ; Stack works DOWNWARDS! So need to add the stack size here
     mwa     {#(__STACK_START__ + __STACK_SIZE__)}, sp
 
-    ; clear 256 bytes from SP, not really required, but useful to ensure no data is in stack
-    setax   sp
-    jsr     _fn_memclr_page
+    ; call library initialisers - only have malloc installed
+    jsr     initlib
 
     ; GO!
     jmp     _main

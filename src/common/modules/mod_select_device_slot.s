@@ -40,7 +40,7 @@ kb_handler:
 
 
 .bss
-sds_selected:   .byte 1
+sds_selected:   .res 1
 
 
 .segment "SCREEN"
