@@ -7,6 +7,8 @@
         .include    "fn_macros.inc"
 
 
+NUM_CHANGES     := 10
+
 .proc fn_font
         ; copy character set into RAM, amend it, tell app where it is
         ldx     #$00
@@ -46,7 +48,7 @@ all_fonts:
         cmp     #$08
         bne     :-
 
-        cpx     #54     ; currently 6 chars x 9 bytes per char
+        cpx     #NUM_CHANGES * 9
         bcc     all_fonts
 
         mva     #>fn_font_data, CHBAS
@@ -64,5 +66,9 @@ font_update:
     .byte $41, $03, $07, $07, $07, $07, $07, $07, $03   ; L ender    (ascii 1   = $01)
     .byte $42, $c0, $e0, $e0, $e0, $e0, $e0, $e0, $c0   ; R ender    (ascii 2   = $02)
     .byte $44, $c3, $e7, $e7, $e7, $e7, $e7, $e7, $c3   ; Tween end  (ascii 4   = $04)
+    .byte $46, $0f, $3f, $7f, $7f, $ff, $ff, $ff, $ff   ; Popup TL   (ascii 6   = $06)
+    .byte $47, $f0, $fc, $fe, $fe, $ff, $ff, $ff, $ff   ; Popup TR   (ascii 7   = $07)
+    .byte $48, $ff, $ff, $ff, $ff, $7f, $7f, $3f, $0f   ; Popup BL   (ascii 8   = $08)
+    .byte $49, $ff, $ff, $ff, $ff, $fe, $fe, $fc, $f0   ; Popup BR   (ascii 9   = $09)
     .byte $7b, $00, $0e, $18, $18, $70, $18, $18, $0e   ; {          (ascii 123 = $7B)
     .byte $7d, $00, $70, $18, $18, $0e, $18, $18, $70   ; }          (ascii 125 = $7D)

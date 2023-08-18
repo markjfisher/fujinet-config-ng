@@ -16,5 +16,5 @@
 t_io_get_host_slots:
         .byte $f4, $40, <fn_io_hostslots, >fn_io_hostslots, $0f, $00, HS8zL, HS8zH, $00, $00
 
-.bss
+.segment "LOW_DATA"
 fn_io_hostslots:      .res 8 * .sizeof(HostSlot)

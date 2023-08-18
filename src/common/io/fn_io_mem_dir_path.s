@@ -1,4 +1,4 @@
         .export fn_dir_path
 
-.bss
+.segment "DATAH"
 fn_dir_path:   .res $e0

@@ -2,18 +2,20 @@
         ; for exposing in Altirra:
         .export     fn_new_disk, t_disk_num_sectors, t_disk_sector_sizes, t_io_create_new
 
+        .import     _fn_io_siov, _fn_strncpy, fn_dir_path
+        .import     popa, pushax
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
-        .import     _fn_io_siov, _fn_strncpy
-        .import     fn_io_deviceslots, fn_dir_path
-        .import     popax, popa, pushax
 
 ; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size)
 .proc _fn_io_create_new
         getax   ptr1    ; size (word) - one of 90, 130, ... etc. see below
         popa    tmp1    ; device_slot (byte)
         popa    tmp2    ; host_slot (byte)
+
+        ; TODO: MALLOC FOR fn_new_disk into ptr2
 
         ; convert selected_size into DiskSize index
         cpw     ptr1, #90
@@ -30,6 +32,7 @@
         beq     s1440
 
         ; TODO CUSTOM 999, for now just return as error
+        ; TODO: FREE
         rts
 
 s90:    ldy     #DiskSize::size90
@@ -47,6 +50,7 @@ s1440:  ldy     #DiskSize::size1440
         ; Y now holds index of numSectors/sectorSize values to read from tables below
 
         ; copy num_sectors param into newdisk
+        ; TODO: FIX TO USE ptr2 INSTEAD OF fn_new_disk
         mwa     #t_disk_num_sectors, ptr1
         mva     {(ptr1), y}, {fn_new_disk + NewDisk::numSectors}
         iny
@@ -69,7 +73,7 @@ s1440:  ldy     #DiskSize::size1440
         lda     #$e0                            ; max length
         jsr     _fn_strncpy
 
-;         ; WHY? This feels out of place: TODO - move this to more appropriate place
+;         ; WHY? This feels out of place: TODO work out who needs this
 ;         ; set the mode of the specific deviceslot
 ;         ; make ptr1 start at specific entry
 ;         mwa     #fn_io_deviceslots, ptr1
@@ -83,15 +87,18 @@ s1440:  ldy     #DiskSize::size1440
 ; skip:
 ;         ldy     #DeviceSlot::mode
 ;         mva     fn_io_deviceslot_mode, {(ptr1), y}
-        ; END: WHY?
 
         ; finally setup DCB and call SIOV
         setax   #t_io_create_new
-        jmp     _fn_io_siov
+        jsr     _fn_io_siov
+
+        ; TODO FREE
+
+        rts
 .endproc
 
 .bss
-fn_new_disk:    .tag NewDisk
+fn_new_disk:    .res 2  ; pointer to malloc data
 
 .rodata
 t_disk_num_sectors:

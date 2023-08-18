@@ -1,7 +1,8 @@
         .export     mod_devices, devices_fetched, device_selected
-        .import     _fn_io_get_device_slots, fn_io_deviceslots, _fn_highlight_line, kb_global, current_line
+        .import     _fn_io_get_device_slots, _fn_highlight_line, kb_global, current_line
         .import     pusha, pushax, show_list
         .import     _fn_clrscr, _fn_put_help
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
@@ -14,11 +15,15 @@
         lda     devices_fetched
         bne     :+
 
+        ; TODO: MALLOC AND CALL
+
         jsr     _fn_io_get_device_slots
         mva     #$01, devices_fetched
 
 :
         jsr     display_devices
+
+        ; FREE
 
         ; highlight current device
         mva     device_selected, current_line
@@ -35,7 +40,7 @@
 
 display_devices:
         pusha   #.sizeof(DeviceSlot)
-        setax   #fn_io_deviceslots+2    ; string is 2 chars in the struct
+        setax   #ptr1+2    ; string is 2 chars in the struct
         jmp     show_list
 
 ; the local module's keyboard handling routines

@@ -1,22 +1,27 @@
         .export         _fn_io_get_ssid
-        .import         _fn_io_siov, fn_io_net_config
+        .import         _fn_io_copy_dcb, _fn_io_dosiov
 
+        .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
+        .include        "fn_data.inc"
 
-; NetConfig* io_get_netconfig()
+; void _fn_io_get_ssid(void *fn_io_net_config)
 ;
-; read ssid to fn_io_net_config and return its address via A/X
+; read ssid to fn_io_net_config
 .proc _fn_io_get_ssid
-        setax   #t_io_get_ssid
-        jsr     _fn_io_siov
+        getax   ptr1
 
-        setax   #fn_io_net_config
-        rts
+        setax   #t_io_get_ssid
+        jsr     _fn_io_copy_dcb
+
+        ; copy mem location to DCB, and call siov
+        mwa     ptr1, IO_DCB::dbuflo
+        jmp     _fn_io_dosiov
 .endproc
 
 .rodata
 .define NCsz .sizeof(NetConfig)
 
 t_io_get_ssid:
-        .byte $fe, $40, <fn_io_net_config, >fn_io_net_config, $0f, $00, <NCsz, >NCsz, $00, $00
+        .byte $fe, $40, $ff, $ff, $0f, $00, <NCsz, >NCsz, $00, $00

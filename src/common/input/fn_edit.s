@@ -6,6 +6,7 @@
         .import     _fn_strlen
         .import     _fn_input
         .import     ascii_to_code
+        .import     _malloc
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -47,8 +48,12 @@ err:
         lda     #$00
         rts
 
+:       ; allocate memory for s_copy
+        lda     #38
+        jsr     _malloc
+
         ; record the initial length, and set that as cursor position
-:       sta     fe_buf_len
+        sta     fe_buf_len
         sta     fe_crs_idx
         jsr     cap_cursor      ; ensure the cursor doesn't start beyond bounds if initial string is at maxlen already
 
@@ -105,12 +110,19 @@ keyboard_loop:
         beq     esc_show_empty
 
         jsr     put_ptr1_s
-        rts
+        jsr     cleanup
+        beq     esc_exit
 
         ; re-write empty if there's no string set in host
 esc_show_empty:
         mwa     #s_empty, ptr1
         jsr     put_ptr1_s
+        jsr     cleanup
+
+esc_exit:
+        ; return values should be 0 in A/X to show we did no edit
+        ; A is already 0
+        ldx     #$00
         rts
 
 not_esc:
@@ -302,7 +314,7 @@ not_home:
         mva     fe_buf_len, fe_crs_idx
         jsr     cap_cursor
 
-:       jsr     refresh_line
+        jsr     refresh_line
         jmp     keyboard_loop
 
 not_end_key:
@@ -404,6 +416,7 @@ not_ascii:
 
 end_enter:
         ; mark that we made an edit, so caller must act appropriately.
+        jsr     cleanup
         ldx     #$00
         lda     #$01
         rts
@@ -533,6 +546,14 @@ cap_cursor:
         stx     fe_crs_idx
 
 :       rts
+
+cleanup:
+        ; FREE s_copy
+
+        ; set A=0 so our callers can beq away
+        lda     #$00
+        rts
+
 .endproc
 
 .bss
@@ -543,5 +564,4 @@ fe_str:         .res 2  ; pointer to original string location being edit
 fe_buf_len:     .res 1  ; buffer length, keep track as we make edits so don't have to redo strlen
 fe_crs_idx:     .res 1  ; the index in the string of cursor position
 
-s_copy:         .res 38 ; TODO: work out better place for this location instead of BSS, as it may get bigger than 38 chars
-
+s_copy:         .res 2  ; pointer to malloc'd data

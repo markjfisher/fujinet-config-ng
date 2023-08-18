@@ -1,4 +1,4 @@
         .export fn_dir_filter
 
-.bss
+.segment "DATAH"
 fn_dir_filter: .res $20
