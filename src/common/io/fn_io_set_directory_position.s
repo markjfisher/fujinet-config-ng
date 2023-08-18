@@ -7,7 +7,7 @@
 
 ; void fn_io_set_directory_position(int pos)
 .proc _fn_io_set_directory_position
-        getax   tmp1        ; save the directory pos to tmp1/2
+        axinto  tmp1        ; save the directory pos to tmp1/2
 
         setax   #t_io_set_directory_position
         jsr     _fn_io_copy_dcb

@@ -1,5 +1,4 @@
         .export     _fn_pause
-        .import     getax
 
         .include    "atari.inc"
         .include    "zeropage.inc"

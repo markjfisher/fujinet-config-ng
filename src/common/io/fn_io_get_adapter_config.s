@@ -10,7 +10,7 @@
 ; caller needs to supply the location to write the config
 .proc _fn_io_get_adapter_config
         ; store the memory location of the adapter config
-        getax   adapter_location
+        axinto  adapter_location
 
         setax   #t_io_get_adapter_config
         jsr     _fn_io_copy_dcb

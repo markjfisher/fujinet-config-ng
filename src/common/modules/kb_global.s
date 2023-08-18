@@ -20,7 +20,7 @@
 ; common up/down/left/right/option/etc routines in here, then calls kb_mod_proc to handle specific module keyboard input
 .proc kb_global
         ; save the specific module's kb handler
-        getax   kb_mod_proc
+        axinto  kb_mod_proc
         ; and pop other params
         popax   p_current_line
         popa    next_mod

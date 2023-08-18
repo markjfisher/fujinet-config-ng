@@ -10,7 +10,7 @@
 ;
 ; read ssid to fn_io_net_config
 .proc _fn_io_get_ssid
-        getax   ptr1
+        axinto  ptr1
 
         setax   #t_io_get_ssid
         jsr     _fn_io_copy_dcb

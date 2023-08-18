@@ -180,7 +180,7 @@ s2:
     sta     arg1
 .endmacro
 
-.macro getax arg1
+.macro axinto arg1
     sta     arg1
     stx     1+(arg1)
 .endmacro

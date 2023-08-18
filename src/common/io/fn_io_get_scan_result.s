@@ -11,7 +11,7 @@
 ;
 ; caller must supply memory location for ssidinfo to go
 .proc _fn_io_get_scan_result
-        getax   ssidinfo_location       ; location to put ssidinfo into
+        axinto  ssidinfo_location       ; location to put ssidinfo into
         popa    tmp1                    ; save index
 
         setax   #t_io_get_scan_result

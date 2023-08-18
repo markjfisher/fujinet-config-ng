@@ -7,7 +7,7 @@
 
 ; void fn_memclr_page(void *p)
 .proc _fn_memclr_page
-    getax   ptr4
+    axinto  ptr4
 
     ldy     #$00
     lda     #$00
@@ -20,7 +20,7 @@
 
 ; void fn_memclr(uint8 count)
 .proc _fn_memclr
-    getax   ptr4
+    axinto  ptr4
     popa    tmp4
     cmp     #$00
     beq     no_copy

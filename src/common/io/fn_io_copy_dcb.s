@@ -10,17 +10,17 @@
 ; DO NOT TRASH tmp1/2 IN THIS ROUTINE - callers use them for storing args.
 ; We also ONLY use ptr4 from ZP, which should allow our callers ptr1-3 to use
 .proc _fn_io_copy_dcb
-        getax ptr4
+        axinto  ptr4
 
         ; first 2 bytes always $70, $01, so we can do those manually. saves table space, and loops
-        mva #$70, IO_DCB::ddevic
-        mva #$01, IO_DCB::dunit
+        mva     #$70, IO_DCB::ddevic
+        mva     #$01, IO_DCB::dunit
 
         ; copy 10 bytes of table into DCB
-        ldy #9
-:       mva {(ptr4), y}, {IO_DCB::dcomnd, y}
+        ldy     #9
+:       mva     {(ptr4), y}, {IO_DCB::dcomnd, y}
         dey
-        bpl :-
+        bpl     :-
 
         rts
 .endproc

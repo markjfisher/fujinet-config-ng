@@ -8,7 +8,7 @@
 
 ; void _fn_io_put_device_slots(void *fn_io_deviceslots)
 .proc _fn_io_put_device_slots
-        getax   ptr1
+        axinto  ptr1
 
         setax   #t_io_put_device_slots
         jsr     _fn_io_copy_dcb

@@ -18,7 +18,7 @@
 ; display a list of items, and show the values, allowing user to select from it
 ; using inverted text for selection
 .proc _fn_popup_select
-        getax   fps_selected            ; address where to set the selected line index so it can be read on completion of popup
+        axinto  fps_selected            ; address where to set the selected line index so it can be read on completion of popup
         popax   fps_kb_handler          ; a kb handler to process key strokes while popup active
         popax   fps_message             ; the header message to display in popup
         popax   fps_list                ; pointer to the list of PopupItem to display. A PopupItem has a type (Text, option etc)

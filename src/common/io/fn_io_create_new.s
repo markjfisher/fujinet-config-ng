@@ -11,7 +11,7 @@
 
 ; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size)
 .proc _fn_io_create_new
-        getax   ptr1    ; size (word) - one of 90, 130, ... etc. see below
+        axinto  ptr1    ; size (word) - one of 90, 130, ... etc. see below
         popa    tmp1    ; device_slot (byte)
         popa    tmp2    ; host_slot (byte)
 

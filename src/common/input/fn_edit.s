@@ -58,8 +58,8 @@ err:
         lda     #38
         ldx     #$00
         jsr     _malloc
-        getax   s_copy          ; save the location
-        getax   ptr1            ; and in ZP for using indirectly
+        axinto  s_copy          ; save the location
+        axinto  ptr1            ; and in ZP for using indirectly
 
         ; copy string into buffer
         pushax  ptr1            ; pointer to the memory location of buffer

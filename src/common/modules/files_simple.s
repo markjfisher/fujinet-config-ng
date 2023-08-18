@@ -82,7 +82,7 @@ l_entries:
 
         ; A/X contain pointer to the data just read (which is also just fn_io_buffer)
         ; an end of dir is 0x7f, 0x7f
-        getax   ptr1
+        axinto  ptr1
         ldy     #$01
         lda     (ptr1), y
 

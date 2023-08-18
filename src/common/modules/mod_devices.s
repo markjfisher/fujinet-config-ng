@@ -2,6 +2,8 @@
         .import     _fn_io_get_device_slots, _fn_highlight_line, kb_global, current_line
         .import     pusha, pushax, show_list
         .import     _fn_clrscr, _fn_put_help
+        .import     _malloc, _free
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -11,19 +13,24 @@
 .proc mod_devices
         jsr     _fn_clrscr
 
-        ; do we have devices data read?
-        lda     devices_fetched
-        bne     :+
+        ; now we're using malloc, we don't have perm. storage for device slots, so need to always call SIO here.
+        ; Maybe this needs to be more permanent?
 
-        ; TODO: MALLOC AND CALL
+        jsr     debug
+        lda     #<(.sizeof(DeviceSlot)*8)
+        ldx     #>(.sizeof(DeviceSlot)*8)
+        jsr     _malloc
+        axinto  md_device_slots         ; save memory location
 
+        ; ax set already to location
         jsr     _fn_io_get_device_slots
         mva     #$01, devices_fetched
 
-:
         jsr     display_devices
 
         ; FREE
+        setax   md_device_slots
+        jsr     _free
 
         ; highlight current device
         mva     device_selected, current_line
@@ -37,13 +44,15 @@
         setax   #mod_devices_kb
         jmp     kb_global          ; rts from this will drop out of module
 
-
 display_devices:
         pusha   #.sizeof(DeviceSlot)
-        setax   #ptr1+2    ; string is 2 chars in the struct
+        mwa     md_device_slots, ptr1
+        adw     ptr1, #$02
+        setax   ptr1            ; string is 2 chars in the struct
         jmp     show_list
 
 ; the local module's keyboard handling routines
+; TODO: implement Eject etc.
 mod_devices_kb:
         ldx     #KBH::NOT_HANDLED
         rts
@@ -51,7 +60,8 @@ mod_devices_kb:
 .endproc
 
 .bss
-host_index:     .res 1
+host_index:             .res 1
+md_device_slots:        .res 2
 
 .data
 devices_fetched:        .byte 0

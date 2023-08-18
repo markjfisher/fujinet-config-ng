@@ -1,5 +1,5 @@
         .export     _fn_put_help
-        .import     getax, mhlp1
+        .import     mhlp1
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
@@ -8,7 +8,7 @@
 ; Assumes all 40 bytes to be copied
 .proc _fn_put_help
         sty     tmp1            ; which help line
-        getax   ptr1            ; save char* s
+        axinto  ptr1            ; save char* s
 
         mwa     #mhlp1, ptr2
         ldx     tmp1

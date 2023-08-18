@@ -7,7 +7,7 @@
 ; returns string length (max 254) of string pointed at by p
 ; if no null was found, returns $ff as error
 .proc _fn_strlen
-        getax   ptr4        ; store p in ZP
+        axinto  ptr4        ; store p in ZP
 
         ldy     #$00
 :       lda     (ptr4), y

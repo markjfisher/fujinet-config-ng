@@ -15,7 +15,7 @@
 ;
 ; show 8 strings on screen in list fashion, used on hosts and devices.
 .proc show_list
-        getax   ptr1            ; ptrToData, the string to display's location
+        axinto  ptr1            ; ptrToData, the string to display's location
         popa    sl_size         ; how much to move down each data block
 
         mva     #$00, sl_index
@@ -33,7 +33,6 @@ l_all:  clc
         jsr     _fn_put_digit
 
         ; --------- print string
-        ; TODO: ELIPSES FOR LONG STRINGS
         ldy     #0
         lda     (ptr1), y
         beq     display_empty   ; if the string is null, display <Empty> instead

@@ -9,7 +9,7 @@
 ; void  _fn_io_set_ssid(void *fn_io_net_config)
 ; sends the ssid to sio.
 .proc _fn_io_set_ssid
-        getax   ptr1
+        axinto  ptr1
 
         setax   #t_io_set_ssid
         jsr     _fn_io_copy_dcb
