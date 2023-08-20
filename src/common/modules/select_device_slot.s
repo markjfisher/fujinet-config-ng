@@ -43,16 +43,26 @@
         ; show the selector
         pusha   pu_width
         pushax  #pu_devs
-        pushax  #sds_msg
-        setax   #kb_handler
-        jsr     _show_select     ; device specific routine to handle showing selection. alters .val in structure
+        setax  #sds_msg
+        ; setax   #kb_handler
+        jsr     _show_select    ; device specific routine to handle showing selection. alters .val in structure
+        sta     tmp1            ; save the return from select
 
         ; free the strings
         setax   pu_devs+4
         jsr     _free
 
+        ; CHECK IF ESC pressed (return value from _show_select)
+        lda     tmp1
+        beq     save_device_choice
+
+        ; ESC was pressed, don't do anything, the caller will simply reload main screen
+        rts
+
+save_device_choice:
         ; pull out byte 3 of each pu_* to see what options were chosen
 
+        ; TODO: LINK UP OPTIONS CHOSEN
         rts
 
         ; convert these into something to mount the device slot with
@@ -75,9 +85,9 @@
 
         rts
 
-kb_handler:
-        ; handle ESC. other keys probably generic
-        rts
+; kb_handler:
+;         ; handle ESC. other keys probably generic
+;         rts
 
 copy_dev_strings:
         ; copy 8x width bytes from every DeviceSlot+2 into memory we grabbed
@@ -123,7 +133,9 @@ empty:  pushax  #s_empty
 
 .data
 pu_width:       .byte 24
-pu_devs:        .byte PopupItemType::textList, 8, 22, 0, $ff, $ff, $00, $00
+; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
+; currently only lengths of 1-9 string list entries will work on screen. popup can have up to 12 items with header etc
+pu_devs:        .byte PopupItemType::textList, 8, 21, 0, $ff, $ff, $00, $00
 pu_spc1:        .byte PopupItemType::space
 pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
 pu_end:         .byte PopupItemType::finish

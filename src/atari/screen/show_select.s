@@ -5,6 +5,8 @@
         .import     _fn_pause
         .import     _fn_get_scrloc
         .import     _malloc, _free
+        .import     _fn_input_ucase
+
         .import     debug
 
         .include    "zeropage.inc"
@@ -20,12 +22,12 @@
 ; display a list of items, and show the values, allowing user to select from it
 ; using inverted text for selection
 .proc _show_select
-        axinto  fps_kb_handler          ; a kb handler to process key strokes while popup active
-        popax   fps_message             ; the header message to display in popup
+        ; axinto  fps_kb_handler          ; a kb handler to process key strokes while popup active
+        axinto  fps_message             ; the header message to display in popup
         popax   fps_items               ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
         popa    fps_width               ; the width of the input area excluding the borders which add 1 each side for the border
 
-        mva     #$00, fps_selected      ; default to first line
+        sta     fps_widget_idx          ; start on first widget
         mwa     fps_items, ptr1         ; set ptr1 to our popup data
 
         ; KEEP ptr1 SACRED
@@ -39,7 +41,7 @@
         ; 4c  d5 x width    4f
         ; which leaves a box in middle size width+2 x height
 
-        ; fixing y at 1st line (0) as it has a 4 pixel blank border
+        ; fixing y at 1st line (0) as it has a 4 pixel blank border, so nicely away from top border, but gives max room
         ; calculate the x-offset to show box. In the inner-box, it's (36 - width) / 2
         lda     #35     ; one off for border
         sec
@@ -150,6 +152,19 @@ no_trans:
         iny
         dex
         bne     :-
+
+        ; print spaces now until width chars printed to remove screen data for shorter lines
+        ; this is important as we will shorten the line by 1 to allow the selection indicator char to be placed before border
+:       cpy     fps_width
+        beq     :+
+        bcs     no_x_space      ; finish only when screen index > fps_width
+
+:       lda     #$00
+        sta     (ptr4), y
+        iny
+        bne     :--             ; always loop, exit will be when we are > width
+
+no_x_space:
         ; right border
         mva     #$d9, {(ptr4), y}
 
@@ -286,11 +301,9 @@ do_last_line:
         mva     #$4f, tmp3
         jsr     block_line
 
-        lda     #2
-        jsr     _fn_pause
-        jsr     debug
-
-        rts
+        ; This is a mini version of gb keyboard handler that understands item types
+        ; exit from here will exit the select screen
+        jmp     show_select_kb
 
 left_border:
         ldy     #$00
@@ -327,8 +340,45 @@ print_widget_space:
         dex
         bne     :-
         rts
-
 .endproc
+
+
+; keep in same file for access to variables
+.proc show_select_kb
+
+start_kb_get:
+        jsr     _fn_input_ucase
+        cmp     #$00
+        beq     start_kb_get
+
+; --------------------------
+; main kb switch
+
+; valid keys are up/down/enter/esc/tab/left/right
+
+; - enter selects current options that are highlighted
+; - ESC always exits with no changes to be made (return '1' in A).
+; - tab moves between widgets
+; - in an option widget, L/R are allowed, not up/down
+; - in a list, U/D allowed, L/R not
+; - Space widget should be skipped
+
+; Highlighting:
+; - options text is inverted with 2 chars around current option
+; - list entry is inverted for entire line
+;
+; Current selected is stored in popupItem.val for each item
+
+        cmp     FNK_TAB
+        bne     not_tab
+
+
+not_tab:
+
+
+        rts
+.endproc
+
 
 .bss
 fps_pu_entry:   .tag PopupItem
@@ -337,4 +387,4 @@ fps_kb_handler: .res 2
 fps_message:    .res 2
 fps_items:      .res 2
 fps_width:      .res 1
-fps_selected:   .res 1
+fps_widget_idx: .res 1  ; which widget we are currently on (do we just need type?)

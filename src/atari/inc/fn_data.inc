@@ -46,6 +46,7 @@ DIR_MAX_LEN := 36   ; old config was 36, but we don't quite have space on screen
 
 FNK_ESC     = ATESC         ; Escape
 FNK_ENTER   = ATEOL         ; Return/Enter
+FNK_TAB     = ATTAB         ; Tab
 FNK_BS      = ATRUB         ; Backspace
 FNK_DEL     = ATDEL         ; Delete
 FNK_INS     = ATINS         ; Insert

@@ -13,7 +13,7 @@
         option                  ; like radio buttons, only 1 can be selected
         ; select                  ; drop down select
         ; checkbox                ; individual on/off
-        ; button                  ; highlight it and press enter to enact
+        ; button                  ; highlight it and press enter to enact - a 1 item option with no "name" will do for this
         space                   ; just a line of space
         finish                  ; marker that we have finished items             
 .endenum
