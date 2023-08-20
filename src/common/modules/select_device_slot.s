@@ -12,6 +12,7 @@
         .import     s_empty
         .import     _show_select
         .import     debug
+        .import     devices_fetched
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -76,7 +77,15 @@ copy_dev_strings:
         ; copy 8x 22 bytes from every DeviceSlot+2 into memory we grabbed
         ; if the entry is null, use s_empty instead
 
-        mva     #$08, tmp1
+        ; have we loaded device slots yet?
+        lda     devices_fetched
+        bne     :+
+
+        ; no! fetch them so we can see the entries
+        jsr     _fn_io_get_device_slots
+        mva     #$01, devices_fetched
+
+:       mva     #$08, tmp1
         mwa     pu_devs+4, ptr1                                 ; dst
         mwa     {#(fn_io_deviceslots + DeviceSlot::file)}, ptr2 ; src
 

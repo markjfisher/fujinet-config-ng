@@ -51,7 +51,7 @@
         jsr     _fn_get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
 
         ; ----------------------------------------------------------
-        ; put the top line down
+        ; show top line down
         mva     #$4a, tmp1
         mva     #$55, tmp2
         mva     #$4b, tmp3
@@ -84,10 +84,10 @@
         mva     #$c7, tmp3
         jsr     block_line
 
-        ; ----------------------------------------------------------
-        ; L2 onwards we need to look at the incoming data needs painting and display it
+; ----------------------------------------------------------
+; L2 onwards we need to look at the popup data
 
-; main loop for displaying different PopupItemTypes
+; main loop for displaying different PopupItemType values
 l_all_popups:
         ; add 40 to screen location to point to next line
         adw     ptr4, #40               ; add 1 line
@@ -115,25 +115,47 @@ not_last_line:
         lda     (ptr1), y
         sta     fps_text+1
 
-        ; ----------------------------------------------
-        ; START CASE FOR TYPE
         pla     ; restore the type
+
+; ----------------------------------------------
+; START SWITCH FOR TYPE
 
 ; --------------------------------------------------
 ; TEXT LIST
         cmp     #PopupItemType::textList
         bne     not_text_list
 
-        ; do a text list
+        mva     fps_num, tmp4
+        mwa     fps_text, ptr2
+        ; align ptr2 with Y being a 1 index (it's screen offset)
+        sbw     ptr2, #$01
+all_text:
+
         jsr     left_border
-        ; now print the text. Each string is exactly "len" chars wide, may have multiple 0s if shorter than that.
-
-        ; get current string into ptr2
-
+        ; current string into ptr2
 
         ldx     fps_width
+:       lda     (ptr2), y               ; fetch a character
+        beq     no_trans                ; 0 conveniently maps to screen code for space, and is filler for end of string
+        jsr     ascii_to_code
+no_trans:
+        sta     (ptr4), y
+        iny
+        dex
+        bne     :-
+        ; right border
+        mva     #$d9, {(ptr4), y}
 
+        ; any more lines?
+        dec     tmp4
+        beq     :+
 
+        ; move to next line, and next string, then reloop
+        adw     ptr4, #40
+        adw     ptr2, fps_width
+        jmp     all_text
+
+:
         jmp     item_handled
 
 not_text_list:
