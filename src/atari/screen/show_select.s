@@ -122,13 +122,20 @@ not_last_line:
 
         mva     {fps_pu_entry + PopupItem::num}, tmp4
         mwa     {fps_pu_entry + PopupItem::text}, ptr2
-        ; align ptr2 with Y being a 1 index (it's screen offset)
-        sbw     ptr2, #$01
+        mva     #$11, tmp1              ; list number as screen code so don't have to convert it
+        ; align ptr2 with Y being a 3 based index (it's screen offset)
+        sbw     ptr2, #$03
 all_text:
 
         jsr     left_border
 
-        ldx     fps_pu_entry + PopupItem::len  ; TODO: and centred in width
+        ; print digit for current index+1
+        mva     tmp1, {(ptr4), y}
+        iny
+        mva     #$00, {(ptr4), y}
+        iny
+
+        ldx     fps_pu_entry + PopupItem::len
 :       lda     (ptr2), y               ; fetch a character
         beq     no_trans                ; 0 conveniently maps to screen code for space, and is filler for end of string
         jsr     ascii_to_code
@@ -147,6 +154,7 @@ no_trans:
         ; move to next line, and next string, then reloop
         adw     ptr4, #40
         adw     ptr2, {fps_pu_entry + PopupItem::len}
+        inc     tmp1                    ; next print index
         jmp     all_text
 
 :

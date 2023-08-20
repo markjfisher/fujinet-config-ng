@@ -9,11 +9,11 @@
 
 ; a bit like html widgets
 .enum PopupItemType
-        textList                ; simple text list display
+        textList                ; simple text list display with numbers
         option                  ; like radio buttons, only 1 can be selected
-        select                  ; drop down select
-        checkbox                ; individual on/off
-        button                  ; highlight it and press enter to enact
-        space                   ; just a line of space
+        ; select                  ; drop down select
+        ; checkbox                ; individual on/off
+        ; button                  ; highlight it and press enter to enact
+        ; space                   ; just a line of space
         finish                  ; marker that we have finished items             
 .endenum

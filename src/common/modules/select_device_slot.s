@@ -29,8 +29,8 @@
         ; we will put all the relevant selection details into memory starting at pu_devs, and it
         ; is the job of the _show_select to display this, calling back to kb handler here
 
-        ; get memory for 8 * pu_width strings
-        lda     pu_width
+        ; get memory for 8 * devices list width strings
+        lda     pu_devs+2
         asl     a
         asl     a
         asl     a       ; * 8
@@ -108,7 +108,7 @@ l1:     pushax  ptr1    ; dst
 
 empty:  pushax  #s_empty
 
-:       lda     #22
+:       lda     pu_devs+2
         jsr     _fn_strncpy
 
         ; increment both src/dst pointers
@@ -123,7 +123,7 @@ empty:  pushax  #s_empty
 
 .data
 pu_width:       .byte 24
-pu_devs:        .byte PopupItemType::textList, 8, 24, 0, $ff, $ff, $00, $00
+pu_devs:        .byte PopupItemType::textList, 8, 22, 0, $ff, $ff, $00, $00
 pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_r, >sds_mode_r, <sds_opt1_spc, >sds_opt1_spc
 pu_end:         .byte PopupItemType::finish
 
