@@ -124,7 +124,8 @@ empty:  pushax  #s_empty
 .data
 pu_width:       .byte 24
 pu_devs:        .byte PopupItemType::textList, 8, 22, 0, $ff, $ff, $00, $00
-pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_r, >sds_mode_r, <sds_opt1_spc, >sds_opt1_spc
+pu_spc1:        .byte PopupItemType::space
+pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
 pu_end:         .byte PopupItemType::finish
 
 .segment "SCREEN"
@@ -133,11 +134,12 @@ sds_msg:
         .byte "   Select Device Slot   "
         NORMAL_CHARMAP
 
-; both must be 4 chars wide
+; option entry, first string 0 terminated "name", next strings are <len> chars exactly for entries
+sds_mode_name:  .byte "Mode: ", 0
 sds_mode_r:     .byte "  R  "
 sds_mode_rw:    .byte " R/W "
 
 ; spacing for widgets. removes 200 bytes of code to calculate!
-sds_opt1_spc:   .byte 4, 6, 4
+sds_opt1_spc:   .byte 3, 2, 3
 
 test_msg:       .byte "/this/path/to/somewhere4.atx", 0

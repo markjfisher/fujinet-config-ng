@@ -3,7 +3,7 @@
         num     .byte           ; number of them
         len     .byte           ; length of each individual text entry
         val     .byte           ; chosen option/select. if checkbox, bit number is on if option set, so limited to 8 checkboxes
-        text    .word           ; ptr to first string (null terminated) of num strings
+        text    .word           ; ptr to strings to use, type specific arrangement.
         spc     .word           ; ptr (or null) to table of num+1 spacing values for placing widget on screen
 .endstruct
 
@@ -14,6 +14,6 @@
         ; select                  ; drop down select
         ; checkbox                ; individual on/off
         ; button                  ; highlight it and press enter to enact
-        ; space                   ; just a line of space
+        space                   ; just a line of space
         finish                  ; marker that we have finished items             
 .endenum

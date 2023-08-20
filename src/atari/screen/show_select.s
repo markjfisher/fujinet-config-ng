@@ -100,6 +100,10 @@ l_all_popups:
         jmp     do_last_line    ; check if we can branch here - might be too far
 
 not_last_line:
+        ; skip reading if the type is "space"
+        cmp     #PopupItemType::space
+        beq     start_switch
+
         pha     ; save the type while we read the whole line
 
         ; read the whole PopupItem entry
@@ -114,6 +118,8 @@ not_last_line:
 
 ; ----------------------------------------------
 ; START SWITCH FOR TYPE
+
+start_switch:
 
 ; --------------------------------------------------
 ; TEXT LIST
@@ -164,26 +170,44 @@ not_text_list:
 ; --------------------------------------------------
 ; OPTION
         cmp     #PopupItemType::option
-        bne     not_option
+        beq     is_option
+        jmp     not_option
 
-        ; TODO: add "name" field in front of options, e.g. "Mode: < R >  R/W "
-        ; use border chars for highlighting chosen option
-
-        ; display the options with spacing.
-        ; loop from 0 .. num-1 displaying spacer+widget
-        ; and finish with the last spacing
-
+is_option:
+        ; TODO: use border chars for highlighting chosen option
         mwa     {fps_pu_entry + PopupItem::spc}, ptr3           ; spacings ptr
         mwa     {fps_pu_entry + PopupItem::text}, ptr2          ; texts ptr
 
-        ldy     #$00
-        sty     tmp1                    ; our loop variable
-
         jsr     left_border
         sty     tmp2                    ; screen position index over whole list, left border increments it by 1
-        ldy     #$00                    ; reset y for spacing index
 
-l1:
+        ; now print first string (name) from entry.text.
+        ldy     #$00
+:       lda     (ptr2), y
+        beq     :+                      ; null terminated string
+        jsr     ascii_to_code           ; convert to code
+        iny
+        sty     tmp1                    ; use tmp1 to store current index into string
+        ldy     tmp2                    ; get the screen index pointer into y
+        sta     (ptr4), y               ; print the character to screen
+        iny
+        sty     tmp2                    ; move pointer on screen on by 1
+        ldy     tmp1                    ; restore character index
+        bne     :-                      ; always. the exit it when we hit a 0 char
+
+:       ; add the y+1 index (which points to 0 char of string) onto ptr2 to shift it to next string
+        iny
+        tya
+        clc
+        adc     ptr2
+        sta     ptr2
+        bcc     :+
+        inc     ptr2+1
+
+:       ldy     #$00
+        sty     tmp1                    ; tmp1 now our main loop variable
+
+widget_loop:
         jsr     print_widget_space
         sty     tmp2                    ; save new position
 
@@ -211,7 +235,7 @@ l1:
         lda     tmp1
         tay                             ; the main loop is also index into space array, read at top of loop
         cmp     fps_pu_entry + PopupItem::num
-        bne     l1                      ; reloop until all widgets done
+        bne     widget_loop             ; reloop until all widgets done
 
         ; display final spacing so it overwrites any background text on the screen
         ; tmp1 holds index to last spacings
@@ -223,7 +247,24 @@ l1:
 
         jmp     item_handled
 
-not_option:        
+not_option:
+        cmp     #PopupItemType::space
+        bne     not_space
+
+        lda     #2
+        jsr     _fn_pause
+        jsr     debug
+
+        ; just put a blank line. keyboard movement will skip over it
+        mva     #$59, tmp1
+        mva     #$00, tmp2
+        mva     #$d9, tmp3
+        jsr     block_line
+
+        adw     ptr1, #$01              ; only 1 byte for space type
+        jmp     l_all_popups
+
+not_space:
 ; TODO: IMPLEMENT OTHER PopupItemType TYPES 
 
 
