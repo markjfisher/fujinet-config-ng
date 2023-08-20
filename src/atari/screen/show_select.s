@@ -266,10 +266,6 @@ not_option:
         cmp     #PopupItemType::space
         bne     not_space
 
-        lda     #2
-        jsr     _fn_pause
-        jsr     debug
-
         ; just put a blank line. keyboard movement will skip over it
         mva     #$59, tmp1
         mva     #$00, tmp2
@@ -351,8 +347,11 @@ start_kb_get:
         cmp     #$00
         beq     start_kb_get
 
-; --------------------------
-; main kb switch
+        jsr     debug
+
+; --------------------------------------------------------------------
+; main popup select  kb switch
+; --------------------------------------------------------------------
 
 ; valid keys are up/down/enter/esc/tab/left/right
 
@@ -367,16 +366,84 @@ start_kb_get:
 ; - options text is inverted with 2 chars around current option
 ; - list entry is inverted for entire line
 ;
-; Current selected is stored in popupItem.val for each item
+; Current selected is stored in popupItem.val for each item, 0 index
 
-        cmp     FNK_TAB
+; --------------------------------------------------------------------
+; TAB - switch widget
+; --------------------------------------------------------------------
+        cmp     #FNK_TAB
         bne     not_tab
 
+        jmp     start_kb_get
 
 not_tab:
+; --------------------------------------------------------------------
+; ENTER - finish interaction
+; --------------------------------------------------------------------
+        cmp     #FNK_ENTER
+        bne     not_enter
+
+        jmp     start_kb_get
+
+not_enter:
+; --------------------------------------------------------------------
+; LEFT - option only
+; --------------------------------------------------------------------
+        cmp     #FNK_LEFT
+        beq     is_left
+        cmp     #FNK_LEFT2
+        bne     not_left
 
 
+is_left:
+        jmp     start_kb_get
+
+not_left:
+; --------------------------------------------------------------------
+; RIGHT - option only
+; --------------------------------------------------------------------
+        cmp     #FNK_RIGHT
+        beq     is_right
+        cmp     #FNK_RIGHT2
+        bne     not_right
+
+is_right:
+        jmp     start_kb_get
+
+not_right:
+; --------------------------------------------------------------------
+; UP - list only
+; --------------------------------------------------------------------
+        cmp     #FNK_UP
+        beq     is_up
+        cmp     #FNK_UP2
+        bne     not_up
+is_up:
+        jmp     start_kb_get
+
+not_up:
+; --------------------------------------------------------------------
+; DOWN - list only
+; --------------------------------------------------------------------
+        cmp     #FNK_DOWN
+        beq     is_down
+        cmp     #FNK_DOWN2
+        bne     not_down
+is_down:
+        jmp     start_kb_get
+
+not_down:
+; --------------------------------------------------------------------
+; ESC - leave processing
+; --------------------------------------------------------------------
+        cmp     #FNK_ESC
+        bne     not_esc
+        ldx     #$00
+        lda     #$01
         rts
+
+not_esc:
+        jmp     start_kb_get
 .endproc
 
 

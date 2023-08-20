@@ -58,16 +58,16 @@ not_option:
 ; ----------------------------------------------------------
 
         pla             ; get keyboard ascii code into A
-        ldx     #$00    ; status of module keyboard handler set in x on return
+        ldx     #KBH::NOT_HANDLED    ; status of module keyboard handler set in x on return
 
         ; use module specific keyboard handler first, so we can override default handling, e.g. L/R arrow keys may not move modules
         jsr     do_kb_module
 
-        ; if X=0, then we use global kb handler, as key wasn't processed, A is still keycode
-        cpx     #$00
+        ; if X=NOT_HANDLED, then we use global kb handler, as key wasn't processed, A is still keycode
+        cpx     #KBH::NOT_HANDLED
         beq     global_kb
 
-        cpx     #$01    ; if X=1, processed key, and we can reloop
+        cpx     #KBH::RELOOP
         beq     start_kb_get
 
         ; anything else was a code to say we want to exit the keyboard routine altogether
