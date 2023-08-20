@@ -29,14 +29,19 @@
         ; we will put all the relevant selection details into memory starting at pu_devs, and it
         ; is the job of the _show_select to display this, calling back to kb handler here
 
-        ; get memory for 8x22 strings
-        setax   #(8*22)
+        ; get memory for 8 * pu_width strings
+        lda     pu_width
+        asl     a
+        asl     a
+        asl     a       ; * 8
+        ldx     #$00
+
         jsr     _malloc
         axinto  pu_devs+4
         jsr     copy_dev_strings
 
         ; show the selector
-        pusha   #22
+        pusha   pu_width
         pushax  #pu_devs
         pushax  #sds_msg
         setax   #kb_handler
@@ -44,10 +49,11 @@
 
         ; free the strings
         setax   pu_devs+4
-
         jsr     _free
 
         ; pull out byte 3 of each pu_* to see what options were chosen
+
+        rts
 
         ; convert these into something to mount the device slot with
 
@@ -74,7 +80,7 @@ kb_handler:
         rts
 
 copy_dev_strings:
-        ; copy 8x 22 bytes from every DeviceSlot+2 into memory we grabbed
+        ; copy 8x width bytes from every DeviceSlot+2 into memory we grabbed
         ; if the entry is null, use s_empty instead
 
         ; have we loaded device slots yet?
@@ -106,7 +112,7 @@ empty:  pushax  #s_empty
         jsr     _fn_strncpy
 
         ; increment both src/dst pointers
-        adw     ptr1, #22
+        adw     ptr1, pu_devs+2
         adw     ptr2, #.sizeof(DeviceSlot)
 
         dec     tmp1
@@ -116,18 +122,19 @@ empty:  pushax  #s_empty
 .endproc
 
 .data
-pu_devs:        .byte PopupItemType::textList, 8, 22, 0, $ff, $ff
-pu_mode:        .byte PopupItemType::option,   2,  4, 0, <sds_mode_r, >sds_mode_r
+pu_width:       .byte 24
+pu_devs:        .byte PopupItemType::textList, 8, 24, 0, $ff, $ff
+pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_r, >sds_mode_r
 pu_end:         .byte PopupItemType::finish
 
 .segment "SCREEN"
         INVERT_ATASCII
 sds_msg:
-        .byte "  Select Device Slot  "
+        .byte "   Select Device Slot   "
         NORMAL_CHARMAP
 
 ; both must be 4 chars wide
-sds_mode_r:     .byte " R ", 0
-sds_mode_rw:    .byte "R/W", 0
+sds_mode_r:     .byte "  R  "
+sds_mode_rw:    .byte " R/W "
 
 test_msg:       .byte "/this/path/to/somewhere4.atx", 0
