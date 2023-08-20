@@ -1,4 +1,4 @@
         .export fn_io_buffer
 
-.bss
+.segment "DATAH"
 fn_io_buffer:         .res $100

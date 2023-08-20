@@ -7,7 +7,7 @@
         .include    "fn_macros.inc"
 
 
-NUM_CHANGES     := 10
+NUM_CHANGES     := 14
 
 .proc fn_font
         ; copy character set into RAM, amend it, tell app where it is
@@ -66,9 +66,13 @@ font_update:
     .byte $41, $03, $07, $07, $07, $07, $07, $07, $03   ; L ender    (ascii 1   = $01)
     .byte $42, $c0, $e0, $e0, $e0, $e0, $e0, $e0, $c0   ; R ender    (ascii 2   = $02)
     .byte $44, $c3, $e7, $e7, $e7, $e7, $e7, $e7, $c3   ; Tween end  (ascii 4   = $04)
-    .byte $46, $0f, $3f, $7f, $7f, $ff, $ff, $ff, $ff   ; Popup TL   (ascii 6   = $06)
-    .byte $47, $f0, $fc, $fe, $fe, $ff, $ff, $ff, $ff   ; Popup TR   (ascii 7   = $07)
-    .byte $48, $ff, $ff, $ff, $ff, $7f, $7f, $3f, $0f   ; Popup BL   (ascii 8   = $08)
-    .byte $49, $ff, $ff, $ff, $ff, $fe, $fe, $fc, $f0   ; Popup BR   (ascii 9   = $09)
+    .byte $46, $00, $00, $00, $00, $01, $07, $0f, $0f   ; Popup TL   (ascii 6   = $06)
+    .byte $47, $00, $00, $00, $00, $80, $e0, $f0, $f0   ; Popup TR   (ascii 7   = $07)
+    .byte $48, $0f, $0f, $07, $01, $00, $00, $00, $00   ; Popup BL   (ascii 8   = $08)
+    .byte $49, $f0, $f0, $e0, $80, $00, $00, $00, $00   ; Popup BR   (ascii 9   = $09)
+    .byte $4a, $00, $00, $00, $00, $1f, $7f, $ff, $ff   ; Popup TLW  (ascii 10  = $0A)
+    .byte $4b, $00, $00, $00, $00, $f8, $fe, $ff, $ff   ; Popup TRW  (ascii 11  = $0B)
+    .byte $4c, $ff, $ff, $7f, $1f, $00, $00, $00, $00   ; Popup BLW  (ascii 12  = $0C)
+    .byte $4f, $ff, $ff, $fe, $f8, $00, $00, $00, $00   ; Popup BRW  (ascii 15  = $0F)
     .byte $7b, $00, $0e, $18, $18, $70, $18, $18, $0e   ; {          (ascii 123 = $7B)
     .byte $7d, $00, $70, $18, $18, $0e, $18, $18, $70   ; }          (ascii 125 = $7D)

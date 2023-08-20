@@ -7,7 +7,6 @@
     done                ; screen to allow user to see exit/boot options etc
 
     files               ; file selection screen when browsing chosen host
-    select_device_slot  ; sub page of files that selects the host slot to put selected file into
 
     ; no real screen associated with next entries, so no need to allocate device specific data to them
     init                ; the initial module to load, runs all module initialisation before moving to appropriate next module, e.g. wifi if no wifi selected, or hosts if there is

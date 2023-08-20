@@ -32,7 +32,6 @@ mod_table:
         .addr (mod_info - 1)
         .addr (mod_done - 1)
         .addr (mod_files - 1)
-        .addr (mod_select_device_slot - 1)
         .addr (mod_init - 1)
 
 ; -------------------------------------------------------------------------------

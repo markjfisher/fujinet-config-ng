@@ -11,6 +11,7 @@
         .import     fn_dir_path, fn_dir_filter, fn_io_buffer
         .import     _fn_io_close_directory, _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory
         .import     _fn_io_error, _fn_io_mount_host_slot
+        .import     select_device_slot
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -267,11 +268,11 @@ not_esc:
         jmp     l_files
 
 enter_is_file:
-        ; move to 'select device slot' module
-        mwa     #Mod::select_device_slot, mod_current
+        ; get user's choice of which to device to put the host
+        jsr     select_device_slot
+        ; and take us back to where we were on file list
+        jmp     l_files
 
-        ldx     #KBH::EXIT
-        rts
 
 not_enter:
 ; --------------------------------------------------------------------------

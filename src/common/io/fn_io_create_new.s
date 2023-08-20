@@ -18,7 +18,6 @@
         popa    tmp1    ; device_slot (byte)
         popa    tmp2    ; host_slot (byte)
 
-        ; TODO: MALLOC FOR fn_new_disk into ptr2
         lda     #.sizeof(NewDisk)
         jsr     _malloc
         axinto  ptr2

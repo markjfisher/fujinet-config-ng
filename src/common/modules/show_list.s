@@ -7,10 +7,6 @@
         .include    "fn_data.inc"
         .include    "fn_mods.inc"
 
-; --------------------------------------------
-; code common to multiple modules
-; --------------------------------------------
-
 ; void show_list(uint8 dataSize, void * ptrToData)
 ;
 ; show 8 strings on screen in list fashion, used on hosts and devices.

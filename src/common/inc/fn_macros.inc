@@ -1,5 +1,4 @@
-; various MADS macros reimplemented to make asm easier to read
-; and push/pop arg macros for CA65
+; various macros to make asm easier to read
 
 .macro  mwa    arg1, arg2
     .if (.match (.left (1, {arg1}), #))
@@ -10,11 +9,20 @@
         ; have to use "1+..." to stop assembler thinking it's an addressing mode
         sta     1+(arg2)
     .else
-        ; assume absolute or zero page
-        lda     arg1
-        sta     arg2
-        lda     1+(arg1)
-        sta     1+(arg2)
+        ; check for "), y" or "),y" at end, and assume this is y index based zp
+        .if .match (.right (4, {arg2}), "), y") .or .match (.right (3, {arg2}), "),y")
+            ; y index
+            lda     arg1
+            sta     arg2
+            iny
+            lda     1+(arg1)
+            sta     arg2
+        .else
+            lda     arg1
+            sta     arg2
+            lda     1+(arg1)
+            sta     1+(arg2)
+        .endif
     .endif
 .endmacro
 

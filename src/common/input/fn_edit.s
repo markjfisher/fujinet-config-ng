@@ -157,8 +157,7 @@ not_esc:
 
         ; put a zero at the end
         dey
-        lda     #$00
-        sta     (ptr3), y
+        mva     #$00, {(ptr3), y}
 
         ; reduce edit index and buffer length
         dec     fe_crs_idx
@@ -192,8 +191,7 @@ can_del:
 
         ; put a zero at the end
         dey
-        lda     #$00
-        sta     (ptr3), y
+        mva     #$00, {(ptr3), y}
 
         ; reduce sbuffer length
         dec     fe_buf_len
@@ -235,14 +233,12 @@ can_ins:
 
         ; put space at our current location, y is 1 less than cursor location at moment
 :       iny
-        lda     #' '
-        sta     (ptr3), y
+        mva     #' ', {(ptr3), y}
 
         ; put 0 at end to ensure string is always nul terminated
         ldy     fe_max_len
         dey
-        lda     #$00
-        sta     (ptr3), y
+        mva     #$00, {(ptr3), y}
 
         ; increase buffer len if we can
         jsr     tmp1_as_len_min_2
@@ -507,8 +503,7 @@ trim_whitespace:
 :       lda     (ptr3), y
         cmp     #' '
         bne     non_space1
-        lda     #$00
-        sta     (ptr3), y               ; overwrite space with a 0
+        mva     #$00, {(ptr3), y}       ; overwrite space with a 0
         dey
         bpl     :-                      ; keep looping until y < 0
 
