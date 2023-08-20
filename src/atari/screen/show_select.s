@@ -4,7 +4,6 @@
         .import     ascii_to_code
         .import     _fn_pause
         .import     _fn_get_scrloc
-        .import     fn_mul, fn_div
         .import     _malloc, _free
         .import     debug
 
@@ -104,18 +103,12 @@ not_last_line:
         pha     ; save the type while we read the whole line
 
         ; read the whole PopupItem entry
+        mwa     #fps_pu_entry, ptr2     ; target for copy
+        ldy     #$00
+:       mva     {(ptr1), y}, {(ptr2), y}
         iny
-        mva     {(ptr1), y}, fps_num
-        iny
-        mva     {(ptr1), y}, fps_len
-        iny
-        mva     {(ptr1), y}, fps_val    ; this is the initial selection too, and where we store results
-        iny
-        lda     (ptr1), y
-        sta     fps_text
-        iny
-        lda     (ptr1), y
-        sta     fps_text+1
+        cpy     #.sizeof(PopupItem)
+        bne     :-
 
         pla     ; restore the type
 
@@ -127,17 +120,15 @@ not_last_line:
         cmp     #PopupItemType::textList
         bne     not_text_list
 
-        mva     fps_num, tmp4
-        mwa     fps_text, ptr2
+        mva     {fps_pu_entry + PopupItem::num}, tmp4
+        mwa     {fps_pu_entry + PopupItem::text}, ptr2
         ; align ptr2 with Y being a 1 index (it's screen offset)
         sbw     ptr2, #$01
 all_text:
 
         jsr     left_border
-        ; current string into ptr2
 
-        ldx     fps_width               ; TODO: THIS SHOULD BE LEN, and centred in width
-
+        ldx     fps_pu_entry + PopupItem::len  ; TODO: and centred in width
 :       lda     (ptr2), y               ; fetch a character
         beq     no_trans                ; 0 conveniently maps to screen code for space, and is filler for end of string
         jsr     ascii_to_code
@@ -155,7 +146,7 @@ no_trans:
 
         ; move to next line, and next string, then reloop
         adw     ptr4, #40
-        adw     ptr2, fps_width
+        adw     ptr2, {fps_pu_entry + PopupItem::len}
         jmp     all_text
 
 :
@@ -167,25 +158,60 @@ not_text_list:
         cmp     #PopupItemType::option
         bne     not_option
 
-        ; do an option
-        jsr     left_border
-
-        ; calculate space around widgets to evenly display them on screen.
-        ; TODO: THIS IS A LOT OF CODE FOR SOMETHING THAT SHOULD BE STATICALLY CALCULATED.
-        ;       ADD A WAY TO DO THIS WITHOUT CALCULATION AS IT ADDS A LOT OF CODE!
-        ; this returns malloc'd array of num+1 spacings to apply around each widget.
-        ; must be free'd after reading it
-        jsr     calculate_spacing
+        ; TODO: add "name" field in front of options, e.g. "Mode: < R >  R/W "
+        ; use border chars for highlighting chosen option
 
         ; display the options with spacing.
         ; loop from 0 .. num-1 displaying spacer+widget
         ; and finish with the last spacing
 
-        mva     #$00, tmp1
+        mwa     {fps_pu_entry + PopupItem::spc}, ptr3           ; spacings ptr
+        mwa     {fps_pu_entry + PopupItem::text}, ptr2          ; texts ptr
 
+        ldy     #$00
+        sty     tmp1                    ; our loop variable
 
-        setax   fps_spacing
-        jsr     _free
+        jsr     left_border
+        sty     tmp2                    ; screen position index over whole list, left border increments it by 1
+        ldy     #$00                    ; reset y for spacing index
+
+l1:
+        jsr     print_widget_space
+        sty     tmp2                    ; save new position
+
+        ; y is doing double work here, it's the offset of 2 pointers; the current character to display, and the screen offset
+        ; print the widget, ptr2 tracks the current widget location
+        ldy     #$00
+        ldx     fps_pu_entry + PopupItem::len                 ; number of chars to display for each widget
+:       lda     (ptr2), y               ; get ascii char
+        iny
+        sty     tmp3                    ; save y (current character index)
+        jsr     ascii_to_code           ; convert to screen code
+        ldy     tmp2                    ; restorey screen offset
+        sta     (ptr4), y               ; print char
+        iny
+        sty     tmp2
+        ldy     tmp3                    ; get index of current char back into y
+        dex
+        bne     :-                      ; loop over len chars
+
+        ; move ptr2 on by len to next string
+        adw     ptr2, {fps_pu_entry + PopupItem::len}
+
+        ; any more to process?
+        inc     tmp1
+        lda     tmp1
+        tay                             ; the main loop is also index into space array, read at top of loop
+        cmp     fps_pu_entry + PopupItem::num
+        bne     l1                      ; reloop until all widgets done
+
+        ; display final spacing so it overwrites any background text on the screen
+        ; tmp1 holds index to last spacings
+        ldy     tmp1
+        jsr     print_widget_space
+
+        ; right border
+        mva     #$d9, {(ptr4), y}
 
         jmp     item_handled
 
@@ -213,6 +239,7 @@ do_last_line:
 
         lda     #2
         jsr     _fn_pause
+        jsr     debug
 
         rts
 
@@ -239,112 +266,26 @@ block_line:
         mva     tmp3, {(ptr4), y}       ; right char
         rts
 
-; hideously complex way of calculating even spacing between widgets!
-calculate_spacing:
-        lda     fps_num
-        sta     tmp1            ; we need to multiply this by len shortly, so store it
-        clc
-        adc     #$01            ; num+1 bytes required for spacing
-        jsr     _malloc
-        axinto  fps_spacing
-        axinto  ptr4            ; need to index into it, so store it in ZP
-
-        mva     #$01, ptr3      ; ptr3 is even/odd indicator, start with odd
-
-        ; calculate the amount of extra space available around widgets
-        mva     fps_len, tmp2   ; tmp1 = num, tmp2 = len
-        jsr     fn_mul          ; tmp3/4 = num*len, can't actually be over 256, as there's only up to 36 width in total
-        lda     fps_width
-        sec
-        sbc     tmp3            ; (width - num*len) = extra space in A. 1 byte only
-        sta     tmp3            ; store extra space in tmp3
-
-        ; calculate number of rounds needed to calculate spaces.
-        ; for even num, it's num/2 - 1, for odd, it's num/2
-        lda     fps_num
-        lsr     a
-        sta     tmp4
-        bcs     odd
-        dec     tmp4
-        dec     ptr3            ; ptr3 = 0 means we're even
-        ; round (r) = 0 .. tmp4
-odd:
-        mva     #$00, ptr1      ; use ptr1 as the round number (r), ptr1+1 as num-r
-        ; this round's space = extra / (num + 1 - r)
-        ; that is stored at spacing[r] and spacing[num-r]
-
-        ; this calculation only needed once, then inc/dec them directly
-        ; ptr1 = num + 1 - r, ptr1+1 = num - r
-        lda     fps_num
-        sec
-        sbc     ptr1
-        sta     ptr1+1          ; store (num-r)
-        clc
-        adc     #$01
-        sta     tmp2            ; d  (num+1-r)
-
-l_r:
-        mva     tmp3, tmp1      ; q  (extra)
-        jsr     fn_div             ; tmp1 = q/d, tmp2 = remainder
-
-        ldy     ptr1
-        lda     tmp1
-        sta     (ptr4), y       ; store calculated space in spacing[r]
-        ldy     ptr1+1
-        sta     (ptr4), y       ; ... and spacing[num-r]
-
-        ; extra = extra - A*2, A is the space calculated for 2 widgets
-        asl     a               ; removing space consumed for this widget (and it's pair) from total available
-        sta     tmp1
-        lda     tmp3            ; extra
-        sec
-        sbc     tmp1            ; subtract space * 2
-        sta     tmp3            ; set amount left
-
-        ; save need to recalculate num+1-r
-        dec     ptr1+1          ; num+1-r decreases by 1
-        lda     ptr1+1
-        sta     tmp2            ; store in tmp2 ready for division on next loop
-
-        inc     ptr1            ; r = r + 1
-        lda     ptr1
-
-        ; loop over all r
-        cmp     tmp4
-        beq     l_r
-        bcc     l_r
-
-        ; for the even case, we have to store the final extra in next r (ptr1)
-        lda     ptr3            ; 0 = even, 1 = odd
-        bne     was_odd
-        ldy     ptr1
-        lda     tmp3
-        sta     (ptr4), y       ; save final extra space in "middle" space, as there were an even number of widgets
-        rts
-
-was_odd:
-        ; if there's any extra left over, add it to spacing[0]
-        lda     tmp3            ; extra space
-        beq     :+
-
-        clc
-        ldy     #$00
-        adc     (ptr4), y
-        sta     (ptr4), y
-:
+; prints next amount of spaces to screen from spc array in ptr3
+print_widget_space:
+        lda     (ptr3), y               ; read number of spaces
+        tax        
+        ; print this many spaces
+        lda     #$00
+        ldy     tmp2
+:       sta     (ptr4), y
+        iny
+        dex
+        bne     :-
         rts
 
 .endproc
 
 .bss
+fps_pu_entry:   .tag PopupItem
+
 fps_kb_handler: .res 2
 fps_message:    .res 2
 fps_items:      .res 2
 fps_width:      .res 1
 fps_selected:   .res 1
-fps_text:       .res 2
-
-fps_num:        .res 1
-fps_len:        .res 1
-fps_val:        .res 1
-fps_spacing:    .res 2

@@ -123,8 +123,8 @@ empty:  pushax  #s_empty
 
 .data
 pu_width:       .byte 24
-pu_devs:        .byte PopupItemType::textList, 8, 24, 0, $ff, $ff
-pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_r, >sds_mode_r
+pu_devs:        .byte PopupItemType::textList, 8, 24, 0, $ff, $ff, $00, $00
+pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_r, >sds_mode_r, <sds_opt1_spc, >sds_opt1_spc
 pu_end:         .byte PopupItemType::finish
 
 .segment "SCREEN"
@@ -136,5 +136,8 @@ sds_msg:
 ; both must be 4 chars wide
 sds_mode_r:     .byte "  R  "
 sds_mode_rw:    .byte " R/W "
+
+; spacing for widgets. removes 200 bytes of code to calculate!
+sds_opt1_spc:   .byte 4, 6, 4
 
 test_msg:       .byte "/this/path/to/somewhere4.atx", 0
