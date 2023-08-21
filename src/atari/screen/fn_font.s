@@ -35,7 +35,7 @@ all_fonts:
         sta     tmp1    ; low byte of x8, tmp2 has highbyte
 
         mwa     #fn_font_data, ptr1
-        adw     ptr1, tmp1      ; adjust ptr1 by the offset
+        adw     ptr1, tmp1      ; adjust ptr1 by the offset in tmp1/tmp2
 
         ; copy 8 bytes from our font data into the target font set
         ldy     #$00

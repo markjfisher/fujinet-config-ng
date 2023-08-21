@@ -328,11 +328,12 @@ l1_b:
     .endif
 .endmacro
 
-
-.macro ada arg1
+; adds byte1 to word arg1 dealing with carry
+.macro adw1 arg1, byte1
     .local l1
     clc
-    adc arg1
+    lda arg1
+    adc byte1
     sta arg1
     bcc l1
     inc 1+(arg1)

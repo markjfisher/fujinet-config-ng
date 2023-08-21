@@ -11,7 +11,7 @@
         .import     _malloc, _free
         .import     s_empty
         .import     _show_select
-        .import     debug
+        .import     debug, _fn_pause
         .import     devices_fetched
 
         .include    "zeropage.inc"
@@ -105,6 +105,10 @@ copy_dev_strings:
         mwa     pu_devs+4, ptr1                                 ; dst
         mwa     {#(fn_io_deviceslots + DeviceSlot::file)}, ptr2 ; src
 
+        lda     #2
+        jsr     _fn_pause
+        jsr     debug
+
 l1:     pushax  ptr1    ; dst
 
         ; is src empty?
@@ -118,11 +122,11 @@ l1:     pushax  ptr1    ; dst
 
 empty:  pushax  #s_empty
 
-:       lda     pu_devs+2
+:       lda     pu_devs + PopupItem::len
         jsr     _fn_strncpy
 
         ; increment both src/dst pointers
-        adw     ptr1, pu_devs+2
+        adw1    ptr1, {pu_devs + PopupItem::len}
         adw     ptr2, #.sizeof(DeviceSlot)
 
         dec     tmp1
@@ -135,10 +139,10 @@ empty:  pushax  #s_empty
 pu_width:       .byte 24
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
 ; currently only lengths of 1-9 string list entries will work on screen. popup can have up to 12 items with header etc
-pu_devs:        .byte PopupItemType::textList, 8, 21, 0, $ff, $ff, $00, $00
-pu_spc1:        .byte PopupItemType::space
-pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
-pu_end:         .byte PopupItemType::finish
+pu_devs:        .byte PopupItemType::textList, 8, 21, 3, $ff, $ff, 0, 0
+pu_spc1:        .byte PopupItemType::space,    0,  0, 0,   0,   0, 0, 0         ; extra 6 bytes is shorter than code to skip
+pu_mode:        .byte PopupItemType::option,   2,  5, 1, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
+pu_end:         .byte PopupItemType::finish,   0, 0, 0, 0, 0, 0, 0              ; again, less bytes putting this here than faff if not.
 
 .segment "SCREEN"
         INVERT_ATASCII

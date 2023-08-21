@@ -6,6 +6,7 @@
         .import     _fn_get_scrloc
         .import     _malloc, _free
         .import     _fn_input_ucase
+        .import     _fn_strlen
 
         .import     debug
 
@@ -87,6 +88,10 @@
         mva     #$c7, tmp3
         jsr     block_line
 
+        ; save the current screen location as start of display lines after the title
+        mwa     ptr4, fps_lines_start
+        adw     fps_lines_start, #40    ; it needs moving to next line, as we are on the "under title" line
+
 ; ----------------------------------------------------------
 ; L2 onwards we need to look at the popup data
 
@@ -102,20 +107,8 @@ l_all_popups:
         jmp     do_last_line    ; check if we can branch here - might be too far
 
 not_last_line:
-        ; skip reading if the type is "space"
-        cmp     #PopupItemType::space
-        beq     start_switch
-
         pha     ; save the type while we read the whole line
-
-        ; read the whole PopupItem entry
-        mwa     #fps_pu_entry, ptr2     ; target for copy
-        ldy     #$00
-:       mva     {(ptr1), y}, {(ptr2), y}
-        iny
-        cpy     #.sizeof(PopupItem)
-        bne     :-
-
+        jsr     copy_entry
         pla     ; restore the type
 
 ; ----------------------------------------------
@@ -174,7 +167,7 @@ no_x_space:
 
         ; move to next line, and next string, then reloop
         adw     ptr4, #40
-        adw     ptr2, {fps_pu_entry + PopupItem::len}
+        adw1    ptr2, {fps_pu_entry + PopupItem::len}
         inc     tmp1                    ; next print index
         jmp     all_text
 
@@ -234,7 +227,7 @@ widget_loop:
         iny
         sty     tmp3                    ; save y (current character index)
         jsr     ascii_to_code           ; convert to screen code
-        ldy     tmp2                    ; restorey screen offset
+        ldy     tmp2                    ; restore screen offset
         sta     (ptr4), y               ; print char
         iny
         sty     tmp2
@@ -243,7 +236,7 @@ widget_loop:
         bne     :-                      ; loop over len chars
 
         ; move ptr2 on by len to next string
-        adw     ptr2, {fps_pu_entry + PopupItem::len}
+        adw1    ptr2, {fps_pu_entry + PopupItem::len}
 
         ; any more to process?
         inc     tmp1
@@ -272,8 +265,8 @@ not_option:
         mva     #$d9, tmp3
         jsr     block_line
 
-        adw     ptr1, #$01              ; only 1 byte for space type
-        jmp     l_all_popups
+        ; UNCOMMENT IF MORE OPTIONS IMPLEMENTED
+        ; jmp     item_handled
 
 not_space:
 ; TODO: IMPLEMENT OTHER PopupItemType TYPES 
@@ -336,18 +329,29 @@ print_widget_space:
         dex
         bne     :-
         rts
+
+copy_entry:
+        ; read the whole PopupItem entry into ptr2
+        mwa     #fps_pu_entry, ptr2     ; target for copy
+        ldy     #$00
+:       mva     {(ptr1), y}, {(ptr2), y}
+        iny
+        cpy     #.sizeof(PopupItem)
+        bne     :-
+        rts
+
 .endproc
 
 
-; keep in same file for access to variables
+; allows new scoping, but also access to everything in this file
 .proc show_select_kb
+
+        jsr     highlight_options
 
 start_kb_get:
         jsr     _fn_input_ucase
         cmp     #$00
         beq     start_kb_get
-
-        jsr     debug
 
 ; --------------------------------------------------------------------
 ; main popup select  kb switch
@@ -373,6 +377,8 @@ start_kb_get:
 ; --------------------------------------------------------------------
         cmp     #FNK_TAB
         bne     not_tab
+
+
 
         jmp     start_kb_get
 
@@ -444,6 +450,138 @@ not_down:
 
 not_esc:
         jmp     start_kb_get
+
+
+highlight_options:
+        ; take the current selection, and widget index, and highlight the right things
+
+        ; highlight the current selection on each item
+        mwa     fps_items, ptr1                 ; first entry
+        mwa     fps_lines_start, ptr3           ; ptr3 is our moving screen location per widget
+
+; loop around all the entries until we hit exit
+all_entries:
+        jsr     _show_select::copy_entry        ; expects ptr1 to point to a PopupItem
+        lda     fps_pu_entry + PopupItem::type
+        cmp     #PopupItemType::finish
+        bne     not_finish
+        jmp     end_hl
+
+not_finish:
+; ---------------------------------------------------------------------------
+; textList
+; ---------------------------------------------------------------------------
+        cmp     #PopupItemType::textList
+        bne     not_text_list
+        ; get current selection
+        lda     fps_pu_entry + PopupItem::val
+        sta     tmp1
+
+        ; loop through the entries until we are on current selection
+        ldx     #$00
+:       cpx     tmp1
+        beq     found_line
+        adw     ptr3, #40
+        inx
+        bne     :-
+
+found_line:
+        ; highlight the text from ptr3+3 to ptr3+entry::len
+        ldy     #$03
+        ldx     fps_pu_entry + PopupItem::len
+:       lda     (ptr3), y
+        ora     #$80
+        sta     (ptr3), y
+        iny
+        dex
+        bne     :-
+
+        ; need to increment ptr3 over rest of lines so it starts at the next widget
+        ; i.e. (num - tmp1) * 40
+        lda     fps_pu_entry + PopupItem::num
+        sec
+        sbc     tmp1
+        tax
+:       adw     ptr3, #40
+        dex
+        bne     :-
+
+        jmp     next_entry
+
+not_text_list:
+; ---------------------------------------------------------------------------
+; option
+; ---------------------------------------------------------------------------
+        cmp     #PopupItemType::option
+        bne     not_option
+
+        ; get string length of name into tmp2, this will be our offset to the option to highlight
+        setax   fps_pu_entry + PopupItem::text
+        jsr     _fn_strlen
+        sta     tmp2
+
+        lda     fps_pu_entry + PopupItem::val
+        sta     tmp1
+
+        ; add the spacer offsets up to chosen item into tmp2
+        ldy     #$00
+        mwa     {fps_pu_entry + PopupItem::spc}, ptr2        ; begining of offsets
+:       lda     (ptr2), y
+        clc
+        adc     tmp2
+        sta     tmp2
+        iny
+        cpy     tmp1
+        bcc     :-
+        beq     :-
+
+        ; add lengths of previous option texts until hit current selected option
+        ldx     #$00
+:       cpx     tmp1
+        beq     found_option
+        lda     tmp2
+        clc
+        adc     fps_pu_entry + PopupItem::len
+        sta     tmp2
+        inx
+        bne     :-
+
+found_option:
+        ldy     tmp2
+        iny                     ; for the left hand border
+        ldx     fps_pu_entry + PopupItem::len
+:       lda     (ptr3), y
+        ora     #$80
+        sta     (ptr3), y
+        iny
+        dex
+        bne     :-
+
+        ; add 40 to ptr3 to point to next line
+        adw     ptr3, #40
+
+        jmp     next_entry
+
+not_option:
+; ---------------------------------------------------------------------------
+; space
+; ---------------------------------------------------------------------------
+        cmp     #PopupItemType::space
+        bne     not_space
+        ; add a line to the screen pointer
+        adw     ptr3, #40
+        ; drop through
+
+not_space:
+
+next_entry:
+        adw     ptr1, #.sizeof(PopupItem)
+        jmp     all_entries
+
+end_hl:
+        ; superhighlight the current widget's chosen option
+
+        rts
 .endproc
 
 
@@ -455,3 +593,4 @@ fps_message:    .res 2
 fps_items:      .res 2
 fps_width:      .res 1
 fps_widget_idx: .res 1  ; which widget we are currently on (do we just need type?)
+fps_lines_start: .res 2

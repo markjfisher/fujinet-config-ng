@@ -8,7 +8,7 @@
 ;
 ; wait for clock to cycle to given count 0-255
 .proc _fn_pause
-        sta    tmp1
+        sta    _fn_pause_count
 
         ; this may need to change if we do more complicated timings elsewhere
         ; but for now, we set RTCLOK+2 to 0, and wait until it hits jiffies
@@ -16,8 +16,11 @@
         sta     RTCLOK+2
 
 :       lda     RTCLOK+2
-        cmp     tmp1
+        cmp     _fn_pause_count
         bne     :-
 
         rts
 .endproc
+
+.bss
+_fn_pause_count: .res 1
