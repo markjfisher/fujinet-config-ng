@@ -1,4 +1,5 @@
         .export     _show_select
+        .export     fps_pu_entry
 
         .import     popax, popa
         .import     ascii_to_code
@@ -28,7 +29,6 @@
         popa    fps_width               ; the width of the input area excluding the borders which add 1 each side for the border
 
         mva     #$00, fps_widget_idx    ; start on first widget
-        mwa     fps_items, ptr1         ; set ptr1 to our popup data
 
         ; KEEP ptr1 SACRED
 
@@ -89,14 +89,17 @@
         jsr     block_line
 
         ; save the current screen location as start of display lines after the title
-        mwa     ptr4, fps_lines_start
-        adw     fps_lines_start, #40    ; it needs moving to next line, as we are on the "under title" line
+        mwa     ptr4, fps_scr_l_strt
+        adw     fps_scr_l_strt, #40    ; it needs moving to next line, as we are on the "under title" line
 
 ; ----------------------------------------------------------
 ; L2 onwards we need to look at the popup data
 
+display_main_loop:
+        mwa     fps_items, ptr1         ; set ptr1 to first popup data
+
 ; main loop for displaying different PopupItemType values
-l_all_popups:
+l_all_items:
         ; add 40 to screen location to point to next line
         adw     ptr4, #40               ; add 1 line
 
@@ -127,7 +130,6 @@ start_switch:
         ; align ptr2 with Y being a 3 based index (it's screen offset)
         sbw     ptr2, #$03
 all_text:
-
         jsr     left_border
 
         ; print digit for current index+1
@@ -252,7 +254,6 @@ widget_loop:
 
         ; right border
         mva     #FNC_RT_BLK, {(ptr4), y}
-
         jmp     item_handled
 
 not_option:
@@ -274,7 +275,7 @@ not_space:
 
 item_handled:
         adw     ptr1, #.sizeof(PopupItem)       ; move ptr1 to next popup entry
-        jmp     l_all_popups
+        jmp     l_all_items
 
 do_last_line:
         ; Pre last line
@@ -290,10 +291,29 @@ do_last_line:
         mva     #FNC_BRW, tmp3
         jsr     block_line
 
+; -----------------------------------------------------------
+; show_select keyboard handler
+; -----------------------------------------------------------
         ; This is a mini version of gb keyboard handler that understands item types
-        ; exit from here will exit the select screen
-        jmp     show_select_kb
+        jsr     show_select_kb
 
+        ; based on return value in A, we will either reloop to display options page again
+        ; or exit with values chosen.
+
+        cmp     #PopupItemReturn::redisplay
+        bne     exit_show_select
+
+        ; reset the screen pointer to display from the top again minus 1 line, as this is added immediately
+        mwa     fps_scr_l_strt, ptr4
+        sbw     ptr4, #40
+        jmp     display_main_loop
+
+exit_show_select:
+        rts
+
+; -----------------------------------------------------------
+; Helper procedures
+; -----------------------------------------------------------
 left_border:
         ldy     #$00
         mva     #FNC_LT_BLK, {(ptr4), y}
@@ -331,7 +351,7 @@ print_widget_space:
         rts
 
 copy_entry:
-        ; read the whole PopupItem entry into ptr2
+        ; read the whole PopupItem entry into ptr2. ptr1 is the current item
         mwa     #fps_pu_entry, ptr2     ; target for copy
         ldy     #$00
 :       mva     {(ptr1), y}, {(ptr2), y}
@@ -349,8 +369,12 @@ copy_entry:
 
 ; allows new scoping, but also access to everything in this file
 .proc show_select_kb
-
         jsr     highlight_options
+
+        ; get current popup item into our buffer so we can read values
+        ldx     fps_widget_idx
+        jsr     ptr1_popup_x
+        jsr     _show_select::copy_entry
 
 start_kb_get:
         jsr     _fn_input_ucase
@@ -382,20 +406,25 @@ start_kb_get:
         cmp     #FNK_TAB
         bne     not_tab
 
+        ; we want to move to next non-space, with wrap to top if next index = finish
+        ldx     fps_widget_idx
+add_1:
+        inx
+get_type:
+        jsr     type_at_x               ; get type of x'th popup Item
+        cmp     #PopupItemType::finish
+        bne     :+
+        ldx     #$00
+        beq     get_type
+:       cmp     #PopupItemType::space
+        beq     add_1
 
-
-        jmp     start_kb_get
+        stx     fps_widget_idx
+        ldx     #$00
+        lda     #PopupItemReturn::redisplay
+        rts
 
 not_tab:
-; --------------------------------------------------------------------
-; ENTER - finish interaction
-; --------------------------------------------------------------------
-        cmp     #FNK_ENTER
-        bne     not_enter
-
-        jmp     start_kb_get
-
-not_enter:
 ; --------------------------------------------------------------------
 ; LEFT - option only
 ; --------------------------------------------------------------------
@@ -404,9 +433,15 @@ not_enter:
         cmp     #FNK_LEFT2
         bne     not_left
 
-
 is_left:
-        jmp     start_kb_get
+        jsr     kb_can_do_LR
+        beq     start_kb_get
+
+        jsr     do_prev_val
+        jsr     copy_new_val
+        ldx     #$00
+        lda     #PopupItemReturn::redisplay
+        rts
 
 not_left:
 ; --------------------------------------------------------------------
@@ -418,7 +453,14 @@ not_left:
         bne     not_right
 
 is_right:
-        jmp     start_kb_get
+        jsr     kb_can_do_LR
+        beq     start_kb_get
+
+        jsr     do_next_val
+        jsr     copy_new_val
+        ldx     #$00
+        lda     #PopupItemReturn::redisplay
+        rts
 
 not_right:
 ; --------------------------------------------------------------------
@@ -429,7 +471,10 @@ not_right:
         cmp     #FNK_UP2
         bne     not_up
 is_up:
-        jmp     start_kb_get
+        jsr     kb_can_do_UD
+        beq     start_kb_get
+        jmp     do_prev
+        ; implicit rts
 
 not_up:
 ; --------------------------------------------------------------------
@@ -440,7 +485,10 @@ not_up:
         cmp     #FNK_DOWN2
         bne     not_down
 is_down:
-        jmp     start_kb_get
+        jsr     kb_can_do_UD
+        beq     start_kb_get
+        jmp     do_next
+        ; implicit rts
 
 not_down:
 ; --------------------------------------------------------------------
@@ -448,20 +496,91 @@ not_down:
 ; --------------------------------------------------------------------
         cmp     #FNK_ESC
         bne     not_esc
+
+        ; exit with escape code, caller will act on it.
         ldx     #$00
-        lda     #$01
+        lda     #PopupItemReturn::escape
+        rts
+not_esc:
+; --------------------------------------------------------------------
+; ENTER - finish interaction
+; --------------------------------------------------------------------
+        cmp     #FNK_ENTER
+        bne     not_enter
+
+        ; simple, just exit with complete code, the caller will read out any data as needed
+        ldx     #$00
+        lda     #PopupItemReturn::complete
         rts
 
-not_esc:
+not_enter:
+
+; --------------------------------------------------------------------
+; end of keyboard switch, reloop until ESC or Enter is hit
+; --------------------------------------------------------------------
+
         jmp     start_kb_get
 
 
-highlight_options:
+do_next_val:
+        ; move to next value, rotating if at end
+        lda     fps_pu_entry + PopupItem::val
+        clc
+        adc     #$01
+        cmp     fps_pu_entry + PopupItem::num
+        bcc     :+
+        lda     #$00
+
+:       rts
+
+do_prev_val:
+        ; move to previous value, rotating if at end
+        lda     fps_pu_entry + PopupItem::val
+        sec
+        sbc     #$01
+        cmp     #$ff
+        bne     :+
+
+        ldx     fps_pu_entry + PopupItem::num
+        dex
+        txa
+
+:       rts
+
+do_prev:
+        jsr     do_prev_val
+        jmp     copy_ret
+
+do_next:
+        jsr     do_next_val
+        jmp     copy_ret
+
+copy_ret:
+        jsr     copy_new_val
+        ldx     #$00
+        lda     #PopupItemReturn::redisplay
+        rts
+
+.endproc
+
+.proc copy_new_val
+        ; copy to original and our buffer. TODO: overkill?
+        sta     tmp1
+        sta     fps_pu_entry + PopupItem::val
+        ldx     fps_widget_idx
+        jsr     ptr1_popup_x    ; ptr1 points to given popupitem
+        ldy     #PopupItem::val
+        lda     tmp1
+        sta     (ptr1), y
+        rts
+.endproc
+
+.proc highlight_options
         ; take the current selection, and widget index, and highlight the right things
 
         ; highlight the current selection on each item
         mwa     fps_items, ptr1                 ; first entry
-        mwa     fps_lines_start, ptr3           ; ptr3 is our moving screen location per widget
+        mwa     fps_scr_l_strt, ptr3            ; ptr3 is our moving screen location per widget
         mva     #$00, tmp3                      ; track which widget we're on, and superhighlight it if it matches current
 
 ; loop around all the entries until we hit exit
@@ -514,7 +633,7 @@ found_line:
 
         lda     fps_pu_entry + PopupItem::len
         clc
-        adc     #$02
+        adc     #$03            ; adjust for the list count spacing
         tay
         lda     #FNC_R_HL
         sta     (ptr3), y
@@ -623,7 +742,65 @@ next_entry:
         jmp     all_entries
 
 end_hl:
+        rts
+.endproc
 
+; walk down the PopupItems to the xth, and find its type, return it in A
+; trashes tmp1, Y, A, ptr1
+.proc type_at_x
+        jsr     ptr1_popup_x
+        ldy     #PopupItem::type
+        lda     (ptr1), y               ; the type of x'th. sets N/Z etc for return too
+        rts
+.endproc
+
+.proc ptr1_popup_x
+        ; ptr1 will point to start of required PopupItem object
+        mwa     fps_items, ptr1
+        ; save x
+        txa
+        pha
+        cpx     #$00
+        beq     :++
+
+        ; move down list until we're at the right one
+:       adw     ptr1, #.sizeof(PopupItem)
+        dex
+        bne     :-
+
+:
+        pla
+        tax
+        rts
+.endproc
+
+.proc kb_can_do_LR
+        ldx     fps_widget_idx
+        jsr     type_at_x
+        cmp     #PopupItemType::option
+        beq     kb_lr_yes
+
+        ; default to NO, if more types need adding, add them above
+        lda     #$00
+        rts
+
+kb_lr_yes:
+        lda     #$01
+        rts
+.endproc
+
+.proc kb_can_do_UD
+        ldx     fps_widget_idx
+        jsr     type_at_x
+        cmp     #PopupItemType::textList
+        beq     kb_ud_yes
+
+        ; default to NO, if more types need adding, add them above
+        lda     #$00
+        rts
+
+kb_ud_yes:
+        lda     #$01
         rts
 .endproc
 
@@ -636,4 +813,4 @@ fps_message:    .res 2
 fps_items:      .res 2
 fps_width:      .res 1
 fps_widget_idx: .res 1  ; which widget we are currently on (do we just need type?)
-fps_lines_start: .res 2
+fps_scr_l_strt: .res 2

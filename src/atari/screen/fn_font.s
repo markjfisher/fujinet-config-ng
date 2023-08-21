@@ -7,7 +7,7 @@
         .include    "fn_macros.inc"
 
 
-NUM_CHANGES     := 16
+NUM_CHANGES     := 16           ; can do 28 before we have to loop differently
 
 .proc fn_font
         ; copy character set into RAM, amend it, tell app where it is

@@ -135,9 +135,9 @@ empty:  pushax  #s_empty
 pu_width:       .byte 24
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
 ; currently only lengths of 1-9 string list entries will work on screen. popup can have up to 12 items with header etc
-pu_devs:        .byte PopupItemType::textList, 8, 21, 3, $ff, $ff, 0, 0
+pu_devs:        .byte PopupItemType::textList, 8, 21, 0, $ff, $ff, 0, 0
 pu_spc1:        .byte PopupItemType::space,    0,  0, 0,   0,   0, 0, 0         ; extra 6 bytes is shorter than code to skip
-pu_mode:        .byte PopupItemType::option,   2,  5, 1, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
+pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
 pu_end:         .byte PopupItemType::finish,   0, 0, 0, 0, 0, 0, 0              ; again, less bytes putting this here than faff if not.
 
 .segment "SCREEN"

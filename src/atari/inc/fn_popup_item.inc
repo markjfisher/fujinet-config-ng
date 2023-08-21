@@ -17,3 +17,9 @@
         space                   ; just a line of space
         finish                  ; marker that we have finished items             
 .endenum
+
+.enum PopupItemReturn
+        escape                  ; exit popup, don't make changes
+        complete                ; enter was hit and options selection complete, exit with changes
+        redisplay               ; nothing chosen yet, just navigating around and need to redisplay the options screen.
+.endenum
