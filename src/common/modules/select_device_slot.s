@@ -105,10 +105,6 @@ copy_dev_strings:
         mwa     pu_devs+4, ptr1                                 ; dst
         mwa     {#(fn_io_deviceslots + DeviceSlot::file)}, ptr2 ; src
 
-        lda     #2
-        jsr     _fn_pause
-        jsr     debug
-
 l1:     pushax  ptr1    ; dst
 
         ; is src empty?

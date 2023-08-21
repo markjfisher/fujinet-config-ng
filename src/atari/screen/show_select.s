@@ -17,7 +17,6 @@
         .include    "fn_data.inc"
         .include    "fn_popup_item.inc"
 
-
 ; void fn_popup_select(char *msg, void *selected)
 ; 
 ; display a list of items, and show the values, allowing user to select from it
@@ -28,12 +27,13 @@
         popax   fps_items               ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
         popa    fps_width               ; the width of the input area excluding the borders which add 1 each side for the border
 
-        sta     fps_widget_idx          ; start on first widget
+        mva     #$00, fps_widget_idx    ; start on first widget
         mwa     fps_items, ptr1         ; set ptr1 to our popup data
 
         ; KEEP ptr1 SACRED
 
         ; border characters are: (screen codes)
+        ; SEE FNC_ codes
         ; 4a  55 * width    4b
         ; 80  title         80
         ; c6  d5 x width    c7
@@ -56,9 +56,9 @@
 
         ; ----------------------------------------------------------
         ; show top line down
-        mva     #$4a, tmp1
-        mva     #$55, tmp2
-        mva     #$4b, tmp3
+        mva     #FNC_TLW, tmp1
+        mva     #FNC_DN_BLK, tmp2
+        mva     #FNC_TRW, tmp3
         jsr     block_line
 
         ; ----------------------------------------------------------
@@ -69,7 +69,7 @@
         sbw     ptr2, #$01
 
         ldy     #$00
-        mva     #$80, {(ptr4), y}
+        mva     #FNC_FULL, {(ptr4), y}
         iny
         ldx     fps_width
 :       lda     (ptr2), y
@@ -78,14 +78,14 @@
         iny
         dex
         bne     :-
-        mva     #$80, {(ptr4), y}
+        mva     #FNC_FULL, {(ptr4), y}
 
         ; ----------------------------------------------------------
         ; Under title
         adw     ptr4, #40
-        mva     #$c6, tmp1
-        mva     #$d5, tmp2
-        mva     #$c7, tmp3
+        mva     #FNC_TL_I, tmp1
+        mva     #FNC_UP_BLK, tmp2
+        mva     #FNC_TR_I, tmp3
         jsr     block_line
 
         ; save the current screen location as start of display lines after the title
@@ -133,7 +133,7 @@ all_text:
         ; print digit for current index+1
         mva     tmp1, {(ptr4), y}
         iny
-        mva     #$00, {(ptr4), y}
+        mva     #FNC_BLANK, {(ptr4), y}
         iny
 
         ldx     fps_pu_entry + PopupItem::len
@@ -152,14 +152,14 @@ no_trans:
         beq     :+
         bcs     no_x_space      ; finish only when screen index > fps_width
 
-:       lda     #$00
+:       lda     #FNC_BLANK
         sta     (ptr4), y
         iny
         bne     :--             ; always loop, exit will be when we are > width
 
 no_x_space:
         ; right border
-        mva     #$d9, {(ptr4), y}
+        mva     #FNC_RT_BLK, {(ptr4), y}
 
         ; any more lines?
         dec     tmp4
@@ -251,7 +251,7 @@ widget_loop:
         jsr     print_widget_space
 
         ; right border
-        mva     #$d9, {(ptr4), y}
+        mva     #FNC_RT_BLK, {(ptr4), y}
 
         jmp     item_handled
 
@@ -260,9 +260,9 @@ not_option:
         bne     not_space
 
         ; just put a blank line. keyboard movement will skip over it
-        mva     #$59, tmp1
-        mva     #$00, tmp2
-        mva     #$d9, tmp3
+        mva     #FNC_LT_BLK, tmp1
+        mva     #FNC_BLANK, tmp2
+        mva     #FNC_RT_BLK, tmp3
         jsr     block_line
 
         ; UNCOMMENT IF MORE OPTIONS IMPLEMENTED
@@ -278,16 +278,16 @@ item_handled:
 
 do_last_line:
         ; Pre last line
-        mva     #$c8, tmp1
-        mva     #$55, tmp2
-        mva     #$c9, tmp3
+        mva     #FNC_BL_I, tmp1
+        mva     #FNC_DN_BLK, tmp2
+        mva     #FNC_BR_I, tmp3
         jsr     block_line
 
         ; last line
         adw     ptr4, #40
-        mva     #$4c, tmp1
-        mva     #$d5, tmp2
-        mva     #$4f, tmp3
+        mva     #FNC_BLW, tmp1
+        mva     #FNC_UP_BLK, tmp2
+        mva     #FNC_BRW, tmp3
         jsr     block_line
 
         ; This is a mini version of gb keyboard handler that understands item types
@@ -296,7 +296,7 @@ do_last_line:
 
 left_border:
         ldy     #$00
-        mva     #$59, {(ptr4), y}
+        mva     #FNC_LT_BLK, {(ptr4), y}
         iny
         rts
 
@@ -322,7 +322,7 @@ print_widget_space:
         lda     (ptr3), y               ; read number of spaces
         tax        
         ; print this many spaces
-        lda     #$00
+        lda     #FNC_BLANK
         ldy     tmp2
 :       sta     (ptr4), y
         iny
@@ -342,6 +342,10 @@ copy_entry:
 
 .endproc
 
+
+; ==============================================================================
+; show_select_kb
+; ==============================================================================
 
 ; allows new scoping, but also access to everything in this file
 .proc show_select_kb
@@ -458,6 +462,7 @@ highlight_options:
         ; highlight the current selection on each item
         mwa     fps_items, ptr1                 ; first entry
         mwa     fps_lines_start, ptr3           ; ptr3 is our moving screen location per widget
+        mva     #$00, tmp3                      ; track which widget we're on, and superhighlight it if it matches current
 
 ; loop around all the entries until we hit exit
 all_entries:
@@ -473,7 +478,8 @@ not_finish:
 ; ---------------------------------------------------------------------------
         cmp     #PopupItemType::textList
         bne     not_text_list
-        ; get current selection
+
+        ; get current selection within the texts to display
         lda     fps_pu_entry + PopupItem::val
         sta     tmp1
 
@@ -496,9 +502,27 @@ found_line:
         dex
         bne     :-
 
+        ; is this current list selection?
+        lda     fps_widget_idx
+        cmp     tmp3
+        bne     :+
+
+        ; yes, super highlight the entry at ptr3+2, and ptr3+len+2 as we are currently editing this list item
+        ldy     #$02
+        lda     #FNC_L_HL
+        sta     (ptr3), y
+
+        lda     fps_pu_entry + PopupItem::len
+        clc
+        adc     #$02
+        tay
+        lda     #FNC_R_HL
+        sta     (ptr3), y
+
+
         ; need to increment ptr3 over rest of lines so it starts at the next widget
         ; i.e. (num - tmp1) * 40
-        lda     fps_pu_entry + PopupItem::num
+:       lda     fps_pu_entry + PopupItem::num
         sec
         sbc     tmp1
         tax
@@ -519,6 +543,7 @@ not_text_list:
         setax   fps_pu_entry + PopupItem::text
         jsr     _fn_strlen
         sta     tmp2
+        inc     tmp2    ; add 1 for border
 
         lda     fps_pu_entry + PopupItem::val
         sta     tmp1
@@ -548,7 +573,6 @@ not_text_list:
 
 found_option:
         ldy     tmp2
-        iny                     ; for the left hand border
         ldx     fps_pu_entry + PopupItem::len
 :       lda     (ptr3), y
         ora     #$80
@@ -557,8 +581,27 @@ found_option:
         dex
         bne     :-
 
+        ; is this current list selection?
+        lda     fps_widget_idx
+        cmp     tmp3
+        bne     :+
+
+        ; yes, put HL chars around the field
+        ldy     tmp2
+        dey
+        lda     #FNC_L_HL
+        sta     (ptr3), y
+        tya
+        clc
+        adc     fps_pu_entry + PopupItem::len
+        tay
+        iny
+        lda     #FNC_R_HL
+        sta     (ptr3), y
+
+
         ; add 40 to ptr3 to point to next line
-        adw     ptr3, #40
+:       adw     ptr3, #40
 
         jmp     next_entry
 
@@ -575,11 +618,11 @@ not_option:
 not_space:
 
 next_entry:
+        inc     tmp3            ; increment which widget the next one will be
         adw     ptr1, #.sizeof(PopupItem)
         jmp     all_entries
 
 end_hl:
-        ; superhighlight the current widget's chosen option
 
         rts
 .endproc

@@ -64,3 +64,35 @@ FNK_HOME    = $01           ; ctrl-a, start of line char
 FNK_END     = $05           ; ctrl-e, end of line char
 FNK_KILL    = $0B           ; ctrl-k, kill to end of line
 FNK_PARENT  = $3C           ; "<" used in files to go to parent dir
+
+; CHARACTER SCREEN CODES FOR HIGHLIGHTING/POPUP BOX etc
+FNC_TLW     = $4A           ; Top Left WIDE
+FNC_TRW     = $4B           ; Top Right WIDE
+FNC_BLW     = $4C           ; Bottom Left WIDE
+FNC_BRW     = $4F           ; Bottom Right WIDE
+
+FNC_TL      = $46           ; Top Left Corner Thin
+FNC_TR      = $47           ; Top Right Corner Thin
+FNC_BL      = $48           ; Bottom Left Corner Thin
+FNC_BR      = $49           ; Bottom Right Corner Thin
+
+; above + $80
+FNC_TL_I    = $C6           ; Top Left Corner Thin INVERSE (makes WIDE outer)
+FNC_TR_I    = $C7           ; Top Right Corner Thin INVERSE (makes WIDE outer)
+FNC_BL_I    = $C8           ; Bottom Left Corner Thin INVERSE (makes WIDE outer)
+FNC_BR_I    = $C9           ; Bottom Right Corner Thin INVERSE (makes WIDE outer)
+
+FNC_DN_BLK  = $55           ; ctrl-U under normal, 4 rows blank, 4 rows filled
+FNC_UP_BLK  = $D5           ; INV ctrl-U under normal, 4 rows filled, 4 rows blank
+FNC_LT_BLK  = $59           ; ctrl-Y, 4 columns filled, 4 columns blank
+FNC_RT_BLK  = $D9           ; INV ctrl-Y, 4 columns blank, 4 columns filled
+
+FNC_BLANK   = $00           ; space, 8 rows blank
+FNC_FULL    = $80           ; inv-space, 8 rows filled
+
+FNC_L_END   = $41           ; Left extra character to widen the string slightly, used for Help text
+FNC_R_END   = $42           ; Right extra character to widen the string slightly, used for Help text
+FNC_M_END   = $44           ; Middle extra character to widen the string slightly, used for Help text - reduces overall space on Help text
+
+FNC_L_HL    = $50           ; Pointer to selection L
+FNC_R_HL    = $54           ; Pointer to selection R

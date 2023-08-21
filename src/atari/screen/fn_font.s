@@ -7,7 +7,7 @@
         .include    "fn_macros.inc"
 
 
-NUM_CHANGES     := 14
+NUM_CHANGES     := 16
 
 .proc fn_font
         ; copy character set into RAM, amend it, tell app where it is
@@ -74,5 +74,7 @@ font_update:
     .byte $4b, $00, $00, $00, $00, $f8, $fe, $ff, $ff   ; Popup TRW  (ascii 11  = $0B)
     .byte $4c, $ff, $ff, $7f, $1f, $00, $00, $00, $00   ; Popup BLW  (ascii 12  = $0C)
     .byte $4f, $ff, $ff, $fe, $f8, $00, $00, $00, $00   ; Popup BRW  (ascii 15  = $0F)
+    .byte $50, $3f, $7b, $f9, $c0, $c0, $f9, $7b, $3f   ; Left HL    (ascii 16  = $10)
+    .byte $54, $fc, $de, $9f, $03, $03, $9f, $de, $fc   ; Right HL   (ascii 20  = $14)
     .byte $7b, $00, $0e, $18, $18, $70, $18, $18, $0e   ; {          (ascii 123 = $7B)
     .byte $7d, $00, $70, $18, $18, $0e, $18, $18, $70   ; }          (ascii 125 = $7D)
