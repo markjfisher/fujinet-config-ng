@@ -12,6 +12,7 @@
         .import     _fn_io_close_directory, _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory
         .import     _fn_io_error, _fn_io_mount_host_slot
         .import     select_device_slot
+        .import     get_to_dir_pos
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -368,18 +369,7 @@ skip_show_dir_char:
         rts
 
 enter_dir:
-        ; open dir for current path, grab the full name of this selected path, and append it to current path string.
-        lda     host_selected
-        jsr     _fn_io_open_directory
-
-        ; set the directory position to top + highlighted
-        lda     mf_selected
-        sta     tmp1
-        mva     #$00, tmp2
-        adw     mf_dir_pos, tmp1, tmp3      ; pretend tmp1 is word value, and save result in tmp3/4
-
-        setax   tmp3                        ; store this in A/X for call
-        jsr     _fn_io_set_directory_position
+        jsr     get_to_dir_pos
 
         ; read the selected directory for as many bytes as we are able given current path value, and append path with it.
         setax   #fn_dir_path        

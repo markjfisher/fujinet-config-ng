@@ -1,18 +1,21 @@
         .export     select_device_slot
 
-        .import     pusha, pushax, popa, popax
-        .import     _fn_popup_select, fn_io_buffer
+        .import     pusha, pushax
+        .import     fn_io_buffer, fn_dir_path
         .import     _fn_io_set_device_filename
-        .import     _fn_io_put_device_slots
         .import     _fn_io_get_device_slots
-        .import     _fn_strncpy
+        .import     _fn_strncpy, _fn_strlen, _fn_strncat
         .import     _fn_clr_highlight
+        .import     _fn_io_read_directory
+        .import     _fn_io_close_directory
         .import     fn_io_deviceslots
         .import     _malloc, _free
         .import     s_empty
         .import     _show_select
-        .import     debug, _fn_pause
         .import     devices_fetched
+        .import     host_selected
+        .import     get_to_dir_pos
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -43,8 +46,7 @@
         ; show the selector
         pusha   pu_width
         pushax  #pu_devs
-        setax  #sds_msg
-        ; setax   #kb_handler
+        setax   #sds_msg
         jsr     _show_select    ; device specific routine to handle showing selection. alters .val in structure
         sta     tmp1            ; save the return from select
 
@@ -52,38 +54,84 @@
         setax   pu_devs+4
         jsr     _free
 
-        ; CHECK IF ESC pressed (return value from _show_select)
+        ; CHECK IF ESC pressed (return value from _show_select is 0 for esc)
         lda     tmp1
-        beq     save_device_choice
+        bne     save_device_choice
 
         ; ESC was pressed, don't do anything, the caller will simply reload main screen
         rts
 
 save_device_choice:
-        ; pull out byte 3 of each pu_* to see what options were chosen
+        ; the selected option was pu_devs+val
+        ; the selected mode was pu_mode+val
+        mva     {pu_devs + PopupItem::val}, sds_dev     ; device slot is 0 based
+        mva     {pu_mode + PopupItem::val}, sds_mode
+        inc     sds_mode                                ; mode is 1/2, we have 0/1, add 1 to align
 
-        ; TODO: LINK UP OPTIONS CHOSEN
-        rts
+        jsr     get_to_dir_pos                          ; get ourselves at the directory position
 
-        ; convert these into something to mount the device slot with
+        ; do a 255 byte read of current dir entry (file)
+        pusha   #$ff
+        lda     #$00
+        jsr     _fn_io_read_directory
 
-        ; TEST CODE BELOW - NEED TO ADD VALUES FROM ABOVE HERE        
-        ; try it out first, let's put a string into fn_io_buffer
-        pushax  #fn_io_buffer   ; dst
-        pushax  #test_msg       ; src
-        lda     #$e0            ; len
+        ; copy fn_io_buffer result to RAM, as we need to play around with buffers
+        setax   #fn_io_buffer
+        jsr     _fn_strlen
+        sta     tmp1            ; save the file name's length
+        jsr     _malloc
+        axinto  ptr1            ; ptr1 must be freed later
+
+        ; copy io_buffer into our memory location
+        jsr     pushax          ; A/X already set correctly to RAM allocated for copy (dst)
+        pushax  #fn_io_buffer   ; src
+        lda     tmp1            ; length
+        jsr     _fn_strncpy
+        
+        ; put a zero at end of name to terminate string
+        ldy     tmp1
+        lda     #$00
+        sta     fn_io_buffer, y
+
+        ; copy path into buffer
+        pushax  #fn_io_buffer
+        pushax  #fn_dir_path
+        lda     #$e0
         jsr     _fn_strncpy
 
+        ; how large is path?
+        setax   #fn_io_buffer
+        jsr     _fn_strlen
+        sta     tmp2
+
+        ; calculate how much space we have left in buffer for copying file names
+        lda     #$fe            ; drop 1 for the end of string
+        sec
+        sbc     tmp1            ; file name
+        sbc     tmp2            ; path
+        sta     tmp1
+
+        ; now append the file name onto this
+        pushax  #fn_io_buffer
+        pushax  ptr1
+        lda     tmp1
+        jsr     _fn_strncat
+
+        ; free up the temp buffer
+        setax   ptr1
+        jsr     _free
+
+        ; we now finally have fn_io_buffer with our /path/filename, ready to call set_device
+
         ; set the device filename, this now works without need to save all slots
-        pusha   #$02    ; read/write mode
-        pusha   #$01    ; host_slot, pretend we were currently in host 1
-        lda     #$01    ; device slot, pretend slot 1
+        pusha   sds_mode                ; read/write mode
+        pusha   host_selected           ; host_slot
+        lda     sds_dev                 ; device slot
         jsr     _fn_io_set_device_filename
 
         ; read the device slots back so screen repopulates
         jsr     _fn_io_get_device_slots
-
-        rts
+        jmp     _fn_io_close_directory
 
 ; kb_handler:
 ;         ; handle ESC. other keys probably generic
@@ -131,6 +179,10 @@ empty:  pushax  #s_empty
         rts
 .endproc
 
+.bss
+sds_mode:       .res 1
+sds_dev:        .res 1
+
 .data
 pu_width:       .byte 24
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
@@ -153,5 +205,3 @@ sds_mode_rw:    .byte " R/W "
 
 ; spacing for widgets. removes 200 bytes of code to calculate!
 sds_opt1_spc:   .byte 3, 2, 3
-
-test_msg:       .byte "/this/path/to/somewhere4.atx", 0
