@@ -70,6 +70,8 @@ save_device_choice:
 
         jsr     get_to_dir_pos                          ; get ourselves at the directory position
 
+        jsr     debug
+
         ; do a 255 byte read of current dir entry (file)
         pusha   #$ff
         lda     #$00
@@ -86,6 +88,8 @@ save_device_choice:
         jsr     pushax          ; A/X already set correctly to RAM allocated for copy (dst)
         pushax  #fn_io_buffer   ; src
         lda     tmp1            ; length
+        clc
+        adc     #$01            ; 1 extra for 0 terminator
         jsr     _fn_strncpy
         
         ; put a zero at end of name to terminate string
@@ -96,7 +100,7 @@ save_device_choice:
         ; copy path into buffer
         pushax  #fn_io_buffer
         pushax  #fn_dir_path
-        lda     #$e0
+        lda     #$ff            ; path is only $e0, but specifying more ensures we blank out rest of buffer
         jsr     _fn_strncpy
 
         ; how large is path?
@@ -105,7 +109,7 @@ save_device_choice:
         sta     tmp2
 
         ; calculate how much space we have left in buffer for copying file names
-        lda     #$fe            ; drop 1 for the end of string
+        lda     #$fe            ; drop 1 to ensure there's a 0 at the end of whole buffer to stop overrun
         sec
         sbc     tmp1            ; file name
         sbc     tmp2            ; path

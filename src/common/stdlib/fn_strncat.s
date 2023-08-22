@@ -30,12 +30,12 @@
         bne :-
 
 found:
-        ; add y to ptr1
+        ; add y to ptr3
         tya
         clc
         adc     ptr3
         sta     ptr3
-        bcc :+
+        bcc     :+
         inc     ptr3+1
 :
 
