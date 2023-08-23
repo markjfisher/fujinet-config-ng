@@ -80,8 +80,9 @@ widget_loop:
         ; right border
         mva     #FNC_RT_BLK, {(ptr4), y}
         rts
+.endproc
 
-print_widget_space:
+.proc print_widget_space
         lda     (ptr3), y               ; read number of spaces
         tax        
         ; print this many spaces
@@ -92,5 +93,4 @@ print_widget_space:
         dex
         bne     :-
         rts
-
 .endproc

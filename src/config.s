@@ -2,6 +2,7 @@
     .import     _main
     .import     __STACK_START__, __STACK_SIZE__
     .import     initlib
+    .import     zerobss
 
     .include    "zeropage.inc"
     .include    "fn_macros.inc"
@@ -15,6 +16,9 @@
     cld
     ; Stack works DOWNWARDS! So need to add the stack size here
     mwa     {#(__STACK_START__ + __STACK_SIZE__)}, sp
+
+    ; initialise BSS to be nice and clear 
+    jsr     zerobss
 
     ; call library initialisers - only have malloc installed. sets up heap for malloc.
     jsr     initlib
