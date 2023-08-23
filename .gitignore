@@ -2,6 +2,7 @@
 /build/
 /target/
 /obj/
+/dist/
 
 a.out
 *.swp

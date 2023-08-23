@@ -125,8 +125,6 @@ save_device_choice:
         jsr     _free
 
         ; we now finally have fn_io_buffer with our /path/filename, ready to call set_device
-        jsr     debug
-
         ; set the device filename, this now works without need to save all slots
         pusha   sds_mode                ; read/write mode
         pusha   host_selected           ; host_slot
