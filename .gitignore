@@ -11,9 +11,6 @@ a.out
 *.cas
 *.d88
 autorun.atr
-config
-config.com
-config.map
 
 # a personal altirra setup
 altirra-debug.ini

@@ -3,6 +3,7 @@
         .import     pusha, pushax
         .import     fn_io_buffer, fn_dir_path
         .import     _fn_io_set_device_filename
+        .import     _fn_io_put_device_slots
         .import     _fn_io_get_device_slots
         .import     _fn_strncpy, _fn_strlen, _fn_strncat
         .import     _fn_clr_highlight
@@ -70,8 +71,6 @@ save_device_choice:
 
         jsr     get_to_dir_pos                          ; get ourselves at the directory position
 
-        jsr     debug
-
         ; do a 255 byte read of current dir entry (file)
         pusha   #$ff
         lda     #$00
@@ -126,12 +125,35 @@ save_device_choice:
         jsr     _free
 
         ; we now finally have fn_io_buffer with our /path/filename, ready to call set_device
+        jsr     debug
 
         ; set the device filename, this now works without need to save all slots
         pusha   sds_mode                ; read/write mode
         pusha   host_selected           ; host_slot
         lda     sds_dev                 ; device slot
         jsr     _fn_io_set_device_filename
+
+        ; write it to the deviceslots memory
+        mwa     #fn_io_deviceslots, ptr1
+        ldx     sds_dev
+        beq     no_dev_add
+:       adw     ptr1, #.sizeof(DeviceSlot)
+        dex
+        bne     :-
+
+no_dev_add:
+        ; write the host slot
+        lda     host_selected
+        ldy     #DeviceSlot::hostSlot
+        sta     (ptr1), y
+
+        ; write the mode
+        lda     sds_dev
+        ldy     #DeviceSlot::mode
+        sta     (ptr1), y
+
+        ; Save everything - bug was here for saving in A8?
+        jsr     _fn_io_put_device_slots
 
         ; read the device slots back so screen repopulates
         jsr     _fn_io_get_device_slots

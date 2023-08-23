@@ -46,18 +46,11 @@ not_option:
         jsr     _fn_input_ucase
         cmp     #$00
         beq     start_kb_get          ; simple loop if no key pressed
-        pha     ; save it
-
-        ; print the char on screen to see it (debug - TODO: remove)
-        ldx     #35
-        ldy     #15
-        jsr     fn_put_c
 
 ; ----------------------------------------------------------
 ; KEYBOARD HANDLING SWITCH STATEMENT
 ; ----------------------------------------------------------
 
-        pla             ; get keyboard ascii code into A
         ldx     #KBH::NOT_HANDLED    ; status of module keyboard handler set in x on return
 
         ; use module specific keyboard handler first, so we can override default handling, e.g. L/R arrow keys may not move modules

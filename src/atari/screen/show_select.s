@@ -1,13 +1,13 @@
         .export     _show_select
         .export     fps_pu_entry
 
-        .import     popax, popa
+        .import     popax, popa, pusha
         .import     ascii_to_code
-        .import     _fn_pause
         .import     _fn_get_scrloc
-        .import     _malloc, _free
         .import     _fn_input_ucase
         .import     _fn_strlen
+        .import     _fn_clr_help
+        .import     _fn_put_help
 
         .import     debug
 
@@ -23,24 +23,17 @@
 ; display a list of items, and show the values, allowing user to select from it
 ; using inverted text for selection
 .proc _show_select
-        ; axinto  fps_kb_handler          ; a kb handler to process key strokes while popup active
         axinto  fps_message             ; the header message to display in popup
         popax   fps_items               ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
         popa    fps_width               ; the width of the input area excluding the borders which add 1 each side for the border
 
+        jsr     _fn_clr_help
+        put_help #2, #mfss_h1
+        put_help #3, #mfss_h2
+
         mva     #$00, fps_widget_idx    ; start on first widget
 
         ; KEEP ptr1 SACRED
-
-        ; border characters are: (screen codes)
-        ; SEE FNC_ codes
-        ; 4a  55 * width    4b
-        ; 80  title         80
-        ; c6  d5 x width    c7
-        ; 59  ... lines     d9
-        ; c8  55 * width    c9
-        ; 4c  d5 x width    4f
-        ; which leaves a box in middle size width+2 x height
 
         ; fixing y at 1st line (0) as it has a 4 pixel blank border, so nicely away from top border, but gives max room
         ; calculate the x-offset to show box. In the inner-box, it's (36 - width) / 2
@@ -808,9 +801,31 @@ kb_ud_yes:
 .bss
 fps_pu_entry:   .tag PopupItem
 
-fps_kb_handler: .res 2
 fps_message:    .res 2
 fps_items:      .res 2
 fps_width:      .res 1
 fps_widget_idx: .res 1  ; which widget we are currently on (do we just need type?)
 fps_scr_l_strt: .res 2
+
+.segment "SCREEN"
+
+mfss_h1:
+
+                NORMAL_CHARMAP
+                .byte $81, $1c, $1d, $82        ; endL up down endR
+                INVERT_ATASCII
+                .byte "Move "
+                NORMAL_CHARMAP
+                .byte $81, "TAB", $82
+                INVERT_ATASCII
+                .byte "Next Widget", 0
+
+mfss_h2:
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "Complete"
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit", 0

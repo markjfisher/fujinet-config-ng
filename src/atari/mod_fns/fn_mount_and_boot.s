@@ -12,7 +12,6 @@
         ; clear the selection bar
         jsr     _bar_clear
 
-        jsr     _wait_scan1
         put_s   #10, #5, #boot_anim_1_1
         put_s   #10, #6, #boot_anim_1_2
         put_s   #10, #7, #boot_anim_1_3

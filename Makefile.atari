@@ -145,8 +145,12 @@ test: $(PROGRAM)
 	$(EMUCMD) $(BUILD_DIR)\\$<
 	$(POSTEMUCMD)
 
+# TODO: add the ../fujinet-config-tools/atari/dist/*.com files here? Don't like linking the projects that way
 dist: $(PROGRAM)
-	@echo "TODO! dist"
+	mkdir -p dist
+	rm -f autorun.atr
+	cp build/$(PROGRAM) dist/
+	dir2atr -m -S -B picoboot.bin autorun.atr dist/
 
 clean:
 	$(call RMFILES,-r $(BUILD_DIR)/*)

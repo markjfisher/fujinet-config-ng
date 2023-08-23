@@ -1,8 +1,8 @@
         .export     mod_hosts, hosts_fetched, host_selected
         .import     _fn_io_get_host_slots, fn_io_hostslots, _fn_highlight_line, kb_global, current_line
         .import     pusha, pushax, show_list, _fn_edit_hosts_entry, mod_current
-        .import     _fn_clrscr, _fn_put_help
-        .import     s_empty, s_hosts_h1, s_hosts_h2, s_hosts_h3
+        .import     _fn_clrscr, _fn_put_help, _fn_put_status
+        .import     s_empty
         .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -12,9 +12,9 @@
 ;  handle HOST LIST
 .proc mod_hosts
         jsr     _fn_clrscr
-        put_help #0, #s_hosts_h1
-        put_help #1, #s_hosts_h2
-        put_help #2, #s_hosts_h3
+        put_status #0, #mh_s1
+        put_status #2, #mh_s3
+        put_help #3, #mh_h1
 
         ; do we have hosts data read?
         lda     hosts_fetched
@@ -23,8 +23,7 @@
         jsr     _fn_io_get_host_slots
         mva     #$01, hosts_fetched
 
-:
-        jsr     display_hosts
+:       jsr     display_hosts
 
         ; highlight current host entry
         mva     host_selected, current_line
@@ -85,4 +84,32 @@ host_index:     .res 1
 
 .data
 hosts_fetched:  .byte 0
-host_selected: .byte 0
+host_selected:  .byte 0
+
+.segment "SCREEN"
+
+mh_s1:
+                INVERT_ATASCII
+                .byte "HOST LIST", 0
+
+mh_s3:
+                NORMAL_CHARMAP
+                .byte $81, $1e, $82
+                INVERT_ATASCII
+                .byte "Info/Exit            Drive Slots"
+                NORMAL_CHARMAP
+                .byte $81, $1f, $82, 0
+
+mh_h1:
+                NORMAL_CHARMAP
+                .byte $81, $1c, $1d, $82        ; endL up down endR
+                INVERT_ATASCII
+                .byte "Move "
+                NORMAL_CHARMAP
+                .byte $81, "E", $82
+                INVERT_ATASCII
+                .byte "Edit "
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "Browse", 0

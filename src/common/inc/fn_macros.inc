@@ -119,13 +119,18 @@
     .endrepeat
 .endmacro
 
-; for screen display, 36 spaces inverted
-.macro SCREENCODE_INVERT_40_SPACES
-        SCREENCODE_INVERT_CHARMAP
-        .repeat 40
-          .byte " "
-        .endrepeat
-        NORMAL_CHARMAP
+; inverts normal ascii chars and numbers, not any of the altered fonts etc.
+.macro HELP_TEXT
+    ; end of string stays same
+    .charmap 0, 0
+    .repeat 64, i
+        .charmap i+32, i+32+$80 ; most of the ascii set
+        ; .charmap i+32+$80, i+32 ; most of the ascii set
+    .endrepeat
+    .repeat 26, i
+        .charmap i+97, i+97+$80 ; a-z
+        ; .charmap i+97+$80, i+97 ; a-z inv
+    .endrepeat
 .endmacro
 
 .macro cpw arg1, arg2
@@ -347,10 +352,18 @@ l1:
         jsr     _fn_put_s
 .endmacro
 
-.macro put_help argNum, arg40StrInternal
-        setax   arg40StrInternal
-        ldy     argNum
+.macro put_help argNum, msg
+        lda     argNum
+        jsr     pusha
+        setax   msg
         jsr     _fn_put_help
+.endmacro
+
+.macro put_status argNum, msg
+        lda     argNum
+        jsr     pusha
+        setax   msg
+        jsr     _fn_put_status
 .endmacro
 
 .macro put_c aC, aX, aY
