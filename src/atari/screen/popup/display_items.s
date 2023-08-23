@@ -1,4 +1,5 @@
         .export    display_items
+        .export    di_current_item
 
         .import    display_textlist
         .import    display_option
@@ -19,7 +20,8 @@
 
 ; Displays all the PopupItem objects
 .proc display_items
-        mwa     ss_items, ptr1         ; set ptr1 to first popup item to display. it will walk down the list
+        mwa     ss_items, ptr1          ; set ptr1 to first popup item to display. it will walk down the list
+        mva     #$00, di_current_item   ; this tracks which item is currently being displayed so we can compare to selected
 
 l_all_items:
         ; read the next Popup type, if it's last element (finish type) return to caller
@@ -70,8 +72,12 @@ not_space:
 ; TODO: IMPLEMENT OTHER PopupItemType VALUES 
 
 next_item:
+        inc     di_current_item                 ; increment the current item being displayed
         adw     ptr1, #.sizeof(PopupItem)       ; move ptr1 to next popup entry
         adw     ptr4, #40                       ; add 40 to screen location to point to next line
         jmp     l_all_items
 
 .endproc
+
+.bss
+di_current_item:        .res 1

@@ -1,6 +1,5 @@
         .export     handle_kb
 
-        .import     highlight_options
         .import     copy_entry
         .import     ss_widget_idx
         .import     ss_items
@@ -20,7 +19,6 @@
         .include    "fn_popup_item.inc"
 
 .proc handle_kb
-        jsr     highlight_options
 
         ; get current popup item into our buffer so we can read values
         ldx     ss_widget_idx
@@ -331,7 +329,6 @@ kb_ud_yes:
 .endproc
 
 .proc copy_new_val
-        ; jsr     debug
         sta     tmp1
         sta     ss_pu_entry + PopupItem::val
         ldx     ss_widget_idx

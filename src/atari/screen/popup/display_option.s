@@ -1,8 +1,13 @@
         .export     display_option
+        .export     dopt_reduce_next_space
 
         .import     ss_pu_entry
         .import     left_border
         .import     ascii_to_code
+        .import     ss_widget_idx
+        .import     di_current_item
+        .import     _fn_pause
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -42,19 +47,42 @@
 :       ldy     #$00
         sty     tmp1                    ; tmp1 now our main loop variable
 
+        mva     #$00, dopt_reduce_next_space
 widget_loop:
+        mva     #$00, tmp4              ; the inverse char if option is highlighted
         jsr     print_widget_space
         sty     tmp2                    ; save new position
 
+        ; are we printing the currently selected option?
+        lda     ss_pu_entry + PopupItem::val
+        cmp     tmp1
+        bne     :+                      ; no
+
+        ; set inverse on, we are the current 
+        mva     #$80, tmp4              ; turn inverting on
+
+        ; but are we the current widget
+        lda     ss_widget_idx
+        cmp     di_current_item
+        bne     :+
+
+        ; yes, we are both the current selected widget, and the one being displayed
+        ; drop back 1 position and print our arrow
+        dey
+        mva     #FNC_L_HL, {(ptr4), y}
+        iny
+        inc     dopt_reduce_next_space
+
         ; y is doing double work here, it's the offset of 2 pointers; the current character to display, and the screen offset
         ; print the widget, ptr2 tracks the current widget location
-        ldy     #$00
+:       ldy     #$00
         ldx     ss_pu_entry + PopupItem::len                 ; number of chars to display for each widget
 :       lda     (ptr2), y               ; get ascii char
         iny
         sty     tmp3                    ; save y (current character index)
         jsr     ascii_to_code           ; convert to screen code
         ldy     tmp2                    ; restore screen offset
+        ora     tmp4
         sta     (ptr4), y               ; print char
         iny
         sty     tmp2
@@ -62,8 +90,22 @@ widget_loop:
         dex
         bne     :-                      ; loop over len chars
 
+        
+        ; other side of the text print other arrow if we the current widget that's highlighted
+        lda     ss_pu_entry + PopupItem::val
+        cmp     tmp1
+        bne     :+              ; no we should not print arrow
+
+        lda     ss_widget_idx
+        cmp     di_current_item
+        bne     :+              ; no we should not print arrow
+
+        ldy     tmp2
+        mva     #FNC_R_HL, {(ptr4), y}
+        iny
+
         ; move ptr2 on by len to next string
-        adw1    ptr2, {ss_pu_entry + PopupItem::len}
+:       adw1    ptr2, {ss_pu_entry + PopupItem::len}
 
         ; any more to process?
         inc     tmp1
@@ -84,13 +126,26 @@ widget_loop:
 
 .proc print_widget_space
         lda     (ptr3), y               ; read number of spaces
-        tax        
+        tax
+        lda     dopt_reduce_next_space
+        cmp     #$00
+        beq     :+
+
+        ; the previous widget was highlighted, skip 1 space, else we'll overwrite the arrow
+        dex                             ; 1 less space
+        inc     tmp2                    ; move screen pointer on 1
+        dec     dopt_reduce_next_space  ; reset it
+
         ; print this many spaces
-        lda     #FNC_BLANK
+:       lda     #FNC_BLANK
         ldy     tmp2
 :       sta     (ptr4), y
         iny
         dex
         bne     :-
+
         rts
 .endproc
+
+.bss
+dopt_reduce_next_space:   .res 1

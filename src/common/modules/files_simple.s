@@ -1,8 +1,7 @@
         .export     files_simple
         .export     mf_dir_or_file
-
-        ; debug only
-        .export     mf_dir_pos, mf_entry_index, mf_selected
+        .export     mf_selected
+        .export     mf_dir_pos
 
         .import     debug
         .import     mod_current, host_selected, kb_global

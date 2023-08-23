@@ -19,6 +19,7 @@
 
         .import     display_items
         .import     handle_kb
+        .import     _wait_scan1
 
         .import     debug
 
@@ -40,9 +41,11 @@
         popax   ss_items               ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
         popa    ss_width               ; the width of the input area excluding the borders which add 1 each side for the border
 
+        jsr     _wait_scan1             ; only paint when we're at the top of screen so get no flashing
         jsr     initialise_select       ; show popup header, setup some variables, ptr4 is start of screen
 
 display_main_loop:
+
         jsr     display_items
         jsr     draw_select_bottom
 
@@ -57,6 +60,8 @@ display_main_loop:
 
         ; reset the screen pointer to display from the top again
         mwa     ss_scr_l_strt, ptr4
+
+        jsr     _wait_scan1             ; only paint when we're at the top of screen so get no flashing
         jmp     display_main_loop
 
 exit_select:
@@ -126,9 +131,8 @@ exit_select:
         mwa     ptr4, ss_scr_l_strt
 
         ; get the counts of the L/R and U/D widgets in the popup items
-        jsr     count_widget_types
+        jmp     count_widget_types
 
-        rts
 .endproc
 
 ; bottom of select

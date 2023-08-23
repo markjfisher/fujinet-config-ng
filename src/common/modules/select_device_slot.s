@@ -63,7 +63,6 @@
         rts
 
 save_device_choice:
-        jsr     debug
         ; the selected option was pu_devs+val
         ; the selected mode was pu_mode+val
         mva     {pu_devs + PopupItem::val}, sds_dev     ; device slot is 0 based
@@ -225,7 +224,7 @@ sds_msg:
 
 ; option entry, first string 0 terminated "name", next strings are <len> chars exactly for entries
 sds_mode_name:  .byte "Mode: ", 0
-sds_mode_r:     .byte "  R  "
+sds_mode_r:     .byte " R/O "
 sds_mode_rw:    .byte " R/W "
 
 ; spacing for widgets. removes 200 bytes of code to calculate!
