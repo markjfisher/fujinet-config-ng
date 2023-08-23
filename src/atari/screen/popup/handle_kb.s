@@ -2,11 +2,15 @@
 
         .import     highlight_options
         .import     copy_entry
-        .import     fps_widget_idx
-        .import     fps_items
+        .import     ss_widget_idx
+        .import     ss_items
+        .import     ss_num_lr
+        .import     ss_other_lr_idx
+        .import     ss_num_ud
+        .import     ss_other_ud_idx
 
         .import     _fn_input_ucase
-        .import     fps_pu_entry
+        .import     ss_pu_entry
 
         .import     debug
 
@@ -19,7 +23,7 @@
         jsr     highlight_options
 
         ; get current popup item into our buffer so we can read values
-        ldx     fps_widget_idx
+        ldx     ss_widget_idx
         jsr     item_x_to_ptr1
         jsr     copy_entry
 
@@ -56,7 +60,7 @@ start_kb_get:
         bne     not_tab
 
         ; we want to move to next non-space, with wrap to top if next index = finish
-        ldx     fps_widget_idx
+        ldx     ss_widget_idx
 add_1:
         inx
 get_type:
@@ -68,7 +72,7 @@ get_type:
 :       cmp     #PopupItemType::space
         beq     add_1
 
-        stx     fps_widget_idx
+        stx     ss_widget_idx
         ldx     #$00
         lda     #PopupItemReturn::redisplay
         rts
@@ -84,13 +88,21 @@ not_tab:
 
 is_left:
         jsr     kb_can_do_LR
-        beq     start_kb_get
+        bne     :+
+        jmp     start_kb_get        ; 0 is also PopupHandleKBEvent::no
 
-        jsr     do_prev_val
-        jsr     copy_new_val
-        ldx     #$00
-        lda     #PopupItemReturn::redisplay
-        rts
+:       cmp     #PopupHandleKBEvent::other
+        beq     :+
+
+        jmp     do_prev
+        ; implicit rts
+
+:       ; a different widget can handle it, we have its index already in ss_other_lr_idx
+        ; so swap to the other widget index, load its data, and run the prev on it instead, then restore back to ourselves
+        ldx     ss_other_lr_idx
+        mwa     #do_prev, ptr3
+        jmp     handle_by_other
+        ; implicit rts, with result in A
 
 not_left:
 ; --------------------------------------------------------------------
@@ -103,13 +115,21 @@ not_left:
 
 is_right:
         jsr     kb_can_do_LR
-        beq     start_kb_get
+        bne     :+
+        jmp     start_kb_get
 
-        jsr     do_next_val
-        jsr     copy_new_val
-        ldx     #$00
-        lda     #PopupItemReturn::redisplay
-        rts
+:       cmp     #PopupHandleKBEvent::other
+        beq     :+
+
+        jmp     do_next
+        ; implicit rts
+
+:       ; a different widget can handle it, we have its index already in ss_other_lr_idx
+        ; so swap to the other widget index, load its data, and run the prev on it instead, then restore back to ourselves
+        ldx     ss_other_lr_idx
+        mwa     #do_next, ptr3
+        jmp     handle_by_other
+        ; implicit rts
 
 not_right:
 ; --------------------------------------------------------------------
@@ -121,8 +141,19 @@ not_right:
         bne     not_up
 is_up:
         jsr     kb_can_do_UD
-        beq     start_kb_get
+        bne     :+
+        jmp     start_kb_get
+
+:       cmp     #PopupHandleKBEvent::other
+        beq     :+
+
         jmp     do_prev
+        ; implicit rts
+
+:       ; other widget
+        ldx     ss_other_ud_idx
+        mwa     #do_prev, ptr3
+        jmp     handle_by_other
         ; implicit rts
 
 not_up:
@@ -135,8 +166,19 @@ not_up:
         bne     not_down
 is_down:
         jsr     kb_can_do_UD
-        beq     start_kb_get
+        bne     :+
+        jmp     start_kb_get
+
+:       cmp     #PopupHandleKBEvent::other
+        beq     :+
+
         jmp     do_next
+        ; implicit rts
+
+:       ; other widget
+        ldx     ss_other_ud_idx
+        mwa     #do_next, ptr3
+        jmp     handle_by_other
         ; implicit rts
 
 not_down:
@@ -167,16 +209,38 @@ not_enter:
 ; --------------------------------------------------------------------
 ; end of keyboard switch, reloop until ESC or Enter is hit
 ; --------------------------------------------------------------------
-
         jmp     start_kb_get
+
+; x = other index to change
+; ptr3 = next/prev function to jsr into
+handle_by_other:
+        lda     ss_widget_idx
+        pha
+        stx     ss_widget_idx
+        jsr     item_x_to_ptr1
+        jsr     copy_entry
+        jsr     do_jmp
+
+        ; reset back to the current index
+        pla
+        sta     ss_widget_idx
+        tax
+        jsr     item_x_to_ptr1
+        jsr     copy_entry
+        lda     #PopupItemReturn::redisplay
+        rts
+
+do_jmp:
+        jmp     (ptr3)
+        ; the rts in the call will return us back into handle_by_other
 
 
 do_next_val:
         ; move to next value, rotating if at end
-        lda     fps_pu_entry + PopupItem::val
+        lda     ss_pu_entry + PopupItem::val
         clc
         adc     #$01
-        cmp     fps_pu_entry + PopupItem::num
+        cmp     ss_pu_entry + PopupItem::num
         bcc     :+
         lda     #$00
 
@@ -184,13 +248,13 @@ do_next_val:
 
 do_prev_val:
         ; move to previous value, rotating if at end
-        lda     fps_pu_entry + PopupItem::val
+        lda     ss_pu_entry + PopupItem::val
         sec
         sbc     #$01
         cmp     #$ff
         bne     :+
 
-        ldx     fps_pu_entry + PopupItem::num
+        ldx     ss_pu_entry + PopupItem::num
         dex
         txa
 
@@ -213,31 +277,48 @@ copy_ret:
 .endproc
 
 .proc kb_can_do_LR
-        jsr     get_current_item
+        jsr     get_current_item_type
         cmp     #PopupItemType::option
         beq     kb_lr_yes
+        
+        lda     ss_num_lr
+        cmp     #1
+        bne     :+
+
+        ; only 1 other can handle this key press, but not current widget
+        lda     #PopupHandleKBEvent::other       ; indicate there's another widget that can use this press
+        rts 
 
         ; default to NO, if more types need adding, add them above
-        lda     #$00
+:       lda     #PopupHandleKBEvent::no
         rts
 
 kb_lr_yes:
-        lda     #$01
+        lda     #PopupHandleKBEvent::this        ; indicate this widget can move L/R
         rts
 .endproc
 
 .proc kb_can_do_UD
-        jsr     get_current_item
+        jsr     get_current_item_type
         cmp     #PopupItemType::textList
         beq     kb_ud_yes
+        
+        lda     ss_num_ud
+        cmp     #1
+        bne     :+
+
+        ; only 1 other can handle this key press, but not current widget
+        lda     #PopupHandleKBEvent::other       ; indicate there's another widget that can use this press
+        rts 
 
         ; default to NO, if more types need adding, add them above
-        lda     #$00
+:       lda     #PopupHandleKBEvent::no
         rts
 
 kb_ud_yes:
-        lda     #$01
+        lda     #PopupHandleKBEvent::this        ; indicate this widget can move L/R
         rts
+
 .endproc
 
 ; walk down the PopupItems to the xth, and find its type, return it in A
@@ -250,10 +331,10 @@ kb_ud_yes:
 .endproc
 
 .proc copy_new_val
-        ; copy to original and our buffer. TODO: overkill?
+        ; jsr     debug
         sta     tmp1
-        sta     fps_pu_entry + PopupItem::val
-        ldx     fps_widget_idx
+        sta     ss_pu_entry + PopupItem::val
+        ldx     ss_widget_idx
         jsr     item_x_to_ptr1    ; ptr1 points to given popupitem
         ldy     #PopupItem::val
         lda     tmp1
@@ -263,7 +344,7 @@ kb_ud_yes:
 
 .proc item_x_to_ptr1
         ; ptr1 will point to start of required PopupItem object
-        mwa     fps_items, ptr1
+        mwa     ss_items, ptr1
         ; save x
         txa
         pha
@@ -275,15 +356,14 @@ kb_ud_yes:
         dex
         bne     :-
 
-:
-        pla
+:       pla
         tax
         rts
 .endproc
 
 ; sets ptr1 to current popup item
-.proc get_current_item
-        ldx     fps_widget_idx
+.proc get_current_item_type
+        ldx     ss_widget_idx
         jsr     type_at_x
         rts
 .endproc

@@ -2,8 +2,8 @@
         .export     block_line
         .export     copy_entry
 
-        .import     fps_width
-        .import     fps_pu_entry
+        .import     ss_width
+        .import     ss_pu_entry
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -33,7 +33,7 @@
         ldy     #$00
         mva     tmp1, {(ptr4), y}       ; left char
         iny
-        ldx     fps_width
+        ldx     ss_width
         lda     tmp2                    ; middle chars
 :       sta     (ptr4), y
         iny
@@ -43,10 +43,10 @@
         rts
 .endproc
 
-; copies current PopupItem into fps_pu_entry, assumes ptr1 points to latest entry, and increments that pointer
+; copies current PopupItem into ss_pu_entry, assumes ptr1 points to latest entry, and increments that pointer
 .proc copy_entry
         ; read the whole PopupItem entry into ptr2. ptr1 is the current item
-        mwa     #fps_pu_entry, ptr2     ; target for copy
+        mwa     #ss_pu_entry, ptr2     ; target for copy
         ldy     #$00
 :       mva     {(ptr1), y}, {(ptr2), y}
         iny

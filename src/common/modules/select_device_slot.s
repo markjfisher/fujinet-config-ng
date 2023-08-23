@@ -63,6 +63,7 @@
         rts
 
 save_device_choice:
+        jsr     debug
         ; the selected option was pu_devs+val
         ; the selected mode was pu_mode+val
         mva     {pu_devs + PopupItem::val}, sds_dev     ; device slot is 0 based
@@ -146,11 +147,11 @@ no_dev_add:
         sta     (ptr1), y
 
         ; write the mode
-        lda     sds_dev
+        lda     sds_mode
         ldy     #DeviceSlot::mode
         sta     (ptr1), y
 
-        ; Save everything - bug was here for saving in A8?
+        ; Save everything - bug was here for saving in A8? TODO check why fix to _fn_io_set_device_filename doesn't seem to be working - or is it another bug?
         jsr     _fn_io_put_device_slots
 
         ; read the device slots back so screen repopulates

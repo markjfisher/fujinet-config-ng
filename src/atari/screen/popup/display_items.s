@@ -4,6 +4,12 @@
         .import    display_option
         .import    display_space
 
+        .import    ss_items
+        .import    ss_num_lr
+        .import    ss_other_lr_idx
+        .import    ss_num_ud
+        .import    ss_other_ud_idx
+
         .import    copy_entry
 
         .include    "zeropage.inc"
@@ -13,6 +19,7 @@
 
 ; Displays all the PopupItem objects
 .proc display_items
+        mwa     ss_items, ptr1         ; set ptr1 to first popup item to display. it will walk down the list
 
 l_all_items:
         ; read the next Popup type, if it's last element (finish type) return to caller
@@ -56,13 +63,11 @@ not_option:
         bne     not_space
 
         jsr     display_space
-
-        ; UNCOMMENT IF MORE OPTIONS IMPLEMENTED
+        ; UNCOMMENT IF MORE OPTIONS IMPLEMENTED - otherwise just fall through
         ; jmp     next_item
 
 not_space:
-; TODO: IMPLEMENT OTHER PopupItemType TYPES 
-
+; TODO: IMPLEMENT OTHER PopupItemType VALUES 
 
 next_item:
         adw     ptr1, #.sizeof(PopupItem)       ; move ptr1 to next popup entry

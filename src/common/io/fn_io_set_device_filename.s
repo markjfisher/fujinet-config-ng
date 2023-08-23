@@ -17,11 +17,12 @@
 
         ; setup aux2 = host_slot * 16 + mode
         lda     tmp2
+        beq     :+
         asl     a
         asl     a
         asl     a
         asl     a
-        clc
+:       clc
         adc     tmp3
         sta     IO_DCB::daux2
 

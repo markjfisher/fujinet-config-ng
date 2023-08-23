@@ -23,3 +23,12 @@
         complete                ; enter was hit and options selection complete, exit with changes
         redisplay               ; nothing chosen yet, just navigating around and need to redisplay the options screen.
 .endenum
+
+; This is to allow a keyboard press to be processed by other widgets
+; e.g. if you are currently editing an UP/DOWN list, but press L or R, and there is 1 option widget on the popup, then allow it to be handled by the option widget
+; which means users don't HAVE to press tab to change context to target widget to change it.
+.enum PopupHandleKBEvent
+        no                      ; the KB press can't be handled in this popup with the currently selected widget or any other
+        this                    ; yes, the current widget handles this kb press
+        other                   ; yes, but by another widget, and there's only 1 other widget that could handle it
+.endenum

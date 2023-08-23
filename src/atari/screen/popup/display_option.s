@@ -1,6 +1,6 @@
         .export     display_option
 
-        .import     fps_pu_entry
+        .import     ss_pu_entry
         .import     left_border
         .import     ascii_to_code
 
@@ -10,8 +10,8 @@
         .include    "fn_popup_item.inc"
 
 .proc display_option
-        mwa     {fps_pu_entry + PopupItem::spc}, ptr3           ; spacings ptr
-        mwa     {fps_pu_entry + PopupItem::text}, ptr2          ; texts ptr
+        mwa     {ss_pu_entry + PopupItem::spc}, ptr3           ; spacings ptr
+        mwa     {ss_pu_entry + PopupItem::text}, ptr2          ; texts ptr
 
         jsr     left_border
         sty     tmp2                    ; screen position index over whole list, left border increments it by 1
@@ -49,7 +49,7 @@ widget_loop:
         ; y is doing double work here, it's the offset of 2 pointers; the current character to display, and the screen offset
         ; print the widget, ptr2 tracks the current widget location
         ldy     #$00
-        ldx     fps_pu_entry + PopupItem::len                 ; number of chars to display for each widget
+        ldx     ss_pu_entry + PopupItem::len                 ; number of chars to display for each widget
 :       lda     (ptr2), y               ; get ascii char
         iny
         sty     tmp3                    ; save y (current character index)
@@ -63,13 +63,13 @@ widget_loop:
         bne     :-                      ; loop over len chars
 
         ; move ptr2 on by len to next string
-        adw1    ptr2, {fps_pu_entry + PopupItem::len}
+        adw1    ptr2, {ss_pu_entry + PopupItem::len}
 
         ; any more to process?
         inc     tmp1
         lda     tmp1
         tay                             ; the main loop is also index into space array, read at top of loop
-        cmp     fps_pu_entry + PopupItem::num
+        cmp     ss_pu_entry + PopupItem::num
         bne     widget_loop             ; reloop until all widgets done
 
         ; display final spacing so it overwrites any background text on the screen
