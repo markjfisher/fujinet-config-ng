@@ -54,7 +54,6 @@ display_main_loop:
 
         ; reset the screen pointer to display from the top again minus 1 line, as this is added immediately
         mwa     fps_scr_l_strt, ptr4
-        sbw     ptr4, #40
         jmp     display_main_loop
 
 exit_show_select:
@@ -112,8 +111,8 @@ initialise_select:
         jsr     block_line
 
         ; save the current screen location as start of display lines after the title
+        adw     ptr4, #40
         mwa     ptr4, fps_scr_l_strt
-        adw     fps_scr_l_strt, #40    ; it needs moving to next line, as we are on the "under title" line
 
         rts
 
@@ -352,7 +351,6 @@ copy_ret:
 .proc highlight_options
         ; take the current selection, and widget index, and highlight the right things
 
-        jsr     debug
         ; highlight the current selection on each item
         mwa     fps_items, ptr1                 ; first entry
         mwa     fps_scr_l_strt, ptr3            ; ptr3 is our moving screen location per widget

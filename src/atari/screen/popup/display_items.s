@@ -11,14 +11,11 @@
         .include    "fn_data.inc"
         .include    "fn_popup_item.inc"
 
+; Displays all the PopupItem objects
 .proc display_items
 
-; main loop for displaying different PopupItemType values
 l_all_items:
-        ; add 40 to screen location to point to next line
-        adw     ptr4, #40
-
-        ; read the next Popup type, if it's last element (finish type) finalise the popup
+        ; read the next Popup type, if it's last element (finish type) return to caller
         ldy     #PopupItem::type
         lda     (ptr1), y
         cmp     #PopupItemType::finish
@@ -33,8 +30,8 @@ not_last_line:
 
 ; ----------------------------------------------
 ; START SWITCH FOR TYPE
+; ----------------------------------------------
 
-start_switch:
 ; --------------------------------------------------
 ; TEXT LIST
         cmp     #PopupItemType::textList
@@ -69,6 +66,7 @@ not_space:
 
 next_item:
         adw     ptr1, #.sizeof(PopupItem)       ; move ptr1 to next popup entry
+        adw     ptr4, #40                       ; add 40 to screen location to point to next line
         jmp     l_all_items
 
 .endproc
