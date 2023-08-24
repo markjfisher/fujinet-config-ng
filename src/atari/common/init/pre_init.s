@@ -1,5 +1,5 @@
         .export     pre_init
-        .import     _reset_handler, detect_banks
+        .import     _reset_handler, detect_banks, setup_fonts
         .include    "atari.inc"
         .include    "fn_macros.inc"
 
@@ -12,6 +12,9 @@
 .proc pre_init
         ; detect banked values for NMIEN for up to MAX_BANKS (defined in detect_banks.s)
         jsr     detect_banks
+
+        ; copy fonts so the change fonts data isn't kept in RAM
+        jsr     setup_fonts
 
         ; setup reset handler
         mwa     DOSINI, _reset_handler+1
@@ -45,4 +48,5 @@ editor:
 ramok:
         rts
 
+clear_from:
 .endproc

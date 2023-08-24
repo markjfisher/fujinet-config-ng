@@ -3,7 +3,6 @@
         .import     mod_current, fn_put_c, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
 
         .include    "zeropage.inc"
-        .include    "atari.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
         .include    "fn_data.inc"

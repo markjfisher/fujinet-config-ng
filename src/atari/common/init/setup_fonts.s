@@ -1,15 +1,14 @@
-        .export     fn_font
-
-        .import     debug
+        .export     setup_fonts
 
         .include    "zeropage.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
 
-
 NUM_CHANGES     := 16           ; can do 28 before we have to loop differently
 
-.proc fn_font
+; this is in INIT so it gets overwritten. We don't need to keep this routine once run.
+.segment "INIT"
+.proc setup_fonts
         ; copy character set into RAM, amend it, tell app where it is
         ldx     #$00
         ; copy $400 bytes
@@ -56,10 +55,6 @@ all_fonts:
         rts
 .endproc
 
-.segment "FONT"
-fn_font_data:   .res $400
-
-.segment "SCREEN"
 ; character changes. First byte is the offset (x8) into font data, then 8 bytes to define char
 font_update:
     .byte $40, $00, $70, $8e, $fe, $fe, $fe, $fe, $00   ; dir symbol (ascii 0   = $00)
@@ -78,3 +73,6 @@ font_update:
     .byte $54, $fc, $de, $9f, $03, $03, $9f, $de, $fc   ; Right HL   (ascii 20  = $14)
     .byte $7b, $00, $0e, $18, $18, $70, $18, $18, $0e   ; {          (ascii 123 = $7B)
     .byte $7d, $00, $70, $18, $18, $0e, $18, $18, $70   ; }          (ascii 125 = $7D)
+
+.segment "FONT"
+fn_font_data:   .res $400

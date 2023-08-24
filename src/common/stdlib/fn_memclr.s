@@ -18,7 +18,9 @@
     rts
 .endproc
 
-; void fn_memclr(uint8 count)
+; void fn_memclr(uint8 count, void *p)
+;
+; clear up to count chars at *p
 .proc _fn_memclr
     axinto  ptr4
     popa    tmp4

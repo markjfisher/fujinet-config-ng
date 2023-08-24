@@ -3,9 +3,9 @@
         .import     pusha, pushax, show_list, _fn_edit_hosts_entry, mod_current
         .import     _fn_clrscr, _fn_put_help, _fn_put_status
         .import     s_empty
-        .include    "atari.inc"
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
+        .include    "fn_data.inc"
         .include    "fn_io.inc"
         .include    "fn_mods.inc"
 
@@ -61,7 +61,7 @@ not_edit:
 ; ----------------------------------------------------------------------
 ; RETURN - Browse Disk Images of selected HOST
 ; ----------------------------------------------------------------------
-        cmp     #ATEOL
+        cmp     #FNK_ENTER
         bne     not_eol
         ; set module to 'files' to show entries of chosen host
         lda     #Mod::files

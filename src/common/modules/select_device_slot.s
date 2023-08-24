@@ -19,7 +19,6 @@
         .import     debug
 
         .include    "zeropage.inc"
-        .include    "atari.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
         .include    "fn_io.inc"

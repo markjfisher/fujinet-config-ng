@@ -16,7 +16,6 @@
         .import     _fn_put_help, _fn_put_status
 
         .include    "zeropage.inc"
-        .include    "atari.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
         .include    "fn_data.inc"

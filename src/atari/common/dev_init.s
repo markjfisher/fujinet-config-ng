@@ -19,9 +19,6 @@
         mva     #$00, COLDST
 
         ; setup main Display List, and screen layout
-        jsr     _fn_setup_screen
-
-        ; load fonts
-        jmp     fn_font
+        jmp     _fn_setup_screen
 
 .endproc
