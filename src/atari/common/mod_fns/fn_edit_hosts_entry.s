@@ -5,7 +5,7 @@
         .import     fn_io_hostslots
         .import     host_selected
         .import     _fn_io_put_host_slots
-        .import     _fn_get_scrloc
+        .import     fn_get_scrloc
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -18,12 +18,12 @@
 ; user input in current hosts entry
 .proc _fn_edit_hosts_entry
         ; get screen location for current edit position
-        ldx     #(SL_X + SL_DX)
+        ldx     #SL_EDIT_X
         lda     host_selected
         clc
         adc     #SL_Y
         tay
-        jsr     _fn_get_scrloc  ; ptr4 set to screen location
+        jsr     fn_get_scrloc  ; ptr4 set to screen location
 
         ; get pointer to the string for this host slot
         mwa     #fn_io_hostslots, ptr1

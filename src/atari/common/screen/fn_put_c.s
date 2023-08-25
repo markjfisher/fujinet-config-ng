@@ -1,6 +1,6 @@
         .export     fn_put_c
 
-        .import     _fn_get_scrloc, ascii_to_code
+        .import     fn_get_scrloc, ascii_to_code
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -15,7 +15,7 @@
 ; no protection against x,y or the char to process being bad.
 .proc fn_put_c
         pha                     ; save the char
-        jsr     _fn_get_scrloc  ; use X,Y to get screen location in ptr4
+        jsr     fn_get_scrloc  ; use X,Y to get screen location in ptr4
         pla
         jsr     ascii_to_code
         ldy     #$00

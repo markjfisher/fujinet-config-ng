@@ -3,6 +3,11 @@
         .import     pusha, pushax, show_list, _fn_edit_hosts_entry, mod_current
         .import     _fn_clrscr, _fn_put_help, _fn_put_status
         .import     s_empty
+        .import     sl_list_num
+        .import     mod_hosts_show_list_num
+        .import     mh_h1, mh_s1, mh_s3
+        .import     debug
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
@@ -38,6 +43,7 @@
         jmp     kb_global          ; rts from this will drop out of module
 
 display_hosts:
+        pushax  #mod_hosts_show_list_num
         pusha   #.sizeof(HostSlot)
         setax   #fn_io_hostslots
         jmp     show_list
@@ -85,31 +91,3 @@ host_index:     .res 1
 .data
 hosts_fetched:  .byte 0
 host_selected:  .byte 0
-
-.segment "SCREEN"
-
-mh_s1:
-                INVERT_ATASCII
-                .byte "HOST LIST", 0
-
-mh_s3:
-                NORMAL_CHARMAP
-                .byte $81, $1e, $82
-                INVERT_ATASCII
-                .byte "Info/Exit            Drive Slots"
-                NORMAL_CHARMAP
-                .byte $81, $1f, $82, 0
-
-mh_h1:
-                NORMAL_CHARMAP
-                .byte $81, $1c, $1d, $82        ; endL up down endR
-                INVERT_ATASCII
-                .byte "Move "
-                NORMAL_CHARMAP
-                .byte $81, "E", $82
-                INVERT_ATASCII
-                .byte "Edit "
-                NORMAL_CHARMAP
-                .byte $81, "Ret", $82
-                INVERT_ATASCII
-                .byte "Browse", 0

@@ -1,6 +1,6 @@
         .export     _fn_mount_and_boot
         .import     _fn_io_get_device_slots, _fn_io_get_host_slots, _fn_io_mount_all, _fn_io_set_boot_config
-        .import     _fn_pause, _fn_put_s, _bar_clear, pushax, _wait_scan1
+        .import     _fn_put_s, _bar_clear, pushax, pusha, _fn_pause
 
         .include    "zeropage.inc"
         .include    "atari.inc"

@@ -28,11 +28,13 @@
 
 ; Atari specific values for Screen Display bits
 ; show_list constants for screen coordinate starting points etc.
-SL_X        := 2    ; the top right corner X posisition to start printing the list
+SL_EDIT_X   := 5    ; x offset for list entry
 SL_Y        := 2    ; the top left corner Y position to start printing the list
-SL_DX       := 3    ; The X value to add to the index position before printing the string
 SL_COUNT    := 8    ; how many entries are in a Screen List
 
+FNS_N2C     := $10  ; Screen code for '0'. Add this to 0 based index so it can be print
+FNS_C_R     := $32  ; screen code for "R"
+FNS_C_W     := $37  ; screen code for "W"
 
 ; Directory ASCII Character Code
 DIR_CHAR    := $00  ; directory character

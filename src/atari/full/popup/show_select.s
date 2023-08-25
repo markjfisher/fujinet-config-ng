@@ -12,7 +12,7 @@
 
         .import     popax, popa, pusha
         .import     ascii_to_code
-        .import     _fn_get_scrloc
+        .import     fn_get_scrloc
         .import     _fn_clr_help
         .import     _fn_put_help
         .import     block_line
@@ -90,7 +90,7 @@ exit_select:
 
         ; we'll manipulate screen location directly for speed, so only call scrloc once
         ldy     #$00
-        jsr     _fn_get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
+        jsr     fn_get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
 
         ; ----------------------------------------------------------
         ; show top line down

@@ -3,7 +3,6 @@
         .export     mf_selected
         .export     mf_dir_pos
 
-        .import     debug
         .import     mod_current, host_selected, kb_global
         .import     pusha, pushax, fn_put_c, _fn_strlen, _fn_memclr, _fn_put_s, _fn_clr_highlight, _fn_clrscr, _fn_strncat
         .import     _fn_highlight_line, current_line
@@ -348,7 +347,6 @@ init_files:
 
 print_entry:
         ; display the entry, read it from ptr1
-
         ; is this a dir? last char of name is '/' - ASSUMPTION - string never 0 length
         setax   ptr1
         jsr     _fn_strlen

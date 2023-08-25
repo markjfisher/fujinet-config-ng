@@ -3,12 +3,17 @@
         .import     pusha, pushax, show_list
         .import     _fn_clrscr, _fn_put_help, _fn_put_status
         .import     _fn_io_set_device_filename
-        .import     host_selected
         .import     fn_io_buffer
+        .import     host_selected
+        .import     sl_list_num
+        .import     mod_devices_show_list_num
+        .import     md_h1, md_s1, md_s3
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_mods.inc"
+        .include    "fn_data.inc"
 
 .proc mod_devices
         jsr     _fn_clrscr
@@ -40,6 +45,7 @@
 
 
 display_devices:
+        pushax  #mod_devices_show_list_num
         pusha   #.sizeof(DeviceSlot)
         setax   #fn_io_deviceslots+2    ; string is 2 chars in the struct
         jmp     show_list
@@ -76,27 +82,3 @@ host_index:     .res 1
 .data
 devices_fetched:        .byte 0
 device_selected:        .byte 0
-
-.segment "SCREEN"
-md_s1:
-                INVERT_ATASCII
-                .byte "DRIVE SLOTS", 0
-
-md_s3:
-                NORMAL_CHARMAP
-                .byte $81, $1e, $82
-                INVERT_ATASCII
-                .byte "Host List              Info/Exit"
-                NORMAL_CHARMAP
-                .byte $81, $1f, $82, 0
-
-
-md_h1:
-                NORMAL_CHARMAP
-                .byte $81, $1c, $1d, $82        ; endL up down endR
-                INVERT_ATASCII
-                .byte "Move "
-                NORMAL_CHARMAP
-                .byte $81, "E", $82
-                INVERT_ATASCII
-                .byte "Eject", 0

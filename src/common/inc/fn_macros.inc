@@ -346,9 +346,9 @@ l1:
 .endmacro
 
 .macro put_s argX, argY, argS
-        pushax  argS
-        ldx     argX
-        ldy     argY
+        pusha   argX
+        pusha   argY
+        setax   argS
         jsr     _fn_put_s
 .endmacro
 
@@ -376,7 +376,7 @@ l1:
 .macro get_scrloc aX, aY
         ldx     aX
         ldy     aY
-        jsr     _fn_get_scrloc
+        jsr     fn_get_scrloc
 .endmacro
 
 .macro pause j

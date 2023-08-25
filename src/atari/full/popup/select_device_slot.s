@@ -16,6 +16,7 @@
         .import     devices_fetched
         .import     host_selected
         .import     get_to_dir_pos
+        .import     sds_msg
         .import     debug
 
         .include    "zeropage.inc"
@@ -47,7 +48,7 @@
         pusha   pu_width
         pushax  #pu_devs
         setax   #sds_msg
-        jsr     _show_select    ; device specific routine to handle showing selection. alters .val in structure
+        jsr     _show_select
         sta     tmp1            ; save the return from select
 
         ; free the strings
@@ -216,10 +217,6 @@ pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mo
 pu_end:         .byte PopupItemType::finish,   0, 0, 0, 0, 0, 0, 0              ; again, less bytes putting this here than faff if not.
 
 .segment "SCREEN"
-        INVERT_ATASCII
-sds_msg:
-        .byte "   Select Device Slot   "
-        NORMAL_CHARMAP
 
 ; option entry, first string 0 terminated "name", next strings are <len> chars exactly for entries
 sds_mode_name:  .byte "Mode: ", 0
