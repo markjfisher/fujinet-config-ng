@@ -29,6 +29,6 @@
 ; which means users don't HAVE to press tab to change context to target widget to change it.
 .enum PopupHandleKBEvent
         no                      ; the KB press can't be handled in this popup with the currently selected widget or any other
-        this                    ; yes, the current widget handles this kb press
+        self                    ; yes, the current widget handles this kb press
         other                   ; yes, but by another widget, and there's only 1 other widget that could handle it
 .endenum

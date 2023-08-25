@@ -16,7 +16,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_popup_item.inc"
+        .include    "popup.inc"
 
 .proc handle_kb
 
@@ -292,7 +292,7 @@ copy_ret:
         rts
 
 kb_lr_yes:
-        lda     #PopupHandleKBEvent::this        ; indicate this widget can move L/R
+        lda     #PopupHandleKBEvent::self        ; indicate this widget can move L/R
         rts
 .endproc
 
@@ -314,7 +314,7 @@ kb_lr_yes:
         rts
 
 kb_ud_yes:
-        lda     #PopupHandleKBEvent::this        ; indicate this widget can move L/R
+        lda     #PopupHandleKBEvent::self        ; indicate this widget can move L/R
         rts
 
 .endproc

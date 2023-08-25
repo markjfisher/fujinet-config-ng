@@ -12,7 +12,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_popup_item.inc"
+        .include    "popup.inc"
 
 .proc display_option
         mwa     {ss_pu_entry + PopupItem::spc}, ptr3           ; spacings ptr

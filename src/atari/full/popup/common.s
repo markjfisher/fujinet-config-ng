@@ -8,7 +8,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_popup_item.inc"
+        .include    "popup.inc"
 
 
 ; -----------------------------------------------------------

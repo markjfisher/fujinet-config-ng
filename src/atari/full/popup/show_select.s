@@ -28,7 +28,7 @@
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
         .include    "fn_data.inc"
-        .include    "fn_popup_item.inc"
+        .include    "popup.inc"
 
 ; void show_select(uint8 width, void *items, char *msg)
 ; 
