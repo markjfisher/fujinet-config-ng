@@ -98,7 +98,7 @@ SOURCES_FULL := $(strip $(SOURCES_FULL))
 
 # Define the LIBS sources
 SRC_LIBS_FN_IO := $(call rwildcard,$(SRCDIR)/libs/fn_io/,*.s)
-SRC_LIBS_FN_IO += $(call rwildcard,$(SRCDIR)/libs/fn_io/,*.s)
+SRC_LIBS_FN_IO += $(call rwildcard,$(SRCDIR)/libs/fn_io/,*.c)
 SRC_LIBS_FN_IO := $(strip $(SRC_LIBS_FN_IO))
 
 # Create OBJECTS outputs
