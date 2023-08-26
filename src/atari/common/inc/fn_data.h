@@ -4,7 +4,7 @@
 #include <atari.h>
 
 #define SL_EDIT_X       5
-#define SL_Y            2
+#define SL_Y            0
 #define SL_COUNT        8
 
 #define FNS_N2C         0x10

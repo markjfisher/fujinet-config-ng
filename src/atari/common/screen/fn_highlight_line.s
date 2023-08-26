@@ -1,4 +1,4 @@
-        .export     _fn_highlight_line
+        .export     _fn_highlight_line, hl_x_offset
         .import     _bar_show, current_line, mod_current
         .include  "zeropage.inc"
         .include  "fn_macros.inc"
@@ -8,6 +8,8 @@
         ; read the highlight offset for current module
         ldx     mod_current
         lda     mod_highlight_offsets, x
+        clc
+        adc     hl_x_offset
         tax
 
         lda     current_line
@@ -30,3 +32,6 @@
 mod_highlight_offsets:
         ; .byte   $20, $20, $18, $18, $18, $18, $18, $18
         .byte   $12, $12, $12, $12, $12, $12, $12, $12
+
+.data
+hl_x_offset: .byte 0

@@ -1,4 +1,4 @@
-        .export     kb_global, current_line
+        .export     kb_global, current_line, p_current_line, kb_mod_proc
         .import     popa, popax
         .import     mod_current, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
 
