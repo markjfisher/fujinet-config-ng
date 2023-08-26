@@ -3,8 +3,9 @@
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_data.inc"
+        .include        "fn_io.inc"
 
-; void _fn_io_copy_dcb(DCB* table)
+; void fn_io_copy_dcb(DCB* table)
 ;
 ; Sets DCB data from given table address
 ; DO NOT TRASH tmp1/2 IN THIS ROUTINE - callers use them for storing args.

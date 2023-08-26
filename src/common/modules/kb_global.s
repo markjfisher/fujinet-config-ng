@@ -1,6 +1,6 @@
-        .export     kb_global, current_line, p_current_line
+        .export     kb_global, current_line
         .import     popa, popax
-        .import     mod_current, fn_put_c, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
+        .import     mod_current, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"

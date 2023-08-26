@@ -3,7 +3,7 @@
   .include    "fn_macros.inc"
   .include    "fn_io.inc"
 
-  .segment "SIOSEG"
+  .segment "SIO"
   .org SIOV
   ; Emulate SIOV call by copying ssid/pass into 
   mwa DBUFLO, $80

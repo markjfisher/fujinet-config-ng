@@ -15,7 +15,8 @@ Given atari application test setup
     And I start compiling for atari in "build/tests" with config "features/atari/atari-app.cfg"
     # These must come after the "start compiling"
     And I add compiler option "--asm-include-dir ../../src/common/inc"
-    And I add compiler option "--asm-include-dir ../../src/atari/inc"
+    And I add compiler option "--asm-include-dir ../../src/atari/common/inc"
+    And I add compiler option "--asm-include-dir ../../src/libs/inc"
 
 # Simple test that does no init, sets up minimal xex for loading and testing
 # feature calls function directly
@@ -24,20 +25,14 @@ Given atari simple test setup
     And I start compiling for atari in "build/tests" with config "features/atari/atari.cfg"
     # These must come after the "start compiling"
     And I add compiler option "--asm-include-dir ../../src/common/inc"
-    And I add compiler option "--asm-include-dir ../../src/atari/inc"
-
-Given I add common io files
-  And I add atari src file "io/fn_io_dosiov.s"
-  And I add common src file "io/fn_io_mem_dir_filter.s"
-  And I add common src file "io/fn_io_mem_dir_path.s"
-  And I add common src file "io/fn_io_mem_io_buffer.s"
-  And I add common src file "io/fn_io_mem_io_net_config.s"
-  And I add common src file "io/fn_io_mem_io_deviceslots.s"
-  And I add common src file "io/fn_io_siov.s"
-  And I add common src file "io/fn_io_copy_dcb.s"
-  And I add common src file "stdlib/fn_strncpy.s"
-  And I add common src file "stdlib/fn_strncat.s"
-  And I add common src file "stdlib/fn_memclr.s"
+    And I add compiler option "--asm-include-dir ../../src/atari/common/inc"
+    And I add compiler option "--asm-include-dir ../../src/libs/inc"
 
 Given I add * src file "*"
   And I add file for compiling "../../src/$1/$2"
+
+Given I add common stdlib files
+  And I add common src file "stdlib/fn_strncpy.s"
+  And I add common src file "stdlib/fn_strncat.s"
+  And I add common src file "stdlib/fn_memclr.s"
+  And I add common src file "stdlib/fn_strlen.s"

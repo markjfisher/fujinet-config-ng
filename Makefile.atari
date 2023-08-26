@@ -3,7 +3,6 @@
 # Requires some unixy setup:
 #  - tr for lowercasing
 
-
 TARGET := atari
 CONFIG_NAME := cf
 
@@ -13,11 +12,12 @@ SUBTARGET := FULL
 ST_LOWER := $(shell echo $(SUBTARGET) | tr 'A-Z' 'a-z')
 PROGRAM_FULL := $(CONFIG_NAME)_$(ST_LOWER)
 
-# Not even sure this is a thing
-PREPROC_FLAGS = -DBUILD_ATARI
+# Not even sure this is a thing, but could put -DFOO -DBAR -DBAZ=1 here
+PREPROC_FLAGS =
 CFLAGS = -Os $(PREPROC_FLAGS)
 
-ASFLAGS_FULL = --asm-include-dir src/common/inc --asm-include-dir src/$(TARGET)/common/inc --asm-include-dir src/$(TARGET)/full/inc $(PREPROC_FLAGS)
+ASFLAGS_COMMON = --asm-include-dir src/common/inc --asm-include-dir src/libs/inc
+ASFLAGS_FULL = $(ASFLAGS_COMMON) --asm-include-dir src/$(TARGET)/common/inc --asm-include-dir src/$(TARGET)/full/inc $(PREPROC_FLAGS)
 
 ASFLAGS = $(ASFLAGS_$(SUBTARGET))
 

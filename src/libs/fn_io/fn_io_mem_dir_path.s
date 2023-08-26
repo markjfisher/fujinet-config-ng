@@ -1,4 +1,4 @@
         .export fn_dir_path
 
-.segment "DATAH"
+.segment "BUFFER"
 fn_dir_path:   .res $e0

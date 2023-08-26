@@ -1,0 +1,47 @@
+Given common fn-io test setup
+  Given I have a simple overclocked 6502 system
+    And I enable trace with indent
+    And I create or clear directory "build/tests"
+    And I load labels "features/test-setup/inc/test_constants.inc"
+
+# More complex test that sets up a full application to run, establishing Stack Pointer (SP) etc
+# test asm must have _main, and test feature calls _init to run
+Given fn-io application test setup
+  Given common fn-io test setup
+    # we do need some compiler target here, going to try none over atari
+    And I start compiling for none in "build/tests" with config "features/test-setup/inc/fn-io-app.cfg"
+    # These must come after the "start compiling"
+    And I add compiler option "--asm-include-dir features/test-setup/inc"
+    And I add compiler option "--asm-include-dir ../../src/libs/inc"
+    And I add compiler option "--asm-include-dir ../../src/common/inc"
+
+# Simple test that does no init, sets up minimal xex for loading and testing
+# feature calls function directly
+Given fn-io simple test setup
+  Given common fn-io test setup
+    And I start compiling for none in "build/tests" with config "features/test-setup/inc/fn-io-direct.cfg"
+    # These must come after the "start compiling"
+    And I add compiler option "--asm-include-dir features/test-setup/inc"
+    And I add compiler option "--asm-include-dir ../../src/libs/inc"
+    And I add compiler option "--asm-include-dir ../../src/common/inc"
+
+Given I add common io files
+  # The test implementation of SIOV
+  And I add stubs test-setup file "fn_io_dosiov.s"
+  # Others for compiling
+  And I add stubs test-setup file "stub_malloc.s"
+  And I add libs src file "fn_io/fn_io_mem_dir_filter.s"
+  And I add libs src file "fn_io/fn_io_mem_dir_path.s"
+  And I add libs src file "fn_io/fn_io_mem_io_buffer.s"
+  And I add libs src file "fn_io/fn_io_mem_io_deviceslots.s"
+  And I add libs src file "fn_io/fn_io_siov.s"
+  And I add libs src file "fn_io/fn_io_copy_dcb.s"
+  And I add common src file "stdlib/fn_strncpy.s"
+  And I add common src file "stdlib/fn_strncat.s"
+  And I add common src file "stdlib/fn_memclr.s"
+
+Given I add * src file "*"
+  And I add file for compiling "../../src/$1/$2"
+
+Given I add * test-setup file "*"
+  And I add file for compiling "features/test-setup/$1/$2"

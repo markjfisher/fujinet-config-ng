@@ -353,8 +353,7 @@ l1:
 .endmacro
 
 .macro put_help argNum, msg
-        lda     argNum
-        jsr     pusha
+        pusha   argNum
         setax   msg
         jsr     _fn_put_help
 .endmacro
@@ -364,13 +363,6 @@ l1:
         jsr     pusha
         setax   msg
         jsr     _fn_put_status
-.endmacro
-
-.macro put_c aC, aX, aY
-        lda     aC
-        ldx     aX
-        ldy     aY
-        jsr     fn_put_c
 .endmacro
 
 .macro get_scrloc aX, aY

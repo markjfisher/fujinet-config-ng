@@ -14,13 +14,16 @@
 
 ; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size)
 .proc _fn_io_create_new
-        axinto  ptr1    ; size (word) - one of 90, 130, ... etc. see below
+        axinto  fn_io_newsize    ; size (word) - one of 90, 130, ... etc. see below
         popa    tmp1    ; device_slot (byte)
         popa    tmp2    ; host_slot (byte)
 
-        lda     #.sizeof(NewDisk)
+        setax   #.sizeof(NewDisk)
         jsr     _malloc
         axinto  ptr2
+
+        mwa     fn_io_newsize, ptr1
+        mwa     ptr2, fn_io_newsize     ; this is done only for test to reach in and get the malloc address
 
         ; convert selected_size into DiskSize index
         cpw     ptr1, #90
@@ -128,8 +131,9 @@ s1440:  ldx     #DiskSize::size1440
 ;         mva     fn_io_deviceslot_mode, {(ptr1), y}
 
         ; finally setup DCB and call SIOV
-        mwa     ptr2, IO_DCB::dbuflo
         setax   #t_io_create_new
+        jsr     _fn_io_copy_dcb
+        mwa     ptr2, IO_DCB::dbuflo
         jsr     _fn_io_dosiov
 
 cleanup:
@@ -137,6 +141,9 @@ cleanup:
         jsr     _free
         rts
 .endproc
+
+.bss
+fn_io_newsize:  .res 2
 
 .rodata
 t_disk_num_sectors:

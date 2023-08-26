@@ -14,7 +14,7 @@ L1: lda arg2
     bpl L1
 .endmacro
 
-  .segment "SIOSEG"
+  .segment "SIO"
   .org SIOV
   ; Emulate SIOV call by copying ssid/pass into 
 

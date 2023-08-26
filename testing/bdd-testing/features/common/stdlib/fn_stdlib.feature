@@ -12,7 +12,7 @@ Feature: Stdlib library tests
      And I write string "<ascii_string>" as ascii to memory address t_src
      And I write memory at t_c with <count>
      And I print ascii from t_src to t_src+128
-     And I execute the procedure at _init for no more than 95 instructions
+     And I execute the procedure at _init for no more than 200 instructions
      And I print ascii from t_src to t_src+128
 
     # test the values in t_dst

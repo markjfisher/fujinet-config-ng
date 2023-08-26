@@ -4,6 +4,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
+        .include    "fn_io.inc"
 
 ; void fn_io_set_directory_position(int pos)
 .proc _fn_io_set_directory_position

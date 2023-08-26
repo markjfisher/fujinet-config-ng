@@ -42,8 +42,7 @@
         bne     :-
 
 over:
-
-        ; pre pad with inverted space, then adjust ptr2 for padding so y index is consistent
+        ; calculate shift for centring the string in 40 wide screen
         lda     #40
         sec
         sbc     tmp2
@@ -61,14 +60,6 @@ over:
         iny
         cpy     tmp2
         bne     :-
-
-;; no longer doing this
-; ; and fill to end of line with $80 again
-;         lda     #$80
-; :       sta     (ptr2), y
-;         iny
-;         cpy     #40
-;         bne     :-
 
         rts
 .endproc

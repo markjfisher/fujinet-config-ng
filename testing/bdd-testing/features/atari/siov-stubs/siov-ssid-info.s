@@ -4,7 +4,7 @@
     .include    "fn_io.inc"
     .export     info
 
-    .segment "SIOSEG"
+    .segment "SIO"
     .org SIOV
 
     ; copy data into "info"

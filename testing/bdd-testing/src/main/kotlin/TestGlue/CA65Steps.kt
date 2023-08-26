@@ -82,9 +82,9 @@ al 003000 .start
         val stubApp = """
                 ; setup basic crt0 code for testing
                     .export _init
-                    .import _main
+                    .import _main, initlib
                     
-                    .import __MAIN_START__, __MAIN_SIZE__
+                    .import __MAIN_START__, __MAIN_SIZE__, __STACKSIZE__
                     .include "zeropage.inc"
     
                 _init:
@@ -93,11 +93,14 @@ al 003000 .start
                     txs
                     cld
                     
-                    ; software stack starts on top of main
-                    lda #<(__MAIN_START__ + __MAIN_SIZE__)
+                    ; software stack starts on top of main, but works downwards, so needs to be at the end.
+                    lda #<(__MAIN_START__ + __MAIN_SIZE__ + __STACKSIZE__)
                     sta sp
-                    lda #>(__MAIN_START__ + __MAIN_SIZE__)
+                    lda #>(__MAIN_START__ + __MAIN_SIZE__ + __STACKSIZE__)
                     sta sp+1
+
+                    ; tests are stubbing _malloc to make it predictable, so no need for this
+                    ; jsr     initlib
                     
                     jsr _main
                     brk

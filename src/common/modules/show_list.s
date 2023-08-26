@@ -16,7 +16,7 @@
 .proc show_list
         axinto  ptr1            ; str, the string to display's location
         popa    sl_size         ; how much to move down each data block
-        popax   sl_callback     ; routine to call that takes list number in A and prints up to 6 chars for index value (allowing customisation). It expects ptr4 to point to start of printing area
+        popax   sl_callback     ; routine to call that takes list number in A and prints up to 5 chars for index value (allowing customisation). It expects ptr4 to point to start of printing area
 
         mva     #$00, sl_index
 
