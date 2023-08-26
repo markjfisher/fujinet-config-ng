@@ -73,7 +73,7 @@ main_dlist:
     LMS DL_MODEF, gintop2
 
     LMS DL_MODE2, m_l1
-    .repeat 19
+    .repeat 20
     .byte DL_MODE2
     .endrepeat
 

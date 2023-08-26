@@ -7,11 +7,13 @@
 
 ; clears the internal screen of our 36x16 display, and the help and status texts
 .proc _fn_clrscr
+        rts
+
         ldx     #$00
         ldy     #$00
         jsr     fn_get_scrloc
 
-        ldx     #19     ; rows-1
+        ldx     #20     ; rows-1
 ycol:   ldy     #35     ; cols-1, yeah, we need Y as the index for x col...
 xrow:   lda     #$00    ; screen code for ' '
         sta     (ptr4), y

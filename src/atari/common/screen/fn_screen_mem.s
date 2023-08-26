@@ -28,10 +28,27 @@ sline3: SPACES_40
         NORMAL_CHARMAP
 
         SCREENCODE_CHARMAP
-m_l1:   .repeat 20
+m_l1:   .repeat 9
             SCREEN_BLANK_LINE
         .endrepeat
-
+        NORMAL_CHARMAP
+m_mid1: .byte $80, $cc
+        .repeat 36
+            .byte $55
+        .endrepeat
+        .byte $cf, $80
+        SCREENCODE_INVERT_CHARMAP
+m_mid2: SPACES_40
+        NORMAL_CHARMAP
+m_mid3: .byte $80, $ca
+        .repeat 36
+            .byte $d5
+        .endrepeat
+        .byte $cb, $80
+        SCREENCODE_CHARMAP
+m_btm:  .repeat 9
+            SCREEN_BLANK_LINE
+        .endrepeat
 
         SCREENCODE_INVERT_CHARMAP
 ; needs to be continuous memory for screen writers
