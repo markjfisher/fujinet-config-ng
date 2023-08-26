@@ -18,8 +18,8 @@
 .proc mod_devices
         jsr     _fn_clrscr
         put_status #0, #md_s1
-        put_status #2, #md_s3
-        put_help #3, #md_h1
+        put_status #1, #md_s3
+        put_help #1, #md_h1
 
         ; do we have devices data read?
         lda     devices_fetched

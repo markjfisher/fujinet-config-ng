@@ -27,24 +27,24 @@ DL_MODEF      = $0F
 .proc _fn_setup_screen
 
         ; Screen is already off in the pre_init stage.
-        mva #$00, NMIEN
-        jsr _bar_setup
-        jsr _bar_clear
+        mva     #$00, NMIEN
+        jsr     _bar_setup
+        jsr     _bar_clear
 
-        mwa #main_dlist, SDLSTL
+        mwa     #main_dlist, SDLSTL
 
-        mva #$02, CHACTL
-        mva #$3c, PACTL
+        mva     #$02, CHACTL
+        mva     #$3c, PACTL
 
         ; setup some colors
-        mva #$0d, COLOR1    ; glyph pixel luma
-        mva #$00, COLOR2    ; b/g
-        mva #$00, COLOR4    ; border
-        jsr _wait_scan1     ; at top of screen, everything is now setup
+        mva     #$0d, COLOR1    ; glyph pixel luma
+        mva     #$00, COLOR2    ; b/g
+        mva     #$00, COLOR4    ; border
+        jsr     _wait_scan1     ; at top of screen, everything is now setup
 
         ; turn screen and interrupts back on with DMA enabled for PMG
-        mva #$40, NMIEN
-        mva #$2e, SDMCTL
+        mva     #$40, NMIEN
+        mva     #$2e, SDMCTL
 
         rts
 .endproc
@@ -52,7 +52,7 @@ DL_MODEF      = $0F
 .segment "DLIST"
 main_dlist:
     ; blank lines in head
-    .byte DL_BLK8, DL_BLK6
+    .byte DL_BLK8, DL_BLK2
     LMS DL_MODEF, gouttop1
     LMS DL_MODEF, gouttop2, 2
 
@@ -62,7 +62,7 @@ main_dlist:
     ; status line
     LMS DL_MODE2, sline1
     LMS DL_MODE2, sline2
-    LMS DL_MODE2, sline3
+;     LMS DL_MODE2, sline3
     
     ; 2 spacers (40 x $ff)
     LMS DL_MODEF, gbk, 2
@@ -73,7 +73,7 @@ main_dlist:
     LMS DL_MODEF, gintop2
 
     LMS DL_MODE2, m_l1
-    .repeat 15
+    .repeat 19
     .byte DL_MODE2
     .endrepeat
 
@@ -86,8 +86,8 @@ main_dlist:
 
     LMS DL_MODE2, mhlp1
     LMS DL_MODE2, mhlp2
-    LMS DL_MODE2, mhlp3
-    LMS DL_MODE2, mhlp4
+;     LMS DL_MODE2, mhlp3
+;     LMS DL_MODE2, mhlp4
 
     LMS DL_MODEF, gouttop2, 2
     LMS DL_MODEF, gouttop1

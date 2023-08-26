@@ -30,10 +30,10 @@
 not_booting:
         ; module shown, let user choose what they want to do
         put_status #0, #mx_s1
-        put_status #2, #mx_s3
-        put_help   #2, #mx_h1
+        put_status #1, #mx_s3
+        put_help   #0, #mx_h1
 
-        put_s      #7, #3, #mx_m1
+        put_s      #7,  #3, #mx_m1
         put_s      #13, #4, #mx_m2
 
         ; highlight current option

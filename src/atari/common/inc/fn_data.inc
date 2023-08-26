@@ -29,7 +29,7 @@
 ; Atari specific values for Screen Display bits
 ; show_list constants for screen coordinate starting points etc.
 SL_EDIT_X   := 5            ; x offset for list entry
-SL_Y        := 2            ; the top left corner Y position to start printing the list
+SL_Y        := 0            ; the top left corner Y position to start printing the list
 SL_COUNT    := 8            ; how many entries are in a Screen List
 
 FNS_N2C     = $10           ; Screen code for '0'. Add this to 0 based index so it can be print
@@ -39,7 +39,7 @@ FNS_C_W     = $37           ; screen code for "W"
 ; Directory ASCII Character Code
 DIR_CHAR    = $00           ; directory character
 DIR_PG_CNT  = $10           ; Number of entries to display on a page in the file listing
-DIR_MAX_LEN = 36            ; old config was 36, but we don't quite have space on screen for 36 with borders.
+DIR_MAX_LEN = 36            ; 
 
 ; KEYBOARD codes
 ; defines for fn_edit to use for various key codes

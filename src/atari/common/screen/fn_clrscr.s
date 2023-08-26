@@ -11,7 +11,7 @@
         ldy     #$00
         jsr     fn_get_scrloc
 
-        ldx     #15     ; rows-1
+        ldx     #19     ; rows-1
 ycol:   ldy     #35     ; cols-1, yeah, we need Y as the index for x col...
 xrow:   lda     #$00    ; screen code for ' '
         sta     (ptr4), y
@@ -26,16 +26,16 @@ xrow:   lda     #$00    ; screen code for ' '
 .endproc
 
 .proc _fn_clr_help
-        ; clear help texts. 4 lines of 40 bytes
+        ; clear help texts. X lines of 40 bytes
         mwa     #mhlp1, ptr4
-        ldx     #160
+        ldx     #80
         jmp     do_clear
 .endproc
 
 .proc _fn_clr_status
-        ; clear the status lines. 3 lines of 40 bytes
+        ; clear the status lines. X lines of 40 bytes
         mwa     #sline1, ptr4
-        ldx     #120
+        ldx     #80
         jmp     do_clear
 .endproc
 

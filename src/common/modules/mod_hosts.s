@@ -18,8 +18,8 @@
 .proc mod_hosts
         jsr     _fn_clrscr
         put_status #0, #mh_s1
-        put_status #2, #mh_s3
-        put_help #3, #mh_h1
+        put_status #1, #mh_s3
+        put_help #1, #mh_h1
 
         ; do we have hosts data read?
         lda     hosts_fetched

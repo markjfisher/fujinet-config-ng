@@ -78,8 +78,8 @@ exit_select:
 
         ; clear screen and print help texts
         jsr     _fn_clr_help
-        put_help #2, #mfss_h1
-        put_help #3, #mfss_h2
+        put_help #0, #mfss_h1
+        put_help #1, #mfss_h2
 
         ; calculate the x-offset to show box. In the inner-box, it's (36 - width) / 2
         lda     #35     ; one off for border

@@ -1,4 +1,5 @@
-        .export     m_l1, sline1, sline2, sline3, mhlp1, mhlp2, mhlp3, mhlp4
+        .export     m_l1, sline1, sline2, sline3, mhlp1, mhlp2
+        ; .export     mhlp3, mhlp4
         .export     gbk, gintop1, gintop2, gouttop1, gouttop2
         .export     s_empty
         .include    "fn_macros.inc"
@@ -27,7 +28,7 @@ sline3: SPACES_40
         NORMAL_CHARMAP
 
         SCREENCODE_CHARMAP
-m_l1:   .repeat 16
+m_l1:   .repeat 20
             SCREEN_BLANK_LINE
         .endrepeat
 
@@ -36,8 +37,8 @@ m_l1:   .repeat 16
 ; needs to be continuous memory for screen writers
 mhlp1:  SPACES_40
 mhlp2:  SPACES_40
-mhlp3:  SPACES_40
-mhlp4:  SPACES_40
+; mhlp3:  SPACES_40
+; mhlp4:  SPACES_40
         NORMAL_CHARMAP
 
 gbk:

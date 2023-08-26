@@ -73,8 +73,8 @@ no_error2:
         mva     #$00, mf_entry_index
         jsr     _fn_clrscr      ; left as late as possible before we start redisplaying entries
         put_status #0, #mf_s1
-        put_help #1, #mf_h1
-        put_help #3, #mf_h3
+        put_help #0, #mf_h1
+        put_help #1, #mf_h3
 
 l_entries:
         ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
