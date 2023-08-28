@@ -273,11 +273,6 @@ endif
 SOURCES := $(strip $(SOURCES))
 SOURCES_TG := $(strip $(SOURCES_TG))
 
-# Define the LIBS sources
-SRC_LIBS_FN_IO := $(call rwildcard,$(SRCDIR)/libs/fn_io/,*.s)
-SRC_LIBS_FN_IO += $(call rwildcard,$(SRCDIR)/libs/fn_io/,*.c)
-SRC_LIBS_FN_IO := $(strip $(SRC_LIBS_FN_IO))
-
 # Set OBJECTS to something like 'obj/c64/foo.o obj/c64/bar.o'.
 # convert from src/your/long/path/foo.[c|s] to obj/your/long/path/foo.o
 OBJ1 := $(SOURCES:.c=.o)
@@ -289,10 +284,6 @@ OBJECTS_TG := $(OBJ2:.s=.o)
 OBJECTS_TG := $(OBJECTS_TG:$(SRCDIR)/%=$(OBJDIR)/%)
 
 OBJECTS += $(OBJECTS_TG)
-
-OBJ3 := $(SRC_LIBS_FN_IO:.c=.o)
-OBJECTS_LIBS_FN_IO := $(OBJ3:.s=.o)
-OBJECTS_LIBS_FN_IO := $(OBJECTS_LIBS_FN_IO:$(SRCDIR)/%=$(OBJDIR)/%)
 
 # Set DEPENDS to something like 'obj/c64/foo.d obj/c64/bar.d'.
 DEPENDS := $(OBJECTS:.o=.d)
@@ -321,7 +312,7 @@ ASFLAGS += --asm-include-dir src/$(CC65TARGET)/$(SUBTARGET)/inc
 endif
 
 .SUFFIXES:
-.PHONY: all test clean fn_io.lib
+.PHONY: all test clean
 
 all: $(PROGRAM)
 
@@ -390,13 +381,8 @@ $(OBJDIR)/%.o: %.s | $(OBJDIR)
 	@$(call MKDIR,$(dir $@))
 	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) $(ASFLAGS) -o $@ $<
 
-$(PROGRAM): $(CONFIG) $(OBJECTS) $(OBJDIR)/fn_io.lib $(LIBS)
+$(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS)
 	$(CC) -t $(CC65TARGET) $(LDFLAGS) -o $(BUILD_DIR)/$@ $(patsubst %.cfg,-C %.cfg,$^)
-
-$(OBJDIR)/fn_io.lib: $(OBJECTS_LIBS_FN_IO) | $(OBJDIR)
-	ar65 a $@ $(OBJECTS_LIBS_FN_IO)
-
-fn_io.lib: $(OBJDIR)/fn_io.lib
 
 test: $(PROGRAM)
 	$(PREEMUCMD)
@@ -405,7 +391,6 @@ test: $(PROGRAM)
 
 clean:
 	$(call RMFILES,$(OBJECTS))
-	$(call RMFILES,$(OBJECTS_LIBS_FN_IO))
 	$(call RMFILES,$(DEPENDS))
 	$(call RMFILES,$(REMOVES))
 	$(call RMFILES,$(PROGRAM))

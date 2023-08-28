@@ -1,5 +1,5 @@
-; test entry point for all SIOV calls, also defined in the cfg file so that any "SIO" segment compiles to same address
-SIOV    = $2000
+; test entry point for all BUS calls, also defined in the cfg file so that any "BUS" segment compiles to same address
+BUS    = $2000
 
 .struct IO_DCB
     .org    $1000

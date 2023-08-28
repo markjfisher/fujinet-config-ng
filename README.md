@@ -11,7 +11,7 @@ to the network, and then passes control to the `hosts` module, to display the li
 
 Pressing arrow keys typically moves between modules, via the keyboard handlers.
 
-### Keyboard Hanlers
+### Keyboard Handlers
 
 More stuff here about common keyboard input during modules, and module specific code. Module keyboard handler
 called first, then the common code checks if key not been processed yet.
@@ -82,4 +82,3 @@ In the target specific directory the following is included by any variant of the
 - src/atari/full/
 
 If no variant is specified, the additional variant directory will not be included.
-
