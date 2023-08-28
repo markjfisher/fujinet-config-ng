@@ -3,7 +3,7 @@
         .include        "fn_macros.inc"
 
 .proc _main
-        ; args:  toggle (uint8)
+        ; args:  toggle (uint8_t)
         lda     t_toggle
 
         jsr     _fn_io_set_boot_config

@@ -45,7 +45,7 @@
         rts
 .endproc
 
-; void bar_setcolor(uint8 newColor)
+; void bar_setcolor(uint8_t newColor)
 .proc _bar_setcolor
         sta     PCOLR0
         sta     PCOLR1
@@ -54,7 +54,7 @@
         rts
 .endproc
 
-; void bar_show(uint8 row(A), uint8 offset(X))
+; void bar_show(uint8_t row(A), uint8_t offset(X))
 .proc _bar_show
         stx     tmp1    ; highlight offset for currently viewed module, forces PMG down screen a bit as we don't always start on first line.
         sec

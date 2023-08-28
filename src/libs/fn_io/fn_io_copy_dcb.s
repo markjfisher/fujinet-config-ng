@@ -1,15 +1,13 @@
-        .export         _fn_io_copy_dcb
+        .export         fn_io_copy_dcb
 
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_data.inc"
         .include        "fn_io.inc"
 
-; void fn_io_copy_dcb(DCB* table)
-;
 ; Sets DCB data from given table address
 ; Trashes ptr4 as only ZP location
-.proc _fn_io_copy_dcb
+.proc fn_io_copy_dcb
         axinto  ptr4
 
         ; first 2 bytes always $70, $01, so we can do those manually. saves table space, and loops

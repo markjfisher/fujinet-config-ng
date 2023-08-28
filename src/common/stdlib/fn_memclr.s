@@ -18,7 +18,7 @@
     rts
 .endproc
 
-; void fn_memclr(uint8 count, void *p)
+; void fn_memclr(uint8_t count, void *p)
 ;
 ; clear up to count chars at *p
 .proc _fn_memclr

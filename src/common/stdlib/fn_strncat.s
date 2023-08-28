@@ -3,7 +3,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; int _fn_strncat(char *dst, char *src, uint8 n)
+; int _fn_strncat(char *dst, char *src, uint8_t n)
 ;
 ; A cut down version of strncat that works for strings up to 256 bytes.
 ; This requires a nul terminating (0) byte in the dst string to start appending from.

@@ -3,7 +3,7 @@
         .include        "fn_macros.inc"
 
 .proc _main
-        ; args: host_slot (uint8), device_slot (uint8), size (uint16)
+        ; args: host_slot (uint8_t), device_slot (uint8_t), size (uint16_t)
         pusha   t_host_slot
         pusha   t_device_slot
         pushax  t_size

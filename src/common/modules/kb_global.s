@@ -7,7 +7,7 @@
         .include    "fn_mods.inc"
         .include    "fn_data.inc"
 
-; void kb_global(uint8 offset, uint8 current, uint8 max, uint8 prevMod, uint8 nextMod, void * kb_mod_proc)
+; void kb_global(uint8_t offset, uint8_t current, uint8_t max, uint8_t prevMod, uint8_t nextMod, void * kb_mod_proc)
 ;      offset:  the adjustment for line high lighting for current module, e.g. $20 is for devices/hosts
 ;     current:  the current selected line (zero based)
 ;         max:  the largest index - 1

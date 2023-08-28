@@ -1,11 +1,11 @@
         .export     _fn_io_read_directory_block
-        .import     _fn_io_copy_dcb, popa, _fn_io_dosiov
+        .import     fn_io_copy_dcb, popa, _fn_io_dosiov
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
 
-; void *fn_io_read_directory_block(uint8 maxlen, uint8 pages, uint8 extended_mode, void *buffer)
+; void *fn_io_read_directory_block(uint8_t maxlen, uint8_t pages, uint8_t extended_mode, void *buffer)
 ;
 ; pages is number of 256 blocks to request
 .proc _fn_io_read_directory_block
@@ -30,7 +30,7 @@
 :       popa    tmp2    ; maxlen
 
         setax   #t_io_read_directory_block
-        jsr     _fn_io_copy_dcb
+        jsr     fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::dbythi    ; pages to expect back 
         mva     tmp2, IO_DCB::daux1     ; maxlen

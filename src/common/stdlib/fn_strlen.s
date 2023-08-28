@@ -2,7 +2,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; uint8 fn_strlen(char *p)
+; uint8_t fn_strlen(char *p)
 ;
 ; returns string length (max 254) of string pointed at by p
 ; if no null was found, returns $ff as error

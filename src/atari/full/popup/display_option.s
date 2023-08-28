@@ -6,8 +6,6 @@
         .import     ascii_to_code
         .import     ss_widget_idx
         .import     di_current_item
-        .import     _fn_pause
-        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"

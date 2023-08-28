@@ -2,6 +2,7 @@
         .import     _fn_io_get_device_slots, _fn_io_get_host_slots, _fn_io_mount_all, _fn_io_set_boot_config
         .import     _fn_put_s, _bar_clear, pushax, pusha, _fn_pause
         .import     fn_io_deviceslots
+        .import     fn_io_hostslots
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -20,6 +21,7 @@
         ; re-read the devices/hosts, the WebUI might have changed them etc.
         setax   #fn_io_deviceslots
         jsr     _fn_io_get_device_slots
+        setax   #fn_io_hostslots
         jsr     _fn_io_get_host_slots
         pause   #10         ; small pause to allow screen to continue showing "Mounting all" briefly
 

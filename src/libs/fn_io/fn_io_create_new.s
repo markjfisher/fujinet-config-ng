@@ -2,14 +2,14 @@
         .export     t_disk_num_sectors, t_disk_sector_sizes, t_io_create_new
 
         .import     popa, popax, _strncpy, pushax
-        .import     _fn_io_copy_dcb, _fn_io_dosiov
+        .import     fn_io_copy_dcb, _fn_io_dosiov
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 
-; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size, void *new_disk, char *dir_path)
+; void fn_io_create_new(uint8_t selected_host_slot, uint8_t selected_device_slot, uint16_t selected_size, struct NewDisk *new_disk, char *dir_path)
 .proc _fn_io_create_new
         axinto  ptr3            ; directory path src
         popax   ptr2            ; buffer for new disk, caller responsible for memory
@@ -123,7 +123,7 @@ s1440:  ldx     #DiskSize::size1440
 
         ; finally setup DCB and call SIOV
         setax   #t_io_create_new
-        jsr     _fn_io_copy_dcb
+        jsr     fn_io_copy_dcb
         mwa     ptr2, IO_DCB::dbuflo
         jmp     _fn_io_dosiov
         ; implicit rts

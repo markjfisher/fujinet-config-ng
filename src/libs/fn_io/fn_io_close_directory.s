@@ -3,14 +3,14 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
-        .import     _fn_io_copy_dcb, _fn_io_dosiov
+        .import     fn_io_copy_dcb, _fn_io_dosiov
 
-; void io_close_directory(uint8 host_slot)
+; void fn_io_close_directory(uint8_t host_slot)
 .proc _fn_io_close_directory
         sta     tmp1    ; save host_slot
 
         setax   #t_io_close_directory
-        jsr     _fn_io_copy_dcb
+        jsr     fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
         jmp     _fn_io_dosiov

@@ -2,15 +2,13 @@
         .import     s_empty, fn_get_scrloc, ascii_to_code
         .import     popa, pushax, popax
 
-        .import     debug
-
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
         .include    "fn_mods.inc"
 
-; void show_list(uint8 dataSize, char *str)
+; void show_list(uint8_t dataSize, char *str)
 ;
 ; show 8 strings on screen in list fashion, used on hosts and devices.
 .proc show_list

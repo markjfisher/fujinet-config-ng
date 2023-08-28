@@ -3,7 +3,7 @@
         .include  "zeropage.inc"
         .include  "fn_macros.inc"
 
-; void __fastcall__ dev_highlight_line(uint8 line)
+; void __fastcall__ dev_highlight_line(uint8_t line)
 .proc _fn_highlight_line
         ; read the highlight offset for current module
         ldx     mod_current

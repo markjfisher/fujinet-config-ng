@@ -4,7 +4,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; void _fn_pause(uint8 jiffies)
+; void _fn_pause(uint8_t jiffies)
 ;
 ; wait for clock to cycle to given count 0-255
 .proc _fn_pause

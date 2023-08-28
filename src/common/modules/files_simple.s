@@ -8,7 +8,8 @@
         .import     _fn_highlight_line, current_line
         .import     fn_dir_path, fn_dir_filter, fn_io_buffer
         .import     _fn_io_close_directory, _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory
-        .import     _fn_io_error, _fn_io_mount_host_slot
+        .import     _fn_io_mount_host_slot
+        .import     fn_io_hostslots
         .import     select_device_slot
         .import     get_to_dir_pos
         .import     mf_h1, mf_h3, mf_s1
@@ -22,15 +23,16 @@
 
 ; same as original implementation, reads dirs 1 by 1
 .proc files_simple
-
         jsr     init_files
 
         ; -----------------------------------------------------
         ; mount the host.
-        lda     host_selected
+        pusha   host_selected
+        setax   #fn_io_hostslots
         jsr     _fn_io_mount_host_slot
 
-        jsr     _fn_io_error
+        lda     IO_DCB::dstats
+        and     #$80
         beq     no_error1
         ; TODO: display error
 
@@ -51,7 +53,8 @@ l_files:
         setax   #fn_io_buffer
         jsr     _fn_io_open_directory
 
-        jsr     _fn_io_error
+        lda     IO_DCB::dstats
+        and     #$80
         beq     no_error2
         ; TODO: display error
         ; TODO: unmount host?

@@ -1,5 +1,5 @@
         .export         _fn_io_get_adapter_config
-        .import         _fn_io_copy_dcb, _fn_io_dosiov
+        .import         fn_io_copy_dcb, _fn_io_dosiov
 
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
@@ -14,7 +14,7 @@
         axinto  ptr1            ; adapter config location
 
         setax   #t_io_get_adapter_config
-        jsr     _fn_io_copy_dcb
+        jsr     fn_io_copy_dcb
 
         ; set the memory address for DCB to write to and call SIOV
         mwa     ptr1, IO_DCB::dbuflo

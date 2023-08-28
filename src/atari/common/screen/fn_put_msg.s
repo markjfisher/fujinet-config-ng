@@ -4,13 +4,10 @@
         .import     ascii_to_code
         .import     _fn_strlen
 
-        .import     debug
-        .import     _fn_pause
-
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; void fn_put_help(uint8 line_num, char *msg)
+; void fn_put_help(uint8_t line_num, char *msg)
 .proc _fn_put_help
         axinto  ptr1            ; save char* msg
         popa    tmp1            ; line number
@@ -18,7 +15,7 @@
         jmp     fn_put_msg
 .endproc
 
-; void fn_put_status(uint8 line_num, char *msg)
+; void fn_put_status(uint8_t line_num, char *msg)
 .proc _fn_put_status
         axinto  ptr1            ; save char* msg
         popa    tmp1            ; line number

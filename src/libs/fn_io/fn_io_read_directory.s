@@ -1,5 +1,5 @@
         .export     _fn_io_read_directory
-        .import     _fn_io_copy_dcb, popa, _fn_io_dosiov
+        .import     fn_io_copy_dcb, popa, _fn_io_dosiov
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -14,7 +14,7 @@
         popa    tmp2    ; maxlen
 
         setax   #t_io_read_directory
-        jsr     _fn_io_copy_dcb
+        jsr     fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux2
         mva     tmp2, IO_DCB::dbytlo

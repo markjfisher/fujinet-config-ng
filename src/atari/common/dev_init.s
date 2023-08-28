@@ -1,5 +1,5 @@
         .export   _dev_init
-        .import   _fn_setup_screen, fn_font, debug
+        .import   _fn_setup_screen, fn_font
         .include  "atari.inc"
         .include  "zeropage.inc"
         .include  "fn_macros.inc"

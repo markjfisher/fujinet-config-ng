@@ -2,7 +2,6 @@
 
         .import     sl_list_num
         .import     fn_io_deviceslots
-        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"

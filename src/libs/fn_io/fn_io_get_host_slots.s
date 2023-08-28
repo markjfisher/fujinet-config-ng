@@ -1,12 +1,19 @@
-        .export         _fn_io_get_host_slots, fn_io_hostslots
-        .import         _fn_io_siov
+        .export         _fn_io_get_host_slots
+        .import         fn_io_copy_dcb, _fn_io_dosiov
+
+        .include        "zeropage.inc"
         .include        "fn_macros.inc"
+        .include        "fn_data.inc"
         .include        "fn_io.inc"
 
-; void _fn_io_get_host_slots()
+; void _fn_io_get_host_slots(struct HostSlot *)
 .proc _fn_io_get_host_slots
+        axinto  ptr1
         setax   #t_io_get_host_slots
-        jmp     _fn_io_siov
+        jsr     fn_io_copy_dcb
+
+        mwa     ptr1, IO_DCB::dbuflo
+        jmp     _fn_io_dosiov
 .endproc
 
 .rodata
@@ -14,7 +21,4 @@
 .define HS8zH .hibyte(.sizeof(HostSlot)*8)
 
 t_io_get_host_slots:
-        .byte $f4, $40, <fn_io_hostslots, >fn_io_hostslots, $0f, $00, HS8zL, HS8zH, $00, $00
-
-.segment "BUFFER"
-fn_io_hostslots:      .res 8 * .sizeof(HostSlot)
+        .byte $f4, $40, $ff, $ff, $0f, $00, HS8zL, HS8zH, $00, $00

@@ -17,7 +17,6 @@
         .import     host_selected
         .import     get_to_dir_pos
         .import     sds_msg
-        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"

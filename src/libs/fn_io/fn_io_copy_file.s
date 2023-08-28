@@ -1,17 +1,17 @@
         .export         _fn_io_copy_file
-        .import         _fn_io_copy_dcb, popa, _fn_io_dosiov
+        .import         fn_io_copy_dcb, popa, _fn_io_dosiov
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include         "fn_data.inc"
  
-; void fn_io_copy_file(uint8 src_slot, uint8 dst_slot, void *copySpec)
+; void fn_io_copy_file(uint8_t src_slot, uint8_t dst_slot, char *copy_spec)
 .proc _fn_io_copy_file
         axinto  ptr1    ; copyspec write location
         popa    tmp1    ; dst_slot
         popa    tmp2    ; src_slot
 
         setax   #t_io_copy_file
-        jsr     _fn_io_copy_dcb
+        jsr     fn_io_copy_dcb
 
         ;  fujinet tracks 1-8, we do 0-7, so need to increment both values
         inc     tmp1

@@ -7,7 +7,6 @@
         .import     _fn_input
         .import     ascii_to_code
         .import     _malloc, _free
-        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -27,7 +26,7 @@
 ; PARAMS:
 ; char *str         - pointer to string being edit
 ; void *scr         - pointer to first location of screen where string is displayed
-; uint8 maxLen      - max string size
+; uint8_t maxLen      - max string size
 ;
 ; RETURNS:
 ; 0 if no edit occurred, 1 if the string was changed

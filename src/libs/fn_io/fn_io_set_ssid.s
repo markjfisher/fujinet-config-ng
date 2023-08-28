@@ -1,18 +1,18 @@
         .export         _fn_io_set_ssid
-        .import          _fn_io_copy_dcb, _fn_io_dosiov
+        .import          fn_io_copy_dcb, _fn_io_dosiov
 
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
         .include        "fn_data.inc"
 
-; void  _fn_io_set_ssid(void *fn_io_net_config)
+; void  fn_io_set_ssid(void *fn_io_net_config)
 ; sends the ssid to sio.
 .proc _fn_io_set_ssid
         axinto  ptr1
 
         setax   #t_io_set_ssid
-        jsr     _fn_io_copy_dcb
+        jsr     fn_io_copy_dcb
 
         ; copy mem location to DCB, and call siov
         mwa     ptr1, IO_DCB::dbuflo

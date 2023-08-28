@@ -28,6 +28,7 @@ Feature: IO library test - fn_io_read_directory
      And I expect to see DAUX2 equal $80
      And I expect to see DBUFLO equal lo($a000)
      And I expect to see DBUFHI equal hi($a000)
+     # buffer location should be returned in A/X
      And I expect register A equal lo($a000)
      And I expect register X equal hi($a000)
 

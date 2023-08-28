@@ -33,10 +33,6 @@ Feature: IO library test - fn_io_get_device_filename
      # verify SIOV was called
      And I expect to see $80 equal 1
 
-     # Verify AX point back to our buffer
-     And I convert registers AX to address
-    Then property "test.BDD6502.regsValue" must contain string "40960"
-
   Examples:
   | slot_offset | comment           |
   | $07         | normal slots 0-7  |

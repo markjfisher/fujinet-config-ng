@@ -1,6 +1,6 @@
         .export _fn_io_dosiov
 
-        .import _fn_io_copy_dcb
+        .import fn_io_copy_dcb
         .include "atari.inc"
 
 ; void fn_io_dosiov()

@@ -21,8 +21,6 @@
         .import     handle_kb
         .import     _wait_scan1
 
-        .import     debug
-
         .include    "zeropage.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
@@ -30,7 +28,7 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
-; void show_select(uint8 width, void *items, char *msg)
+; void show_select(uint8_t width, void *items, char *msg)
 ; 
 ; A generic selection popup window that can display different types of widgets
 ;

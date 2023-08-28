@@ -5,7 +5,7 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; void fn_put_s(uint8 X, uint8 Y, char *s)
+; void fn_put_s(uint8_t X, uint8_t Y, char *s)
 ; X, Y contain coordinates for string
 ; char *S is on call stack
 ;

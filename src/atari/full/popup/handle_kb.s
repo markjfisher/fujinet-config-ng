@@ -11,8 +11,6 @@
         .import     _fn_input_ucase
         .import     ss_pu_entry
 
-        .import     debug
-
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"

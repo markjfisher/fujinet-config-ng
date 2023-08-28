@@ -6,7 +6,6 @@
         .import     sl_list_num
         .import     mod_hosts_show_list_num
         .import     mh_h1, mh_s1, mh_s3
-        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -25,6 +24,7 @@
         lda     hosts_fetched
         bne     :+
 
+        setax   #fn_io_hostslots
         jsr     _fn_io_get_host_slots
         mva     #$01, hosts_fetched
 

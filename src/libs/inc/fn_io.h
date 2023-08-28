@@ -1,9 +1,7 @@
-/*
-This is to allow interop between C and ASM in project
-*/
-
 #ifndef FN_IO_H
 #define FN_IO_H
+
+#include <stdint.h>
 
 #define FILE_MAXLEN 36
 #define SSID_MAXLEN 33 /* 32 + NULL */
@@ -40,30 +38,60 @@ typedef struct
 {
   char ssid[SSID_MAXLEN];
   char hostname[64];
-  unsigned char localIP[4];
-  unsigned char gateway[4];
-  unsigned char netmask[4];
-  unsigned char dnsIP[4];
-  unsigned char macAddress[6];
-  unsigned char bssid[6];
+  uint8_t localIP[4];
+  uint8_t gateway[4];
+  uint8_t netmask[4];
+  uint8_t dnsIP[4];
+  uint8_t macAddress[6];
+  uint8_t bssid[6];
   char fn_version[15];
 } AdapterConfig;
 
-typedef unsigned char HostSlot[32];
+typedef uint8_t HostSlot[32];
 
 typedef struct {
-  unsigned char hostSlot;
-  unsigned char mode;
-  unsigned char file[FILE_MAXLEN];
+  uint8_t hostSlot;
+  uint8_t mode;
+  uint8_t file[FILE_MAXLEN];
 } DeviceSlot;
 
 typedef struct
 {
   unsigned short numSectors;
   unsigned short sectorSize;
-  unsigned char hostSlot;
-  unsigned char deviceSlot;
+  uint8_t hostSlot;
+  uint8_t deviceSlot;
   char filename[224];
 } NewDisk;
+
+void fn_io_close_directory(uint8_t host_slot);
+void fn_io_copy_file(uint8_t src_slot, uint8_t dst_slot, char *copy_spec);
+void fn_io_create_new(uint8_t selected_host_slot, uint8_t selected_device_slot, uint16_t selected_size, NewDisk *new_disk, char *dir_path);
+void fn_io_disable_device(uint8_t d);
+void fn_io_enable_device(uint8_t d);
+void fn_io_get_adapter_config(AdapterConfig *ac);
+bool fn_io_get_device_enabled_status(uint8_t d);
+void fn_io_get_device_filename(uint8_t ds, char *buffer);
+void fn_io_get_device_slots(DeviceSlot *d);
+void fn_io_get_host_slots(HostSlot *h);
+void fn_io_get_scan_result(uint8_t n, SSIDInfo *ssid_info);
+void fn_io_get_ssid(NetConfig *net_config);
+bool fn_io_get_wifi_enabled(void);
+uint8_t io_get_wifi_status(void);
+uint8_t fn_io_mount_all(void);
+void fn_io_mount_disk_image(uint8_t ds, uint8_t mode);
+void fn_io_mount_host_slot(uint8_t hs);
+void fn_io_open_directory(uint8_t hs, char *path_filter);
+void fn_io_put_device_slots(DeviceSlot *d);
+void fn_io_put_host_slots(HostSlot *h);
+char *fn_io_read_directory(uint8_t maxlen, uint8_t aux2, char *buffer);
+void fn_io_reset(void);
+uint8_t io_scan_for_networks(void);
+void fn_io_set_boot_config(uint8_t toggle);
+void fn_io_set_boot_mode(uint8_t mode);
+void fn_io_set_device_filename(uint8_t mode, uint8_t host_slot, uint8_t device_slot, void *buffer);
+void fn_io_set_directory_position(uint16_t pos);
+void fn_io_set_ssid(NetConfig *nc);
+void fn_io_unmount_disk_image(uint8_t ds);
 
 #endif /* FN_IO_H */
