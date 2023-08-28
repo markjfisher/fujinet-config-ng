@@ -24,8 +24,9 @@ Feature: IO library test - fn_io_scan_for_networks
      And I expect to see DBYTHI equal $00
      And I expect to see DAUX1 equal $00
      And I expect to see DAUX2 equal $00
-     And I expect to see DBUFLO equal lo(fn_io_scan)
-     And I expect to see DBUFHI equal hi(fn_io_scan)
+     # using tmp1, which in cc65 is ZP address $92
+     And I expect to see DBUFLO equal lo($92)
+     And I expect to see DBUFHI equal hi($92)
 
      And I expect register A equal <networks>
 

@@ -1,24 +1,27 @@
         .export         _fn_io_get_device_filename
-        .import         _fn_io_copy_dcb, fn_io_buffer, _fn_io_dosiov
+        .import         _fn_io_copy_dcb, _fn_io_dosiov, popa
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_data.inc"
  
-; char* _fn_io_get_device_filename(device_slot)
+; void * fn_io_get_device_filename(uint8 device_slot, void *buffer)
 .proc _fn_io_get_device_filename
-        sta     tmp1        ; save device_slot
+        axinto  ptr1            ; save the buffer pointer
+        popa    tmp1            ; save device_slot
         setax   #t_io_get_device_filename
         jsr     _fn_io_copy_dcb
 
         mva     tmp1, IO_DCB::daux1
+        mwa     ptr1, IO_DCB::dbuflo
         jsr     _fn_io_dosiov
 
-        setax   #fn_io_buffer
+        ; for convenience, return the pointer back to the caller
+        ; might be better to have error codes here? Are there any?
+        setax   ptr1
         rts
 .endproc
 
 .rodata
-
 t_io_get_device_filename:
-        .byte $da, $40, <fn_io_buffer, >fn_io_buffer, $0f, $00, $00,   $01,   $ff, $00
+        .byte $da, $40, $ff, $ff, $0f, $00, $00, $01, $ff, $00
 

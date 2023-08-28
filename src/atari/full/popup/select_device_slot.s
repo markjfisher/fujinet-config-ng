@@ -73,7 +73,8 @@ save_device_choice:
 
         ; do a 255 byte read of current dir entry (file)
         pusha   #$ff
-        lda     #$00
+        pusha   #$00
+        setax   #fn_io_buffer
         jsr     _fn_io_read_directory
 
         ; copy fn_io_buffer result to RAM, as we need to play around with buffers
@@ -128,7 +129,8 @@ save_device_choice:
         ; set the device filename, this now works without need to save all slots
         pusha   sds_mode                ; read/write mode
         pusha   host_selected           ; host_slot
-        lda     sds_dev                 ; device slot
+        pusha   sds_dev                 ; device slot
+        setax   #fn_io_buffer
         jsr     _fn_io_set_device_filename
 
         ; write it to the deviceslots memory
@@ -151,10 +153,13 @@ no_dev_add:
         sta     (ptr1), y
 
         ; Save everything - bug was here for saving in A8? TODO check why fix to _fn_io_set_device_filename doesn't seem to be working - or is it another bug?
+        setax   #fn_io_deviceslots
         jsr     _fn_io_put_device_slots
 
         ; read the device slots back so screen repopulates
+        setax   #fn_io_deviceslots
         jsr     _fn_io_get_device_slots
+
         jmp     _fn_io_close_directory
 
 ; kb_handler:
@@ -170,6 +175,7 @@ copy_dev_strings:
         bne     :+
 
         ; no! fetch them so we can see the entries
+        setax   #fn_io_deviceslots
         jsr     _fn_io_get_device_slots
         mva     #$01, devices_fetched
 

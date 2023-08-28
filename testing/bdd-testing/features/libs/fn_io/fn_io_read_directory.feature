@@ -12,8 +12,9 @@ Feature: IO library test - fn_io_read_directory
       And I write memory at $80 with $ff
       And I write memory at t_maxlen with $20
       And I write memory at t_aux2 with $80
-      And I write memory at fn_io_buffer with $aa
-     When I execute the procedure at _init for no more than 1000 instructions
+      And I write memory at t_buffer with $00
+      And I write memory at t_buffer+1 with $a0
+     When I execute the procedure at _init for no more than 130 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70
@@ -25,10 +26,10 @@ Feature: IO library test - fn_io_read_directory
      And I expect to see DBYTHI equal $00
      And I expect to see DAUX1 equal $20
      And I expect to see DAUX2 equal $80
-     And I expect to see DBUFLO equal lo(fn_io_buffer)
-     And I expect to see DBUFHI equal hi(fn_io_buffer)
-     And I expect register A equal lo(fn_io_buffer)
-     And I expect register X equal hi(fn_io_buffer)
+     And I expect to see DBUFLO equal lo($a000)
+     And I expect to see DBUFHI equal hi($a000)
+     And I expect register A equal lo($a000)
+     And I expect register X equal hi($a000)
 
     # check SIOV was called
     Then I expect to see $80 equal $01

@@ -1,29 +1,21 @@
         .export     _fn_io_create_new
-        ; for exposing in Altirra:
         .export     t_disk_num_sectors, t_disk_sector_sizes, t_io_create_new
 
-        .import     _fn_strncpy, fn_dir_path
-        .import     popa, pushax
+        .import     popa, popax, _strncpy, pushax
         .import     _fn_io_copy_dcb, _fn_io_dosiov
-        .import     _malloc, _free
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 
-; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size)
+; void _fn_io_create_new(uint8 selected_host_slot, uint8 selected_device_slot, uint16 selected_size, void *new_disk, char *dir_path)
 .proc _fn_io_create_new
-        axinto  fn_io_newsize    ; size (word) - one of 90, 130, ... etc. see below
-        popa    tmp1    ; device_slot (byte)
-        popa    tmp2    ; host_slot (byte)
-
-        setax   #.sizeof(NewDisk)
-        jsr     _malloc
-        axinto  ptr2
-
-        mwa     fn_io_newsize, ptr1
-        mwa     ptr2, fn_io_newsize     ; this is done only for test to reach in and get the malloc address
+        axinto  ptr3            ; directory path src
+        popax   ptr2            ; buffer for new disk, caller responsible for memory
+        popax   ptr1            ; size (word) - one of 90, 130, ... etc. see below
+        popa    tmp1            ; device_slot (byte)
+        popa    tmp2            ; host_slot (byte)
 
         ; convert selected_size into DiskSize index
         cpw     ptr1, #90
@@ -40,8 +32,7 @@
         beq     s1440
 
         ; TODO CUSTOM 999, for now just return as error
-        jmp     cleanup
-        ; implicit rts
+        rts
 
 s90:    ldx     #DiskSize::size90
         .byte   $2c     ; BIT
@@ -108,9 +99,9 @@ s1440:  ldx     #DiskSize::size1440
 
         ; and copy the string there
         pushax  ptr2            ; dst
-        pushax  #fn_dir_path    ; src
-        lda     #$e0            ; max length
-        jsr     _fn_strncpy
+        pushax  ptr3            ; src
+        setax   #$e0
+        jsr     _strncpy
 
         ; restore ptr2 to start of malloc location
         sbw     ptr2, #NewDisk::filename
@@ -134,16 +125,9 @@ s1440:  ldx     #DiskSize::size1440
         setax   #t_io_create_new
         jsr     _fn_io_copy_dcb
         mwa     ptr2, IO_DCB::dbuflo
-        jsr     _fn_io_dosiov
-
-cleanup:
-        setax   ptr2
-        jsr     _free
-        rts
+        jmp     _fn_io_dosiov
+        ; implicit rts
 .endproc
-
-.bss
-fn_io_newsize:  .res 2
 
 .rodata
 t_disk_num_sectors:

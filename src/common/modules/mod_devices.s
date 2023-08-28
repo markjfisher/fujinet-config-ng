@@ -25,6 +25,7 @@
         lda     devices_fetched
         bne     :+
 
+        setax   #fn_io_deviceslots
         jsr     _fn_io_get_device_slots
         mva     #$01, devices_fetched
 
@@ -61,10 +62,12 @@ mod_devices_kb:
         sta     fn_io_buffer
         pusha   #$00
         pusha   host_selected
-        lda     device_selected
+        pusha   device_selected
+        setax   #fn_io_buffer
         jsr     _fn_io_set_device_filename
-        
+
         ; read the device slots back so screen repopulates
+        setax   #fn_io_deviceslots
         jsr     _fn_io_get_device_slots
 
         ldx     #KBH::EXIT

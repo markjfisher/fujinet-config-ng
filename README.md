@@ -23,11 +23,13 @@ host values.
 
 ## Building
 
-Pick your target platform's appropriate Makefile, e.g
+Use make. Specify the targets as required (default = atari.full)
 
 ```shell
-$ make -f Makefile.atari clean all
+$ make TARGETS=atari.full,apple2 clean all
 ```
+
+See Variants information below for how to build different subtargets for a platform, if required.
 
 ## Core application
 
@@ -61,8 +63,23 @@ Define your own cc65 linker config anywhere on your device specific path.
 - inc/fn_data.inc
 
 This defines various values that IO and keyboard routines need to work on a particular device.
-See [atari fn_data.inc](src/atari/inc/fn_data.inc) for an example.
+See [atari fn_data.inc](src/atari/common/inc/fn_data.inc) for an example.
 
 ## COMMON code
 
 The `common` subdir contains device agnostic code. It contains the core FujiNet IO routines.
+
+## Variants
+
+It is also possible to build variants of the application that share common code without having to duplicate source.
+
+See atari.full for an example.
+
+In the target specific directory the following is included by any variant of the target, e.g. for atari.full:
+
+- src/common
+- src/atari/common/
+- src/atari/full/
+
+If no variant is specified, the additional variant directory will not be included.
+

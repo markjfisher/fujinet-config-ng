@@ -1,35 +1,31 @@
         .export         _fn_io_get_wifi_enabled
         .import         _fn_io_siov
+        .import         return0, return1
 
+        .include        "zeropage.inc"
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
 
-; int _fn_io_get_wifi_enabled()
+; int fn_io_get_wifi_enabled()
 ;
-; sets A=1 if wifi is enabled. 0 otherwise
+; sets A=1 if wifi is enabled. 0 otherwise, X=0 in both cases for calling convention
 .proc _fn_io_get_wifi_enabled
         setax   #t_io_get_wifi_enabled
         jsr     _fn_io_siov
 
         ; was it set?
-        lda     fn_io_wifi_enabled
+        lda     tmp4
         cmp     #$01
-        bne :+
+        bne     :+
 
         ; yes
-        ldx     #$00
-        lda     #$01
-        rts
+        jmp     return1
 
         ; no
-        ldx     #$00
-:       lda     #$00
-        rts
+:       jmp     return0
+
 .endproc
 
 .rodata
 t_io_get_wifi_enabled:
-        .byte $ea, $40, <fn_io_wifi_enabled, >fn_io_wifi_enabled, $0f, $00, $01, $00, $00, $00
-
-.bss
-fn_io_wifi_enabled: .res 1
+        .byte $ea, $40, <tmp4, >tmp4, $0f, $00, $01, $00, $00, $00

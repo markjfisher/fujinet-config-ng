@@ -13,9 +13,11 @@ Feature: IO library test - fn_io_create_new
       And I write memory at t_host_slot with <host_slot>
       And I write memory at t_device_slot with <device_slot>
       And I write word at t_size with value <size>
-      #And I write memory at fn_io_deviceslot_mode with <mode>
-      And I write string "<path>" as ascii to memory address fn_dir_path
-     When I execute the procedure at _init for no more than 1500 instructions
+      And I write word at t_path with value 40960
+      And I write memory at t_newdisk with lo($c000)
+      And I write memory at t_newdisk+1 with hi($c000)
+      And I write string "<path>" as ascii to memory address $a000
+     When I execute the procedure at _init for no more than 1700 instructions
 
     # check the DCB values were set correctly
     Then I expect to see DDEVIC equal $70
@@ -33,21 +35,16 @@ Feature: IO library test - fn_io_create_new
     # check the new disk has expected data
     When I hex dump memory between $c000 and $c000+16
     Then property "test.BDD6502.lastHexDump" must contain string "<new_disk>"
-     # check the mode was saved into the deviceslots[n].mode
-    #  And I print memory from fn_io_deviceslots to fn_io_deviceslots+37
-    #  And I print memory from fn_io_deviceslots+38 to fn_io_deviceslots+75
-    #  And I print memory from fn_io_deviceslots+76 to fn_io_deviceslots+113
-     # And I expect to see fn_io_deviceslots+38*<device_slot>+1 equal <mode>
 
      # check SIOV was called
      And I expect to see $80 equal $01
 
     Examples:
     # note the additonal space in output of hex after 8 chars
-    | host_slot | device_slot | size   | mode | path | new_disk                          |
-    | 2         | 0           | 90     | 0    | /p1  | : d0 02 80 00 02 00 2f 70  31 00  |
-    | 3         | 1           | 130    | 1    | /p2  | : 10 04 80 00 03 01 2f 70  32 00  |
-    | 4         | 1           | 180    | 2    | /p3  | : d0 02 00 01 04 01 2f 70  33 00  |
-    | 5         | 2           | 360    | 3    | /p4  | : a0 05 00 01 05 02 2f 70  34 00  |
-    | 6         | 2           | 720    | 4    | /p5  | : 40 0b 00 01 06 02 2f 70  35 00  |
-    | 7         | 2           | 1440   | 5    | /p6  | : 80 16 00 01 07 02 2f 70  36 00  |
+    | host_slot | device_slot | size   | path | new_disk                          |
+    | 2         | 0           | 90     | /p1  | : d0 02 80 00 02 00 2f 70  31 00  |
+    | 3         | 1           | 130    | /p2  | : 10 04 80 00 03 01 2f 70  32 00  |
+    | 4         | 1           | 180    | /p3  | : d0 02 00 01 04 01 2f 70  33 00  |
+    | 5         | 2           | 360    | /p4  | : a0 05 00 01 05 02 2f 70  34 00  |
+    | 6         | 2           | 720    | /p5  | : 40 0b 00 01 06 02 2f 70  35 00  |
+    | 7         | 2           | 1440   | /p6  | : 80 16 00 01 07 02 2f 70  36 00  |

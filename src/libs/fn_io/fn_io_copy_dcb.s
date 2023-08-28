@@ -8,8 +8,7 @@
 ; void fn_io_copy_dcb(DCB* table)
 ;
 ; Sets DCB data from given table address
-; DO NOT TRASH tmp1/2 IN THIS ROUTINE - callers use them for storing args.
-; We also ONLY use ptr4 from ZP, which should allow our callers ptr1-3 to use
+; Trashes ptr4 as only ZP location
 .proc _fn_io_copy_dcb
         axinto  ptr4
 

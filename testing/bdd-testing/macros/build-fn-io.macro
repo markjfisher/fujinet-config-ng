@@ -30,10 +30,6 @@ Given I add common io files
   And I add stubs test-setup file "fn_io_dosiov.s"
   # Others for compiling
   And I add stubs test-setup file "stub_malloc.s"
-  And I add libs src file "fn_io/fn_io_mem_dir_filter.s"
-  And I add libs src file "fn_io/fn_io_mem_dir_path.s"
-  And I add libs src file "fn_io/fn_io_mem_io_buffer.s"
-  And I add libs src file "fn_io/fn_io_mem_io_deviceslots.s"
   And I add libs src file "fn_io/fn_io_siov.s"
   And I add libs src file "fn_io/fn_io_copy_dcb.s"
   And I add common src file "stdlib/fn_strncpy.s"

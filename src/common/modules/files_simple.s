@@ -13,6 +13,7 @@
         .import     get_to_dir_pos
         .import     mf_h1, mf_h3, mf_s1
         .import     _fn_put_help, _fn_put_status
+        .import     path_to_buffer
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -42,13 +43,12 @@ no_error1:
 ; we'll keep looping around here until something is chosen, or we exit
 l_files:
         jsr     _fn_clr_highlight
-
-; for some reason, the original CONFIG always closes and re-opens the directory
-; we will do that to start, then test it without doing those operations, but just managing it in "enter" etc.
+        jsr     path_to_buffer
 
         ; -----------------------------------------------------
         ; open directory
-        lda     host_selected
+        pusha   host_selected
+        setax   #fn_io_buffer
         jsr     _fn_io_open_directory
 
         jsr     _fn_io_error
@@ -82,7 +82,8 @@ l_entries:
         mva     #$00, {mf_dir_or_file, x}
 
         pusha   #DIR_MAX_LEN    ; the max length of each line for directory/file names
-        lda     #$00            ; special aux2 param
+        pusha   #$00            ; special aux2 param
+        setax   #fn_io_buffer
         jsr     _fn_io_read_directory
 
         ; A/X contain pointer to the data just read (which is also just fn_io_buffer)
@@ -383,7 +384,8 @@ enter_dir:
         sbc     tmp1            ; subtract current path length
         sta     mf_entry_index  ; save it in our safe temp variable used for looping elsewhere
         jsr     pusha           ; store the reduced length on stack for call
-        lda     #$00            ; special aux2 param
+        pusha   #$00            ; special aux2 param
+        setax   #fn_io_buffer
         jsr     _fn_io_read_directory
 
         ; fn_io_buffer contains the dir name we need to append to the path
