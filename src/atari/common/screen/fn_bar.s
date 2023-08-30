@@ -31,7 +31,7 @@
 .proc _bar_clear
         ; clear __PMG_START__ for from 384+28 to 1024 bytes
         ; The extra 28 come from the fact the PMG is not shown in first 7 lines (4 bytes per line)
-        mwa     #__PMG_START__+412, ptr2        ; slight overlap here, but really doesn't matter
+        mwa     #__PMG_START__+384, ptr2        ; slight overlap here, but really doesn't matter
         mwa     #__PMG_START__+512, ptr3
         mwa     #__PMG_START__+768, ptr4
         lda     #$00

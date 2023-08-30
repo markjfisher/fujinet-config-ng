@@ -351,9 +351,14 @@ l1_b:
 l1:
 .endmacro
 
-.macro put_s argX, argY, argS
+.macro put_s argX, argY, argS, yOffset
         pusha   argX
-        pusha   argY
+        lda     argY
+        .ifnblank yOffset
+          clc
+          adc   yOffset
+        .endif
+        jsr     pusha
         setax   argS
         jsr     _fn_put_s
 .endmacro

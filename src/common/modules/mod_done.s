@@ -1,6 +1,6 @@
         .export     mod_done, done_is_booting
         .import     pusha, pushax
-        .import     mod_current, _fn_io_set_boot_config, kb_global, _fn_clrscr, current_line, _fn_highlight_line, _fn_mount_and_boot
+        .import     mod_current, _fn_io_set_boot_config, kb_global, _fn_clrscr_all, current_line, _fn_highlight_line, _fn_mount_and_boot
         .import     _fn_put_status
         .import     _fn_clr_highlight
         .import     _fn_put_s
@@ -14,7 +14,7 @@
 ; This is the last module that shows anything.
 ; A chance to exit, boot etc without always pressing OPTION
 .proc mod_done
-        jsr     _fn_clrscr
+        jsr     _fn_clrscr_all
         jsr     _fn_clr_highlight
 
         lda     done_is_booting
@@ -30,8 +30,8 @@
 not_booting:
         ; module shown, let user choose what they want to do
         put_status #0, #mx_s1
-        put_status #2, #mx_s3
-        put_help   #2, #mx_h1
+        put_status #1, #mx_s3
+        put_help   #0, #mx_h1
 
         put_s      #7, #3, #mx_m1
         put_s      #13, #4, #mx_m2

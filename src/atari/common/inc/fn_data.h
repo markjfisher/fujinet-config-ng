@@ -7,6 +7,8 @@
 #define SL_Y            2
 #define SL_COUNT        8
 
+#define MF_YOFF         4
+
 #define FNS_N2C         0x10
 #define FNS_C_R         0x32
 #define FNS_C_W         0x37

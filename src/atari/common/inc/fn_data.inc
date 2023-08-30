@@ -32,6 +32,8 @@ SL_EDIT_X   := 5            ; x offset for list entry
 SL_Y        := 2            ; the top left corner Y position to start printing the list
 SL_COUNT    := 8            ; how many entries are in a Screen List
 
+MF_YOFF     := 4            ; Mod Files Y Offset for shifting file list down screen
+
 FNS_N2C     = $10           ; Screen code for '0'. Add this to 0 based index so it can be print
 FNS_C_R     = $32           ; screen code for "R"
 FNS_C_W     = $37           ; screen code for "W"

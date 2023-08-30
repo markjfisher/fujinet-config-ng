@@ -4,7 +4,7 @@
         .export     mf_dir_pos
 
         .import     mod_current, host_selected, kb_global
-        .import     pusha, pushax, fn_put_c, _fn_strlen, _fn_memclr, _fn_put_s, _fn_clr_highlight, _fn_clrscr, _fn_strncat
+        .import     pusha, pushax, fn_put_c, _fn_strlen, _fn_memclr, _fn_put_s, _fn_clr_highlight, _fn_strncat
         .import     _fn_highlight_line, current_line
         .import     fn_dir_path, fn_dir_filter, fn_io_buffer
         .import     _fn_io_close_directory, _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory
@@ -13,13 +13,18 @@
         .import     select_device_slot
         .import     get_to_dir_pos
         .import     mf_h1, mf_h3, mf_s1
+        .import     mf_host, mf_filter, mf_path
         .import     _fn_put_help, _fn_put_status
+        .import     files_simple_y_offset
         .import     path_to_buffer
+        .import     _fn_clrscr_files
+        .import     fn_get_scrloc
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
         .include    "fn_data.inc"
+        .include    "fn_io.inc"
 
 ; same as original implementation, reads dirs 1 by 1
 .proc files_simple
@@ -44,6 +49,8 @@ no_error1:
 
 ; we'll keep looping around here until something is chosen, or we exit
 l_files:
+        jsr     _fn_clrscr_files      ; as soon as possible to print dir etc
+        jsr     print_dir_info
         jsr     _fn_clr_highlight
         jsr     path_to_buffer
 
@@ -74,10 +81,9 @@ no_error2:
 ; SHOW PAGE OF ENTRIES
 ; --------------------------------------------------------------------------
         mva     #$00, mf_entry_index
-        jsr     _fn_clrscr      ; left as late as possible before we start redisplaying entries
         put_status #0, #mf_s1
-        put_help #1, #mf_h1
-        put_help #3, #mf_h3
+        put_help #0, #mf_h1
+        put_help #1, #mf_h3
 
 l_entries:
         ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
@@ -344,6 +350,9 @@ init_files:
         ; initialise mf_selected
         mva     #$00, mf_selected
 
+        jsr     files_simple_y_offset
+        sta     mf_y_offset
+
         rts
 
 print_entry:
@@ -363,12 +372,16 @@ print_entry:
 
         ; save the fact this is a dir
         mva     #$01, {mf_dir_or_file, y} 
+        tya
+        clc
+        adc     mf_y_offset
+        tay
 
         lda     #DIR_CHAR
         jsr     fn_put_c
 
 skip_show_dir_char:
-        put_s   #$01, mf_entry_index, ptr1
+        put_s   #$01, mf_entry_index, ptr1, mf_y_offset
         rts
 
 enter_dir:
@@ -390,11 +403,42 @@ enter_dir:
 
         ; fn_io_buffer contains the dir name we need to append to the path
 
-        pushax  #fn_dir_path     ; dst, where we will apend the path to.
-        pushax  #fn_io_buffer    ; src, which has a trailing slash conveniently
+        pushax  #fn_dir_path    ; dst, where we will apend the path to.
+        pushax  #fn_io_buffer   ; src, which has a trailing slash conveniently
         lda     mf_entry_index  ; the free space in path
         jmp     _fn_strncat
         ; implicit rts
+.endproc
+
+.proc print_dir_info
+
+        ; use 3 lines at the top of screen to display the Host/Filter/Path
+        ; titles
+        put_s   #0, #0, #mf_host
+        put_s   #0, #1, #mf_filter
+        put_s   #0, #2, #mf_path
+
+        ; values
+        ; host
+        mwa     #fn_io_hostslots, ptr1
+        ldx     host_selected
+        beq     :++
+:       adw     ptr1, #.sizeof(HostSlot)
+        dex
+        bne     :-
+
+:       put_s   #5, #0, ptr1
+
+        ; Filter
+        lda     fn_dir_filter
+        beq     skip_filter
+        put_s   #5, #1, #fn_dir_filter
+
+skip_filter:
+        ; Path
+        put_s   #5, #2, #fn_dir_path
+
+        rts
 .endproc
 
 .bss
@@ -406,6 +450,7 @@ mf_entry_index: .res 1
 mf_selected:    .res 1
 ; the total number of entries on the current screen
 mf_entries_cnt: .res 1
-
+; y offset for printing files
+mf_y_offset:    .res 1
 
 mf_dir_or_file: .res DIR_PG_CNT

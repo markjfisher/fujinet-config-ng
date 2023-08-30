@@ -52,7 +52,7 @@ DL_MODEF      = $0F
 .segment "DLIST"
 main_dlist:
     ; blank lines in head
-    .byte DL_BLK8, DL_BLK6
+    .byte DL_BLK8, DL_BLK2
     LMS DL_MODEF, gouttop1
     LMS DL_MODEF, gouttop2, 2
 
@@ -62,7 +62,6 @@ main_dlist:
     ; status line
     LMS DL_MODE2, sline1
     LMS DL_MODE2, sline2
-    LMS DL_MODE2, sline3
     
     ; 2 spacers (40 x $ff)
     LMS DL_MODEF, gbk, 2
@@ -73,7 +72,7 @@ main_dlist:
     LMS DL_MODEF, gintop2
 
     LMS DL_MODE2, m_l1
-    .repeat 15
+    .repeat 19
     .byte DL_MODE2
     .endrepeat
 
@@ -86,8 +85,6 @@ main_dlist:
 
     LMS DL_MODE2, mhlp1
     LMS DL_MODE2, mhlp2
-    LMS DL_MODE2, mhlp3
-    LMS DL_MODE2, mhlp4
 
     LMS DL_MODEF, gouttop2, 2
     LMS DL_MODEF, gouttop1

@@ -1,5 +1,5 @@
         .export     _reset_handler
-        .import     start, mod_current, _fn_clrscr, hosts_fetched, devices_fetched
+        .import     start, mod_current, _fn_clrscr_all, hosts_fetched, devices_fetched
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
@@ -14,6 +14,6 @@
         mwa     #Mod::init, mod_current
         mwa     #$00, hosts_fetched
         mwa     #$00, devices_fetched
-        jsr     _fn_clrscr
+        jsr     _fn_clrscr_all
         jmp     start
 .endproc
