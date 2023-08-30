@@ -114,8 +114,6 @@ finish_list:
         mva     mf_selected, current_line
         jsr     _fn_highlight_line
 
-        ; TODO: check if we can manage this better. LESS SIO PLX
-        lda     host_selected
         jsr     _fn_io_close_directory
 
         ; handle keyboard
@@ -324,7 +322,6 @@ not_parent:
 
 ; -----------------------------------------------------
 init_files:
-        lda     host_selected
         jsr     _fn_io_close_directory
 
         mwa     #$00, mf_dir_pos

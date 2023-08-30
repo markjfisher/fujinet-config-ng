@@ -9,20 +9,26 @@
         ; have to use "1+..." to stop assembler thinking it's an addressing mode
         sta     1+(arg2)
     .else
-        ; check for "), y" or "),y" at end, and assume this is y index based zp
-        .if .match (.right (4, {arg2}), "), y") .or .match (.right (3, {arg2}), "),y")
-            ; y index
-            lda     arg1
-            sta     arg2
-            iny
-            lda     1+(arg1)
-            sta     arg2
-        .else
-            lda     arg1
-            sta     arg2
-            lda     1+(arg1)
-            sta     1+(arg2)
-        .endif
+        lda     arg1
+        sta     arg2
+        lda     1+(arg1)
+        sta     1+(arg2)
+    .endif
+.endmacro
+
+.macro mway arg1, arg2
+    .if (.match (.left (1, {arg1}), #))
+        lda     #<(.right (.tcount ({arg1})-1, {arg1}))
+        sta     arg2
+        iny
+        lda     #>(.right (.tcount ({arg1})-1, {arg1}))
+        sta     arg2
+    .else
+        lda     arg1
+        sta     arg2
+        iny
+        lda     1+(arg1)
+        sta     arg2
     .endif
 .endmacro
 
