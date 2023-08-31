@@ -351,7 +351,7 @@ l1_b:
 l1:
 .endmacro
 
-; adds byte1 to word arg1 dealing with carry
+; subtracts byte1 from word arg1 dealing with carry
 .macro sbw1 arg1, byte1
     .local l1
     sec
