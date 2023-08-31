@@ -10,10 +10,10 @@
 
 ; void ellipsize(uint8_t max, char *dst, char *src)
 ;
-; max includes the zero terminator.
+; max includes the zero terminator. i.e. strlen + 1
 ; returns a string with "..." in middle of the string reducing strings above max to that length, with start and end chars either side
 ; e.g.
-; "123456789" -> "12...89" for max of 7
+; "123456789" -> "12...89" for max of 8
 .proc _ellipsize
         axinto  ptr4    ; src
         popax   ptr3    ; dst
