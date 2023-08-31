@@ -384,7 +384,7 @@ $(OBJDIR)/%.o: %.s | $(OBJDIR)
 	@$(call MKDIR,$(dir $@))
 	$(CC) -t $(CC65TARGET) -c --create-dep $(@:.o=.d) $(ASFLAGS) -o $@ $<
 
-$(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS)
+$(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS) | $(BUILD_DIR)
 	$(CC) -t $(CC65TARGET) $(LDFLAGS) -o $(BUILD_DIR)/$@ $(patsubst %.cfg,-C %.cfg,$^)
 
 test: $(PROGRAM)
