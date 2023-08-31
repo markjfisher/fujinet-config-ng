@@ -41,6 +41,7 @@ over_inc:
 
         ; if A is 0, don't save
         beq     no_save
+        setax   #fn_io_hostslots
         jmp     _fn_io_put_host_slots
 
 no_save:
