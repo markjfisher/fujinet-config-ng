@@ -4,7 +4,6 @@
         .import     _fn_strncpy
         .import     popa, popax, pushax
 
-        .import     debug
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
@@ -13,13 +12,12 @@
 ; max includes the zero terminator. i.e. strlen + 1
 ; returns a string with "..." in middle of the string reducing strings above max to that length, with start and end chars either side
 ; e.g.
-; "123456789" -> "12...89" for max of 8
+; "123456789" -> "12...89" for max of 7+null = 8 chars
 .proc _ellipsize
         axinto  ptr4    ; src
         popax   ptr3    ; dst
         popa    tmp1    ; max length
 
-        jsr     debug
         ; are we short enough to just copy?
         setax   ptr4
         jsr     _fn_strlen
