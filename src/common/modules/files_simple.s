@@ -19,6 +19,10 @@
         .import     path_to_buffer
         .import     _fn_clrscr_files
         .import     fn_get_scrloc
+        .import     _malloc, _free
+        .import     _ellipsize
+
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -431,12 +435,24 @@ enter_dir:
 
         ; Filter
         lda     fn_dir_filter
-        beq     skip_filter
+        beq     :+
         put_s   #5, #1, #fn_dir_filter
 
-skip_filter:
-        ; Path
-        put_s   #5, #2, #fn_dir_path
+:
+        lda     #32             ; max length, including the 0 terminator
+        jsr     pusha           ; save as parameter for ellipsize
+        jsr     _malloc
+        axinto  ptr1            ; save for free
+        jsr     pushax          ; dst
+        setax   #fn_dir_path    ; src
+        jsr     _ellipsize
+
+        ; print the ellipsized string
+        put_s   #5, #2, ptr1
+
+        ; free the memory we took
+        setax   ptr1
+        jsr     _free
 
         rts
 .endproc
