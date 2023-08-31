@@ -388,8 +388,8 @@ $(PROGRAM): $(CONFIG) $(OBJECTS) $(LIBS) | $(BUILD_DIR)
 	$(CC) -t $(CC65TARGET) $(LDFLAGS) -o $(BUILD_DIR)/$@ $(patsubst %.cfg,-C %.cfg,$^)
 
 test: $(PROGRAM)
-	$(PREEMUCMD)
-	$(EMUCMD) $(BUILD_DIR)\\$<
+	$(PREEMUCMD) \
+	$(EMUCMD) $(BUILD_DIR)\\$< \
 	$(POSTEMUCMD)
 
 clean:
