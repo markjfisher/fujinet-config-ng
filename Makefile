@@ -307,8 +307,11 @@ ifneq ($(word 2,$(CONFIG)),)
 endif
 
 ASFLAGS += --asm-include-dir src/common/inc --asm-include-dir src/libs/inc --asm-include-dir src/$(CC65TARGET)/common/inc
+CFLAGS += --include-dir src/common/inc --include-dir src/$(CC65TARGET)/common/inc
+
 ifneq "$(SUBTARGET)" ""
 ASFLAGS += --asm-include-dir src/$(CC65TARGET)/$(SUBTARGET)/inc
+CFLAGS += --include-dir src/$(CC65TARGET)/$(SUBTARGET)/inc
 endif
 
 .SUFFIXES:
