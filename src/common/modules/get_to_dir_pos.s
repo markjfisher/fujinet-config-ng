@@ -2,10 +2,8 @@
 
         .import     _fn_io_open_directory
         .import     _fn_io_set_directory_position
-        .import     _fn_strncat
-        .import     _fn_strncpy
-        .import     _fn_strlen
         .import     _fn_memclr_page
+        .import     _fn_strlcpy
         .import     fn_io_buffer
         .import     fn_dir_filter
         .import     fn_dir_path
@@ -13,9 +11,6 @@
         .import     mf_selected
         .import     mf_dir_pos
         .import     pusha, pushax
-        .import     fn_mempcpy_fast
-
-        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -41,23 +36,18 @@
         jsr     _fn_memclr_page         ; relies on our buffer being 256 bytes
 
         pushax  #fn_io_buffer
-        pushax  #fn_dir_path
+        pushax  #fn_dir_paths
         lda     #$e0
-        jsr     _fn_strncpy
-        ; axinto  ptr1                    ; length of path is in A/X
-        ; sta     tmp4
+        jsr     _fn_strlcpy
+        sta     tmp4                    ; A/X hold length, will only be low byte
 
-        lda     fn_dir_filter    ; if filter set, we need to cat it on end
+        lda     fn_dir_filter           ; if filter set, we need to cat it on end
         bne     :+
         rts
 
         ; we have to put the filter 1 byte after the null of the path, not append it
         ; as there has to be a 0 null between path and filter.
-:       setax   #fn_io_buffer
-        jsr     _fn_strlen
-        clc
-        adc     #$01
-        sta     tmp4
+:       inc     tmp4
         mwa     #fn_io_buffer, ptr3
         adw1    ptr3, tmp4
 
@@ -70,5 +60,4 @@
         bne     :-      ; no
 
         rts
-
 .endproc
