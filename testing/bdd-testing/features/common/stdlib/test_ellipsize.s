@@ -1,7 +1,6 @@
-; test the stdlib library
+        .export         _main, t_src, t_dst, t_max
 
         .import         _ellipsize, pusha, pushax
-        .export         _main, t_src, t_dst, t_max
         .include        "fn_macros.inc"
 
 .proc _main

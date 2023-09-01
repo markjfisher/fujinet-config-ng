@@ -10,6 +10,7 @@
         .import     _fn_io_close_directory, _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory
         .import     _fn_io_mount_host_slot
         .import     fn_io_hostslots
+        .import     _fn_edit
         .import     select_device_slot
         .import     get_to_dir_pos
         .import     mf_h1, mf_h3, mf_s1
@@ -325,6 +326,33 @@ not_enter:
         jmp     l_files
 
 not_parent:
+; --------------------------------------------------------------------------
+; F/f - Set Filter
+        cmp     #FNK_FILTER
+        beq     :+
+        cmp     #FNK_FILTER2
+        bne     not_filter
+
+:       ldx     #5
+        ldy     #1
+        jsr     fn_get_scrloc           ; sets ptr4 to given screen location
+
+        ; allow an edit at the filter location
+        pushax  #fn_dir_filter          ; filter string
+        pushax  ptr4                    ; scr location
+        pusha   #31                     ; filter is max 32 but decrease 1 for the 'extra' 0 separating the path and filter. and this is also happily the screen width max with the "Fltr:" string and borders
+        lda     #$00                    ; show blank on pressing ESC for empty string
+        jsr     _fn_edit
+        beq     no_edit
+
+        ; if there was an edit, reset selected and put back to start of dir, as the list will have changed
+        mva     #$00, mf_selected
+        sta     mf_dir_pos
+
+no_edit:
+        jmp     l_files
+
+not_filter:
 ; -------------------------------------------------
 ; NOT HANDLED
         ldx     #KBH::NOT_HANDLED    ; flag main kb handler it should handle this code, still in A

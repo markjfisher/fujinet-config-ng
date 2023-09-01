@@ -15,7 +15,7 @@
 ; is longer than n. Thus, in this case, destination shall not be considered a
 ; null terminated C string (reading it as such would overflow).
 
-; void strcat(char *dst, char *src, uint8_t count)
+; void fn_strncpy(char *dst, char *src, uint8_t count)
 ;
 ; THIS FUNCTION TRASHES tmp4, ptr3, ptr4
 .proc   _fn_strncpy

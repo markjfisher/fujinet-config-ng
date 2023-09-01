@@ -1,6 +1,6 @@
         .export     _fn_edit_hosts_entry
 
-        .import     pushax
+        .import     pushax, pusha
         .import     _fn_edit
         .import     fn_io_hostslots
         .import     host_selected
@@ -36,7 +36,8 @@ over_inc:
 
         pushax  ptr1    ; hostname string location
         pushax  ptr4    ; scr location
-        lda     #.sizeof(HostSlot)
+        pusha   #.sizeof(HostSlot)
+        lda     #$01    ; show empty on pressing ESC for empty string
         jsr     _fn_edit
 
         ; if A is 0, don't save

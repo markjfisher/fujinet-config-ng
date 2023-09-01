@@ -4,6 +4,7 @@
         .import     _fn_io_set_directory_position
         .import     _fn_strncat
         .import     _fn_strncpy
+        .import     _fn_strlen
         .import     _fn_memclr_page
         .import     fn_io_buffer
         .import     fn_dir_filter
@@ -12,6 +13,9 @@
         .import     mf_selected
         .import     mf_dir_pos
         .import     pusha, pushax
+        .import     fn_mempcpy_fast
+
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -24,32 +28,47 @@
         jsr     _fn_io_open_directory
 
         ; set the directory position to top + highlighted
-        lda     mf_selected
-        sta     tmp1
-        mva     #$00, tmp2
-        adw     mf_dir_pos, tmp1, tmp3      ; pretend tmp1 is word value, and save result in tmp3/4
+        mwa     mf_dir_pos, ptr1
+        adw1    ptr1, mf_selected
 
-        setax   tmp3                        ; store this in A/X for call
+        setax   ptr1
         jmp     _fn_io_set_directory_position
 .endproc
 
 ; copies the path to buffer, adding on filter if set
 .proc path_to_buffer
         setax   #fn_io_buffer
-        jsr     _fn_memclr_page
+        jsr     _fn_memclr_page         ; relies on our buffer being 256 bytes
 
         pushax  #fn_io_buffer
         pushax  #fn_dir_path
         lda     #$e0
         jsr     _fn_strncpy
+        ; axinto  ptr1                    ; length of path is in A/X
+        ; sta     tmp4
 
         lda     fn_dir_filter    ; if filter set, we need to cat it on end
         bne     :+
         rts
 
-:       pushax  #fn_io_buffer
-        pushax  #fn_dir_filter
-        lda     #$20
-        jmp     _fn_strncat
+        ; we have to put the filter 1 byte after the null of the path, not append it
+        ; as there has to be a 0 null between path and filter.
+:       setax   #fn_io_buffer
+        jsr     _fn_strlen
+        clc
+        adc     #$01
+        sta     tmp4
+        mwa     #fn_io_buffer, ptr3
+        adw1    ptr3, tmp4
+
+        ; now copy filter to ptr3 until we've copied the zero null terminator
+        mwa     #fn_dir_filter, ptr4
+        ldy     #$00
+:       mva     {(ptr4), y}, {(ptr3), y}
+        iny
+        cmp     #$00    ; have we done the null byte, 0 yet?
+        bne     :-      ; no
+
+        rts
 
 .endproc

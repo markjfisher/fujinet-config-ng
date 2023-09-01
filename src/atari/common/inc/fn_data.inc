@@ -68,6 +68,8 @@ FNK_HOME    = $01           ; ctrl-a, start of line char
 FNK_END     = $05           ; ctrl-e, end of line char
 FNK_KILL    = $0B           ; ctrl-k, kill to end of line
 FNK_PARENT  = $3C           ; "<" used in files to go to parent dir
+FNK_FILTER  = $46           ; "F" Filter
+FNK_FILTER2 = $66           ; "f" Filter
 
 ; CHARACTER SCREEN CODES FOR HIGHLIGHTING/POPUP BOX etc
 FNC_TLW     = $4A           ; Top Left WIDE

@@ -1,18 +1,19 @@
         .export     _fn_edit
 
         .import     s_empty     ; the "<Empty>" string
-        .import     popax, pushax
+        .import     popax, pushax, popa
         .import     _fn_strncpy
         .import     _fn_strlen
         .import     _fn_input
         .import     ascii_to_code
         .import     _malloc, _free
+        .import     return0, return1
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
 
-; bool fn_edit()
+; bool fn_edit(char* str, void *scr_loc, uint8_t max_len, bool show_empty)
 ;
 ; Edit a string up to 255 chars. Enter/ESC to finish editing
 ; Cursor movement supported, including:
@@ -26,14 +27,16 @@
 ; PARAMS:
 ; char *str         - pointer to string being edit
 ; void *scr         - pointer to first location of screen where string is displayed
-; uint8_t maxLen      - max string size
+; uint8_t maxLen    - max string size
+; bool show_empty   - show <Empty> when exiting and string is empty (for ESC)
 ;
 ; RETURNS:
 ; 0 if no edit occurred, 1 if the string was changed
 
 .proc _fn_edit
         ; pull out the params
-        sta     fe_max_len      ; this includes the 0 at the end, so strlen should be 1 less. e.g. max = 4: ["abc",0] is ok, so strlen of 3 is ok. but strlen of 4 is too long
+        sta     fe_show_empty
+        popa    fe_max_len      ; this includes the 0 at the end, so strlen should be 1 less. e.g. max = 4: ["abc",0] is ok, so strlen of 3 is ok. but strlen of 4 is too long
         popax   fe_screen_loc
         popax   fe_str
 
@@ -44,9 +47,8 @@
         bcc     :+
 
 err:
-        ldx     #$00
-        lda     #$00
-        rts
+        jmp     return0
+        ; implicit rts
 
 :       ; record the initial length, and set that as cursor position
         sta     fe_buf_len
@@ -117,17 +119,17 @@ keyboard_loop:
         jsr     cleanup
         beq     esc_exit
 
-        ; re-write empty if there's no string set in host
+        ; re-write empty if there's no string set in host, but only if told to by param
 esc_show_empty:
+        lda     fe_show_empty
+        beq     :+
         mwa     #s_empty, ptr1
         jsr     put_ptr1_s
-        jsr     cleanup
+:       jsr     cleanup
 
 esc_exit:
         ; return values should be 0 in A/X to show we did no edit
-        ; A is already 0
-        ldx     #$00
-        rts
+        jmp     return0
 
 not_esc:
 
@@ -417,9 +419,8 @@ not_ascii:
 end_enter:
         ; mark that we made an edit, so caller must act appropriately.
         jsr     cleanup
-        ldx     #$00
-        lda     #$01
-        rts
+        jmp     return1
+        ; implicit rts
 
 not_eol:
         ; not a char we recognised, go back for next char
@@ -559,6 +560,7 @@ cleanup:
 .endproc
 
 .bss
+fe_show_empty:  .res 1  ; bool to show empty or leave blank when ESC hit
 fe_max_len:     .res 1  ; max length of string being edit. includes 0 char for end of string
 fe_screen_loc:  .res 2  ; pointer to screen location to print to
 fe_str:         .res 2  ; pointer to original string location being edit

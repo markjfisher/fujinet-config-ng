@@ -37,6 +37,8 @@
 #define FNK_END         0x05
 #define FNK_KILL        0x0B
 #define FNK_PARENT      0x3C
+#define FNK_FILTER      0x46
+#define FNK_FILTER2     0x66
 
 #define FNC_TLW         0x4A
 #define FNC_TRW         0x4B
