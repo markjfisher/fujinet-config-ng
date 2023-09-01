@@ -184,7 +184,6 @@ class MemorySteps {
 
         // loop through all the tokens generated from the given string and match their codes to what's in memory
         var currentLocation = address
-        // need 4 backslashes to reduce to 1!
         // Remove any continuation + (CR)LF so we can have strings over multiple lines in test, but treat as continuous
         val tokens = toTokens(s)
         tokens.forEach { t ->
@@ -241,6 +240,7 @@ class MemorySteps {
         }
 
         fun toTokens(s: String): List<ScreenToken> {
+            // need 4 backslashes to reduce to 1!
             // remove any line extensions (backslash followed by CR/LF) so we can use multiple lines in test but access continuous memory
             val crRemoved = s.replace("\\\\\r?\n".toRegex(), "")
 
