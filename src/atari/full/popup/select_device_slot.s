@@ -5,7 +5,7 @@
         .import     _fn_io_set_device_filename
         .import     _fn_io_put_device_slots
         .import     _fn_io_get_device_slots
-        .import     _fn_strncpy, _fn_strlen, _fn_strncat
+        .import     _fn_strncpy, _fn_strlen, _fn_strncat, _fn_strlcpy
         .import     _fn_clr_highlight
         .import     _fn_io_read_directory
         .import     _fn_io_close_directory
@@ -17,6 +17,8 @@
         .import     host_selected
         .import     get_to_dir_pos
         .import     sds_msg
+
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -70,55 +72,47 @@ save_device_choice:
 
         jsr     get_to_dir_pos                          ; get ourselves at the directory position
 
+        ; get filename to 255 chars
+        setax   #$ff
+        jsr     pusha                   ; push size for read dir call
+        jsr     _malloc
+        axinto  ptr1                    ; memloc = ptr1
+
         ; do a 255 byte read of current dir entry (file)
-        pusha   #$ff
-        pusha   #$00
-        setax   #fn_io_buffer
+        pusha   #$00                    ; aux
+        setax   ptr1
         jsr     _fn_io_read_directory
 
-        ; copy fn_io_buffer result to RAM, as we need to play around with buffers
-        setax   #fn_io_buffer
+        setax   ptr1
         jsr     _fn_strlen
-        sta     tmp1            ; save the file name's length
-        jsr     _malloc
-        axinto  ptr1            ; ptr1 must be freed later
-
-        ; copy io_buffer into our memory location
-        jsr     pushax          ; A/X already set correctly to RAM allocated for copy (dst)
-        pushax  #fn_io_buffer   ; src
-        lda     tmp1            ; length
-        clc
-        adc     #$01            ; 1 extra for 0 terminator
-        jsr     _fn_strncpy
-        
-        ; put a zero at end of name to terminate string
-        ldy     tmp1
-        lda     #$00
-        sta     fn_io_buffer, y
+        sta     tmp2                    ; file name length, but need to increment by 1 for strlcpy which insists on the final 0
+        inc     tmp2 
 
         ; copy path into buffer
         pushax  #fn_io_buffer
         pushax  #fn_dir_path
-        lda     #$ff            ; path is only $e0, but specifying more ensures we blank out rest of buffer
-        jsr     _fn_strncpy
-
-        ; how large is path?
-        setax   #fn_io_buffer
-        jsr     _fn_strlen
-        sta     tmp2
-
-        ; calculate how much space we have left in buffer for copying file names
-        lda     #$fe            ; drop 1 to ensure there's a 0 at the end of whole buffer to stop overrun
-        sec
-        sbc     tmp1            ; file name
-        sbc     tmp2            ; path
+        lda     #$ff
+        jsr     _fn_strlcpy             ; length of src (dir) returned for the path
         sta     tmp1
 
+        ; check that tmp1 + tmp2 (file + dir) doesn't exceed 255 chars
+        clc
+        adc     tmp2
+        bcc     under256
+        
+        setax   ptr1
+        jsr     _free
+        ; TODO - Show some error
+        rts
+
+under256:
         ; now append the file name onto this
-        pushax  #fn_io_buffer
+        mwa     #fn_io_buffer, ptr2
+        adw1    ptr2, tmp1
+        pushax  ptr2
         pushax  ptr1
-        lda     tmp1
-        jsr     _fn_strncat
+        lda     tmp2            ; how long is the name of the file?
+        jsr     _fn_strlcpy
 
         ; free up the temp buffer
         setax   ptr1

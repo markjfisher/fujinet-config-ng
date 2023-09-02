@@ -1,4 +1,4 @@
-        .export     get_to_dir_pos, path_to_buffer
+        .export     get_to_dir_pos, copy_path_filter_to_buffer
 
         .import     _fn_io_open_directory
         .import     _fn_io_set_directory_position
@@ -16,7 +16,7 @@
         .include    "fn_macros.inc"
 
 .proc get_to_dir_pos
-        jsr     path_to_buffer
+        jsr     copy_path_filter_to_buffer
         ; open dir for current path, grab the full name of this selected path, and append it to current path string.
         pusha   host_selected
         setax   #fn_io_buffer
@@ -31,12 +31,12 @@
 .endproc
 
 ; copies the path to buffer, adding on filter if set
-.proc path_to_buffer
+.proc copy_path_filter_to_buffer
         setax   #fn_io_buffer
         jsr     _fn_memclr_page         ; relies on our buffer being 256 bytes
 
         pushax  #fn_io_buffer
-        pushax  #fn_dir_paths
+        pushax  #fn_dir_path
         lda     #$e0
         jsr     _fn_strlcpy
         sta     tmp4                    ; A/X hold length, will only be low byte

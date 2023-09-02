@@ -17,7 +17,7 @@
         .import     mf_host, mf_filter, mf_path
         .import     _fn_put_help, _fn_put_status
         .import     files_simple_y_offset
-        .import     path_to_buffer
+        .import     copy_path_filter_to_buffer
         .import     _fn_clrscr_files
         .import     fn_get_scrloc
         .import     _malloc, _free
@@ -57,7 +57,7 @@ l_files:
         jsr     _fn_clrscr_files      ; as soon as possible to print dir etc
         jsr     print_dir_info
         jsr     _fn_clr_highlight
-        jsr     path_to_buffer
+        jsr     copy_path_filter_to_buffer
 
         ; -----------------------------------------------------
         ; open directory
@@ -127,6 +127,11 @@ finish_list:
 
         jsr     _fn_io_close_directory
 
+        lda     mf_kbh_running
+        bne     :+              ; don't redo kb handler if we're drilling down into directories, it just eats stack space, simply return up to previous version
+
+        mva     #$01, mf_kbh_running
+
         ; handle keyboard
         lda     #DIR_PG_CNT
         sec
@@ -137,8 +142,9 @@ finish_list:
         pushax  #mf_selected    ; memory address of our current file/dir
         setax   #mod_files_kb   ; this kb handler, the global kb handler will jump into this routine which will handle the interactions
         jmp     kb_global       ; rts from this will drop out of module
+        ; implicit rts
 
-error:
+:       ldx     #KBH::RELOOP
         rts
 
 
@@ -379,8 +385,9 @@ init_files:
         ldy     #$00
         mva     #'/', {(ptr1), y}
 
-        ; initialise mf_selected
+        ; initialise mf_selected, and set the kbh_running flag to false so we only do 1 kbh
         mva     #$00, mf_selected
+        sta     mf_kbh_running
 
         jsr     files_simple_y_offset
         sta     mf_y_offset
@@ -397,6 +404,7 @@ print_entry:
         lda     (ptr1), y       ; the last character of string
         cmp     #'/'
         bne     skip_show_dir_char
+
         ; unset the final '/' in string, we don't need to display it as we have a dir char
         mva     #$00, {(ptr1), y}
         ldx     #$00            ; x coordinate for dir
@@ -496,5 +504,7 @@ mf_selected:    .res 1
 mf_entries_cnt: .res 1
 ; y offset for printing files
 mf_y_offset:    .res 1
+
+mf_kbh_running: .res 1
 
 mf_dir_or_file: .res DIR_PG_CNT
