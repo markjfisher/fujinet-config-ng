@@ -1,24 +1,28 @@
         .export     select_device_slot
 
-        .import     pusha, pushax
-        .import     fn_io_buffer, fn_dir_path
-        .import     _fn_io_set_device_filename
-        .import     _fn_io_put_device_slots
-        .import     _fn_io_get_device_slots
-        .import     _fn_strncpy, _fn_strlen, _fn_strncat, _fn_strlcpy
         .import     _fn_clr_highlight
-        .import     _fn_io_read_directory
         .import     _fn_io_close_directory
-        .import     fn_io_deviceslots
-        .import     _malloc, _free
-        .import     s_empty
+        .import     _fn_io_get_device_slots
+        .import     _fn_io_put_device_slots
+        .import     _fn_io_read_directory
+        .import     _fn_io_set_device_filename
+        .import     _fn_strlcpy
+        .import     _fn_strlen
+        .import     _fn_strncpy
+        .import     _free
+        .import     _malloc
         .import     _show_select
-        .import     devices_fetched
-        .import     host_selected
-        .import     get_to_dir_pos
-        .import     sds_msg
-
         .import     debug
+        .import     devices_fetched
+        .import     fn_dir_path
+        .import     fn_io_buffer
+        .import     fn_io_deviceslots
+        .import     host_selected
+        .import     pusha
+        .import     pushax
+        .import     read_full_dir_name
+        .import     s_empty
+        .import     sds_msg
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -70,20 +74,8 @@ save_device_choice:
         mva     {pu_mode + PopupItem::val}, sds_mode
         inc     sds_mode                                ; mode is 1/2, we have 0/1, add 1 to align
 
-        jsr     get_to_dir_pos                          ; get ourselves at the directory position
-
-        ; get filename to 255 chars
-        setax   #$ff
-        jsr     pusha                   ; push size for read dir call
-        jsr     _malloc
-        axinto  ptr1                    ; memloc = ptr1
-
-        ; do a 255 byte read of current dir entry (file)
-        pusha   #$00                    ; aux
-        setax   ptr1
-        jsr     _fn_io_read_directory
-
-        setax   ptr1
+        jsr     read_full_dir_name      ; AX holds allocated memory
+        axinto  ptr1                    ; this is not technically required, as _fn_io_read_directory uses ptr1, but if that ever changes, we're screwed, so store AX into ptr1 whatever happens
         jsr     _fn_strlen
         sta     tmp2                    ; file name length, but need to increment by 1 for strlcpy which insists on the final 0
         inc     tmp2 
@@ -99,7 +91,8 @@ save_device_choice:
         clc
         adc     tmp2
         bcc     under256
-        
+
+        jsr     debug
         setax   ptr1
         jsr     _free
         ; TODO - Show some error
@@ -154,10 +147,6 @@ no_dev_add:
         jsr     _fn_io_get_device_slots
 
         jmp     _fn_io_close_directory
-
-; kb_handler:
-;         ; handle ESC. other keys probably generic
-;         rts
 
 copy_dev_strings:
         ; copy 8x width bytes from every DeviceSlot+2 into memory we grabbed

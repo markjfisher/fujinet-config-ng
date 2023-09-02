@@ -3,6 +3,7 @@
         .import     _fn_io_open_directory
         .import     _fn_io_set_directory_position
         .import     _fn_memclr_page
+        .import     _fn_io_error
         .import     _fn_strlcpy
         .import     fn_io_buffer
         .import     fn_dir_filter
@@ -11,6 +12,8 @@
         .import     mf_selected
         .import     mf_dir_pos
         .import     pusha, pushax
+
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -26,7 +29,8 @@
         mwa     mf_dir_pos, ptr1
         adw1    ptr1, mf_selected
 
-        setax   ptr1
+        ; setax   ptr1  ; a is already ptr1
+        ldx     ptr1+1
         jmp     _fn_io_set_directory_position
 .endproc
 

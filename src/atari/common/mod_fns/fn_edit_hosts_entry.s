@@ -6,6 +6,7 @@
         .import     host_selected
         .import     _fn_io_put_host_slots
         .import     fn_get_scrloc
+        .import     get_to_current_hostslot
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -25,14 +26,8 @@
         tay
         jsr     fn_get_scrloc  ; ptr4 set to screen location
 
-        ; get pointer to the string for this host slot
-        mwa     #fn_io_hostslots, ptr1
-        ldx     host_selected
-        beq     over_inc
-:       adw     ptr1, #.sizeof(HostSlot)
-        dex
-        bne     :-
-over_inc:
+        ; get pointer to the string for this host slot into ptr1
+        jsr     get_to_current_hostslot
 
         pushax  ptr1    ; hostname string location
         pushax  ptr4    ; scr location

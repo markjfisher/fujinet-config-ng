@@ -1,0 +1,19 @@
+        .export     get_to_current_hostslot
+
+        .import     fn_io_hostslots
+        .import     host_selected
+
+        .include    "zeropage.inc"
+        .include    "fn_macros.inc"
+        .include    "fn_io.inc"
+
+.proc get_to_current_hostslot
+        mwa     #fn_io_hostslots, ptr1
+        ldx     host_selected
+        beq     over_inc
+:       adw     ptr1, #.sizeof(HostSlot)
+        dex
+        bne     :-
+over_inc:
+        rts
+.endproc

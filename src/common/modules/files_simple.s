@@ -1,29 +1,52 @@
         .export     files_simple
         .export     mf_dir_or_file
-        .export     mf_selected
         .export     mf_dir_pos
+        .export     mf_selected
 
-        .import     mod_current, host_selected, kb_global
-        .import     pusha, pushax, fn_put_c, _fn_strlen, _fn_memclr, _fn_put_s, _fn_clr_highlight, _fn_strncat
-        .import     _fn_highlight_line, current_line
-        .import     fn_dir_path, fn_dir_filter, fn_io_buffer
-        .import     _fn_io_close_directory, _fn_io_read_directory, _fn_io_set_directory_position, _fn_io_open_directory
-        .import     _fn_io_mount_host_slot
-        .import     fn_io_hostslots
-        .import     _fn_edit
-        .import     select_device_slot
-        .import     get_to_dir_pos
-        .import     mf_h1, mf_h3, mf_s1
-        .import     mf_host, mf_filter, mf_path
-        .import     _fn_put_help, _fn_put_status
-        .import     files_simple_y_offset
-        .import     copy_path_filter_to_buffer
-        .import     _fn_clrscr_files
-        .import     fn_get_scrloc
-        .import     _malloc, _free
         .import     _ellipsize
-
+        .import     _fn_clr_highlight
+        .import     _fn_clrscr_files
+        .import     _fn_edit
+        .import     _fn_highlight_line
+        .import     _fn_io_close_directory
+        .import     _fn_io_mount_host_slot
+        .import     _fn_io_open_directory
+        .import     _fn_io_read_directory
+        .import     _fn_io_set_directory_position
+        .import     _fn_memclr
+        .import     _fn_put_help
+        .import     _fn_put_s
+        .import     _fn_put_status
+        .import     _fn_strlen
+        .import     _fn_strncat
+        .import     _free
+        .import     _malloc
+        .import     copy_path_filter_to_buffer
+        .import     current_line
         .import     debug
+        .import     files_simple_y_offset
+        .import     fn_dir_filter
+        .import     fn_dir_path
+        .import     fn_get_scrloc
+        .import     fn_io_buffer
+        .import     fn_io_hostslots
+        .import     fn_put_c
+        .import     get_to_current_hostslot
+        .import     host_selected
+        .import     kb_global
+        .import     mf_filter
+        .import     mf_h1
+        .import     mf_h3
+        .import     mf_host
+        .import     mf_path
+        .import     mf_s1
+        .import     mod_current
+        .import     pusha
+        .import     pushax
+        .import     read_full_dir_name
+        .import     return0
+        .import     return1
+        .import     select_device_slot
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -128,24 +151,21 @@ finish_list:
         jsr     _fn_io_close_directory
 
         lda     mf_kbh_running
-        bne     :+              ; don't redo kb handler if we're drilling down into directories, it just eats stack space, simply return up to previous version
+        beq     :+
+        
+        ; don't redo kb handler if we're drilling down into directories, it just eats stack space, simply return and let the one previously setup to reloop
+        ldx     #KBH::RELOOP
+        rts
 
-        mva     #$01, mf_kbh_running
-
-        ; handle keyboard
-        lda     #DIR_PG_CNT
-        sec
-        sbc     #$01
-        jsr     pusha           ; we can highlight max of DIR_PG_CNT (i.e. 0 to DIR_PG_CNT - 1)
+        ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into kb_global 
+:       mva     #$01, mf_kbh_running
+        pusha   #DIR_PG_CNT-1   ; we can highlight max of DIR_PG_CNT (i.e. 0 to DIR_PG_CNT - 1)
         pusha   #Mod::files     ; L/R arrow keys will be overridden by local kb handler
         pusha   #Mod::files     ; L/R arrow keys this will be overridden by local kb handler
-        pushax  #mf_selected    ; memory address of our current file/dir
-        setax   #mod_files_kb   ; this kb handler, the global kb handler will jump into this routine which will handle the interactions
+        pushax  #mf_selected    ; memory address of our current chosen file/dir
+        setax   #mod_files_kb   ; this mod's kb handler, the global kb handler will jump into this routine which will handle the interactions
         jmp     kb_global       ; rts from this will drop out of module
         ; implicit rts
-
-:       ldx     #KBH::RELOOP
-        rts
 
 
 ; --------------------------------------------------------------------------
@@ -287,6 +307,8 @@ not_esc:
         ; we're a directory, so go into it, and restart directory listing.
         jsr     _fn_clr_highlight
         jsr     enter_dir
+        bne     enter_error
+
         mva     #$00, mf_selected
         jmp     l_files
 
@@ -296,6 +318,13 @@ enter_is_file:
         ; and take us back to where we were on file list
         jmp     l_files
 
+enter_error:
+        ; TODO: print message that the dir is too long to enter.
+
+        ; need to re-highlight line
+        jsr     _fn_highlight_line
+        ldx     #KBH::RELOOP
+        rts
 
 not_enter:
 ; --------------------------------------------------------------------------
@@ -424,50 +453,59 @@ skip_show_dir_char:
         put_s   #$01, mf_entry_index, ptr1, mf_y_offset
         rts
 
-enter_dir:
-        jsr     get_to_dir_pos
+.endproc
 
-        ; read the selected directory for as many bytes as we are able given current path value, and append path with it.
-        setax   #fn_dir_path        
+; Appends the directory we are trying to enter onto path, but only if it fits in the maximum path size.
+; So you may be able to see the dir, but you won't be able to go into it if it makes whole path length too long.
+; Returns 0 for ok, 1 for error (path too long).
+.proc enter_dir
+        ; get the chosen dir into 255 byte temp buffer, and then check it will fit on the end of our current path, i.e. doesn't combined go over 254 (allowing for nul)
+        jsr     read_full_dir_name      ; AX holds allocated memory - must free it
+        axinto  ptr1
         jsr     _fn_strlen
-        sta     tmp1
+        sta     tmp1                    ; length of new directory we want to enter
 
-        lda     #$e0            ; max length of path
-        sec
-        sbc     tmp1            ; subtract current path length
-        sta     mf_entry_index  ; save it in our safe temp variable used for looping elsewhere
-        jsr     pusha           ; store the reduced length on stack for call
-        pusha   #$00            ; special aux2 param
-        setax   #fn_io_buffer
-        jsr     _fn_io_read_directory
+        setax   #fn_dir_path
+        jsr     _fn_strlen              ; current path length
+        sta     tmp2
 
-        ; fn_io_buffer contains the dir name we need to append to the path
+        ; when added to current path, will it fit? (max #$e0)
+        clc
+        adc     tmp1
+        bcs     too_big                 ; already over $ff in length, so too big
+        cmp     #$e0                    ; max dir path size
+        bcs     too_big                 ; nope
 
-        pushax  #fn_dir_path    ; dst, where we will apend the path to.
-        pushax  #fn_io_buffer   ; src, which has a trailing slash conveniently
-        lda     mf_entry_index  ; the free space in path
-        jmp     _fn_strncat
+        inc     tmp1                    ; extra for nul
+        ; ptr1 contains the dir name we need to append to the path
+        pushax  #fn_dir_path            ; dst, where we will apend the path to.
+        pushax  ptr1                    ; src, which has a trailing slash conveniently
+        lda     tmp1                    ; we know it will fit and it's this length
+        jsr     _fn_strncat
+        jsr     free_dir
+        jmp     return0
+
+too_big:
+        jsr     free_dir
+        jmp     return1
+
+free_dir:
+        setax   ptr1
+        jmp     _free
         ; implicit rts
 .endproc
 
 .proc print_dir_info
-
         ; use 3 lines at the top of screen to display the Host/Filter/Path
         ; titles
         put_s   #0, #0, #mf_host
         put_s   #0, #1, #mf_filter
         put_s   #0, #2, #mf_path
 
-        ; values
+        ; print values
         ; host
-        mwa     #fn_io_hostslots, ptr1
-        ldx     host_selected
-        beq     :++
-:       adw     ptr1, #.sizeof(HostSlot)
-        dex
-        bne     :-
-
-:       put_s   #5, #0, ptr1
+        jsr     get_to_current_hostslot         ; sets ptr1 to correct hostslot
+        put_s   #5, #0, ptr1
 
         ; Filter
         lda     fn_dir_filter
