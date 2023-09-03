@@ -20,6 +20,7 @@
         .import     fn_io_buffer
         .import     fn_io_deviceslots
         .import     host_selected
+        .import     info_popup_help
         .import     pusha
         .import     pushax
         .import     read_full_dir_name
@@ -51,7 +52,6 @@
         jsr     copy_dev_strings
 
         ; show the selector
-        pusha   #24
         pushax  #sds_pu_info
         pushax  #devices_help
         setax   #sds_msg
@@ -97,6 +97,13 @@ save_device_choice:
         setax   ptr1
         jsr     _free
         ; TODO - Show some error
+        ; jsr     debug
+        ; pusha   #26
+        ; pushax  #sds_err_info
+        ; pushax  #info_popup_help
+        ; setax   #sds_err_title
+        ; jmp     _show_select
+
         rts
 
 under256:
@@ -201,10 +208,11 @@ devices_help:
 sds_mode:       .res 1
 sds_dev:        .res 1
 
+; the device list is dynamic, so this can't be in RODATA
 .data
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
 ; currently only lengths of 1-9 string list entries will work on screen. popup can have up to 12 items with header etc
-sds_pu_info:    .byte 1, 0, 2           ; PopupItemInfo. is selectable, up/down = testList, l/r = option
+sds_pu_info:    .byte 24, 0, 1, 0, 2           ; PopupItemInfo. width, is_selectable, up/down = testList, l/r = option
 sds_pu_devs:    .byte PopupItemType::textList, 8, 21, 0, $ff, $ff
 sds_pu_spc1:    .byte PopupItemType::space
 sds_pu_mode:    .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
@@ -223,10 +231,10 @@ sds_opt1_spc:   .byte 3, 2, 3
 ; ------------------------------------------------------------------
 ; Select Device Slot data
 ; ------------------------------------------------------------------
-        INVERT_ATASCII
-sds_msg:
-        .byte "   Select Device Slot   "
         NORMAL_CHARMAP
+sds_msg:
+        .byte "Select Device Slot", 0
+        
 
 .segment "SCREEN"
 mfss_h1:

@@ -1,7 +1,6 @@
         .export     _fn_clrscr_all, _fn_clr_help, _fn_clr_status, _fn_clrscr_all, _fn_clrscr_files
         .import     fn_get_scrloc
         .import     mhlp1, sline1, m_l1
-        .import     _wait_scan1
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"

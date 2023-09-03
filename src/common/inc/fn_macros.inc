@@ -347,27 +347,40 @@ l1_b:
     .if (.match ({byte1}, a))
         adc arg1
         sta arg1
-        bcc l1
-        inc 1+(arg1)
     .else
         lda arg1
         adc byte1
         sta arg1
-        bcc l1
-        inc 1+(arg1)
     .endif
+    bcc l1
+    inc 1+(arg1)
 l1:
 .endmacro
 
-; subtracts byte1 from word arg1 dealing with carry
+; subtracts byte1 from word arg1 dealing with carry, allow byte1 to be a
+; although you'd probably be better going via ZP than the mess of code for subtracting a from memory
 .macro sbw1 arg1, byte1
-    .local l1
+    .local l1, dec_hi
     sec
-    lda arg1
-    sbc byte1
-    sta arg1
-    bcs l1
-    dec 1+(arg1)
+    .if (.match ({byte1}, a))
+        sbc arg1
+        beq :+
+        bcs dec_hi
+:       eor #$ff
+        clc
+        adc #$01
+        sta arg1
+        jmp l1
+dec_hi:
+        dec 1+(arg1)
+        bcs :-
+    .else
+        lda arg1
+        sbc byte1
+        sta arg1
+        bcs l1
+        dec 1+(arg1)
+    .endif
 l1:
 .endmacro
 

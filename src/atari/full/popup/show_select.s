@@ -9,10 +9,11 @@
         .export     ss_widget_idx
         .export     ss_help_cb
 
-        .import     popax, popa, pusha
+        .import     popax, popa, pusha, pushax
         .import     ascii_to_code
         .import     fn_get_scrloc
         .import     _fn_clr_help
+        .import     _fn_strlen
         .import     _fn_put_help
         .import     block_line
         .import     type_at_x
@@ -40,7 +41,6 @@
         axinto  ss_message              ; the header message to display in popup
         popax   ss_help_cb              ; the cb function to setup help messages for this particular popup
         popax   ss_items                ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
-        popa    ss_width                ; the width of the input area excluding the borders which add 1 each side for the border
 
         jsr     _wait_scan1             ; only paint when we're at the top of screen so get no flashing
         jsr     initialise_select       ; show popup header, setup some variables, ptr4 is start of screen
@@ -79,6 +79,21 @@ exit_select:
         ; initialise some variables
         mva     #$00, ss_widget_idx     ; start on first widget
 
+        ; store the popup info in locations we can directly read rather than faffing with Y indexing
+        mwa     ss_items, ptr1
+        ldy     #$00
+        mva     {(ptr1), y}, ss_width
+        iny
+        mva     {(ptr1), y}, ss_y_offset
+        iny
+        mva     {(ptr1), y}, ss_has_sel
+        iny
+        mva     {(ptr1), y}, ss_ud_idx
+        iny
+        mva     {(ptr1), y}, ss_lr_idx
+        ; move ss_items pointer forward to entries
+        adw1    ss_items, #.sizeof(PopupItemInfo)
+
         jsr     _fn_clr_help
         jsr     show_help               ; show the custom help messages for this popup
 
@@ -93,30 +108,64 @@ exit_select:
         ldy     #$00
         jsr     fn_get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
 
+        ; move location down by ss_y_offset lines
+        ldx     ss_y_offset
+        beq     :++
+:       adw1    ptr4, #40
+        dex
+        bne     :-
+
         ; ----------------------------------------------------------
         ; show top line down
-        mva     #FNC_TLW, tmp1
+:       mva     #FNC_TLW, tmp1
         mva     #FNC_DN_BLK, tmp2
         mva     #FNC_TRW, tmp3
         jsr     block_line
 
         ; ----------------------------------------------------------
-        ; print the popup header message. let the caller worry about centring it with padded spaces
+        ; print the popup header message. centre the text, and invert it. we are given simple ascii string
         adw     ptr4, #40
         mwa     ss_message, ptr2
-        ; so that we can use same y index for both pointers, need to subtract 1 from ptr2, as y starts at 1
-        sbw     ptr2, #$01
+        pushax  ptr4
+        setax   ptr2
+        jsr     _fn_strlen
+        sta     tmp1            ; save message length
+        popax   ptr4
+        lda     ss_width
+        sec
+        sbc     tmp1
+        lsr     a               ; (width - msg_len) / 2 = padding
+        sta     tmp1
+        inc     tmp1            ; add 1 for left border
 
         ldy     #$00
-        mva     #FNC_FULL, {(ptr4), y}
+        lda     #FNC_FULL       ; inverse space screen code
+:       sta     (ptr4), y
         iny
-        ldx     ss_width
-:       lda     (ptr2), y
-        jsr     ascii_to_code
-        sta     (ptr4), y               ; copy letter to screen
-        iny
-        dex
+        cpy     tmp1
         bne     :-
+
+        ; now print the text. y holds the screen offset from start, subtract it from ptr2 so we can still use y as index
+        tya
+        sbw1    ptr2, a
+
+:       lda     (ptr2), y
+        beq     str_nul
+        jsr     ascii_to_code
+        ora     #$80            ; inverse text
+        sta     (ptr4), y       ; copy letter to screen
+        iny
+        bne     :-              ; always. the 0 in string will terminate
+str_nul:
+        ; now print more inverse spaces until we hit the width, and finally add 1 more
+
+        lda     #FNC_FULL
+:       sta     (ptr4), y
+        iny
+        cpy     ss_width
+        bcc     :-
+        beq     :-
+
         mva     #FNC_FULL, {(ptr4), y}
 
         ; ----------------------------------------------------------
@@ -130,17 +179,6 @@ exit_select:
         ; save the current screen location as start of display lines after the title
         adw     ptr4, #40
         mwa     ptr4, ss_scr_l_strt
-
-        ; store the popup info in locations we can directly read rather than faffing with Y indexing
-        mwa     ss_items, ptr1
-        ldy     #$00
-        mva     {(ptr1), y}, ss_has_sel
-        iny
-        mva     {(ptr1), y}, ss_ud_idx
-        iny
-        mva     {(ptr1), y}, ss_lr_idx
-        ; move ss_items pointer forward to entries
-        adw1    ss_items, #.sizeof(PopupItemInfo)
 
         rts
 .endproc
@@ -170,6 +208,7 @@ ss_pu_entry:    .res POPUP_MAX_SZ
 ss_message:     .res 2
 ss_items:       .res 2
 ss_width:       .res 1
+ss_y_offset:    .res 1
 ss_widget_idx:  .res 1
 ss_scr_l_strt:  .res 2
 ss_help_cb:     .res 2

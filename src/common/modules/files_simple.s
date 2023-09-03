@@ -21,6 +21,7 @@
         .import     _fn_strncat
         .import     _free
         .import     _malloc
+        .import     _show_select
         .import     copy_path_filter_to_buffer
         .import     current_line
         .import     debug
@@ -33,6 +34,7 @@
         .import     fn_put_c
         .import     get_to_current_hostslot
         .import     host_selected
+        .import     info_popup_help
         .import     kb_global
         .import     mf_filter
         .import     mf_h1
@@ -53,6 +55,7 @@
         .include    "fn_mods.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
+        .include    "popup.inc"
 
 ; same as original implementation, reads dirs 1 by 1
 .proc files_simple
@@ -319,12 +322,14 @@ enter_is_file:
         jmp     l_files
 
 enter_error:
-        ; TODO: print message that the dir is too long to enter.
+        pushax  #sds_err_info
+        pushax  #info_popup_help
+        setax   #sds_err_title
+        jsr     _show_select
 
         ; need to re-highlight line
         jsr     _fn_highlight_line
-        ldx     #KBH::RELOOP
-        rts
+        jmp     l_files
 
 not_enter:
 ; --------------------------------------------------------------------------
@@ -546,3 +551,20 @@ mf_y_offset:    .res 1
 mf_kbh_running: .res 1
 
 mf_dir_or_file: .res DIR_PG_CNT
+
+
+.rodata
+sds_err_info:   .byte 16, 4, 0, $ff, $ff
+                .byte PopupItemType::space
+                .byte PopupItemType::string, 1, <sds_err_msg, >sds_err_msg
+                .byte PopupItemType::space
+                .byte PopupItemType::finish
+
+.segment "SCREEN"
+sds_err_msg:
+                NORMAL_CHARMAP
+                .byte " Path too long!", 0
+
+sds_err_title:
+                INVERT_ATASCII
+                .byte "Error", 0

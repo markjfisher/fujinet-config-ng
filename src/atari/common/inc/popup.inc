@@ -19,6 +19,8 @@ POPUP_LEN_IDX   := 2
 POPUP_VAL_IDX   := 3
 
 .struct PopupItemInfo
+        width   .byte           ; the width of the input area excluding the borders which add 1 each side for the border
+        y_off   .byte           ; number of lines from top to add for popup
         has_sel .byte           ; 1 if there are any selectable widgets, 0 if info type
         ud_idx  .byte           ; the entry index to use for Up / Down move if current doesn't support it. $ff for none
         lr_idx  .byte           ; the entry index to use for Left / Right move if current doesn't support it. $ff for none
