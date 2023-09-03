@@ -1,4 +1,4 @@
-        .export    _wait_scan1, _wait_scan0
+        .export    _wait_scan1
         .include    "atari.inc"
         .include    "fn_macros.inc"
 
@@ -6,15 +6,11 @@
 ;
 ; pauses until we hit VCOUNT == 1, i.e. scanline 1
 .proc _wait_scan1
-        jsr _wait_scan0
+:       lda VCOUNT
+        bne :-
+        rts
 
 :       lda VCOUNT
         beq :-
-        rts
-.endproc
-
-.proc _wait_scan0
-:       lda VCOUNT
-        bne :-
         rts
 .endproc

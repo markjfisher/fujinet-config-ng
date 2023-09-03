@@ -22,8 +22,6 @@
         .import     handle_kb
         .import     _wait_scan1
 
-        .import     debug
-
         .include    "zeropage.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"

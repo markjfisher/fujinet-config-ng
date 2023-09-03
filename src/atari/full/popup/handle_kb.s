@@ -12,8 +12,6 @@
         .import     ss_pu_entry
         .import     pui_sizes
 
-        .import     debug
-
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"

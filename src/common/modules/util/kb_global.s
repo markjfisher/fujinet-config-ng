@@ -2,8 +2,6 @@
         .import     popa, popax
         .import     mod_current, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
 
-        .import     debug
-
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"

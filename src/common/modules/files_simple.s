@@ -9,6 +9,7 @@
         .import     _fn_edit
         .import     _fn_highlight_line
         .import     _fn_io_close_directory
+        .import     _fn_io_error
         .import     _fn_io_mount_host_slot
         .import     _fn_io_open_directory
         .import     _fn_io_read_directory
@@ -18,13 +19,13 @@
         .import     _fn_put_s
         .import     _fn_put_status
         .import     _fn_strlen
-        .import     _fn_strncat
+        .import     _fn_strlcpy
+        .import     _fn_strncpy
         .import     _free
         .import     _malloc
         .import     _show_select
         .import     copy_path_filter_to_buffer
         .import     current_line
-        .import     debug
         .import     files_simple_y_offset
         .import     fn_dir_filter
         .import     fn_dir_path
@@ -43,6 +44,7 @@
         .import     mf_path
         .import     mf_s1
         .import     mod_current
+        .import     pu_err_title
         .import     pusha
         .import     pushax
         .import     read_full_dir_name
@@ -66,11 +68,13 @@
         pusha   host_selected
         setax   #fn_io_hostslots
         jsr     _fn_io_mount_host_slot
-
-        lda     IO_DCB::dstats
-        and     #$80
+        jsr     _fn_io_error
         beq     no_error1
-        ; TODO: display error
+
+        pushax  #mounthost_err_info
+        pushax  #info_popup_help
+        setax   #pu_err_title
+        jsr     _show_select
 
         ; set next module as hosts
         mva     #Mod::hosts, mod_current
@@ -91,11 +95,13 @@ l_files:
         setax   #fn_io_buffer
         jsr     _fn_io_open_directory
 
-        lda     IO_DCB::dstats
-        and     #$80
+        jsr     _fn_io_error
         beq     no_error2
-        ; TODO: display error
-        ; TODO: unmount host?
+
+        pushax  #opendir_err_info
+        pushax  #info_popup_help
+        setax   #pu_err_title
+        jsr     _show_select
 
         ; set next module as hosts
         mva     #Mod::hosts, mod_current
@@ -298,8 +304,8 @@ not_esc:
         cmp     #FNK_ENTER
         bne     not_enter
         ; go into the dir, or choose the file
-        ; TODO ".." parent dir handling
 
+        jsr     _fn_clr_highlight
         ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
         ldx     mf_selected
         lda     mf_dir_or_file, x
@@ -307,24 +313,35 @@ not_esc:
         ; 0 is a file, 1 is a dir
         beq     enter_is_file
 
+enter_is_dir:
         ; we're a directory, so go into it, and restart directory listing.
-        jsr     _fn_clr_highlight
-        jsr     enter_dir
-        bne     enter_error
+        lda     #$e0                    ; max size of dir
+        jsr     combine_path_with_selection
+        bne     too_long_error
+
+        ; copy fn_io_buffer to fn_dir_path
+        pushax  #fn_dir_path
+        pushax  #fn_io_buffer
+        lda     #$e0
+        jsr     _fn_strncpy
 
         mva     #$00, mf_selected
         jmp     l_files
 
 enter_is_file:
+        lda     #$ff
+        jsr     combine_path_with_selection
+        bne     too_long_error
+
         ; get user's choice of which to device to put the host
         jsr     select_device_slot
         ; and take us back to where we were on file list
         jmp     l_files
 
-enter_error:
-        pushax  #sds_err_info
+too_long_error:
+        pushax  #p2l_err_info
         pushax  #info_popup_help
-        setax   #sds_err_title
+        setax   #pu_err_title
         jsr     _show_select
 
         ; need to re-highlight line
@@ -457,39 +474,54 @@ print_entry:
 skip_show_dir_char:
         put_s   #$01, mf_entry_index, ptr1, mf_y_offset
         rts
-
 .endproc
 
-; Appends the directory we are trying to enter onto path, but only if it fits in the maximum path size.
-; So you may be able to see the dir, but you won't be able to go into it if it makes whole path length too long.
+; Appends the directory/filename onto path, but only if it fits in the maximum path size.
+; So you may be able to see the dir/file, but you won't be able to use it if it makes whole path length too long.
 ; Returns 0 for ok, 1 for error (path too long).
-.proc enter_dir
+.proc combine_path_with_selection
+        sta     tmp3                 ; max length
+
+        ; ---------------------------------------------
+        ; path + file size checking
+        ; ---------------------------------------------
+
         ; get the chosen dir into 255 byte temp buffer, and then check it will fit on the end of our current path, i.e. doesn't combined go over 254 (allowing for nul)
         jsr     read_full_dir_name      ; AX holds allocated memory - must free it
         axinto  ptr1
         jsr     _fn_strlen
-        sta     tmp1                    ; length of new directory we want to enter
+        sta     tmp2                    ; length of new directory/file chosen
 
-        setax   #fn_dir_path
-        jsr     _fn_strlen              ; current path length
-        sta     tmp2
+        pushax  #fn_dir_path
+        jsr     _fn_strlen             ; returns length of src (i.e. path)
+        sta     tmp1
 
         ; when added to current path, will it fit? (max #$e0)
         clc
-        adc     tmp1
+        adc     tmp2
         bcs     too_big                 ; already over $ff in length, so too big
-        cmp     #$e0                    ; max dir path size
-        bcs     too_big                 ; nope
+        cmp     tmp3                    ; specified max size, for dirs it's $e0, for files $ff
+        beq     :+
+        bcs     too_big
 
-        inc     tmp1                    ; extra for nul
-        ; ptr1 contains the dir name we need to append to the path
-        pushax  #fn_dir_path            ; dst, where we will apend the path to.
-        pushax  ptr1                    ; src, which has a trailing slash conveniently
-        lda     tmp1                    ; we know it will fit and it's this length
-        jsr     _fn_strncat
+        ; --------------------------------------------
+        ; all good, append values
+        ; --------------------------------------------
+
+:       mwa     #fn_io_buffer, ptr2
+        adw1    ptr2, tmp1
+        inc     tmp2                    ; allow for nul char in strlcpy. this should be done AFTER the size check!
+        pushax  ptr2                    ; dst, where we will apend the entry to.
+        pushax  ptr1                    ; src, which has a trailing slash conveniently if it's a dir
+        lda     tmp2                    ; we know it will fit and it's this length
+        jsr     _fn_strlcpy
+
         jsr     free_dir
         jmp     return0
 
+        ; --------------------------------------------
+        ; ERROR path + extra are too long, return 1
+        ; --------------------------------------------
 too_big:
         jsr     free_dir
         jmp     return1
@@ -497,7 +529,6 @@ too_big:
 free_dir:
         setax   ptr1
         jmp     _free
-        ; implicit rts
 .endproc
 
 .proc print_dir_info
@@ -554,17 +585,34 @@ mf_dir_or_file: .res DIR_PG_CNT
 
 
 .rodata
-sds_err_info:   .byte 16, 4, 0, $ff, $ff
+p2l_err_info:
+                .byte 16, 4, 0, $ff, $ff
                 .byte PopupItemType::space
-                .byte PopupItemType::string, 1, <sds_err_msg, >sds_err_msg
+                .byte PopupItemType::string, 1, <p2l_err_msg, >p2l_err_msg
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
+mounthost_err_info:
+                .byte 26, 4, 0, $ff, $ff
+                .byte PopupItemType::space
+                .byte PopupItemType::string, 1, <mounthost_err_msg, >mounthost_err_msg
+                .byte PopupItemType::space
+                .byte PopupItemType::finish
+
+opendir_err_info:
+                .byte 30, 4, 0, $ff, $ff
+                .byte PopupItemType::space
+                .byte PopupItemType::string, 1, <opendir_err_msg, >opendir_err_msg
+                .byte PopupItemType::space
+                .byte PopupItemType::finish
+
+
 .segment "SCREEN"
-sds_err_msg:
                 NORMAL_CHARMAP
+p2l_err_msg:
                 .byte " Path too long!", 0
 
-sds_err_title:
-                INVERT_ATASCII
-                .byte "Error", 0
+mounthost_err_msg:
+                .byte "  Error mounting host!", 0
+opendir_err_msg:
+                .byte "  Error Opening Directory!", 0

@@ -13,8 +13,6 @@
         .import    ss_other_ud_idx
         .import    copy_entry
 
-        .import    debug
-
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"

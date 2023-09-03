@@ -1,4 +1,5 @@
         .export     select_device_slot
+        .export     pathfile_err_info
 
         .import     _fn_clr_help
         .import     _fn_clr_highlight
@@ -14,13 +15,13 @@
         .import     _free
         .import     _malloc
         .import     _show_select
-        .import     debug
         .import     devices_fetched
         .import     fn_dir_path
         .import     fn_io_buffer
         .import     fn_io_deviceslots
         .import     host_selected
         .import     info_popup_help
+        .import     pu_err_title
         .import     pusha
         .import     pushax
         .import     read_full_dir_name
@@ -76,50 +77,6 @@ save_device_choice:
         mva     {sds_pu_mode + POPUP_VAL_IDX}, sds_mode
         inc     sds_mode                                ; mode is 1/2, we have 0/1, add 1 to align
 
-        jsr     read_full_dir_name      ; AX holds allocated memory
-        axinto  ptr1                    ; this is not technically required, as _fn_io_read_directory uses ptr1, but if that ever changes, we're screwed, so store AX into ptr1 whatever happens
-        jsr     _fn_strlen
-        sta     tmp2                    ; file name length, but need to increment by 1 for strlcpy which insists on the final 0
-        inc     tmp2 
-
-        ; copy path into buffer
-        pushax  #fn_io_buffer
-        pushax  #fn_dir_path
-        lda     #$ff
-        jsr     _fn_strlcpy             ; length of src (dir) returned for the path
-        sta     tmp1
-
-        ; check that tmp1 + tmp2 (file + dir) doesn't exceed 255 chars
-        clc
-        adc     tmp2
-        bcc     under256
-
-        setax   ptr1
-        jsr     _free
-        ; TODO - Show some error
-        ; jsr     debug
-        ; pusha   #26
-        ; pushax  #sds_err_info
-        ; pushax  #info_popup_help
-        ; setax   #sds_err_title
-        ; jmp     _show_select
-
-        rts
-
-under256:
-        ; now append the file name onto this
-        mwa     #fn_io_buffer, ptr2
-        adw1    ptr2, tmp1
-        pushax  ptr2
-        pushax  ptr1
-        lda     tmp2            ; how long is the name of the file?
-        jsr     _fn_strlcpy
-
-        ; free up the temp buffer
-        setax   ptr1
-        jsr     _free
-
-        ; we now finally have fn_io_buffer with our /path/filename, ready to call set_device
         ; set the device filename, this now works without need to save all slots
         pusha   sds_mode                ; read/write mode
         pusha   host_selected           ; host_slot
@@ -212,11 +169,21 @@ sds_dev:        .res 1
 .data
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
 ; currently only lengths of 1-9 string list entries will work on screen. popup can have up to 12 items with header etc
-sds_pu_info:    .byte 24, 0, 1, 0, 2           ; PopupItemInfo. width, is_selectable, up/down = testList, l/r = option
+sds_pu_info:    .byte 24, 0, 1, 0, 2           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option
 sds_pu_devs:    .byte PopupItemType::textList, 8, 21, 0, $ff, $ff
 sds_pu_spc1:    .byte PopupItemType::space
 sds_pu_mode:    .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
 sds_pu_end:     .byte PopupItemType::finish
+
+
+.rodata
+
+pathfile_err_info:
+                .byte 24, 4, 0, $ff, $ff
+                .byte PopupItemType::space
+                .byte PopupItemType::string, 1, <pathfile_err_msg, >pathfile_err_msg
+                .byte PopupItemType::space
+                .byte PopupItemType::finish
 
 .segment "SCREEN"
 
@@ -256,3 +223,7 @@ mfss_h2:
                 .byte $81, "ESC", $82
                 INVERT_ATASCII
                 .byte "Exit", 0
+
+pathfile_err_msg:
+                NORMAL_CHARMAP
+                .byte "  Path + File too long", 0

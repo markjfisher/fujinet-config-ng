@@ -13,8 +13,6 @@
         .import     mf_dir_pos
         .import     pusha, pushax
 
-        .import     debug
-
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 

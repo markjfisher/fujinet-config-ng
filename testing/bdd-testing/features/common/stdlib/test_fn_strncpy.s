@@ -10,7 +10,7 @@
         pushax  #t_src
         lda     t_c
 
-        jsr _fn_strncpy
+        jsr     _fn_strncpy
         rts
 .endproc
 

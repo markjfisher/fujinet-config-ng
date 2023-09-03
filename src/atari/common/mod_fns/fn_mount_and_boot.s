@@ -3,6 +3,7 @@
         .import     _fn_put_s, _bar_clear, pushax, pusha, _fn_pause
         .import     fn_io_deviceslots
         .import     fn_io_hostslots
+        .import     return1
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -43,7 +44,7 @@
         jmp     COLDSV
 
 error:
-        rts
+        jmp     return1
 
 .endproc
 
