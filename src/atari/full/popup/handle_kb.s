@@ -4,14 +4,12 @@
         .import     copy_entry
         .import     ss_widget_idx
         .import     ss_items
-        .import     ss_num_lr
-        .import     ss_other_lr_idx
-        .import     ss_num_ud
-        .import     ss_other_ud_idx
+        .import     ss_has_sel
+        .import     ss_ud_idx
+        .import     ss_lr_idx
 
         .import     _fn_input_ucase
         .import     ss_pu_entry
-        .import     di_has_selectable
         .import     pui_sizes
 
         .import     debug
@@ -61,7 +59,7 @@ start_kb_get:
         bne     not_tab
 
         ; do we have any selectables? e.g. info popups have non, so don't want to get stuck in loop here
-        lda     di_has_selectable
+        lda     ss_has_sel
         bne     :+
         
         ; ignore tab, as we have no selectable widgets. e.g. info
@@ -109,7 +107,7 @@ is_left:
 
 :       ; a different widget can handle it, we have its index already in ss_other_lr_idx
         ; so swap to the other widget index, load its data, and run the prev on it instead, then restore back to ourselves
-        ldx     ss_other_lr_idx
+        ldx     ss_lr_idx
         mwa     #do_prev, ptr3
         jmp     handle_by_other
         ; implicit rts, with result in A
@@ -136,7 +134,7 @@ is_right:
 
 :       ; a different widget can handle it, we have its index already in ss_other_lr_idx
         ; so swap to the other widget index, load its data, and run the prev on it instead, then restore back to ourselves
-        ldx     ss_other_lr_idx
+        ldx     ss_lr_idx
         mwa     #do_next, ptr3
         jmp     handle_by_other
         ; implicit rts
@@ -161,7 +159,7 @@ is_up:
         ; implicit rts
 
 :       ; other widget
-        ldx     ss_other_ud_idx
+        ldx     ss_ud_idx
         mwa     #do_prev, ptr3
         jmp     handle_by_other
         ; implicit rts
@@ -186,7 +184,7 @@ is_down:
         ; implicit rts
 
 :       ; other widget
-        ldx     ss_other_ud_idx
+        ldx     ss_ud_idx
         mwa     #do_next, ptr3
         jmp     handle_by_other
         ; implicit rts
@@ -287,14 +285,12 @@ copy_ret:
 .endproc
 
 .proc kb_can_do_LR
-        jsr     debug
         jsr     get_current_item_type
         cmp     #PopupItemType::option
         beq     kb_lr_yes
         
-        lda     ss_num_lr
-        cmp     #1
-        bne     :+
+        lda     ss_lr_idx
+        bmi     :+
 
         ; only 1 other can handle this key press, but not current widget
         lda     #PopupHandleKBEvent::other       ; indicate there's another widget that can use this press
@@ -314,9 +310,8 @@ kb_lr_yes:
         cmp     #PopupItemType::textList
         beq     kb_ud_yes
         
-        lda     ss_num_ud
-        cmp     #1
-        bne     :+
+        lda     ss_ud_idx
+        bmi     :+
 
         ; only 1 other can handle this key press, but not current widget
         lda     #PopupHandleKBEvent::other       ; indicate there's another widget that can use this press

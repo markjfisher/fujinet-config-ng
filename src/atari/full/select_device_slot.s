@@ -52,7 +52,7 @@
 
         ; show the selector
         pusha   #24
-        pushax  #sds_pu_devs
+        pushax  #sds_pu_info
         pushax  #devices_help
         setax   #sds_msg
         jsr     _show_select
@@ -162,8 +162,8 @@ copy_dev_strings:
         jsr     _fn_io_get_device_slots
         mva     #$01, devices_fetched
 
-:       mva     #$08, tmp1
-        mwa     sds_pu_devs+4, ptr1                                 ; dst
+:       mva     #$08, tmp1              ; number of strings in popup
+        mwa     {sds_pu_devs + PopupItemTextList::text}, ptr1   ; dst, location of string buffer
         mwa     {#(fn_io_deviceslots + DeviceSlot::file)}, ptr2 ; src
 
 l1:     pushax  ptr1    ; dst
@@ -204,10 +204,11 @@ sds_dev:        .res 1
 .data
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
 ; currently only lengths of 1-9 string list entries will work on screen. popup can have up to 12 items with header etc
-sds_pu_devs:        .byte PopupItemType::textList, 8, 21, 0, $ff, $ff
-sds_pu_spc1:        .byte PopupItemType::space
-sds_pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
-sds_pu_end:         .byte PopupItemType::finish
+sds_pu_info:    .byte 1, 0, 2           ; PopupItemInfo. is selectable, up/down = testList, l/r = option
+sds_pu_devs:    .byte PopupItemType::textList, 8, 21, 0, $ff, $ff
+sds_pu_spc1:    .byte PopupItemType::space
+sds_pu_mode:    .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
+sds_pu_end:     .byte PopupItemType::finish
 
 .segment "SCREEN"
 

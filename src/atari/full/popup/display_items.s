@@ -1,6 +1,5 @@
         .export    display_items
         .export    di_current_item
-        .export    di_has_selectable
 
         .import    display_textlist
         .import    display_option
@@ -25,7 +24,6 @@
 .proc display_items
         mwa     ss_items, ptr1          ; set ptr1 to first popup item to display. it will walk down the list
         mva     #$00, di_current_item   ; this tracks which item is currently being displayed so we can compare to selected
-        sta     di_has_selectable       ; this tracks if any widgets are selectable for TAB handling
 
 l_all_items:
         ; read the next Popup type, if it's last element (finish type) return to caller
@@ -33,8 +31,8 @@ l_all_items:
         lda     (ptr1), y
         cmp     #PopupItemType::finish
         bne     not_last_line
-        ; all items done
 
+        ; all items done
         rts
 
 not_last_line:
@@ -53,7 +51,6 @@ not_last_line:
         cmp     #PopupItemType::textList
         bne     not_text_list
 
-        mva     #$01, di_has_selectable
         adw1    ptr1, #.sizeof(PopupItemTextList)
         jsr     display_textlist
         beq     next_item
@@ -64,7 +61,6 @@ not_text_list:
         cmp     #PopupItemType::option
         bne     not_option
 
-        mva     #$01, di_has_selectable
         adw1    ptr1, #.sizeof(PopupItemOption)
         jsr     display_option
         beq     next_item
@@ -103,4 +99,3 @@ next_item:
 
 .bss
 di_current_item:        .res 1
-di_has_selectable:      .res 1

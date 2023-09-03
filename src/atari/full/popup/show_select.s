@@ -2,14 +2,12 @@
         .export     ss_pu_entry
         .export     ss_width
         .export     ss_items
+        .export     ss_has_sel
+        .export     ss_ud_idx
+        .export     ss_lr_idx
         .export     ss_scr_l_strt
         .export     ss_widget_idx
         .export     ss_help_cb
-
-        .export     ss_num_lr
-        .export     ss_other_lr_idx
-        .export     ss_num_ud
-        .export     ss_other_ud_idx
 
         .import     popax, popa, pusha
         .import     ascii_to_code
@@ -80,8 +78,6 @@ exit_select:
 .proc initialise_select
         ; initialise some variables
         mva     #$00, ss_widget_idx     ; start on first widget
-        sta     ss_num_lr               ; track number of L/R widgets for keyboard shortcuts
-        sta     ss_num_ud               ; track number of U/D widgets for keyboard shortcuts
 
         jsr     _fn_clr_help
         jsr     show_help               ; show the custom help messages for this popup
@@ -135,9 +131,18 @@ exit_select:
         adw     ptr4, #40
         mwa     ptr4, ss_scr_l_strt
 
-        ; get the counts of the L/R and U/D widgets in the popup items
-        jmp     count_widget_types
+        ; store the popup info in locations we can directly read rather than faffing with Y indexing
+        mwa     ss_items, ptr1
+        ldy     #$00
+        mva     {(ptr1), y}, ss_has_sel
+        iny
+        mva     {(ptr1), y}, ss_ud_idx
+        iny
+        mva     {(ptr1), y}, ss_lr_idx
+        ; move ss_items pointer forward to entries
+        adw1    ss_items, #.sizeof(PopupItemInfo)
 
+        rts
 .endproc
 
 ; bottom of select
@@ -157,39 +162,6 @@ exit_select:
         jmp     block_line
 .endproc
 
-; Count the number of LR or UD widgets for keyboard handling
-.proc count_widget_types
-        mwa     ss_items, ptr1          ; reset ptr1
-        ldy     #POPUP_TYPE_IDX
-        ldx     #$00
-loop:
-        jsr     type_at_x
-
-        cmp     #PopupItemType::textList
-        beq     inc_ud
-        cmp     #PopupItemType::option
-        beq     inc_lr
-        cmp     #PopupItemType::finish
-        beq     out
-
-next:
-        inx
-        jmp     loop
-
-inc_ud:
-        stx     ss_other_ud_idx
-        inc     ss_num_ud
-        bne     next
-
-inc_lr:
-        stx     ss_other_lr_idx
-        inc     ss_num_lr
-        bne     next
-
-out:
-        rts
-.endproc
-
 
 .bss
 ; this has to be as big as the largest type of popup, as all types will be copied into it for processing.
@@ -202,10 +174,6 @@ ss_widget_idx:  .res 1
 ss_scr_l_strt:  .res 2
 ss_help_cb:     .res 2
 
-; these help track the number of widgets that can handle L/R or U/D key presses for streamlined user experience
-; when pressing those keys.
-ss_num_lr:       .res 1
-ss_other_lr_idx: .res 1
-ss_num_ud:       .res 1
-ss_other_ud_idx: .res 1
-
+ss_has_sel:     .res 1
+ss_ud_idx:      .res 1
+ss_lr_idx:      .res 1
