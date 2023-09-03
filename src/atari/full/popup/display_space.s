@@ -1,6 +1,7 @@
         .export     display_space
 
         .import     block_line
+        .import     return0
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -11,6 +12,6 @@
         mva     #FNC_LT_BLK, tmp1
         mva     #FNC_BLANK, tmp2
         mva     #FNC_RT_BLK, tmp3
-        jmp     block_line
-        ; implicit rts
+        jsr     block_line
+        jmp     return0
 .endproc

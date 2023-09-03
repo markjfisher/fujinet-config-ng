@@ -235,7 +235,8 @@ define NEWLINE
 endef
 # Note: Do not remove any of the two empty lines above !
 
-rwildcard=$(wildcard $1$2)$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
+#rwildcard=$(wildcard $(1)$(2))$(foreach d,$(wildcard $1*),$(info $$d: $(d), $$2: $(2)) $(call rwildcard,$d/,$2))
+rwildcard=$(wildcard $(1)$(2))$(foreach d,$(wildcard $1*), $(call rwildcard,$d/,$2))
 
 TARGETLIST := $(subst $(COMMA),$(SPACE),$(TARGETS))
 
@@ -368,7 +369,6 @@ endif
 # $(info $$SOURCES = ${SOURCES})
 # $(info $$SOURCES_TG = ${SOURCES_TG})
 # $(info $$OBJECTS = ${OBJECTS})
-# $(info $$OBJECTS_LIBS_FN_IO = ${OBJECTS_LIBS_FN_IO})
 # $(info $$SRC_INC_DIRS = ${SRC_INC_DIRS})
 # $(info $$TARGETOBJDIR = ${TARGETOBJDIR})
 

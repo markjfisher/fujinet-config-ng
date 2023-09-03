@@ -1,21 +1,64 @@
-.struct PopupItem
-        type    .byte           ; the widget type
-        num     .byte           ; number of them
-        len     .byte           ; length of each individual text entry
-        val     .byte           ; chosen option/select. if checkbox, bit number is on if option set, so limited to 8 checkboxes
-        text    .word           ; ptr to strings to use, type specific arrangement.
-        spc     .word           ; ptr (or null) to table of num+1 spacing values for placing widget on screen
+; generic information for PopupItems
+
+; type    .byte           ; the widget type
+; num     .byte           ; number of them
+; len     .byte           ; length of each individual text entry
+; val     .byte           ; chosen option/select. if checkbox, bit number is on if option set, so limited to 8 checkboxes
+; text    .word           ; ptr to strings to use, type specific arrangement.
+; spc     .word           ; ptr to table of num+1 spacing values for placing widget on screen
+
+; for allocating space to work with popups, need largest struct size
+POPUP_MAX_SZ    := 8
+
+; type is always first byte
+POPUP_TYPE_IDX  := 0
+
+; for any selectable item (see pui_is_selectable), the NUM/LEN/VAL values must be at these indexes
+POPUP_NUM_IDX   := 1
+POPUP_LEN_IDX   := 2
+POPUP_VAL_IDX   := 3
+
+.struct PopupItemTextList
+        type    .byte
+        num     .byte
+        len     .byte
+        val     .byte
+        text    .word
+.endstruct
+
+.struct PopupItemOption
+        type    .byte
+        num     .byte
+        len     .byte
+        val     .byte
+        text    .word
+        spc     .word
+.endstruct
+
+.struct PopupItemString
+        type    .byte
+        num     .byte
+        text    .word
+.endstruct
+
+.struct PopupItemSpace
+        type    .byte
+.endstruct
+
+.struct PopupItemFinish
+        type    .byte
 .endstruct
 
 ; a bit like html widgets
 .enum PopupItemType
-        textList                ; simple text list display with numbers
+        finish                  ; marker that we have finished items             
+        space                   ; just a line of space
+        textList                ; simple text list display with numbers, non editable, but selectable
         option                  ; like radio buttons, only 1 can be selected
+        string                  ; a non selectable string to be displayed on line. num determines number of strings to display
         ; select                  ; drop down select
         ; checkbox                ; individual on/off
         ; button                  ; highlight it and press enter to enact - a 1 item option with no "name" will do for this
-        space                   ; just a line of space
-        finish                  ; marker that we have finished items             
 .endenum
 
 .enum PopupItemReturn

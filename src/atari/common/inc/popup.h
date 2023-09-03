@@ -13,6 +13,7 @@ struct PopupItem {
 enum PopupItemType {
     textList,
     option,
+    string,
     // select
     // checkbox
     // button

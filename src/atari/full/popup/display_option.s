@@ -6,6 +6,7 @@
         .import     ascii_to_code
         .import     ss_widget_idx
         .import     di_current_item
+        .import     return0
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -13,8 +14,8 @@
         .include    "popup.inc"
 
 .proc display_option
-        mwa     {ss_pu_entry + PopupItem::spc}, ptr3           ; spacings ptr
-        mwa     {ss_pu_entry + PopupItem::text}, ptr2          ; texts ptr
+        mwa     {ss_pu_entry + PopupItemOption::spc}, ptr3           ; spacings ptr
+        mwa     {ss_pu_entry + PopupItemOption::text}, ptr2          ; texts ptr
 
         jsr     left_border
         sty     tmp2                    ; screen position index over whole list, left border increments it by 1
@@ -36,13 +37,8 @@
 :       ; add the y+1 index (which points to 0 char of string) onto ptr2 to shift it to next string
         iny
         tya
-        clc
-        adc     ptr2
-        sta     ptr2
-        bcc     :+
-        inc     ptr2+1
-
-:       ldy     #$00
+        adw1    ptr2, a
+        ldy     #$00
         sty     tmp1                    ; tmp1 now our main loop variable
 
         mva     #$00, dopt_reduce_next_space
@@ -52,7 +48,7 @@ widget_loop:
         sty     tmp2                    ; save new position
 
         ; are we printing the currently selected option?
-        lda     ss_pu_entry + PopupItem::val
+        lda     ss_pu_entry + POPUP_VAL_IDX
         cmp     tmp1
         bne     :+                      ; no
 
@@ -74,7 +70,7 @@ widget_loop:
         ; y is doing double work here, it's the offset of 2 pointers; the current character to display, and the screen offset
         ; print the widget, ptr2 tracks the current widget location
 :       ldy     #$00
-        ldx     ss_pu_entry + PopupItem::len                 ; number of chars to display for each widget
+        ldx     ss_pu_entry + POPUP_LEN_IDX   ; number of chars to display for each widget
 :       lda     (ptr2), y               ; get ascii char
         iny
         sty     tmp3                    ; save y (current character index)
@@ -90,7 +86,7 @@ widget_loop:
 
         
         ; other side of the text print other arrow if we the current widget that's highlighted
-        lda     ss_pu_entry + PopupItem::val
+        lda     ss_pu_entry + POPUP_VAL_IDX
         cmp     tmp1
         bne     :+              ; no we should not print arrow
 
@@ -103,13 +99,13 @@ widget_loop:
         iny
 
         ; move ptr2 on by len to next string
-:       adw1    ptr2, {ss_pu_entry + PopupItem::len}
+:       adw1    ptr2, {ss_pu_entry + POPUP_LEN_IDX}
 
         ; any more to process?
         inc     tmp1
         lda     tmp1
         tay                             ; the main loop is also index into space array, read at top of loop
-        cmp     ss_pu_entry + PopupItem::num
+        cmp     ss_pu_entry + POPUP_NUM_IDX
         bne     widget_loop             ; reloop until all widgets done
 
         ; display final spacing so it overwrites any background text on the screen
@@ -119,7 +115,7 @@ widget_loop:
 
         ; right border
         mva     #FNC_RT_BLK, {(ptr4), y}
-        rts
+        jmp     return0
 .endproc
 
 .proc print_widget_space

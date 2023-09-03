@@ -6,6 +6,7 @@
         .import     ascii_to_code
         .import     di_current_item
         .import     ss_widget_idx
+        .import     return0
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -13,8 +14,8 @@
         .include    "popup.inc"
 
 .proc display_textlist
-        mva     {ss_pu_entry + PopupItem::num}, tmp4
-        mwa     {ss_pu_entry + PopupItem::text}, ptr2
+        mva     {ss_pu_entry + POPUP_NUM_IDX}, tmp4
+        mwa     {ss_pu_entry + PopupItemTextList::text}, ptr2
         mva     #$11, tmp1              ; list number as screen code so don't have to convert it
         ; align ptr2 with Y being a 3 based index (it's screen offset)
         sbw     ptr2, #$03
@@ -33,7 +34,7 @@ all_text:
         lda     tmp1
         sec
         sbc     #$11            ; the list number makes a convenient loop index, but it starts at #$11
-        cmp     ss_pu_entry + PopupItem::val
+        cmp     ss_pu_entry + POPUP_VAL_IDX
         bne     :+
 
         mva     #$80, tmp3              ; current line, so invert text
@@ -50,7 +51,7 @@ all_text:
 :       mva     #FNC_BLANK, {(ptr4), y} ; wasn't current line, just print a space
 :       iny
 
-        ldx     ss_pu_entry + PopupItem::len
+        ldx     ss_pu_entry + POPUP_LEN_IDX
 :       lda     (ptr2), y               ; fetch a character
         beq     no_trans                ; 0 conveniently maps to screen code for space, and is filler for end of string
         jsr     ascii_to_code
@@ -91,11 +92,11 @@ no_x_space:
 
         ; move to next line, and next string, then reloop
         adw     ptr4, #40
-        adw1    ptr2, {ss_pu_entry + PopupItem::len}
+        adw1    ptr2, {ss_pu_entry + POPUP_LEN_IDX}
         inc     tmp1                    ; next print index
         jmp     all_text                ; always branch
 :
-        rts
+        jmp     return0
 .endproc
 
 .bss

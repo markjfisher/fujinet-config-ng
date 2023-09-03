@@ -1,11 +1,13 @@
         .export     select_device_slot
 
+        .import     _fn_clr_help
         .import     _fn_clr_highlight
         .import     _fn_io_close_directory
         .import     _fn_io_get_device_slots
         .import     _fn_io_put_device_slots
         .import     _fn_io_read_directory
         .import     _fn_io_set_device_filename
+        .import     _fn_put_help
         .import     _fn_strlcpy
         .import     _fn_strlen
         .import     _fn_strncpy
@@ -22,7 +24,6 @@
         .import     pushax
         .import     read_full_dir_name
         .import     s_empty
-        .import     sds_msg
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -35,29 +36,30 @@
         jsr     _fn_clr_highlight
 
         ; handle the selection of a device slot for the given file from host
-        ; we will put all the relevant selection details into memory starting at pu_devs, and it
+        ; we will put all the relevant selection details into memory starting at sds_pu_devs, and it
         ; is the job of the _show_select to display this, calling back to kb handler here
 
         ; get memory for 8 * devices list width strings
-        lda     pu_devs+2
+        lda     sds_pu_devs+2
         asl     a
         asl     a
         asl     a       ; * 8
         ldx     #$00
 
         jsr     _malloc
-        axinto  pu_devs+4
+        axinto  sds_pu_devs+4
         jsr     copy_dev_strings
 
         ; show the selector
-        pusha   pu_width
-        pushax  #pu_devs
+        pusha   #24
+        pushax  #sds_pu_devs
+        pushax  #devices_help
         setax   #sds_msg
         jsr     _show_select
         sta     tmp1            ; save the return from select
 
         ; free the strings
-        setax   pu_devs+4
+        setax   sds_pu_devs+4
         jsr     _free
 
         ; CHECK IF ESC pressed (return value from _show_select is 0 for esc)
@@ -68,10 +70,10 @@
         rts
 
 save_device_choice:
-        ; the selected option was pu_devs+val
-        ; the selected mode was pu_mode+val
-        mva     {pu_devs + PopupItem::val}, sds_dev     ; device slot is 0 based
-        mva     {pu_mode + PopupItem::val}, sds_mode
+        ; the selected option was sds_pu_devs+val
+        ; the selected mode was sds_pu_mode+val
+        mva     {sds_pu_devs + POPUP_VAL_IDX}, sds_dev     ; device slot is 0 based
+        mva     {sds_pu_mode + POPUP_VAL_IDX}, sds_mode
         inc     sds_mode                                ; mode is 1/2, we have 0/1, add 1 to align
 
         jsr     read_full_dir_name      ; AX holds allocated memory
@@ -92,7 +94,6 @@ save_device_choice:
         adc     tmp2
         bcc     under256
 
-        jsr     debug
         setax   ptr1
         jsr     _free
         ; TODO - Show some error
@@ -162,7 +163,7 @@ copy_dev_strings:
         mva     #$01, devices_fetched
 
 :       mva     #$08, tmp1
-        mwa     pu_devs+4, ptr1                                 ; dst
+        mwa     sds_pu_devs+4, ptr1                                 ; dst
         mwa     {#(fn_io_deviceslots + DeviceSlot::file)}, ptr2 ; src
 
 l1:     pushax  ptr1    ; dst
@@ -178,16 +179,21 @@ l1:     pushax  ptr1    ; dst
 
 empty:  pushax  #s_empty
 
-:       lda     pu_devs + PopupItem::len
+:       lda     sds_pu_devs + POPUP_LEN_IDX
         jsr     _fn_strncpy
 
         ; increment both src/dst pointers
-        adw1    ptr1, {pu_devs + PopupItem::len}
+        adw1    ptr1, {sds_pu_devs + POPUP_LEN_IDX}
         adw     ptr2, #.sizeof(DeviceSlot)
 
         dec     tmp1
         bne     l1
 
+        rts
+
+devices_help:
+        put_help #0, #mfss_h1
+        put_help #1, #mfss_h2
         rts
 .endproc
 
@@ -196,13 +202,12 @@ sds_mode:       .res 1
 sds_dev:        .res 1
 
 .data
-pu_width:       .byte 24
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
 ; currently only lengths of 1-9 string list entries will work on screen. popup can have up to 12 items with header etc
-pu_devs:        .byte PopupItemType::textList, 8, 21, 0, $ff, $ff, 0, 0
-pu_spc1:        .byte PopupItemType::space,    0,  0, 0,   0,   0, 0, 0         ; extra 6 bytes is shorter than code to skip
-pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
-pu_end:         .byte PopupItemType::finish,   0, 0, 0, 0, 0, 0, 0              ; again, less bytes putting this here than faff if not.
+sds_pu_devs:        .byte PopupItemType::textList, 8, 21, 0, $ff, $ff
+sds_pu_spc1:        .byte PopupItemType::space
+sds_pu_mode:        .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
+sds_pu_end:         .byte PopupItemType::finish
 
 .segment "SCREEN"
 
@@ -213,3 +218,32 @@ sds_mode_rw:    .byte " R/W "
 
 ; spacing for widgets. removes 200 bytes of code to calculate!
 sds_opt1_spc:   .byte 3, 2, 3
+
+; ------------------------------------------------------------------
+; Select Device Slot data
+; ------------------------------------------------------------------
+        INVERT_ATASCII
+sds_msg:
+        .byte "   Select Device Slot   "
+        NORMAL_CHARMAP
+
+.segment "SCREEN"
+mfss_h1:
+                NORMAL_CHARMAP
+                .byte $81, $1c, $1d, $82        ; endL up down endR
+                INVERT_ATASCII
+                .byte "Move "
+                NORMAL_CHARMAP
+                .byte $81, "TAB", $82
+                INVERT_ATASCII
+                .byte "Next Widget", 0
+
+mfss_h2:
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "Complete"
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit", 0

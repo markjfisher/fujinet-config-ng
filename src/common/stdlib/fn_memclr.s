@@ -21,7 +21,7 @@
 ; void fn_memclr(uint8_t count, void *p)
 ;
 ; clear up to count chars at *p
-.proc _fn_memclr
+.proc _fn_memclr    
     axinto  ptr4
     popa    tmp4
     cmp     #$00

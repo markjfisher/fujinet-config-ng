@@ -4,6 +4,7 @@
         .export     ss_items
         .export     ss_scr_l_strt
         .export     ss_widget_idx
+        .export     ss_help_cb
 
         .export     ss_num_lr
         .export     ss_other_lr_idx
@@ -16,10 +17,13 @@
         .import     _fn_clr_help
         .import     _fn_put_help
         .import     block_line
+        .import     type_at_x
 
         .import     display_items
         .import     handle_kb
         .import     _wait_scan1
+
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "atari.inc"
@@ -35,9 +39,10 @@
 ; ptr4 is set to the screen location needed at any one time in the showing of the widget
 ; be careful not to trash it.
 .proc _show_select
-        axinto  ss_message             ; the header message to display in popup
-        popax   ss_items               ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
-        popa    ss_width               ; the width of the input area excluding the borders which add 1 each side for the border
+        axinto  ss_message              ; the header message to display in popup
+        popax   ss_help_cb              ; the cb function to setup help messages for this particular popup
+        popax   ss_items                ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
+        popa    ss_width                ; the width of the input area excluding the borders which add 1 each side for the border
 
         jsr     _wait_scan1             ; only paint when we're at the top of screen so get no flashing
         jsr     initialise_select       ; show popup header, setup some variables, ptr4 is start of screen
@@ -67,6 +72,10 @@ exit_select:
 
 .endproc
 
+.proc show_help
+        jmp     (ss_help_cb)
+.endproc
+
 ; draw top part of select with title/help/status, and initialise some values
 .proc initialise_select
         ; initialise some variables
@@ -74,10 +83,8 @@ exit_select:
         sta     ss_num_lr               ; track number of L/R widgets for keyboard shortcuts
         sta     ss_num_ud               ; track number of U/D widgets for keyboard shortcuts
 
-        ; clear screen and print help texts
         jsr     _fn_clr_help
-        put_help #0, #mfss_h1
-        put_help #1, #mfss_h2
+        jsr     show_help               ; show the custom help messages for this popup
 
         ; calculate the x-offset to show box. In the inner-box, it's (36 - width) / 2
         lda     #35     ; one off for border
@@ -153,11 +160,11 @@ exit_select:
 ; Count the number of LR or UD widgets for keyboard handling
 .proc count_widget_types
         mwa     ss_items, ptr1          ; reset ptr1
-        ldy     #PopupItem::type
+        ldy     #POPUP_TYPE_IDX
         ldx     #$00
 loop:
-        lda     (ptr1), y
-        
+        jsr     type_at_x
+
         cmp     #PopupItemType::textList
         beq     inc_ud
         cmp     #PopupItemType::option
@@ -165,7 +172,7 @@ loop:
         cmp     #PopupItemType::finish
         beq     out
 
-next:   adw     ptr1, #.sizeof(PopupItem)
+next:
         inx
         jmp     loop
 
@@ -185,13 +192,15 @@ out:
 
 
 .bss
-ss_pu_entry:    .tag PopupItem
+; this has to be as big as the largest type of popup, as all types will be copied into it for processing.
+ss_pu_entry:    .res POPUP_MAX_SZ
 
 ss_message:     .res 2
 ss_items:       .res 2
 ss_width:       .res 1
 ss_widget_idx:  .res 1
 ss_scr_l_strt:  .res 2
+ss_help_cb:     .res 2
 
 ; these help track the number of widgets that can handle L/R or U/D key presses for streamlined user experience
 ; when pressing those keys.
@@ -200,24 +209,3 @@ ss_other_lr_idx: .res 1
 ss_num_ud:       .res 1
 ss_other_ud_idx: .res 1
 
-.segment "SCREEN"
-
-mfss_h1:
-                NORMAL_CHARMAP
-                .byte $81, $1c, $1d, $82        ; endL up down endR
-                INVERT_ATASCII
-                .byte "Move "
-                NORMAL_CHARMAP
-                .byte $81, "TAB", $82
-                INVERT_ATASCII
-                .byte "Next Widget", 0
-
-mfss_h2:
-                NORMAL_CHARMAP
-                .byte $81, "Ret", $82
-                INVERT_ATASCII
-                .byte "Complete"
-                NORMAL_CHARMAP
-                .byte $81, "ESC", $82
-                INVERT_ATASCII
-                .byte "Exit", 0

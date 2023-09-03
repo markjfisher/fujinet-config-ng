@@ -1,17 +1,20 @@
         .export    display_items
         .export    di_current_item
+        .export    di_has_selectable
 
         .import    display_textlist
         .import    display_option
         .import    display_space
+        .import    display_string
 
         .import    ss_items
         .import    ss_num_lr
         .import    ss_other_lr_idx
         .import    ss_num_ud
         .import    ss_other_ud_idx
-
         .import    copy_entry
+
+        .import    debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -22,14 +25,16 @@
 .proc display_items
         mwa     ss_items, ptr1          ; set ptr1 to first popup item to display. it will walk down the list
         mva     #$00, di_current_item   ; this tracks which item is currently being displayed so we can compare to selected
+        sta     di_has_selectable       ; this tracks if any widgets are selectable for TAB handling
 
 l_all_items:
         ; read the next Popup type, if it's last element (finish type) return to caller
-        ldy     #PopupItem::type
+        ldy     #POPUP_TYPE_IDX
         lda     (ptr1), y
         cmp     #PopupItemType::finish
         bne     not_last_line
         ; all items done
+
         rts
 
 not_last_line:
@@ -41,13 +46,17 @@ not_last_line:
 ; START SWITCH FOR TYPE
 ; ----------------------------------------------
 
+; all widget displays return 0 in A/X, so we can beq
+
 ; --------------------------------------------------
 ; TEXT LIST
         cmp     #PopupItemType::textList
         bne     not_text_list
 
+        mva     #$01, di_has_selectable
+        adw1    ptr1, #.sizeof(PopupItemTextList)
         jsr     display_textlist
-        jmp     next_item
+        beq     next_item
 
 not_text_list:
 ; --------------------------------------------------
@@ -55,8 +64,10 @@ not_text_list:
         cmp     #PopupItemType::option
         bne     not_option
 
+        mva     #$01, di_has_selectable
+        adw1    ptr1, #.sizeof(PopupItemOption)
         jsr     display_option
-        jmp     next_item
+        beq     next_item
 
 not_option:
 ; --------------------------------------------------
@@ -64,16 +75,27 @@ not_option:
         cmp     #PopupItemType::space
         bne     not_space
 
+        adw1    ptr1, #.sizeof(PopupItemSpace)
         jsr     display_space
-        ; UNCOMMENT IF MORE OPTIONS IMPLEMENTED - otherwise just fall through
-        ; jmp     next_item
+        beq     next_item
 
 not_space:
+; --------------------------------------------------
+; STRING LINES (string)
+        cmp     #PopupItemType::string
+        bne     not_string
+
+        adw1    ptr1, #.sizeof(PopupItemString)
+        jsr     display_string
+        ; beq     next_item
+
+not_string:
+
 ; TODO: IMPLEMENT OTHER PopupItemType VALUES 
 
 next_item:
         inc     di_current_item                 ; increment the current item being displayed
-        adw     ptr1, #.sizeof(PopupItem)       ; move ptr1 to next popup entry
+        ; ptr1 moves to next widget in each type above
         adw     ptr4, #40                       ; add 40 to screen location to point to next line
         jmp     l_all_items
 
@@ -81,3 +103,4 @@ next_item:
 
 .bss
 di_current_item:        .res 1
+di_has_selectable:      .res 1

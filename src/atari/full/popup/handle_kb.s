@@ -1,4 +1,5 @@
         .export     handle_kb
+        .export     type_at_x
 
         .import     copy_entry
         .import     ss_widget_idx
@@ -10,6 +11,10 @@
 
         .import     _fn_input_ucase
         .import     ss_pu_entry
+        .import     di_has_selectable
+        .import     pui_sizes
+
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -55,8 +60,15 @@ start_kb_get:
         cmp     #FNK_TAB
         bne     not_tab
 
-        ; we want to move to next non-space, with wrap to top if next index = finish
-        ldx     ss_widget_idx
+        ; do we have any selectables? e.g. info popups have non, so don't want to get stuck in loop here
+        lda     di_has_selectable
+        bne     :+
+        
+        ; ignore tab, as we have no selectable widgets. e.g. info
+        jmp     start_kb_get
+
+        ; we want to move to next widget that is selectable, with wrap to top if next index = finish
+:       ldx     ss_widget_idx
 add_1:
         inx
 get_type:
@@ -66,6 +78,8 @@ get_type:
         ldx     #$00
         beq     get_type
 :       cmp     #PopupItemType::space
+        beq     add_1
+        cmp     #PopupItemType::string
         beq     add_1
 
         stx     ss_widget_idx
@@ -233,10 +247,10 @@ do_jmp:
 
 do_next_val:
         ; move to next value, rotating if at end
-        lda     ss_pu_entry + PopupItem::val
+        lda     ss_pu_entry + POPUP_VAL_IDX
         clc
         adc     #$01
-        cmp     ss_pu_entry + PopupItem::num
+        cmp     ss_pu_entry + POPUP_NUM_IDX
         bcc     :+
         lda     #$00
 
@@ -244,13 +258,13 @@ do_next_val:
 
 do_prev_val:
         ; move to previous value, rotating if at end
-        lda     ss_pu_entry + PopupItem::val
+        lda     ss_pu_entry + POPUP_VAL_IDX
         sec
         sbc     #$01
         cmp     #$ff
         bne     :+
 
-        ldx     ss_pu_entry + PopupItem::num
+        ldx     ss_pu_entry + POPUP_NUM_IDX
         dex
         txa
 
@@ -273,6 +287,7 @@ copy_ret:
 .endproc
 
 .proc kb_can_do_LR
+        jsr     debug
         jsr     get_current_item_type
         cmp     #PopupItemType::option
         beq     kb_lr_yes
@@ -321,18 +336,18 @@ kb_ud_yes:
 ; trashes tmp1, Y, A, ptr1
 .proc type_at_x
         jsr     item_x_to_ptr1
-        ldy     #PopupItem::type
+        ldy     #POPUP_TYPE_IDX
         lda     (ptr1), y               ; the type of x'th Item. sets N/Z etc for return too
         rts
 .endproc
 
 .proc copy_new_val
-        sta     tmp1
-        sta     ss_pu_entry + PopupItem::val
+        pha     ; push new value so we can retrieve it after getting to correct item
+        sta     ss_pu_entry + POPUP_VAL_IDX
         ldx     ss_widget_idx
-        jsr     item_x_to_ptr1    ; ptr1 points to given popupitem
-        ldy     #PopupItem::val
-        lda     tmp1
+        jsr     item_x_to_ptr1
+        ldy     #POPUP_VAL_IDX
+        pla
         sta     (ptr1), y
         rts
 .endproc
@@ -340,19 +355,33 @@ kb_ud_yes:
 .proc item_x_to_ptr1
         ; ptr1 will point to start of required PopupItem object
         mwa     ss_items, ptr1
+        cpx     #$00
+        beq     out
+
         ; save x
         txa
         pha
-        cpx     #$00
-        beq     :++
+
+        stx     tmp1    ; becomes loop index
 
         ; move down list until we're at the right one
-:       adw     ptr1, #.sizeof(PopupItem)
-        dex
-        bne     :-
+        ; get size from pui_sizes, x
 
-:       pla
+        ldy     #POPUP_TYPE_IDX
+w_loop:
+        lda     (ptr1), y
+        tax                             ; the type, used as index to...
+        lda     pui_sizes, x            ; this widget's type size
+
+        ; add size to ptr1
+        adw1    ptr1, a
+        dec     tmp1
+        bne     w_loop
+
+        ; restore x
+        pla
         tax
+out:
         rts
 .endproc
 

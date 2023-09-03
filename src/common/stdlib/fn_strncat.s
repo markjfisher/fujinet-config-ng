@@ -32,12 +32,7 @@
 found:
         ; add y to ptr3
         tya
-        clc
-        adc     ptr3
-        sta     ptr3
-        bcc     :+
-        inc     ptr3+1
-:
+        adw1    ptr3, a
 
         ; copy the string to location found
         ; can only copy n chars max, including a nul

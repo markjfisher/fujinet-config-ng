@@ -339,15 +339,23 @@ l1_b:
     .endif
 .endmacro
 
-; adds byte1 to word arg1 dealing with carry
+; adds byte1 to word arg1 dealing with carry, allow byte1 to be a
+; so we can directly add accumulator to WORD
 .macro adw1 arg1, byte1
     .local l1
     clc
-    lda arg1
-    adc byte1
-    sta arg1
-    bcc l1
-    inc 1+(arg1)
+    .if (.match ({byte1}, a))
+        adc arg1
+        sta arg1
+        bcc l1
+        inc 1+(arg1)
+    .else
+        lda arg1
+        adc byte1
+        sta arg1
+        bcc l1
+        inc 1+(arg1)
+    .endif
 l1:
 .endmacro
 

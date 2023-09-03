@@ -1,20 +1,22 @@
         .export     left_border
         .export     block_line
         .export     copy_entry
+        .export     pui_is_selectable
+        .export     pui_sizes
 
         .import     ss_width
         .import     ss_pu_entry
+
+        .import     debug
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 
-
 ; -----------------------------------------------------------
 ; Helper procedures
 ; -----------------------------------------------------------
-
 
 ; starts the new line off, setting y, and printing first char.
 ; assumes ptr4 points to current screen location
@@ -43,14 +45,47 @@
         rts
 .endproc
 
-; copies current PopupItem into ss_pu_entry, assumes ptr1 points to latest entry, and increments that pointer
+; copies current PopupItem into ss_pu_entry, assumes ptr1 points to latest entry
 .proc copy_entry
-        ; read the whole PopupItem entry into ptr2. ptr1 is the current item
-        mwa     #ss_pu_entry, ptr2     ; target for copy
-        ldy     #$00
+        ; read the whole PopupItem entry into ptr2. ptr1 is the current item.
+        mwa     #ss_pu_entry, ptr2      ; target for copy
+
+        ; for sanity (not really needed) blank the target space. TODO: review deleting this to save memory
+        ldx     #POPUP_MAX_SZ
+        lda     #$00
+        tay
+:       sta     (ptr2), y
+        iny
+        dex
+        bne     :-
+
+        ; get the size of the current item so we know how many bytes to copy
+        ldy     #POPUP_TYPE_IDX
+        lda     (ptr1), y
+        tax
+        lda     pui_sizes, x        ; size
+        tax
+
+        ; copy into target from current
 :       mva     {(ptr1), y}, {(ptr2), y}
         iny
-        cpy     #.sizeof(PopupItem)
+        dex
         bne     :-
+
         rts
 .endproc
+
+.rodata
+
+; sizes, and is_selectable of each PopupItemType
+
+; Types order:
+; finish
+; space
+; textList
+; option
+; string
+
+
+pui_sizes:          .byte 1, 1, 6, 8, 4
+pui_is_selectable:  .byte 0, 0, 1, 1, 0
