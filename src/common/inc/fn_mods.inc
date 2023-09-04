@@ -18,4 +18,9 @@
     NOT_HANDLED         ; not handled by module, try in global handler
     RELOOP              ; handled by module, start main handler loop again
     EXIT                ; main kb handler should exit
+    ; following allow modules to return different codes that can be act on instead of explicitly exiting
+    APP_1               ; app specific code 1
+    APP_2               ; app specific code 2
+    APP_3               ; app specific code 3
+    APP_4               ; app specific code 4
 .endenum

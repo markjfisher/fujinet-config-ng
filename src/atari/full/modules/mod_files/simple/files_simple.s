@@ -149,13 +149,10 @@ l_entries:
 
 finish_list:
         ; make the mf_entries_cnt be 0 based
-        ; dec     mf_entry_index ; BREAKS EVERYTHING
-        ; save the number we showed, so we know if we can move highlight down, and if we are at EOD yet (if it's equal to DIR_PG_CNT, we still have more pages to show)
+        ; save the number we showed, so we know if we can move highlight down, and if we are at EOD yet (if it's equal to DIR_PG_CNT, we still have more pages to show) - TODO WHAT IF IT'S LAST? TRY 16 EXACT
         mva     mf_entry_index, mf_entries_cnt
         ; turn our cursor back on
         mva     mf_selected, kb_current_line
-        ; need to highlight line as we are not always starting the kb handler, which usually does it for us
-        jsr     _scr_highlight_line
 
         jsr     _fn_io_close_directory
 
@@ -173,9 +170,17 @@ finish_list:
         pusha   #Mod::files     ; L/R arrow keys this will be overridden by local kb handler
         pushax  #mf_selected    ; memory address of our current chosen file/dir
         setax   #mod_files_kb   ; this mod's kb handler, the global kb handler will jump into this routine which will handle the interactions
-        jmp     _kb_global       ; rts from this will drop out of module
-        ; implicit rts
+        jsr     _kb_global       ; rts from this will drop out of module
 
+        ; we could detect the return code here, if it's NOT the EXIT value, then we can decide what to do, e.g. reloop this module
+        cpx     #KBH::EXIT
+        bne     app_specific
+        rts
+
+app_specific:
+        ; go back up to main files loop for any app specific exit, as we're "out" of the kbh, we need to specify it needs to be run again.
+        mva     #$00, mf_kbh_running
+        jmp     l_files
 
 ; --------------------------------------------------------------------------
 ; KEYBOARD HANDLER
@@ -197,7 +202,8 @@ do_right:
 
         mva     #$00, mf_selected
         adw1    mf_dir_pos, #DIR_PG_CNT
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
 not_right:
 ; -------------------------------------------------
@@ -216,7 +222,8 @@ do_left:
         ; set selected to first, reduce dir_pos by page count and reload dirs
         mva     #$00, mf_selected
         sbw1    mf_dir_pos, #DIR_PG_CNT
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
 ; -------------------------------------------------
 ; exit back to main KB handler with a reloop. this was a key movement we are ignoring but want to continue in files module.
@@ -247,7 +254,8 @@ do_up:
         ; valid up, reduce by page count, but set our cursor on last line to look cool
         mva     #(DIR_PG_CNT-1), mf_selected
         sbw1    mf_dir_pos, #DIR_PG_CNT
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
         ; otherwise pass back to the global to process generic UP as though we didn't handle it at all
 :       lda     #FNK_UP         ; reload the key into A
@@ -279,7 +287,8 @@ do_down:
         ; valid down, increase by page count, but set our cursor on first line to look cool
         mva     #$00, mf_selected
         adw1    mf_dir_pos, #DIR_PG_CNT
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
         ; otherwise pass back to the global to process generic DOWN
 :       lda     #FNK_DOWN         ; reload the key into A
@@ -305,7 +314,6 @@ not_esc:
         bne     not_enter
         ; go into the dir, or choose the file
 
-        jsr     _scr_clr_highlight
         ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
         ldx     mf_selected
         lda     mf_dir_or_file, x
@@ -326,7 +334,8 @@ enter_is_dir:
         jsr     _fn_strncpy
 
         mva     #$00, mf_selected
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
 enter_is_file:
         lda     #$ff
@@ -336,17 +345,18 @@ enter_is_file:
         ; get user's choice of which to device to put the host
         jsr     select_device_slot
         ; and take us back to where we were on file list
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
 too_long_error:
+        jsr     _scr_clr_highlight
         pushax  #p2l_err_info
         pushax  #info_popup_help
         setax   #pu_err_title
         jsr     _show_select
 
-        ; need to re-highlight line
-        jsr     _scr_highlight_line
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
 not_enter:
 ; --------------------------------------------------------------------------
@@ -380,7 +390,8 @@ not_enter:
         ; set selected to 0, pos to 0, and go back to the top
         mva     #$00, mf_selected
         mwa     #$00, mf_dir_pos
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
 not_parent:
 ; --------------------------------------------------------------------------
@@ -407,7 +418,8 @@ not_parent:
         sta     mf_dir_pos
 
 no_edit:
-        jmp     l_files
+        ldx     #KBH::APP_1
+        rts
 
 not_filter:
 ; -------------------------------------------------

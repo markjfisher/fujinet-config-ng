@@ -4,7 +4,6 @@
         .import     _clr_status
         .import     _put_help
         .import     _put_status
-        .import     _scr_clr_highlight
         .import     get_scrloc
         .import     mf_s1, mf_h1, mf_h2
         .import     pusha
