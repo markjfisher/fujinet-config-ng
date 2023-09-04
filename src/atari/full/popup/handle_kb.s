@@ -8,7 +8,7 @@
         .import     ss_ud_idx
         .import     ss_lr_idx
 
-        .import     _fn_input_ucase
+        .import     _kb_get_c_ucase
         .import     ss_pu_entry
         .import     pui_sizes
 
@@ -25,7 +25,7 @@
         jsr     copy_entry
 
 start_kb_get:
-        jsr     _fn_input_ucase
+        jsr     _kb_get_c_ucase
         cmp     #$00
         beq     start_kb_get
 

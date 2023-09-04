@@ -1,6 +1,6 @@
         .export     mod_done, is_booting
         .import     pusha, pushax
-        .import     mod_current, _fn_io_set_boot_config, kb_global, _clr_scr_all, current_line, _scr_highlight_line, _mount_and_boot
+        .import     mod_current, _fn_io_set_boot_config, _kb_global, _clr_scr_all, kb_current_line, _scr_highlight_line, _mount_and_boot
         .import     _put_status
         .import     _scr_clr_highlight
         .import     _put_s
@@ -37,7 +37,7 @@ not_booting:
         put_s      #13, #4, #mx_m2
 
         ; highlight current option
-        ; mva     done_selected, current_line
+        ; mva     done_selected, kb_current_line
         ; jsr     _scr_highlight_line
 
         ; handle keyboard
@@ -46,7 +46,7 @@ not_booting:
         pusha   #Mod::hosts     ; next
         pushax  #done_selected  ; our current selection
         setax   #mod_done_kb
-        jmp     kb_global          ; rts from this will drop out of module
+        jmp     _kb_global          ; rts from this will drop out of module
 
 mod_done_kb:
         rts

@@ -1,5 +1,5 @@
         .export     _scr_highlight_line
-        .import     _bar_show, current_line, mod_current
+        .import     _bar_show, kb_current_line, mod_current
         .include  "zeropage.inc"
         .include  "fn_macros.inc"
 
@@ -10,7 +10,7 @@
         lda     mod_highlight_offsets, x
         tax
 
-        lda     current_line
+        lda     kb_current_line
         jsr     _bar_show
         rts
 .endproc

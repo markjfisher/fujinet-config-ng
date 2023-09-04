@@ -1,5 +1,5 @@
         .export     _reset_handler
-        .import     start, mod_current, _clr_scr_all, hosts_fetched, devices_fetched
+        .import     start, mod_current, _clr_scr_all, mh_is_hosts_data_fetched, md_is_devices_data_fetched
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
@@ -12,8 +12,8 @@
 
         ; reset all modules state, and clear old screen data
         mwa     #Mod::init, mod_current
-        mwa     #$00, hosts_fetched
-        mwa     #$00, devices_fetched
+        mwa     #$00, mh_is_hosts_data_fetched
+        mwa     #$00, md_is_devices_data_fetched
         jsr     _clr_scr_all
         jmp     start
 .endproc

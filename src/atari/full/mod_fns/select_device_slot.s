@@ -15,11 +15,11 @@
         .import     _free
         .import     _malloc
         .import     _show_select
-        .import     devices_fetched
+        .import     md_is_devices_data_fetched
         .import     fn_dir_path
         .import     fn_io_buffer
         .import     fn_io_deviceslots
-        .import     host_selected
+        .import     mh_host_selected
         .import     info_popup_help
         .import     pu_err_title
         .import     pusha
@@ -79,7 +79,7 @@ save_device_choice:
 
         ; set the device filename, this now works without need to save all slots
         pusha   sds_mode                ; read/write mode
-        pusha   host_selected           ; host_slot
+        pusha   mh_host_selected           ; host_slot
         pusha   sds_dev                 ; device slot
         setax   #fn_io_buffer
         jsr     _fn_io_set_device_filename
@@ -94,7 +94,7 @@ save_device_choice:
 
 no_dev_add:
         ; write the host slot
-        lda     host_selected
+        lda     mh_host_selected
         ldy     #DeviceSlot::hostSlot
         sta     (ptr1), y
 
@@ -118,13 +118,13 @@ copy_dev_strings:
         ; if the entry is null, use s_empty instead
 
         ; have we loaded device slots yet?
-        lda     devices_fetched
+        lda     md_is_devices_data_fetched
         bne     :+
 
         ; no! fetch them so we can see the entries
         setax   #fn_io_deviceslots
         jsr     _fn_io_get_device_slots
-        mva     #$01, devices_fetched
+        mva     #$01, md_is_devices_data_fetched
 
 :       mva     #$08, tmp1              ; number of strings in popup
         mwa     {sds_pu_devs + PopupItemTextList::text}, ptr1   ; dst, location of string buffer

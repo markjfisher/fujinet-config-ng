@@ -4,7 +4,7 @@
         .import     popax, pushax, popa
         .import     _fn_strncpy
         .import     _fn_strlen
-        .import     _fn_input
+        .import     _kb_get_c
         .import     ascii_to_code
         .import     _malloc, _free
         .import     return0, return1
@@ -96,7 +96,7 @@ not_empty:
 ; --------------------------------------------------------------------------
 ; KEYBOARD HANDLING
 keyboard_loop:
-        jsr     _fn_input       ; put current key press in A (0 = no key)
+        jsr     _kb_get_c       ; put current key press in A (0 = no key)
         cmp     #$00
         beq     keyboard_loop
 

@@ -1,25 +1,35 @@
         .export     mod_init
-        .import     _fn_io_get_wifi_enabled, _fn_io_get_wifi_status, _fn_io_get_ssid, _dev_init
-        .import     mod_current, host_selected, current_line, device_selected, is_booting
+
+        .import     _dev_init
+        .import     _fn_io_get_ssid
+        .import     _fn_io_get_wifi_enabled
+        .import     _fn_io_get_wifi_status
+        .import     md_device_selected
+        .import     fn_io_netconfig
+        .import     mh_host_selected
+        .import     is_booting
+        .import     kb_current_line
+        .import     mod_current
+
+        .import     debug
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_mods.inc"
 
 ; void mod_init()
-
+;
 ; First Module to load when application starts.
-; Calls out to device specific initialisation.
-; Nothing in these modules should be machine specific.
-; All _fn_* routines will be implemented per device
+; Connects to wifi if possible, and moves to first screen module
 .proc mod_init
         jsr     _dev_init               ; call device specific initialization
 
         ; initialise some module values
-        mva     #$00, host_selected
-        sta     device_selected
-        sta     current_line
-        sta     is_booting
+        mva     #$00, mh_host_selected
+        sta           md_device_selected
+        sta           kb_current_line
+        sta           is_booting
 
         ; Start getting information from FN to decide what module to load next
         jsr     _fn_io_get_wifi_enabled
@@ -29,6 +39,8 @@
         cmp     #WifiStatus::connected
         beq     connected
 
+        ; only runs if we aren't connected, which is rare
+        setax   #fn_io_netconfig
         jsr     _fn_io_get_ssid
         setax   ptr1                    ; SSIDInfo in ptr1
         ldy     #SSIDInfo::ssid

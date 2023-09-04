@@ -1,8 +1,8 @@
-        .export     kb_global
-        .export     current_line
+        .export     _kb_global
+        .export     kb_current_line
 
-        .import     _fn_input_ucase
-        .import     _fn_is_option
+        .import     _kb_get_c_ucase
+        .import     _kb_is_option
         .import     _scr_highlight_line
         .import     is_booting
         .import     mod_current
@@ -14,42 +14,41 @@
         .include    "fn_mods.inc"
         .include    "fn_data.inc"
 
-; void kb_global(uint8_t offset, uint8_t current, uint8_t max, uint8_t prevMod, uint8_t nextMod, void * kb_mod_proc)
-;      offset:  the adjustment for line high lighting for current module, e.g. $20 is for devices/hosts
-;     current:  the current selected line (zero based)
-;         max:  the largest index - 1
-;     prevmod:  which mod to go to if press left key
-;     nextmod:  which mod to go to if press right key
-; kb_mod_proc:  the module specific keyboard routine to check current keypress for. e.g. pressing enter is mod specific
+; void kb_global(uint8_t kb_max_entries, uint8_t kb_prev_mod, uint8_t kb_next_mod, void *kb_current_line, void * kb_mod_proc)
 ;
-; handle keyboard on modules
-; common up/down/left/right/option/etc routines in here, then calls kb_mod_proc to handle specific module keyboard input
-.proc kb_global
+;  kb_max_entries:  Total entries on page - 1, for up/down movement
+;         prevmod:  which mod to go to if press left key
+;         nextmod:  which mod to go to if press right key
+; kb_current_line:  the mod specific location to store the current selected line (zero based) so each mod can return to where it was
+;     kb_mod_proc:  the module specific keyboard routine to check current keypress for. e.g. pressing enter is mod specific
+;
+; A global keyboard handler for navigation on modules. Passes off to mod specific kb handler first to allow it to be processed locally.
+; then deals with common cases (L/R, U/D, Option, ... more TODO)
+.proc _kb_global
         ; save the specific module's kb handler
         axinto  kb_mod_proc
         ; and pop other params
-        popax   p_current_line
-        popa    next_mod
-        popa    prev_mod
-        popa    selected_max
+        popax   kb_mod_current_line_p
+        popa    kb_next_mod
+        popa    kb_prev_mod
+        popa    kb_max_entries
 
-        ; save current_line from ptr to its module specific verson.
-        ldy     #$00
-        mwa     p_current_line, ptr1
-        mva     {(ptr1), y}, current_line
+        jmp     save_state
+        ; implicit rts
 
 start_kb_get:
 
         ; check for option to boot
-        jsr     _fn_is_option
+        jsr     _kb_is_option
         beq     not_option
+
         ; set done module with a flag to say boot
         mva     #$01, is_booting
         mva     #Mod::done, mod_current
         rts
 
 not_option:
-        jsr     _fn_input_ucase
+        jsr     _kb_get_c_ucase
         cmp     #$00
         beq     start_kb_get          ; simple loop if no key pressed
 
@@ -74,7 +73,7 @@ not_option:
 
 global_kb:
 ; -------------------------------------------------
-; right - set next module, and exit kb_global
+; right - set next module, and exit _kb_global
         cmp     #FNK_RIGHT
         beq     do_right
         cmp     #FNK_RIGHT2
@@ -82,12 +81,12 @@ global_kb:
         bne     :+
 
 do_right:
-        mva     next_mod, mod_current
+        mva     kb_next_mod, mod_current
         rts
 
 :
 ; -------------------------------------------------
-; left - set prev module, and exit kb_global
+; left - set prev module, and exit _kb_global
         cmp     #FNK_LEFT
         beq     do_left
         cmp     #FNK_LEFT2
@@ -95,32 +94,8 @@ do_right:
         bne     :+
 
 do_left:
-        mva     prev_mod, mod_current
+        mva     kb_prev_mod, mod_current
         rts
-
-:
-; -------------------------------------------------
-; 1-8
-        cmp     #'1'
-        bcs     one_or_over
-        bcc     :+
-one_or_over:
-        cmp     #'9'
-        bcs     :+
-
-        ; in range 1-8
-        ; check we are on hosts/devices (0, 1). don't trash A it still holds the key pressed
-        ldx     mod_current
-        cpx     #2
-        bcs     cont_kb
-
-        ; yes, we are hosts/devices
-        sec
-        sbc     #'1' ; convert from ascii for 1-8 to index 0-7
-        sta     current_line
-        jsr     save_current_line
-        jsr     _scr_highlight_line
-        jmp     start_kb_get
 
 :
 ; -------------------------------------------------
@@ -132,14 +107,11 @@ one_or_over:
         bne     :+
 
 do_up:
-        lda     current_line
+        lda     kb_current_line
         cmp     #0
         beq     cont_kb
-        dec     current_line
-        jsr     save_current_line
-        jsr     _scr_highlight_line
-        jmp     start_kb_get
-
+        dec     kb_current_line
+        jmp     save_state
 :
 ; -------------------------------------------------
 ; down
@@ -147,19 +119,25 @@ do_up:
         beq     do_down
         cmp     #FNK_DOWN2
         beq     do_down
-        bne     :+
+        bne     cont_kb                 ; CHANGE THIS IF MORE KEYBOARD OPTIONS ADDED
 
 do_down:
-        lda     current_line
-        cmp     selected_max
+        lda     kb_current_line
+        cmp     kb_max_entries
         bcs     cont_kb
-        inc     current_line
-        jsr     save_current_line
-        jsr     _scr_highlight_line
-        jmp     start_kb_get
+        inc     kb_current_line
+        ; fall through to saving and restarting
 
-:
-; may need to move this to middle of the cases so they can branch to it easily, or change to jmps
+save_state:
+        ldy     #$00
+        mwa     kb_mod_current_line_p, ptr1       ; need to see if anything ever changes ptr1, to make this more efficient
+        mva     kb_current_line, {(ptr1), y}
+
+        ; only highlight line if there are any to highlight
+        lda     kb_max_entries
+        beq     cont_kb
+        jsr     _scr_highlight_line
+
 cont_kb:
         ; and reloop if we didn't leave this routine through a kb option
         jmp     start_kb_get
@@ -169,19 +147,12 @@ do_kb_module:
         jmp     (kb_mod_proc)
         ; rts is implicit in the jmp
 
-; write current line back to the module's version
-save_current_line:
-        ldy     #$00
-        mwa     p_current_line, ptr1       ; need to see if anything ever changes ptr1, to make this more efficient
-        mva     current_line, {(ptr1), y}
-        rts
-
 .endproc
 
 .bss
-p_current_line: .res 2
-current_line:   .res 1
-kb_mod_proc:    .res 2
-selected_max:   .res 1
-next_mod:       .res 1
-prev_mod:       .res 1
+kb_mod_current_line_p:  .res 2
+kb_current_line:        .res 1
+kb_mod_proc:            .res 2
+kb_max_entries:         .res 1
+kb_next_mod:            .res 1
+kb_prev_mod:            .res 1

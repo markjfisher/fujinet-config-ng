@@ -1,4 +1,5 @@
     .export     start
+
     .import     _main
     .import     __LOWCODE_RUN__, __LOWCODE_SIZE__
     .import     __MAIN_START__, __MAIN_SIZE__
@@ -11,6 +12,8 @@
     .include    "atari.inc"
     .include    "zeropage.inc"
     .include    "fn_macros.inc"
+
+; This is a cut down version of cc65's atari crt0.s
 
 .segment "STARTUP"
     rts

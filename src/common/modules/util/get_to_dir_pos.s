@@ -8,7 +8,7 @@
         .import     fn_io_buffer
         .import     fn_dir_filter
         .import     fn_dir_path
-        .import     host_selected
+        .import     mh_host_selected
         .import     mf_selected
         .import     mf_dir_pos
         .import     pusha, pushax
@@ -19,7 +19,7 @@
 .proc get_to_dir_pos
         jsr     copy_path_filter_to_buffer
         ; open dir for current path, grab the full name of this selected path, and append it to current path string.
-        pusha   host_selected
+        pusha   mh_host_selected
         setax   #fn_io_buffer
         jsr     _fn_io_open_directory
 

@@ -2,7 +2,7 @@
         .export     m_l1, sline1, sline2, mhlp1, mhlp2
         .export     gbk, gintop1, gintop2, gouttop1, gouttop2
 
-        .import     _fn_pause, _wait_scan1, _bar_setup, _bar_clear
+        .import     _pause, _wait_scan1, _bar_setup, _bar_clear
 
         .include    "atari.inc"
         .include    "fn_macros.inc"

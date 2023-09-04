@@ -1,7 +1,7 @@
         .export     get_to_current_hostslot
 
         .import     fn_io_hostslots
-        .import     host_selected
+        .import     mh_host_selected
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -9,7 +9,7 @@
 
 .proc get_to_current_hostslot
         mwa     #fn_io_hostslots, ptr1
-        ldx     host_selected
+        ldx     mh_host_selected
         beq     over_inc
 :       adw     ptr1, #.sizeof(HostSlot)
         dex

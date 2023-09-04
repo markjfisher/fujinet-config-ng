@@ -3,7 +3,7 @@
         .import     pushax, pusha
         .import     _fn_edit
         .import     fn_io_hostslots
-        .import     host_selected
+        .import     mh_host_selected
         .import     _fn_io_put_host_slots
         .import     get_scrloc
         .import     get_to_current_hostslot
@@ -20,7 +20,7 @@
 .proc _edit_hosts_entry
         ; get screen location for current edit position
         ldx     #SL_EDIT_X
-        lda     host_selected
+        lda     mh_host_selected
         clc
         adc     #SL_Y
         tay

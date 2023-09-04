@@ -417,5 +417,5 @@ l1:
 
 .macro pause j
         lda     j
-        jsr     _fn_pause
+        jsr     _pause
 .endmacro

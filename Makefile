@@ -186,13 +186,16 @@ ifeq ($(detected_OS),$(filter $(detected_OS),MSYS MINGW))
 	XS := /
 endif
 
+LBL_SYM := $(XS)/debugcmd: ".loadsym build\config.$(TARGETS).lbl"
+
 ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
-  $(XS)/debugcmd: ".loadsym build\config.atari.lite.lbl" \
+  $(LBL_SYM) \
   $(XS)/debugcmd: "bp debug" \
-  $(XS)/debugcmd: "bp pre_init" \
-  $(XS)/debugcmd: "bp start"
+
+  # $(XS)/debugcmd: "bp pre_init" \
+  # $(XS)/debugcmd: "bp start"
 
 atari_EMUCMD := $(ALTIRRA)
 

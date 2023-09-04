@@ -1,6 +1,6 @@
         .export     _mount_and_boot
         .import     _fn_io_get_device_slots, _fn_io_get_host_slots, _fn_io_mount_all, _fn_io_set_boot_config
-        .import     _put_s, _bar_clear, pushax, pusha, _fn_pause
+        .import     _put_s, _bar_clear, pushax, pusha, _pause
         .import     fn_io_deviceslots
         .import     fn_io_hostslots
         .import     return1

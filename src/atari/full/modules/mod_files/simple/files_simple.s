@@ -25,7 +25,7 @@
         .import     _malloc
         .import     _show_select
         .import     copy_path_filter_to_buffer
-        .import     current_line
+        .import     kb_current_line
         .import     files_simple_y_offset
         .import     fn_dir_filter
         .import     fn_dir_path
@@ -33,9 +33,9 @@
         .import     fn_io_buffer
         .import     fn_io_hostslots
         .import     get_to_current_hostslot
-        .import     host_selected
+        .import     mh_host_selected
         .import     info_popup_help
-        .import     kb_global
+        .import     _kb_global
         .import     mf_filter
         .import     mf_h1
         .import     mf_h3
@@ -64,7 +64,7 @@
 
         ; -----------------------------------------------------
         ; mount the host.
-        pusha   host_selected
+        pusha   mh_host_selected
         setax   #fn_io_hostslots
         jsr     _fn_io_mount_host_slot
         jsr     _fn_io_error
@@ -90,7 +90,7 @@ l_files:
 
         ; -----------------------------------------------------
         ; open directory
-        pusha   host_selected
+        pusha   mh_host_selected
         setax   #fn_io_buffer
         jsr     _fn_io_open_directory
 
@@ -153,7 +153,8 @@ finish_list:
         ; save the number we showed, so we know if we can move highlight down, and if we are at EOD yet (if it's equal to DIR_PG_CNT, we still have more pages to show)
         mva     mf_entry_index, mf_entries_cnt
         ; turn our cursor back on
-        mva     mf_selected, current_line
+        mva     mf_selected, kb_current_line
+        ; need to highlight line as we are not always starting the kb handler, which usually does it for us
         jsr     _scr_highlight_line
 
         jsr     _fn_io_close_directory
@@ -165,14 +166,14 @@ finish_list:
         ldx     #KBH::RELOOP
         rts
 
-        ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into kb_global 
+        ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into _kb_global 
 :       mva     #$01, mf_kbh_running
         pusha   #DIR_PG_CNT-1   ; we can highlight max of DIR_PG_CNT (i.e. 0 to DIR_PG_CNT - 1)
         pusha   #Mod::files     ; L/R arrow keys will be overridden by local kb handler
         pusha   #Mod::files     ; L/R arrow keys this will be overridden by local kb handler
         pushax  #mf_selected    ; memory address of our current chosen file/dir
         setax   #mod_files_kb   ; this mod's kb handler, the global kb handler will jump into this routine which will handle the interactions
-        jmp     kb_global       ; rts from this will drop out of module
+        jmp     _kb_global       ; rts from this will drop out of module
         ; implicit rts
 
 

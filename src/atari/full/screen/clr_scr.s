@@ -21,8 +21,8 @@
 
         ldx     #19     ; rows-1
 ycol:   ldy     #37     ; width - 2 (so include borders), yeah, we need Y as the index for x col...
-xrow:   lda     #$00    ; screen code for ' '
-        sta     (ptr4), y
+        lda     #$00    ; screen code for ' '
+xrow:   sta     (ptr4), y
         dey
         bpl     xrow
         adw     ptr4, #40
@@ -31,6 +31,7 @@ xrow:   lda     #$00    ; screen code for ' '
         rts
 .endproc
 
+; TODO: Move this, make more generic to any size, not just "line 4"
 .proc _clr_scr_files
         jsr     _clr_scr
 
