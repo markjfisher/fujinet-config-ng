@@ -11,10 +11,10 @@
 
         .import     popax, popa, pusha, pushax
         .import     ascii_to_code
-        .import     fn_get_scrloc
-        .import     _fn_clr_help
+        .import     get_scrloc
+        .import     _clr_help
         .import     _fn_strlen
-        .import     _fn_put_help
+        .import     _put_help
         .import     block_line
         .import     type_at_x
 
@@ -92,7 +92,7 @@ exit_select:
         ; move ss_items pointer forward to entries
         adw1    ss_items, #.sizeof(PopupItemInfo)
 
-        jsr     _fn_clr_help
+        jsr     _clr_help
         jsr     show_help               ; show the custom help messages for this popup
 
         ; calculate the x-offset to show box. In the inner-box, it's (36 - width) / 2
@@ -104,7 +104,7 @@ exit_select:
 
         ; we'll manipulate screen location directly for speed, so only call scrloc once
         ldy     #$00
-        jsr     fn_get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
+        jsr     get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
 
         ; move location down by ss_y_offset lines
         ldx     ss_y_offset

@@ -1,7 +1,7 @@
         .export     mod_devices, devices_fetched, device_selected
-        .import     _fn_io_get_device_slots, fn_io_deviceslots, _fn_highlight_line, kb_global, current_line
+        .import     _fn_io_get_device_slots, fn_io_deviceslots, _scr_highlight_line, kb_global, current_line
         .import     pusha, pushax, show_list
-        .import     _fn_clrscr_all, _fn_put_help, _fn_put_status
+        .import     _clr_scr_all, _put_help, _put_status
         .import     _fn_io_set_device_filename
         .import     fn_io_buffer
         .import     host_selected
@@ -16,7 +16,7 @@
         .include    "fn_data.inc"
 
 .proc mod_devices
-        jsr     _fn_clrscr_all
+        jsr     _clr_scr_all
         put_status #0, #md_s1
         put_status #1, #md_s3
         put_help #1, #md_h1
@@ -34,7 +34,7 @@
 
         ; highlight current device
         mva     device_selected, current_line
-        jsr     _fn_highlight_line
+        jsr     _scr_highlight_line
 
         ; handle keyboard
         pusha   #7              ; only 8 entries on screen

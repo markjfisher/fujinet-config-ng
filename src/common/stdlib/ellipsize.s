@@ -1,7 +1,7 @@
         .export     _ellipsize
 
         .import     _fn_strlen
-        .import     _fn_strncpy
+        .import     _fn_strlcpy
         .import     popa, popax, pushax
 
         .include    "zeropage.inc"
@@ -25,12 +25,12 @@
         cmp     tmp1
         bcs     :+
 
-        ; yes, use strncpy
+        ; yes, use strlcpy
         pushax  ptr3
         pushax  ptr4
         inc     tmp4    ; add 1 for null
         lda     tmp4    ; get length back
-        jmp     _fn_strncpy
+        jmp     _fn_strlcpy
         ; implicit rts
 
         ; no, we need to elipsize

@@ -393,26 +393,26 @@ l1:
         .endif
         jsr     pusha
         setax   argS
-        jsr     _fn_put_s
+        jsr     _put_s
 .endmacro
 
 .macro put_help argNum, msg
         pusha   argNum
         setax   msg
-        jsr     _fn_put_help
+        jsr     _put_help
 .endmacro
 
 .macro put_status argNum, msg
         lda     argNum
         jsr     pusha
         setax   msg
-        jsr     _fn_put_status
+        jsr     _put_status
 .endmacro
 
 .macro get_scrloc aX, aY
         ldx     aX
         ldy     aY
-        jsr     fn_get_scrloc
+        jsr     get_scrloc
 .endmacro
 
 .macro pause j

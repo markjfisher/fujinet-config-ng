@@ -4,10 +4,10 @@
         .export     mf_selected
 
         .import     _ellipsize
-        .import     _fn_clr_highlight
-        .import     _fn_clrscr_files
+        .import     _scr_clr_highlight
+        .import     _clr_scr_files
         .import     _fn_edit
-        .import     _fn_highlight_line
+        .import     _scr_highlight_line
         .import     _fn_io_close_directory
         .import     _fn_io_error
         .import     _fn_io_mount_host_slot
@@ -15,9 +15,9 @@
         .import     _fn_io_read_directory
         .import     _fn_io_set_directory_position
         .import     _fn_memclr
-        .import     _fn_put_help
-        .import     _fn_put_s
-        .import     _fn_put_status
+        .import     _put_help
+        .import     _put_s
+        .import     _put_status
         .import     _fn_strlen
         .import     _fn_strlcpy
         .import     _fn_strncpy
@@ -29,10 +29,9 @@
         .import     files_simple_y_offset
         .import     fn_dir_filter
         .import     fn_dir_path
-        .import     fn_get_scrloc
+        .import     get_scrloc
         .import     fn_io_buffer
         .import     fn_io_hostslots
-        .import     fn_put_c
         .import     get_to_current_hostslot
         .import     host_selected
         .import     info_popup_help
@@ -84,9 +83,9 @@ no_error1:
 
 ; we'll keep looping around here until something is chosen, or we exit
 l_files:
-        jsr     _fn_clrscr_files      ; as soon as possible to print dir etc
+        jsr     _clr_scr_files      ; as soon as possible to print dir etc
         jsr     print_dir_info
-        jsr     _fn_clr_highlight
+        jsr     _scr_clr_highlight
         jsr     copy_path_filter_to_buffer
 
         ; -----------------------------------------------------
@@ -155,7 +154,7 @@ finish_list:
         mva     mf_entry_index, mf_entries_cnt
         ; turn our cursor back on
         mva     mf_selected, current_line
-        jsr     _fn_highlight_line
+        jsr     _scr_highlight_line
 
         jsr     _fn_io_close_directory
 
@@ -196,7 +195,7 @@ do_right:
         bcc     exit_reloop
 
         mva     #$00, mf_selected
-        adw     mf_dir_pos, #$10 ; TODO: FIX MACRO TO USE #DIR_PG_CNT
+        adw1    mf_dir_pos, #DIR_PG_CNT
         jmp     l_files
 
 not_right:
@@ -215,7 +214,7 @@ do_left:
 
         ; set selected to first, reduce dir_pos by page count and reload dirs
         mva     #$00, mf_selected
-        sbw     mf_dir_pos, #$10    ; TODO: FIX THIS TO USE #DIR_PG_CNT IN MACROS
+        sbw1    mf_dir_pos, #DIR_PG_CNT
         jmp     l_files
 
 ; -------------------------------------------------
@@ -246,7 +245,7 @@ do_up:
 
         ; valid up, reduce by page count, but set our cursor on last line to look cool
         mva     #(DIR_PG_CNT-1), mf_selected
-        sbw     mf_dir_pos, #$10        ; TODO: FIX THIS TO USE #DIR_PG_CNT 
+        sbw1    mf_dir_pos, #DIR_PG_CNT
         jmp     l_files
 
         ; otherwise pass back to the global to process generic UP as though we didn't handle it at all
@@ -278,7 +277,7 @@ do_down:
 
         ; valid down, increase by page count, but set our cursor on first line to look cool
         mva     #$00, mf_selected
-        adw     mf_dir_pos, #$10    ; TODO: FIX MACRO SO CAN USE #DIR_PG_CNT
+        adw1    mf_dir_pos, #DIR_PG_CNT
         jmp     l_files
 
         ; otherwise pass back to the global to process generic DOWN
@@ -305,7 +304,7 @@ not_esc:
         bne     not_enter
         ; go into the dir, or choose the file
 
-        jsr     _fn_clr_highlight
+        jsr     _scr_clr_highlight
         ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
         ldx     mf_selected
         lda     mf_dir_or_file, x
@@ -345,7 +344,7 @@ too_long_error:
         jsr     _show_select
 
         ; need to re-highlight line
-        jsr     _fn_highlight_line
+        jsr     _scr_highlight_line
         jmp     l_files
 
 not_enter:
@@ -392,7 +391,7 @@ not_parent:
 
 :       ldx     #5
         ldy     #1
-        jsr     fn_get_scrloc           ; sets ptr4 to given screen location
+        jsr     get_scrloc           ; sets ptr4 to given screen location
 
         ; allow an edit at the filter location
         pushax  #fn_dir_filter          ; filter string
@@ -420,29 +419,17 @@ init_files:
         jsr     _fn_io_close_directory
 
         mwa     #$00, mf_dir_pos
-
-        ; clear path
-        pusha   #$e0
-        setax   #fn_dir_path
-        jsr     _fn_memclr
-
-        ; clear filter
-        pusha   #$20
-        setax   #fn_dir_filter
-        jsr     _fn_memclr
-
-        ; set initial path to '/'
-        mwa     #fn_dir_path, ptr1
-        ldy     #$00
-        mva     #'/', {(ptr1), y}
-
-        ; initialise mf_selected, and set the kbh_running flag to false so we only do 1 kbh
-        mva     #$00, mf_selected
+        sta     mf_selected
         sta     mf_kbh_running
+
+        ; set initial dir path to '/'
+        ldx     #$01
+        sta     fn_dir_path, x
+        dex
+        mva     #'/', {fn_dir_path, x}
 
         jsr     files_simple_y_offset
         sta     mf_y_offset
-
         rts
 
 print_entry:
@@ -463,13 +450,17 @@ print_entry:
 
         ; save the fact this is a dir
         mva     #$01, {mf_dir_or_file, y} 
+
+        ; and print the dir char
         tya
         clc
         adc     mf_y_offset
         tay
 
-        lda     #DIR_CHAR
-        jsr     fn_put_c
+        jsr     get_scrloc
+        ldy     #$00
+        lda     #FNC_DIR_C
+        sta     (ptr4), y
 
 skip_show_dir_char:
         put_s   #$01, mf_entry_index, ptr1, mf_y_offset

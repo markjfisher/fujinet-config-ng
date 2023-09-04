@@ -1,11 +1,11 @@
-        .export     _fn_edit_hosts_entry
+        .export     _edit_hosts_entry
 
         .import     pushax, pusha
         .import     _fn_edit
         .import     fn_io_hostslots
         .import     host_selected
         .import     _fn_io_put_host_slots
-        .import     fn_get_scrloc
+        .import     get_scrloc
         .import     get_to_current_hostslot
 
         .include    "zeropage.inc"
@@ -14,17 +14,17 @@
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 
-; void dev_edit_hosts_entry()
+; void edit_hosts_entry()
 ;
 ; user input in current hosts entry
-.proc _fn_edit_hosts_entry
+.proc _edit_hosts_entry
         ; get screen location for current edit position
         ldx     #SL_EDIT_X
         lda     host_selected
         clc
         adc     #SL_Y
         tay
-        jsr     fn_get_scrloc  ; ptr4 set to screen location
+        jsr     get_scrloc  ; ptr4 set to screen location
 
         ; get pointer to the string for this host slot into ptr1
         jsr     get_to_current_hostslot

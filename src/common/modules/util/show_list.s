@@ -1,5 +1,5 @@
         .export     show_list
-        .import     s_empty, fn_get_scrloc, ascii_to_code
+        .import     s_empty, get_scrloc, ascii_to_code
         .import     popa, pushax, popax
 
         .include    "zeropage.inc"
@@ -20,7 +20,7 @@
 
         ldy     #SL_Y
         ldx     #$00
-        jsr     fn_get_scrloc   ; ptr4 has screen location of (0, SL_Y)
+        jsr     get_scrloc   ; ptr4 has screen location of (0, SL_Y)
 
         lda     sl_index        ; set A to current index for the callback
 all_list:
@@ -43,7 +43,7 @@ next_char:
         jsr     ascii_to_code
         sta     (ptr4), y       ; print char
         iny                     ; move across a character, used for string and screen loc
-        cpy     #(36-SL_EDIT_X)
+        cpy     #(SL_WID_NB-SL_EDIT_X)
         bne     next_char
 
         ; Increment ptr1/4 location to next entry and screen location

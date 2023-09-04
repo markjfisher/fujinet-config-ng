@@ -1,5 +1,5 @@
         .export         _main
-        .import         _fn_clrscr_all
+        .import         _clr_scr_all
 
         .include        "zeropage.inc"
         .include        "fn_macros.inc"
@@ -8,5 +8,5 @@
 
 .proc _main
         ; call the function under test
-        jmp     _fn_clrscr_all
+        jmp     _clr_scr_all
 .endproc

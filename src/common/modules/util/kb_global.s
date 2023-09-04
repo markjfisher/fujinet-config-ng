@@ -1,6 +1,13 @@
-        .export     kb_global, current_line
-        .import     popa, popax
-        .import     mod_current, _fn_input_ucase, _fn_highlight_line, _fn_is_option, done_is_booting
+        .export     kb_global
+        .export     current_line
+
+        .import     _fn_input_ucase
+        .import     _fn_is_option
+        .import     _scr_highlight_line
+        .import     is_booting
+        .import     mod_current
+        .import     popa
+        .import     popax
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -37,7 +44,7 @@ start_kb_get:
         jsr     _fn_is_option
         beq     not_option
         ; set done module with a flag to say boot
-        mva     #$01, done_is_booting
+        mva     #$01, is_booting
         mva     #Mod::done, mod_current
         rts
 
@@ -112,7 +119,7 @@ one_or_over:
         sbc     #'1' ; convert from ascii for 1-8 to index 0-7
         sta     current_line
         jsr     save_current_line
-        jsr     _fn_highlight_line
+        jsr     _scr_highlight_line
         jmp     start_kb_get
 
 :
@@ -130,7 +137,7 @@ do_up:
         beq     cont_kb
         dec     current_line
         jsr     save_current_line
-        jsr     _fn_highlight_line
+        jsr     _scr_highlight_line
         jmp     start_kb_get
 
 :
@@ -148,7 +155,7 @@ do_down:
         bcs     cont_kb
         inc     current_line
         jsr     save_current_line
-        jsr     _fn_highlight_line
+        jsr     _scr_highlight_line
         jmp     start_kb_get
 
 :

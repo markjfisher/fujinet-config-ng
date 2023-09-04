@@ -1,12 +1,12 @@
-Feature: Screen Functions test - fn_get_scrloc
+Feature: Screen Functions test - get_scrloc
 
-  This tests Atari screen function fn_get_scrloc to get the location of x,y coordinate within border
+  This tests Atari screen function get_scrloc to get the location of x,y coordinate within border
 
-  Scenario Outline: Running fn_get_scrloc sets ptr4 to x/y location
+  Scenario Outline: Running get_scrloc sets ptr4 to x/y location
     Given atari application test setup
-      And I add atari src file "common/screen/fn_get_scrloc.s"
+      And I add atari src file "common/screen/get_scrloc.s"
       And I add atari src file "common/screen/fn_screen_mem.s"
-      And I add file for compiling "features/atari/common/screen/test_fn_get_scrloc.s"
+      And I add file for compiling "features/atari/common/screen/test_get_scrloc.s"
       And I create and load application
       And I write memory at t_x with <x>
       And I write memory at t_y with <y>

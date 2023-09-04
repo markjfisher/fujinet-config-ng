@@ -14,7 +14,7 @@
 
 # Space or comma separated list of cc65 supported target platforms to build for.
 # Default: c64 (lowercase!)
-TARGETS := atari.full
+TARGETS := atari.full atari.lite
 
 # Name of the final, single-file executable.
 # Default: name of the current dir with target name appended
@@ -189,9 +189,10 @@ endif
 ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
-  $(XS)/debugcmd: ".loadsym build\config.atari.full.lbl" \
-  $(XS)/debugcmd: "bp debug"
-#  $(XS)/debugcmd: "bp start"
+  $(XS)/debugcmd: ".loadsym build\config.atari.lite.lbl" \
+  $(XS)/debugcmd: "bp debug" \
+  $(XS)/debugcmd: "bp pre_init" \
+  $(XS)/debugcmd: "bp start"
 
 atari_EMUCMD := $(ALTIRRA)
 

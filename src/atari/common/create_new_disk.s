@@ -1,15 +1,21 @@
         .export     _create_new_disk
-        .export     t_disk_num_sectors, t_disk_sector_sizes
+        .export     t_disk_num_sectors
+        .export     t_disk_sector_sizes
 
         .import     _fn_io_create_new
-        .import     popa, popax, _strncpy, pushax
-        .import     _fn_io_copy_cmd_data, _fn_io_do_bus
-        .import     return0, return1
+        .import     _strncpy
+        .import     popa
+        .import     popax
+        .import     pushax
+        .import     return0
+        .import     return1
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
+
+; THIS CODE IS NOT TESTED FULLY IN THIS FORM - IT WAS IN FN_IO LIB, NOW LIVES AS CLIENT FUNCTION
 
 ; int create_new_disk(uint8_t host_slot, uint8_t device_slot, DiskSize size_index, uint16_t cust_num_sectors, uint16_t cust_size_sectors, char *disk_path)
 ;

@@ -1,5 +1,5 @@
         .export         _main, t_x, t_y
-        .import         fn_get_scrloc
+        .import         get_scrloc
 
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
@@ -9,7 +9,7 @@
         ; call the function under test
         ldx     t_x
         ldy     t_y
-        jmp     fn_get_scrloc
+        jmp     get_scrloc
 .endproc
 
 .bss

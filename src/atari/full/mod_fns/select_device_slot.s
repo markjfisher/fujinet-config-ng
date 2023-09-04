@@ -1,14 +1,14 @@
         .export     select_device_slot
         .export     pathfile_err_info
 
-        .import     _fn_clr_help
-        .import     _fn_clr_highlight
+        .import     _clr_help
+        .import     _scr_clr_highlight
         .import     _fn_io_close_directory
         .import     _fn_io_get_device_slots
         .import     _fn_io_put_device_slots
         .import     _fn_io_read_directory
         .import     _fn_io_set_device_filename
-        .import     _fn_put_help
+        .import     _put_help
         .import     _fn_strlcpy
         .import     _fn_strlen
         .import     _fn_strncpy
@@ -35,7 +35,7 @@
         .include    "popup.inc"
 
 .proc select_device_slot
-        jsr     _fn_clr_highlight
+        jsr     _scr_clr_highlight
 
         ; handle the selection of a device slot for the given file from host
         ; we will put all the relevant selection details into memory starting at sds_pu_devs, and it

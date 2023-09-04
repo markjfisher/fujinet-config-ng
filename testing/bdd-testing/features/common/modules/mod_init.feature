@@ -6,7 +6,7 @@ Feature: Module mod_init test
 
   Scenario: Running mod_init initialises module
     Given atari application test setup
-    #   And I add atari src file "screen/fn_clrscr.s"
+    #   And I add atari src file "screen/clr_scr.s"
     #   And I add common/modules src file "kb_global.s"
     #   And I add common/modules src file "mod_done.s"
     #   And I add common/modules src file "mod_init.s"

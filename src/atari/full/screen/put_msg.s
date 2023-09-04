@@ -1,4 +1,4 @@
-        .export     _fn_put_help, _fn_put_status
+        .export     _put_help, _put_status
         .import     popa
         .import     mhlp1, sline1
         .import     ascii_to_code
@@ -7,25 +7,25 @@
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
 
-; void fn_put_help(uint8_t line_num, char *msg)
-.proc _fn_put_help
+; void put_help(uint8_t line_num, char *msg)
+.proc _put_help
         axinto  ptr1            ; save char* msg
         popa    tmp1            ; line number
         mwa     #mhlp1, ptr2    ; get location of first help line into ptr2
-        jmp     fn_put_msg
+        jmp     put_msg
 .endproc
 
-; void fn_put_status(uint8_t line_num, char *msg)
-.proc _fn_put_status
+; void put_status(uint8_t line_num, char *msg)
+.proc _put_status
         axinto  ptr1            ; save char* msg
         popa    tmp1            ; line number
         mwa     #sline1, ptr2    ; get location of first status line into ptr2
-        jmp     fn_put_msg
+        jmp     put_msg
 .endproc
 
 ; common routine to print message
 ; ASSUMPTION - screen has been cleared before calling this, so no extra spaces to print
-.proc fn_put_msg
+.proc put_msg
         setax   ptr1
         jsr     _fn_strlen
         sta     tmp2            ; string length

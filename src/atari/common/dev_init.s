@@ -1,5 +1,5 @@
         .export   _dev_init
-        .import   _fn_setup_screen, fn_font
+        .import   _scr_setup, fn_font
         .include  "atari.inc"
         .include  "zeropage.inc"
         .include  "fn_macros.inc"
@@ -19,6 +19,6 @@
         mva     #$00, COLDST
 
         ; setup main Display List, and screen layout
-        jmp     _fn_setup_screen
+        jmp     _scr_setup
 
 .endproc

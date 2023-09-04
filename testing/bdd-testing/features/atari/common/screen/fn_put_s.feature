@@ -1,13 +1,13 @@
-Feature: Screen Functions test - _fn_put_s
+Feature: Screen Functions test - _put_s
 
-  This tests Atari screen function _fn_put_s to place a string within the display area
+  This tests Atari screen function _put_s to place a string within the display area
 
-  Scenario: Running _fn_put_s puts a string that fits on a line without cropping at border
+  Scenario: Running _put_s puts a string that fits on a line without cropping at border
     Given atari application test setup
-      And I add atari src file "common/screen/fn_put_s.s"
-      And I add atari src file "common/screen/fn_get_scrloc.s"
+      And I add atari src file "common/screen/put_s.s"
+      And I add atari src file "common/screen/get_scrloc.s"
       And I add atari src file "common/screen/fn_screen_mem.s"
-      And I add file for compiling "features/atari/common/screen/test_fn_put_s.s"
+      And I add file for compiling "features/atari/common/screen/test_put_s.s"
       And I create and load application
       And I write memory at t_x with 0
       And I write memory at t_y with 0
@@ -20,12 +20,12 @@ Feature: Screen Functions test - _fn_put_s
      {inv} {inv}                                      {inv} {inv}
      """
 
-  Scenario: Running _fn_put_s puts a string but crops it at the border
+  Scenario: Running _put_s puts a string but crops it at the border
     Given atari application test setup
-      And I add atari/common/screen src file "fn_put_s.s"
-      And I add atari/common/screen src file "fn_get_scrloc.s"
+      And I add atari/common/screen src file "put_s.s"
+      And I add atari/common/screen src file "get_scrloc.s"
       And I add atari/common/screen src file "fn_screen_mem.s"
-      And I add file for compiling "features/atari/common/screen/test_fn_put_s.s"
+      And I add file for compiling "features/atari/common/screen/test_put_s.s"
       And I create and load application
       And I write memory at t_x with 25
       And I write memory at t_y with 0

@@ -8,8 +8,6 @@
 .endif
 
 ; The location where IO_DCB exists on Atari.
-; This structure is used to set the location of parameters that eventually get sent to FN device.
-; I assume all devices have similar.
 .struct IO_DCB
     .org $0300
     ddevic  .byte
@@ -31,6 +29,7 @@
 SL_EDIT_X   := 5            ; x offset for list entry
 SL_Y        := 2            ; the top left corner Y position to start printing the list
 SL_COUNT    := 8            ; how many entries are in a Screen List
+SL_WID_NB   := 36           ; screen width without borders
 
 MF_YOFF     := 4            ; Mod Files Y Offset for shifting file list down screen
 
@@ -38,9 +37,7 @@ FNS_N2C     = $10           ; Screen code for '0'. Add this to 0 based index so 
 FNS_C_R     = $32           ; screen code for "R"
 FNS_C_W     = $37           ; screen code for "W"
 
-; Directory ASCII Character Code
-DIR_CHAR    = $00           ; directory character
-DIR_PG_CNT  = $10           ; Number of entries to display on a page in the file listing
+DIR_PG_CNT  = 16            ; Number of entries to display on a page in the file listing
 DIR_MAX_LEN = 36            ; old config was 36, but we don't quite have space on screen for 36 with borders.
 
 ; KEYBOARD codes
@@ -96,6 +93,7 @@ FNC_RT_BLK  = $D9           ; INV ctrl-Y, 4 columns blank, 4 columns filled
 FNC_BLANK   = $00           ; space, 8 rows blank
 FNC_FULL    = $80           ; inv-space, 8 rows filled
 
+FNC_DIR_C   = $40           ; directory character SCREEN CODE
 FNC_L_END   = $41           ; Left extra character to widen the string slightly, used for Help text
 FNC_R_END   = $42           ; Right extra character to widen the string slightly, used for Help text
 FNC_M_END   = $44           ; Middle extra character to widen the string slightly, used for Help text - reduces overall space on Help text

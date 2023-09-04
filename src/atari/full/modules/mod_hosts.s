@@ -1,7 +1,7 @@
         .export     mod_hosts, hosts_fetched, host_selected
-        .import     _fn_io_get_host_slots, fn_io_hostslots, _fn_highlight_line, kb_global, current_line
-        .import     pusha, pushax, show_list, _fn_edit_hosts_entry, mod_current
-        .import     _fn_clrscr_all, _fn_put_help, _fn_put_status
+        .import     _fn_io_get_host_slots, fn_io_hostslots, _scr_highlight_line, kb_global, current_line
+        .import     pusha, pushax, show_list, _edit_hosts_entry, mod_current
+        .import     _clr_scr_all, _put_help, _put_status
         .import     s_empty
         .import     sl_list_num
         .import     mod_hosts_show_list_num
@@ -15,7 +15,7 @@
 
 ;  handle HOST LIST
 .proc mod_hosts
-        jsr     _fn_clrscr_all
+        jsr     _clr_scr_all
         put_status #0, #mh_s1
         put_status #1, #mh_s3
         put_help #1, #mh_h1
@@ -32,7 +32,7 @@
 
         ; highlight current host entry
         mva     host_selected, current_line
-        jsr     _fn_highlight_line
+        jsr     _scr_highlight_line
 
         ; handle keyboard
         pusha   #7              ; only 8 entries on screen
@@ -59,7 +59,7 @@ mod_hosts_kb:
 ; ----------------------------------------------------------------------
         cmp     #'E'
         bne     not_edit
-        jsr     _fn_edit_hosts_entry
+        jsr     _edit_hosts_entry
 
         ldx     #KBH::RELOOP
         rts

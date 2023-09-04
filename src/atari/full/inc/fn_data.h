@@ -13,7 +13,7 @@
 #define FNS_C_R         0x32
 #define FNS_C_W         0x37
 
-#define DIR_CHAR        0x00
+#define FNC_DIR_C        0x40
 #define DIR_PG_CNT      0x10
 #define DIR_MAX_LEN     36
 
