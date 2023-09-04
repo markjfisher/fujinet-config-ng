@@ -1,10 +1,10 @@
         .export     mod_files
 
         .import     _mf_init_screen
-        .import     files_simple
+        .import     mfs_main
 
 .proc mod_files
         jsr     _mf_init_screen
 
-        jmp     files_simple
+        jmp     mfs_main
 .endproc

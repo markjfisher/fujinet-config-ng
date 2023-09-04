@@ -1,7 +1,6 @@
-        .export     files_simple
-        .export     mf_dir_or_file
-        .export     mf_dir_pos
-        .export     mf_selected
+        .export     mfs_main
+        .export     mf_kbh_running
+        .export     mf_y_offset
 
         .import     _ellipsize
         .import     _scr_clr_highlight
@@ -26,7 +25,7 @@
         .import     _show_select
         .import     copy_path_filter_to_buffer
         .import     kb_current_line
-        .import     files_simple_y_offset
+        .import     _mfs_get_y_offset
         .import     fn_dir_filter
         .import     fn_dir_path
         .import     get_scrloc
@@ -51,6 +50,12 @@
         .import     return1
         .import     select_device_slot
 
+        .import     mf_selected
+        .import     mf_dir_or_file
+        .import     mf_dir_pos
+        .import     mfs_error_initialising
+        .import     mfs_init
+
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
@@ -59,30 +64,15 @@
         .include    "popup.inc"
 
 ; same as original implementation, reads dirs 1 by 1
-.proc files_simple
-        jsr     init_files
-
-        ; -----------------------------------------------------
-        ; mount the host.
-        pusha   mh_host_selected
-        setax   #fn_io_hostslots
-        jsr     _fn_io_mount_host_slot
-        jsr     _fn_io_error
-        beq     no_error1
-
-        pushax  #mounthost_err_info
-        pushax  #info_popup_help
-        setax   #pu_err_title
-        jsr     _show_select
-
-        ; set next module as hosts
-        mva     #Mod::hosts, mod_current
-        rts
-
-no_error1:
+.proc mfs_main
+        jsr     mfs_init
+        beq     l_files                         ; 0 indicates no error
+        jmp     mfs_error_initialising
 
 ; we'll keep looping around here until something is chosen, or we exit
 l_files:
+
+
         jsr     _clr_scr_files      ; as soon as possible to print dir etc
         jsr     print_dir_info
         jsr     _scr_clr_highlight
@@ -117,9 +107,9 @@ no_error2:
 ; SHOW PAGE OF ENTRIES
 ; --------------------------------------------------------------------------
         mva     #$00, mf_entry_index
-        put_status #0, #mf_s1
-        put_help #0, #mf_h1
-        put_help #1, #mf_h2
+        ; put_status #0, #mf_s1
+        ; put_help #0, #mf_h1
+        ; put_help #1, #mf_h2
 
 l_entries:
         ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
@@ -441,7 +431,7 @@ init_files:
         dex
         mva     #'/', {fn_dir_path, x}
 
-        jsr     files_simple_y_offset
+        jsr     _mfs_get_y_offset
         sta     mf_y_offset
         rts
 
@@ -573,11 +563,7 @@ free_dir:
 
 .bss
 ; the current directory position value while browsing of first entry on screen
-mf_dir_pos:     .res 2
-; a place to hold the loop index for files being shown on screen
 mf_entry_index: .res 1
-; currently highlighted option
-mf_selected:    .res 1
 ; the total number of entries on the current screen
 mf_entries_cnt: .res 1
 ; y offset for printing files
@@ -585,7 +571,6 @@ mf_y_offset:    .res 1
 
 mf_kbh_running: .res 1
 
-mf_dir_or_file: .res DIR_PG_CNT
 
 
 .rodata
@@ -596,7 +581,7 @@ p2l_err_info:
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
-mounthost_err_info:
+mfs_init_err_info:
                 .byte 26, 4, 0, $ff, $ff
                 .byte PopupItemType::space
                 .byte PopupItemType::string, 1, <mounthost_err_msg, >mounthost_err_msg
