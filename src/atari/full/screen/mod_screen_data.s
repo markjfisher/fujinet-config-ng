@@ -1,7 +1,7 @@
-        .export md_s1, md_s3, md_h1
+        .export md_s1, md_s2, md_h1
         .export mx_s1, mx_s3, mx_h1, mx_m1, mx_m2
-        .export mh_s1, mh_s3, mh_h1
-        .export mf_s1, mf_h1, mf_h3
+        .export mh_s1, mh_s2, mh_h1
+        .export mf_s1, mf_h1, mf_h2
         .export mf_host, mf_filter, mf_path
 
         .include    "fn_macros.inc"
@@ -17,7 +17,7 @@ md_s1:
                 INVERT_ATASCII
                 .byte "DRIVE SLOTS", 0
 
-md_s3:
+md_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $82             ; arrow left surrounded by buffers
                 INVERT_ATASCII
@@ -42,7 +42,7 @@ mh_s1:
                 INVERT_ATASCII
                 .byte "HOST LIST", 0
 
-mh_s3:
+mh_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $82
                 INVERT_ATASCII
@@ -112,7 +112,7 @@ mf_h1:
                 INVERT_ATASCII
                 .byte "Choose", 0
 
-mf_h3:
+mf_h2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $1f, $82
                 INVERT_ATASCII

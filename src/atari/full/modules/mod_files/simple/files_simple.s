@@ -38,7 +38,7 @@
         .import     _kb_global
         .import     mf_filter
         .import     mf_h1
-        .import     mf_h3
+        .import     mf_h2
         .import     mf_host
         .import     mf_path
         .import     mf_s1
@@ -119,7 +119,7 @@ no_error2:
         mva     #$00, mf_entry_index
         put_status #0, #mf_s1
         put_help #0, #mf_h1
-        put_help #1, #mf_h3
+        put_help #1, #mf_h2
 
 l_entries:
         ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
