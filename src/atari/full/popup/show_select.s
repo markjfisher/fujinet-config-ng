@@ -14,7 +14,7 @@
         .import     get_scrloc
         .import     _clr_help
         .import     _fn_strlen
-        .import     _put_help_status
+        .import     _put_help
         .import     block_line
         .import     type_at_x
 

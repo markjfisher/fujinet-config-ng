@@ -1,7 +1,8 @@
         .export     _mh_init_screen
 
         .import     _clr_scr_all
-        .import     _put_help_status
+        .import     _put_help
+        .import     _put_status
         .import     mh_h1, mh_s1, mh_s2
         .import     pusha
 

@@ -1,4 +1,5 @@
-        .export     _put_help_status
+        .export     _put_help
+        .export     _put_status
         .import     popa
         .import     mhlp1, sline1
         .import     ascii_to_code
@@ -8,31 +9,20 @@
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
 
-; void put_status_help(uint8_t line_num, bool is_status, char *msg)
-.proc _put_help_status
+.proc _put_status
         axinto  ptr1            ; save char* msg
+        mwa     #sline1, ptr2   ; get location of first status line into ptr2
+        ; fall into put_common
+
+; ASSUMPTION - screen has been cleared before calling this, so no extra spaces to print
+put_common:
+        setax   ptr1
         jsr     _fn_strlen
         sta     tmp2            ; string length
 
-        ; read type of call, help or status
-        jsr     popa            ; 0 for help, 1 for status - saves 2 procedures doing similar work
-        cmp     #$00
-        beq     is_help
-is_status:
-        mwa     #sline1, ptr2   ; get location of first status line into ptr2
-        jmp     put_common
-
-is_help:
-        mwa     #mhlp1, ptr2    ; get location of first help line into ptr2
-        jmp     put_common
-.endproc
-
-; common routine to print message
-; ASSUMPTION - screen has been cleared before calling this, so no extra spaces to print
-.proc put_common
         jsr     popa            ; line number
+        tax                     ; this also sets the Z flag, as popa doesn't set it correctly
         beq     over
-        tax
 
         ; jump to correct line
 :       adw1    ptr2, #SCR_WIDTH
@@ -60,3 +50,11 @@ over:
 
         rts
 .endproc
+
+; void put_status_help(uint8_t line_num, bool is_status, char *msg)
+.proc _put_help
+        axinto  ptr1            ; save char* msg
+        mwa     #mhlp1, ptr2    ; get location of first help line into ptr2
+        jmp     _put_status::put_common
+.endproc
+

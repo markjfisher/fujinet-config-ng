@@ -10,7 +10,7 @@
         pusha   t_y
         pusha   #0
         setax   #t_s
-        jmp     _put_help_status
+        jmp     _put_help
 .endproc
 
 .bss
