@@ -1,0 +1,122 @@
+        .export     mfs_kbh_select_current
+
+        .import     _fn_strlcpy
+        .import     _fn_strlen
+        .import     _fn_strncpy
+        .import     _free
+        .import     _scr_clr_highlight
+        .import     fn_dir_path
+        .import     fn_io_buffer
+        .import     mf_dir_or_file
+        .import     mf_selected
+        .import     mfs_error_too_long
+        .import     pushax
+        .import     read_full_dir_name
+        .import     return0
+        .import     return1
+        .import     select_device_slot
+
+        .include    "zeropage.inc"
+        .include    "fn_macros.inc"
+        .include    "fn_mods.inc"
+        .include    "fn_data.inc"
+        .include    "fn_io.inc"
+
+; Handle Selection of the currently highlighted line
+.proc mfs_kbh_select_current
+        ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
+        ldx     mf_selected
+        lda     mf_dir_or_file, x
+
+        ; 0 is a file, 1 is a dir
+        beq     is_file
+
+is_dir:
+        ; we're a directory, so go into it, and restart directory listing.
+        lda     #$e0                    ; max size of dir
+        jsr     combine_path_with_selection
+        bne     too_long_error
+
+        ; copy fn_io_buffer to fn_dir_path
+        pushax  #fn_dir_path
+        pushax  #fn_io_buffer
+        lda     #$e0
+        jsr     _fn_strncpy
+
+        mva     #$00, mf_selected
+        ldx     #KBH::APP_1
+        rts
+
+is_file:
+        lda     #$ff
+        jsr     combine_path_with_selection
+        bne     too_long_error
+
+        ; get user's choice of which to device to put the host
+        jsr     select_device_slot
+
+        ldx     #KBH::APP_1
+        rts
+
+too_long_error:
+        jsr     _scr_clr_highlight
+        jsr     mfs_error_too_long
+        ldx     #KBH::APP_1
+        rts
+.endproc
+
+
+; Appends the directory/filename onto path, but only if it fits in the maximum path size.
+; So you may be able to see the dir/file, but you won't be able to use it if it makes whole path length too long.
+; Returns 0 for ok, 1 for error (path too long).
+.proc combine_path_with_selection
+        sta     tmp3                 ; max length
+
+        ; ---------------------------------------------
+        ; path + file size checking
+        ; ---------------------------------------------
+
+        ; get the chosen dir into 255 byte temp buffer, and then check it will fit on the end of our current path, i.e. doesn't combined go over 254 (allowing for nul)
+        jsr     read_full_dir_name      ; AX holds allocated memory - must free it
+        axinto  ptr1
+        jsr     _fn_strlen
+        sta     tmp2                    ; length of new directory/file chosen
+
+        pushax  #fn_dir_path
+        jsr     _fn_strlen             ; returns length of src (i.e. path)
+        sta     tmp1
+
+        ; when added to current path, will it fit? (max #$e0)
+        clc
+        adc     tmp2
+        bcs     too_big                 ; already over $ff in length, so too big
+        cmp     tmp3                    ; specified max size, for dirs it's $e0, for files $ff
+        beq     :+
+        bcs     too_big
+
+        ; --------------------------------------------
+        ; all good, append values
+        ; --------------------------------------------
+
+:       mwa     #fn_io_buffer, ptr2
+        adw1    ptr2, tmp1
+        inc     tmp2                    ; allow for nul char in strlcpy. this should be done AFTER the size check!
+        pushax  ptr2                    ; dst, where we will apend the entry to.
+        pushax  ptr1                    ; src, which has a trailing slash conveniently if it's a dir
+        lda     tmp2                    ; we know it will fit and it's this length
+        jsr     _fn_strlcpy
+
+        jsr     free_dir
+        jmp     return0
+
+        ; --------------------------------------------
+        ; ERROR path + extra are too long, return 1
+        ; --------------------------------------------
+too_big:
+        jsr     free_dir
+        jmp     return1
+
+free_dir:
+        setax   ptr1
+        jmp     _free
+.endproc

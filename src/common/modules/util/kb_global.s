@@ -45,6 +45,7 @@ start_kb_get:
         ; set done module with a flag to say boot
         mva     #$01, is_booting
         mva     #Mod::done, mod_current
+        ldx     #KBH::EXIT
         rts
 
 not_option:

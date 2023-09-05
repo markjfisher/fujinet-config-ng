@@ -4,9 +4,9 @@
         .import     _mfs_get_y_offset
         .import     fn_dir_path
         .import     mf_dir_pos
-        .import     mf_kbh_running
+        .import     mfs_kbh_running
         .import     mf_selected
-        .import     mf_y_offset
+        .import     mfs_y_offset
         .import     return0
         .import     return1
 
@@ -24,7 +24,7 @@
 
         mwa     #$00, mf_dir_pos
         sta          mf_selected
-        sta          mf_kbh_running
+        sta          mfs_kbh_running
 
         ; set initial dir path to '/'. make most of A=0 to set the 2nd byte first
         ldx     #$01
@@ -33,7 +33,7 @@
         mva     #'/', {fn_dir_path, x}
 
         jsr     _mfs_get_y_offset
-        sta     mf_y_offset
+        sta     mfs_y_offset
 
         ; -----------------------------------------------------
         ; mount the host.
