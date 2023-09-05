@@ -94,8 +94,8 @@ FNC_UP_BLK  = $D5           ; INV ctrl-U under normal, 4 rows filled, 4 rows bla
 FNC_LT_BLK  = $59           ; ctrl-Y, 4 columns filled, 4 columns blank
 FNC_RT_BLK  = $D9           ; INV ctrl-Y, 4 columns blank, 4 columns filled
 
-FNC_BLANK   = $00           ; space, 8 rows blank
-FNC_FULL    = $80           ; inv-space, 8 rows filled
+FNC_BLANK   = $00           ; screen code for space
+FNC_FULL    = $80           ; screen code for inv-space
 
 FNC_DIR_C   = $40           ; directory character SCREEN CODE
 FNC_L_END   = $41           ; Left extra character to widen the string slightly, used for Help text

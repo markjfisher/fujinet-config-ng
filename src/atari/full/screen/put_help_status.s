@@ -9,6 +9,7 @@
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
 
+; void put_status(uint8_t line_num, char *msg)
 .proc _put_status
         axinto  ptr1            ; save char* msg
         mwa     #sline1, ptr2   ; get location of first status line into ptr2
@@ -51,7 +52,7 @@ over:
         rts
 .endproc
 
-; void put_status_help(uint8_t line_num, bool is_status, char *msg)
+; void put_help(uint8_t line_num, char *msg)
 .proc _put_help
         axinto  ptr1            ; save char* msg
         mwa     #mhlp1, ptr2    ; get location of first help line into ptr2

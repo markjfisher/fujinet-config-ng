@@ -1,6 +1,6 @@
         .export mfs_kbh
 
-        .import     _fn_edit
+        .import     _edit_line
         .import     _fn_strlen
         .import     fn_dir_filter
         .import     fn_dir_path
@@ -204,7 +204,7 @@ not_parent:
         pushax  ptr4                    ; scr location
         pusha   #31                     ; filter is max 32 but decrease 1 for the 'extra' 0 separating the path and filter. and this is also happily the screen width max with the "Fltr:" string and borders
         lda     #$00                    ; show blank on pressing ESC for empty string
-        jsr     _fn_edit
+        jsr     _edit_line
         beq     no_edit
 
         ; if there was an edit, reset selected and put back to start of dir, as the list will have changed

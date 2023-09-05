@@ -1,6 +1,6 @@
-        .export     _fn_edit
+        .export     _edit_line
 
-        .import     s_empty     ; the "<Empty>" string
+        .import     s_empty
         .import     popax, pushax, popa
         .import     _fn_strncpy
         .import     _fn_strlen
@@ -33,7 +33,7 @@
 ; RETURNS:
 ; 0 if no edit occurred, 1 if the string was changed
 
-.proc _fn_edit
+.proc _edit_line
         ; pull out the params
         sta     fe_show_empty
         popa    fe_max_len      ; this includes the 0 at the end, so strlen should be 1 less. e.g. max = 4: ["abc",0] is ok, so strlen of 3 is ok. but strlen of 4 is too long
@@ -56,15 +56,14 @@ err:
         jsr     cap_cursor      ; ensure the cursor doesn't start beyond bounds if initial string is at maxlen already
 
         ; allocate memory for s_copy
-        lda     #38
-        ldx     #$00
+        setax   #38
         jsr     _malloc
         axinto  s_copy          ; save the location
         axinto  ptr1            ; and in ZP for using indirectly
 
         ; copy string into buffer
-        pushax  ptr1            ; pointer to the memory location of buffer
-        pushax  fe_str          ; ptr to original string
+        jsr     pushax          ; dst: pointer to the memory location of buffer, current A/X already set
+        pushax  fe_str          ; src: ptr to original string
         lda     fe_max_len
         jsr     _fn_strncpy     ; this fills up to max with 0s if string is short (or no string at all)
 
@@ -433,7 +432,7 @@ not_eol:
 
 ; write blanks to screen up to max len
 clear_edit:
-        lda     #$00    ; space = 0 on screen
+        lda     #FNC_BLANK    ; screen space
         ldy     #$00
 :       sta     (ptr4), y
         iny

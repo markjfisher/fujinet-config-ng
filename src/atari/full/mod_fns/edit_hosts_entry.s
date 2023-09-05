@@ -1,7 +1,7 @@
         .export     _edit_hosts_entry
 
         .import     pushax, pusha
-        .import     _fn_edit
+        .import     _edit_line
         .import     fn_io_hostslots
         .import     mh_host_selected
         .import     _fn_io_put_host_slots
@@ -33,7 +33,7 @@
         pushax  ptr4    ; scr location
         pusha   #.sizeof(HostSlot)
         lda     #$01    ; show empty on pressing ESC for empty string
-        jsr     _fn_edit
+        jsr     _edit_line
 
         ; if A is 0, don't save
         beq     no_save
