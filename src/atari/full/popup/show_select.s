@@ -14,7 +14,7 @@
         .import     get_scrloc
         .import     _clr_help
         .import     _fn_strlen
-        .import     _put_help
+        .import     _put_help_status
         .import     block_line
         .import     type_at_x
 
@@ -109,7 +109,7 @@ exit_select:
         ; move location down by ss_y_offset lines
         ldx     ss_y_offset
         beq     :++
-:       adw1    ptr4, #40
+:       adw1    ptr4, #SCR_WIDTH
         dex
         bne     :-
 
@@ -122,7 +122,7 @@ exit_select:
 
         ; ----------------------------------------------------------
         ; print the popup header message. centre the text, and invert it. we are given simple ascii string
-        adw     ptr4, #40
+        adw1    ptr4, #SCR_WIDTH
         mwa     ss_message, ptr2
         pushax  ptr4
         setax   ptr2
@@ -168,14 +168,14 @@ str_nul:
 
         ; ----------------------------------------------------------
         ; Under title
-        adw     ptr4, #40
+        adw1    ptr4, #SCR_WIDTH
         mva     #FNC_TL_I, tmp1
         mva     #FNC_UP_BLK, tmp2
         mva     #FNC_TR_I, tmp3
         jsr     block_line
 
         ; save the current screen location as start of display lines after the title
-        adw     ptr4, #40
+        adw1    ptr4, #SCR_WIDTH
         mwa     ptr4, ss_scr_l_strt
 
         rts
@@ -191,7 +191,7 @@ str_nul:
         jsr     block_line
 
         ; last line
-        adw     ptr4, #40
+        adw1    ptr4, #SCR_WIDTH
         mva     #FNC_BLW, tmp1
         mva     #FNC_UP_BLK, tmp2
         mva     #FNC_BRW, tmp3

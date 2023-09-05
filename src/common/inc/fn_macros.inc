@@ -398,15 +398,16 @@ l1:
 
 .macro put_help argNum, msg
         pusha   argNum
+        pusha   #0
         setax   msg
-        jsr     _put_help
+        jsr     _put_help_status
 .endmacro
 
 .macro put_status argNum, msg
-        lda     argNum
-        jsr     pusha
+        pusha   argNum
+        pusha   #1
         setax   msg
-        jsr     _put_status
+        jsr     _put_help_status
 .endmacro
 
 .macro get_scrloc aX, aY

@@ -55,7 +55,7 @@ widget_loop:
         ; set inverse on, we are the current 
         mva     #$80, tmp4              ; turn inverting on
 
-        ; but are we the current widget
+        ; but are we the current widget?
         lda     ss_widget_idx
         cmp     di_current_item
         bne     :+
@@ -72,11 +72,13 @@ widget_loop:
 :       ldy     #$00
         ldx     ss_pu_entry + POPUP_LEN_IDX   ; number of chars to display for each widget
 :       lda     (ptr2), y               ; get ascii char
+        jsr     ascii_to_code           ; convert to screen code
+        ora     tmp4                    ; invert if needed
+
         iny
         sty     tmp3                    ; save y (current character index)
-        jsr     ascii_to_code           ; convert to screen code
+
         ldy     tmp2                    ; restore screen offset
-        ora     tmp4
         sta     (ptr4), y               ; print char
         iny
         sty     tmp2

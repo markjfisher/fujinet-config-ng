@@ -48,16 +48,8 @@
         ; read the whole PopupItem entry into ptr2. ptr1 is the current item.
         mwa     #ss_pu_entry, ptr2      ; target for copy
 
-        ; for sanity (not really needed) blank the target space. TODO: review deleting this to save memory
-        ldx     #POPUP_MAX_SZ
-        lda     #$00
-        tay
-:       sta     (ptr2), y
-        iny
-        dex
-        bne     :-
-
         ; get the size of the current item so we know how many bytes to copy
+        ; the TYPE is defined to be the first byte, so initialise copy in Y to 0
         ldy     #POPUP_TYPE_IDX
         lda     (ptr1), y
         tax

@@ -1,7 +1,7 @@
         .export     info_popup_help
         .export     pu_err_title
 
-        .import     _put_help
+        .import     _put_help_status
         .import     pusha
 
         .include    "zeropage.inc"

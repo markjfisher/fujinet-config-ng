@@ -8,8 +8,9 @@
 .proc _main
         ; call the function under test
         pusha   t_y
+        pusha   #0
         setax   #t_s
-        jmp     _put_help
+        jmp     _put_help_status
 .endproc
 
 .bss

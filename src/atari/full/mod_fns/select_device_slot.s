@@ -8,7 +8,7 @@
         .import     _fn_io_put_device_slots
         .import     _fn_io_read_directory
         .import     _fn_io_set_device_filename
-        .import     _put_help
+        .import     _put_help_status
         .import     _fn_strlcpy
         .import     _fn_strlen
         .import     _fn_strncpy

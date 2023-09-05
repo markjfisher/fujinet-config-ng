@@ -1,10 +1,9 @@
         .export     mod_done, is_booting
         .import     pusha, pushax
         .import     mod_current, _fn_io_set_boot_config, _kb_global, _clr_scr_all, kb_current_line, _scr_highlight_line, _mount_and_boot
-        .import     _put_status
+        .import     _put_help_status
         .import     _scr_clr_highlight
         .import     _put_s
-        .import     _put_help
         .import     mx_h1, mx_s1, mx_s3, mx_m1, mx_m2
 
         .include    "zeropage.inc"

@@ -25,6 +25,10 @@
 .endstruct
 
 ; Atari specific values for Screen Display bits
+
+SCR_WIDTH   := 40           ; the global screen width value
+SCR_WIDTHX2 := 80           ; pre-calculate 2 widths so we don't have to keep doing it in code
+
 ; show_list constants for screen coordinate starting points etc.
 SL_EDIT_X   := 5            ; x offset for list entry
 SL_Y        := 2            ; the top left corner Y position to start printing the list

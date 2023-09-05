@@ -2,6 +2,7 @@
         .import     m_l1
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
+        .include    "fn_data.inc"
 
 ; INTERNAL routine to set ptr4 to the screen location for the given X,Y coordinates
 ; X = x coord, Y = y coord
@@ -18,10 +19,10 @@
         ; add x coordinate to ptr4
         adw1    ptr4, tmp4
 
-        ; now move down in lines of 40, y times
+        ; now move down in lines of SCR_WIDTH, y times
         cpy     #$00
         beq     out
-:       adw     ptr4, #40     ; 40 bytes per row
+:       adw1    ptr4, #SCR_WIDTH
         dey
         bne     :-
 

@@ -25,7 +25,7 @@ ycol:   ldy     #37     ; width - 2 (so include borders), yeah, we need Y as the
 xrow:   sta     (ptr4), y
         dey
         bpl     xrow
-        adw     ptr4, #40
+        adw1    ptr4, #SCR_WIDTH
         dex
         bpl     ycol
         rts
@@ -52,16 +52,16 @@ xrow:   sta     (ptr4), y
 .endproc
 
 .proc _clr_help
-        ; clear help texts. X lines of 40 bytes
+        ; clear help texts. Currently 2 lines of SCR_WIDTH bytes, stored as SCR_WIDTHX2 to save calculating
         mwa     #mhlp1, ptr4
-        ldx     #80
+        ldx     #SCR_WIDTHX2
         jmp     do_clear
 .endproc
 
 .proc _clr_status
-        ; clear the status lines. Y lines of 40 bytes
+        ; clear the status lines. Currently 2 lines of SCR_WIDTH bytes, stored as SCR_WIDTHX2 to save calculating
         mwa     #sline1, ptr4
-        ldx     #80
+        ldx     #SCR_WIDTHX2
         jmp     do_clear
 .endproc
 
