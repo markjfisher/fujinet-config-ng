@@ -136,7 +136,7 @@ not_esc:
 ; BACKSPACE
         cmp     #FNK_BS
         bne     not_bs
-        ; allow if Y > 0, on entry Y is current index
+        ; allow if Y > 0, on entry Y is current char index on line
         cpy     #$00
         beq     keyboard_loop
 
@@ -147,6 +147,8 @@ not_esc:
         ; 4. invert screen byte at y to look like cursor
 
         ; move all bytes up to the end down a position
+
+        ; 17 bytes shorter manipulating y in this way than creating a ptr1 with ptr3-1 and doing a simple loop. the overhead is expensive in creating ptr1
 :       lda     (ptr3), y
         dey
         sta     (ptr3), y
@@ -221,7 +223,6 @@ can_ins:
         dey
         dey
 
-        ; TODO: instead of bouncing Y around, use 2 ptrX locations instead
 :       lda     (ptr3), y       ; load char from end, push it forward one, down to current position
         iny
         sta     (ptr3), y
@@ -400,7 +401,10 @@ not_ascii:
         ; restore screen pointer for print routines
         mwa     fe_screen_loc, ptr4
 
-        ; if string is empty, display empty message again
+        ; if string is empty, display empty message again if needed
+        lda     fe_show_empty
+        beq     :+
+
         mwa     fe_str, ptr3
         ldy     #$00
         lda     (ptr3), y
