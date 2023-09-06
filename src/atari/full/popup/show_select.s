@@ -95,8 +95,8 @@ exit_select:
         jsr     _clr_help
         jsr     show_help               ; show the custom help messages for this popup
 
-        ; calculate the x-offset to show box. In the inner-box, it's (36 - width) / 2
-        lda     #35     ; one off for border
+        ; calculate the x-offset to show box. In the inner-box, it's (SCR_WIDTH - width) / 2
+        lda     #SCR_WIDTH-3
         sec
         sbc     ss_width
         lsr     a       ; divide by 2
@@ -109,7 +109,7 @@ exit_select:
         ; move location down by ss_y_offset lines
         ldx     ss_y_offset
         beq     :++
-:       adw1    ptr4, #SCR_WIDTH
+:       adw1    ptr4, #SCR_BYTES_W
         dex
         bne     :-
 
@@ -122,7 +122,7 @@ exit_select:
 
         ; ----------------------------------------------------------
         ; print the popup header message. centre the text, and invert it. we are given simple ascii string
-        adw1    ptr4, #SCR_WIDTH
+        adw1    ptr4, #SCR_BYTES_W
         mwa     ss_message, ptr2
         pushax  ptr4
         setax   ptr2
@@ -168,14 +168,14 @@ str_nul:
 
         ; ----------------------------------------------------------
         ; Under title
-        adw1    ptr4, #SCR_WIDTH
+        adw1    ptr4, #SCR_BYTES_W
         mva     #FNC_TL_I, tmp1
         mva     #FNC_UP_BLK, tmp2
         mva     #FNC_TR_I, tmp3
         jsr     block_line
 
         ; save the current screen location as start of display lines after the title
-        adw1    ptr4, #SCR_WIDTH
+        adw1    ptr4, #SCR_BYTES_W
         mwa     ptr4, ss_scr_l_strt
 
         rts
@@ -191,7 +191,7 @@ str_nul:
         jsr     block_line
 
         ; last line
-        adw1    ptr4, #SCR_WIDTH
+        adw1    ptr4, #SCR_BYTES_W
         mva     #FNC_BLW, tmp1
         mva     #FNC_UP_BLK, tmp2
         mva     #FNC_BRW, tmp3

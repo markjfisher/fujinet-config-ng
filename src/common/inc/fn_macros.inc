@@ -204,13 +204,6 @@ s2:
     stx     1+(arg1)
 .endmacro
 
-; adw: adds word values together, or immediate bytes.
-; adw src, #$40
-; adw src, #$4000
-; adw a, b
-; adw src, #$40, dst
-; adw src, #$4000, dst
-; adw a, b, c
 .macro adw arg1, arg2, arg3
     .local l1_a, l1_b
     ; ensure arg1/arg3 don't have immediate values. They are always locations.

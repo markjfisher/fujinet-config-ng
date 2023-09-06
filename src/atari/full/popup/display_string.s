@@ -52,7 +52,7 @@ no_x_space:
         beq     :+
 
         ; move to next line, and string then reloop
-        adw1    ptr4, #SCR_WIDTH
+        adw1    ptr4, #SCR_BYTES_W
         jmp     all_strings                ; always branch
 :
         jmp     return0

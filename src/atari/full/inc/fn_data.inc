@@ -26,14 +26,15 @@
 
 ; Atari specific values for Screen Display bits
 
-SCR_WIDTH   := 40           ; the global screen width value
-SCR_WIDTHX2 := 80           ; pre-calculate 2 widths so we don't have to keep doing it in code
+SCR_WIDTH   := 40           ; the global screen width value, including borders
+SCR_BYTES_W := 40           ; the number of bytes in a line
+SCR_BWX2    := 80           ; pre-calculate 2 widths so we don't have to keep doing it in code
 
 ; show_list constants for screen coordinate starting points etc.
 SL_EDIT_X   := 5            ; x offset for list entry
 SL_Y        := 2            ; the top left corner Y position to start printing the list
 SL_COUNT    := 8            ; how many entries are in a Screen List
-SL_WID_NB   := 36           ; screen width without borders
+SL_WID_NB   := SCR_WIDTH-2  ; screen width without borders
 
 MF_YOFF     := 4            ; Mod Files Y Offset for shifting file list down screen
 
@@ -91,13 +92,17 @@ FNC_BR_I    = $C9           ; Bottom Right Corner Thin INVERSE (makes WIDE outer
 
 FNC_DN_BLK  = $55           ; ctrl-U under normal, 4 rows blank, 4 rows filled
 FNC_UP_BLK  = $D5           ; INV ctrl-U under normal, 4 rows filled, 4 rows blank
-FNC_LT_BLK  = $59           ; ctrl-Y, 4 columns filled, 4 columns blank
-FNC_RT_BLK  = $D9           ; INV ctrl-Y, 4 columns blank, 4 columns filled
+FNC_LT_BLK  = $59           ; ctrl-Y, 4 columns filled, 4 columns blank - NEW BORDER LEFT CHAR
+FNC_RT_BLK  = $D9           ; INV ctrl-Y, 4 columns blank, 4 columns filled - NEW BORDER RIGHT CHAR
 
-FNC_BLANK   = $00           ; screen code for space
-FNC_FULL    = $80           ; screen code for inv-space
+FNC_BL_SEP  = $57           ; Left border separator that connects border to bar line, looks like T rotated CCW 90 - this replaces the border char on left
+FNC_BR_SEP  = $58           ; Right border separator that connects border to bar line, looks like T rotated CW 90 - this replaces the border char on right
+FNC_MD_SEP  = $52           ; Middle border separator that connects BL and BR chars across page, standard "-" like char
 
-FNC_DIR_C   = $40           ; directory character SCREEN CODE
+FNC_BLANK   = $00           ; space
+FNC_FULL    = $80           ; inv-space
+
+FNC_DIR_C   = $40           ; directory character
 FNC_L_END   = $41           ; Left extra character to widen the string slightly, used for Help text
 FNC_R_END   = $42           ; Right extra character to widen the string slightly, used for Help text
 FNC_M_END   = $44           ; Middle extra character to widen the string slightly, used for Help text - reduces overall space on Help text

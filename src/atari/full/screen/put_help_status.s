@@ -26,7 +26,7 @@ put_common:
         beq     over
 
         ; jump to correct line
-:       adw1    ptr2, #SCR_WIDTH
+:       adw1    ptr2, #SCR_BYTES_W
         dex
         bne     :-
 

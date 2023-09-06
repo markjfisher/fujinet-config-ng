@@ -91,7 +91,7 @@ no_x_space:
         beq     :+
 
         ; move to next line, and next string, then reloop
-        adw1    ptr4, #SCR_WIDTH
+        adw1    ptr4, #SCR_BYTES_W
         adw1    ptr2, {ss_pu_entry + POPUP_LEN_IDX}
         inc     tmp1                    ; next print index
         jmp     all_text                ; always branch

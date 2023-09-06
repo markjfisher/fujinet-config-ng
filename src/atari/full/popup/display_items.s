@@ -90,7 +90,7 @@ not_string:
 next_item:
         inc     di_current_item                 ; increment the current item being displayed
         ; ptr1 moves to next widget in each type above
-        adw1    ptr4, #SCR_WIDTH
+        adw1    ptr4, #SCR_BYTES_W
         jmp     l_all_items
 
 .endproc

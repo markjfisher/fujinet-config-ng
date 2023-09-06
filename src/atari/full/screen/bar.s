@@ -70,11 +70,9 @@
         tax
 
         ldy     #$04
-:       lda     #$bf    ; shape data in A, these 2 shorten the PM at start and end to be within border
-        sta     __PMG_START__+$180, x
-        lda     #$7f
+        lda     #$ff    ; shape data in A - with half chars on the borders, we can't get 4 pixels short anymore
+:       sta     __PMG_START__+$180, x
         sta     __PMG_START__+$200, x
-        lda     #$ff
         sta     __PMG_START__+$280, x
         sta     __PMG_START__+$300, x
         sta     __PMG_START__+$380, x

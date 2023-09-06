@@ -6,6 +6,7 @@
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
+        .include    "fn_data.inc"
 
 ; void put_s(uint8_t X, uint8_t Y, char *s)
 ; X, Y contain coordinates for string
@@ -20,7 +21,7 @@
 
         ; load and check x,y boundary
         ldx     tmp1
-        cpx     #36
+        cpx     #SCR_WIDTH-2
         bcs     exit
         ldy     tmp2
         cpy     #20
@@ -41,7 +42,7 @@ next_char:
 
         inc     tmp1            ; x+1, small numbers so no need to check C
         lda     tmp1
-        cmp     #36
+        cmp     #SCR_WIDTH-2
         bcs     exit            ; out of bounds in X
         iny                     ; move across a character, used for string and screen loc
         bcc     next_char

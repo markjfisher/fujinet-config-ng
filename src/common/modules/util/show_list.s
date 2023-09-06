@@ -49,7 +49,7 @@ next_char:
         ; Increment ptr1/4 location to next entry and screen location
 :       inc     sl_index
         adw1    ptr1, sl_size
-        adw1    ptr4, {#(40-SL_EDIT_X)}       ; 40 - 5 chars for the next list number
+        adw1    ptr4, {#(SCR_BYTES_W-SL_EDIT_X)}       ; 40 - 5 chars for the next list number
 
         lda     sl_index
         cmp     #SL_COUNT

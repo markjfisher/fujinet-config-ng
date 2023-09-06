@@ -6,6 +6,7 @@
 
         .include    "atari.inc"
         .include    "fn_macros.inc"
+        .include    "fn_data.inc"
 
 ; Convenience defines
 
@@ -96,36 +97,27 @@ main_dlist:
 
 .segment "SCREEN"
 
-; inverse space + 38 spaces + inverse space.
-.macro SCREEN_BLANK_LINE
-        .byte $80
-        .repeat 38
-            .byte " "
-        .endrepeat
-        .byte $80
-.endmacro
-
-.macro SPACES_40
-        .repeat 40
+.macro SPACES_LINE
+        .repeat SCR_BYTES_W
             .byte " "
         .endrepeat
 .endmacro
 
         SCREENCODE_INVERT_CHARMAP
-sline1: SPACES_40
-sline2: SPACES_40
+sline1: SPACES_LINE
+sline2: SPACES_LINE
         NORMAL_CHARMAP
 
         SCREENCODE_CHARMAP
 m_l1:   .repeat 20
-            SCREEN_BLANK_LINE
+            SPACES_LINE
         .endrepeat
 
 
         SCREENCODE_INVERT_CHARMAP
 ; needs to be continuous memory for screen writers
-mhlp1:  SPACES_40
-mhlp2:  SPACES_40
+mhlp1:  SPACES_LINE
+mhlp2:  SPACES_LINE
         NORMAL_CHARMAP
 
 gbk:
@@ -134,18 +126,18 @@ gbk:
     .endrepeat
 
 gintop1:
-    .byte $ff, $e0
-    .repeat 36
+    .byte $fe
+    .repeat 38
         .byte $00
     .endrepeat
-    .byte $07, $ff
+    .byte $7f
 
 gintop2:
-    .byte $ff, $80
-    .repeat 36
+    .byte $f8
+    .repeat 38
         .byte $00
     .endrepeat
-    .byte $01, $ff
+    .byte $1f
 
 gouttop1:
     .byte $0f, $ff
