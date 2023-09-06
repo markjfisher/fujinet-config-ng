@@ -20,6 +20,24 @@
     fn_version  .res 15
 .endstruct
 
+.struct AdapterConfigExtended
+    ssid        .res 33
+    hostname    .res 64
+    localIP     .res 4
+    gateway     .res 4
+    netmask     .res 4
+    dnsIP       .res 4
+    macAddress  .res 6
+    bssid       .res 6
+    fn_version  .res 15
+    sLocalIP    .res 16
+    sGateway    .res 16
+    sNetmask    .res 16
+    sDnsIP      .res 16
+    sMacAddress .res 18
+    sBssid      .res 18
+.endstruct
+
 .struct DeviceSlot
     hostSlot    .res 1
     mode        .res 1

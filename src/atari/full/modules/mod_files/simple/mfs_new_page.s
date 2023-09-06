@@ -1,6 +1,6 @@
         .export     mfs_new_page
 
-        .import     _clr_scr_files
+        .import     _clr_src_with_separator
         .import     _ellipsize
         .import     _fn_io_error
         .import     _fn_io_open_directory
@@ -28,7 +28,8 @@
 
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 .proc mfs_new_page
-        jsr     _clr_scr_files
+        lda     #$04                    ; print a separator on line 4
+        jsr     _clr_src_with_separator
         jsr     _scr_clr_highlight
         jsr     print_dir_info
         jsr     copy_path_filter_to_buffer

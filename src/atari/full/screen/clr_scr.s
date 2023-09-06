@@ -1,4 +1,8 @@
-        .export     _clr_scr_all, _clr_help, _clr_status, _clr_scr_all, _clr_scr_files
+        .export     _clr_scr_all
+        .export     _clr_src_with_separator
+        .export     _clr_help
+        .export     _clr_status
+
         .import     get_scrloc
         .import     mhlp1, sline1, m_l1
 
@@ -21,7 +25,7 @@
         jsr     get_scrloc
 
         ldx     #19     ; rows-1
-ycol:   ldy     #SCR_WIDTH-3
+ycol:   ldy     #SCR_WID_NB-1 ; usable width - 1 
         lda     #$00    ; screen code for ' '
 xrow:   sta     (ptr4), y
         dey
@@ -34,14 +38,14 @@ xrow:   sta     (ptr4), y
 
 .proc _clr_scr
         jsr     clr_scr_inner
-        ldy     #$00
-        jmp     draw_border     ; clears any old separators
+        ldy     #$00            ; forces a simple border
+        jmp     draw_border     ; with no separators
 .endproc
 
-; y holds the line at which a separator should be drawn, 0 for no border
+; y holds the line at which a separator should be drawn, 0 for no separator
 .proc draw_border
         mwa     #m_l1, ptr4
-        dey             ; make it 0 indexed, and now becomes $ff if there was no border, which means we'll never print it
+        dey             ; make it 0 indexed, if no separator required, y becomes $ff, which means we'll never print it
         sty     tmp4
         ldx     #$00    ; current row    
 all_loop:
@@ -82,11 +86,15 @@ next:
         rts
 .endproc
 
-; TODO: Move this, make more generic to any size, not just "line 4"
-.proc _clr_scr_files
-        jsr     clr_scr_inner
-        ldy     #$04
-        jmp     draw_border
+; void clr_src_with_separator(uint8_t separator_line)
+;
+; clear screen and place a separator on page at line separator_line (1 based index)
+.proc _clr_src_with_separator
+        pha                             ; save the separator_line
+        jsr     clr_scr_inner           ; clear the inner part of screen
+        pla                             ; restore parameter
+        tay
+        jmp     draw_border             ; ... and draw border with param in Y index
 .endproc
 
 .proc _clr_help

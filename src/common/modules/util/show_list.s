@@ -43,7 +43,7 @@ next_char:
         jsr     ascii_to_code
         sta     (ptr4), y       ; print char
         iny                     ; move across a character, used for string and screen loc
-        cpy     #(SL_WID_NB-SL_EDIT_X)
+        cpy     #(SCR_WID_NB-SL_EDIT_X)
         bne     next_char
 
         ; Increment ptr1/4 location to next entry and screen location

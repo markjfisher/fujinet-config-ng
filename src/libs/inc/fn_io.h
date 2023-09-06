@@ -48,6 +48,25 @@ typedef struct
   char fn_version[15];
 } AdapterConfig;
 
+typedef struct
+{
+  char ssid[SSID_MAXLEN];
+  char hostname[64];
+  uint8_t localIP[4];
+  uint8_t gateway[4];
+  uint8_t netmask[4];
+  uint8_t dnsIP[4];
+  uint8_t macAddress[6];
+  uint8_t bssid[6];
+  char fn_version[15];
+  char sLocalIP[16];
+  char sGateway[16];
+  char sNetmask[16];
+  char sDnsIP[16];
+  char sMacAddress[18];
+  char sBssid[18];
+} AdapterConfigExtended;
+
 typedef uint8_t HostSlot[32];
 
 typedef struct {
@@ -72,6 +91,7 @@ void fn_io_disable_device(uint8_t d);
 bool fn_io_error();
 void fn_io_enable_device(uint8_t d);
 void fn_io_get_adapter_config(AdapterConfig *ac);
+void fn_io_get_adapter_config_extended(AdapterConfigExtended *ac);
 bool fn_io_get_device_enabled_status(uint8_t d);
 void fn_io_get_device_filename(uint8_t ds, char *buffer);
 void fn_io_get_device_slots(DeviceSlot *d);

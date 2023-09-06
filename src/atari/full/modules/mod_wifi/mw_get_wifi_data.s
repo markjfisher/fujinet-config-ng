@@ -1,7 +1,47 @@
         .export     _mw_get_wifi_data
 
-.proc _mw_get_wifi_data
-        ; have to work out what we want to show - say we have no wifi setup vs already connected
+        .import     _fn_io_error
+        .import     _fn_io_get_adapter_config_extended
+        .import     _free
+        .import     _malloc
+        .import     mw_adapter_config
+        .import     mw_error_fetch_ac
+        .import     mw_is_ac_data_fetched
+        .import     return0
+        .import     return1
 
+        .include    "zeropage.inc"
+        .include    "fn_data.inc"
+        .include    "fn_io.inc"
+        .include    "fn_macros.inc"
+
+; int mw_get_wifi_data()
+;
+; fetches AdapterConfig data if not yet done.
+; On an error, it will return 1 and already have zero'd AC data, otherwise returns 0 after setting data in mw_adapter_config
+; also stores it in mw_adapter_config, but for any C callers, they can read it from return value
+
+.proc _mw_get_wifi_data
+        lda     mw_is_ac_data_fetched
+        beq     fetch_ac
         rts
+
+fetch_ac:
+        setax   #mw_adapter_config
+        jsr     _fn_io_get_adapter_config_extended
+        jsr     _fn_io_error
+        bne     fetch_ac_error
+        mva     #$01, mw_is_ac_data_fetched
+        jsr     return0
+        rts
+
+fetch_ac_error:
+        lda     #$00
+        ldx     #.sizeof(AdapterConfigExtended)-1
+:       sta     mw_adapter_config, x
+        dex
+        bpl     :-
+
+        jsr     mw_error_fetch_ac
+        jmp     return1
 .endproc

@@ -27,14 +27,15 @@
 ; Atari specific values for Screen Display bits
 
 SCR_WIDTH   := 40           ; the global screen width value, including borders
+SCR_WID_NB  := SCR_WIDTH-2  ; screen width without borders
+
 SCR_BYTES_W := 40           ; the number of bytes in a line
-SCR_BWX2    := 80           ; pre-calculate 2 widths so we don't have to keep doing it in code
+SCR_BWX2    := 80           ; pre-calculate 2 widths so we don't have to keep doing it in code, used for clearing status/help lines which are 2 lines tall
 
 ; show_list constants for screen coordinate starting points etc.
 SL_EDIT_X   := 5            ; x offset for list entry
 SL_Y        := 2            ; the top left corner Y position to start printing the list
 SL_COUNT    := 8            ; how many entries are in a Screen List
-SL_WID_NB   := SCR_WIDTH-2  ; screen width without borders
 
 MF_YOFF     := 4            ; Mod Files Y Offset for shifting file list down screen
 
