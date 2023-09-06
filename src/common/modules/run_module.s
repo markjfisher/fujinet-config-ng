@@ -1,6 +1,6 @@
         .export     run_module
         .export     mod_table, mod_current
-        .import     mod_init, _mod_hosts, _mod_devices, mod_wifi, mod_info, mod_done
+        .import     mod_init, _mod_hosts, _mod_devices, _mod_wifi, mod_info, mod_done
         .import     mod_files, mod_sel_host_slot, mod_select_device_slot
 
         .include    "fn_mods.inc"
@@ -27,7 +27,7 @@
 mod_table:
         .addr (_mod_hosts - 1)
         .addr (_mod_devices - 1)
-        .addr (mod_wifi - 1)
+        .addr (_mod_wifi - 1)
         .addr (mod_info - 1)
         .addr (mod_done - 1)
         .addr (mod_files - 1)

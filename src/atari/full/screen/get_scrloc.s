@@ -11,13 +11,12 @@
 ; TRASHES tmp4. Y, sets ptr4
 ; DO NOT TRASH OTHER ZP VALUES. for efficiency and to reduce memory usage.
 .proc get_scrloc
-        stx     tmp4            ; x coord
-
         mwa     #m_l1, ptr4     ; start of screen memory
         adw1    ptr4, #$02      ; shift inside border
 
         ; add x coordinate to ptr4
-        adw1    ptr4, tmp4
+        txa
+        adw1    ptr4, a
 
         ; now move down in lines of SCR_WIDTH, y times
         cpy     #$00

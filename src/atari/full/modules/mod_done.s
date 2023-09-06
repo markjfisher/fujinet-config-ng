@@ -42,7 +42,7 @@ not_booting:
 
         ; handle keyboard
         pusha   #$00            ; no lines (set to $f for all lines) - stops the highlight from moving
-        pusha   #Mod::devices   ; previous
+        pusha   #Mod::wifi      ; previous
         pusha   #Mod::hosts     ; next
         pushax  #done_selected  ; our current selection
         setax   #mod_done_kb

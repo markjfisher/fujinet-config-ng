@@ -23,7 +23,7 @@
 
         pusha   #7              ; only 8 entries on screen
         pusha   #Mod::hosts     ; previous
-        pusha   #Mod::done      ; next
+        pusha   #Mod::wifi      ; next
         pushax  #md_device_selected   ; our current device
         setax   #md_kb_handler
         jmp     _kb_global          ; rts from this will drop out of module

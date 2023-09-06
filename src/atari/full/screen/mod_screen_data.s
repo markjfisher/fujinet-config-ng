@@ -1,6 +1,7 @@
         .export md_s1, md_s2, md_h1
         .export mx_s1, mx_s3, mx_h1, mx_m1, mx_m2
         .export mh_s1, mh_s2, mh_h1
+        .export mw_s1, mw_s2, mw_h1
         .export mf_s1, mf_h1, mf_h2
         .export mf_host, mf_filter, mf_path
 
@@ -126,3 +127,22 @@ mf_h2:
 mf_host:        .byte "Host:", 0
 mf_filter:      .byte "Fltr:", 0
 mf_path:        .byte "Path:", 0
+
+; ------------------------------------------------------------------
+; Mod WIFI data
+; ------------------------------------------------------------------
+mw_s1:
+                INVERT_ATASCII
+                .byte "WIFI SETUP", 0
+
+mw_s2:
+                NORMAL_CHARMAP
+                .byte $81, $1e, $82
+                INVERT_ATASCII
+                .byte "Drive Slots            Info/Exit", 0
+                NORMAL_CHARMAP
+                .byte $81, $1f, $82, 0
+
+mw_h1:
+                NORMAL_CHARMAP
+                .byte "TODO", 0
