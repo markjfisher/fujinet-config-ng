@@ -9,6 +9,5 @@
         jsr     _mw_init_screen
         jsr     _mw_get_wifi_data
         jsr     _mw_display_wifi
-        ; jmp     _mw_handle_input
-        rts
+        jmp     _mw_handle_input
 .endproc

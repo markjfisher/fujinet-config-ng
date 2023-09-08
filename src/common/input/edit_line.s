@@ -8,12 +8,13 @@
         .import     ascii_to_code
         .import     _malloc, _free
         .import     return0, return1
+        .import     put_s_p1p4
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
 
-; bool fn_edit(char* str, void *scr_loc, uint8_t max_len, bool show_empty)
+; bool edit_line(char* str, void *scr_loc, uint8_t max_len)
 ;
 ; Edit a string up to 255 chars. Enter/ESC to finish editing
 ; Cursor movement supported, including:
@@ -28,22 +29,25 @@
 ; char *str         - pointer to string being edit
 ; void *scr         - pointer to first location of screen where string is displayed
 ; uint8_t maxLen    - max string size
-; bool show_empty   - show <Empty> when exiting and string is empty (for ESC)
 ;
 ; RETURNS:
 ; 0 if no edit occurred, 1 if the string was changed
 
+; TODO: 
+;  - this needs some rework to be cross platform, i.e. cgetc, cputc etc
+;  - clean up the 'minus 2' stuff
+;  - take x,y instead of screen location and then use getscrloc functions to set position
+
 .proc _edit_line
         ; pull out the params
-        sta     fe_show_empty
-        popa    fe_max_len      ; this includes the 0 at the end, so strlen should be 1 less. e.g. max = 4: ["abc",0] is ok, so strlen of 3 is ok. but strlen of 4 is too long
-        popax   fe_screen_loc
-        popax   fe_str
+        sta     el_max_len      ; this includes the 0 at the end, so strlen should be 1 less. e.g. max = 4: ["abc",0] is ok, so strlen of 3 is ok. but strlen of 4 is too long
+        popax   el_screen_loc
+        popax   el_str
 
-        ; check length, if it's >= fe_max_len, exit with 0
-        jsr     _fn_strlen      ; returns strlen, or #$ff for bad string, so we can always just check >= fe_max_len
-        cmp     fe_max_len
-        bcs     err             ; string was too large (>= fe_max_len), see params above
+        ; check length, if it's >= el_max_len, exit with 0
+        jsr     _fn_strlen      ; returns strlen, or #$ff for bad string, so we can always just check >= el_max_len
+        cmp     el_max_len
+        bcs     err             ; string was too large (>= el_max_len), see params above
         bcc     :+
 
 err:
@@ -51,20 +55,20 @@ err:
         ; implicit rts
 
 :       ; record the initial length, and set that as cursor position
-        sta     fe_buf_len
-        sta     fe_crs_idx
+        sta     el_buf_len
+        sta     el_crs_idx
         jsr     cap_cursor      ; ensure the cursor doesn't start beyond bounds if initial string is at maxlen already
 
-        ; allocate memory for s_copy
+        ; allocate memory for el_copy
         setax   #38
         jsr     _malloc
-        axinto  s_copy          ; save the location
+        axinto  el_copy          ; save the location
         axinto  ptr1            ; and in ZP for using indirectly
 
         ; copy string into buffer
         jsr     pushax          ; dst: pointer to the memory location of buffer, current A/X already set
-        pushax  fe_str          ; src: ptr to original string
-        lda     fe_max_len
+        pushax  el_str          ; src: ptr to original string
+        lda     el_max_len
         jsr     _fn_strncpy     ; this fills up to max with 0s if string is short (or no string at all)
 
         ; if current String is empty (0 in first byte), clear the Edit box in case it has filler text
@@ -72,23 +76,28 @@ err:
         lda     (ptr1), y
         bne     not_empty
 
-        mwa     fe_screen_loc, ptr4
+        mwa     el_screen_loc, ptr4
         jsr     clear_edit      ; leaves with Z=1
         beq     :+              ; skip the double set of ptr4
 
 not_empty:
         ; initial cursor at end of string - cursor either 1 past, or on last character (if string is max size)
-        mwa     fe_screen_loc, ptr4
-:       ldy     fe_crs_idx
+        mwa     el_screen_loc, ptr4
+:       ldy     el_crs_idx
         lda     (ptr4), y
         eor     #$80
         sta     (ptr4), y
 
+        lda     el_max_len
+        sec
+        sbc     #$02
+        sta     el_max_len_min2         ; required for some end of cursor checks
+
         mwa     ptr1, ptr3
 
         ; THESE 2 SHOULD BE CONSISTENT THROUGH ENTIRE ROUTINE
-        ; ptr3 = s_copy
-        ; ptr4 = fe_screen_loc
+        ; ptr3 = el_copy
+        ; ptr4 = el_screen_loc
 
         ; GOING INTO EACH CASE, A = keycode, Y = cursor index
 
@@ -99,7 +108,7 @@ keyboard_loop:
         cmp     #$00
         beq     keyboard_loop
 
-        ldy     fe_crs_idx      ; current cursor position
+        ldy     el_crs_idx      ; current cursor position
 
 ; --------------------------------------------------------------------------
 ; ESC
@@ -109,26 +118,10 @@ keyboard_loop:
         ; first clear screen of any potential editing that's longer than the original string
         jsr     clear_edit
 
-        mwa     fe_str, ptr1
-        ldy     #$00
-        lda     (ptr1), y
-        beq     esc_show_empty
-
-        jsr     put_ptr1_s
+        mwa     el_str, ptr1
+        jsr     put_s_p1p4
         jsr     cleanup
-        beq     esc_exit
-
-        ; re-write empty if there's no string set in host, but only if told to by param
-esc_show_empty:
-        lda     fe_show_empty
-        beq     :+
-        mwa     #s_empty, ptr1
-        jsr     put_ptr1_s
-:       jsr     cleanup
-
-esc_exit:
-        ; return values should be 0 in A/X to show we did no edit
-        jmp     return0
+        jmp     return0         ; no edit
 
 not_esc:
 
@@ -154,7 +147,7 @@ not_esc:
         sta     (ptr3), y
         iny
         iny
-        cpy     fe_max_len
+        cpy     el_max_len
         bne     :-
 
         ; put a zero at the end
@@ -162,8 +155,8 @@ not_esc:
         mva     #$00, {(ptr3), y}
 
         ; reduce edit index and buffer length
-        dec     fe_crs_idx
-        dec     fe_buf_len
+        dec     el_crs_idx
+        dec     el_buf_len
         jsr     refresh_line
         jmp     keyboard_loop
 
@@ -175,8 +168,8 @@ not_bs:
         bne     not_del
 
         ; check if cursor is not at the end first. if it is, nothing to do
-        lda     fe_crs_idx
-        cmp     fe_buf_len
+        lda     el_crs_idx
+        cmp     el_buf_len
         bcc     can_del
         jmp     keyboard_loop   ; can't delete as there is nothing ahead of us
 
@@ -188,7 +181,7 @@ can_del:
         sta     (ptr3), y
         iny
         iny
-        cpy     fe_max_len
+        cpy     el_max_len
         bne     :-
 
         ; put a zero at the end
@@ -196,7 +189,7 @@ can_del:
         mva     #$00, {(ptr3), y}
 
         ; reduce sbuffer length
-        dec     fe_buf_len
+        dec     el_buf_len
         jsr     refresh_line
         jmp     keyboard_loop
 
@@ -208,8 +201,8 @@ not_del:
         bne     not_insert
 
         ; check if cursor is at end, do nothing if it is
-        lda     fe_crs_idx
-        cmp     fe_buf_len
+        lda     el_crs_idx
+        cmp     el_buf_len
         bcc     can_ins
         jmp     keyboard_loop
 
@@ -219,7 +212,7 @@ can_ins:
         ; last char if there was one, drops off end if string too big.
         ; put space in current location
         ; set y = max_len - 2 (one off for null, one off for not going too far)
-        ldy     fe_max_len
+        ldy     el_max_len
         dey
         dey
 
@@ -229,7 +222,7 @@ can_ins:
         dey
         dey
         bmi     :+              ; were we editing at position 0? TODO: will this break with long strings?
-        cpy     fe_crs_idx
+        cpy     el_crs_idx
         bcs     :-
 
         ; put space at our current location, y is 1 less than cursor location at moment
@@ -237,16 +230,16 @@ can_ins:
         mva     #' ', {(ptr3), y}
 
         ; put 0 at end to ensure string is always nul terminated
-        ldy     fe_max_len
+        ldy     el_max_len
         dey
         mva     #$00, {(ptr3), y}
 
         ; increase buffer len if we can
-        jsr     tmp1_as_len_min_2
-        lda     fe_buf_len
+        mva     el_max_len_min2, tmp1
+        lda     el_buf_len
         cmp     tmp1
         bcs     no_extra
-        inc     fe_buf_len
+        inc     el_buf_len
 
 no_extra:
         jsr     refresh_line
@@ -260,11 +253,11 @@ not_insert:
         bne     not_left
 
         ; if cursor already at 0, don't move
-        lda     fe_crs_idx
+        lda     el_crs_idx
         cmp     #$00
         beq     :+
 
-        dec     fe_crs_idx
+        dec     el_crs_idx
         jsr     refresh_line
 
 :
@@ -277,18 +270,16 @@ not_left:
         cmp     #FNK_RIGHT
         bne     not_right
 
-        ; if cursor already at max, don't move.
-        jsr     tmp1_as_len_min_2
-        lda     fe_crs_idx
-        cmp     tmp1
+        lda     el_crs_idx
+        cmp     el_max_len_min2
 
         beq     :+
         ; also can't be longer than the current buffer length
-        cmp     fe_buf_len
+        cmp     el_buf_len
         bcs     :+
 
         ; allowed to move cursor as it isn't at the ends
-        inc     fe_crs_idx
+        inc     el_crs_idx
 
 :       jsr     refresh_line
         jmp     keyboard_loop
@@ -301,7 +292,7 @@ not_right:
         bne     not_home
 
         ; set cursor to 0
-        mva     #$00, fe_crs_idx
+        mva     #$00, el_crs_idx
         jsr     refresh_line
         jmp     keyboard_loop
 
@@ -313,7 +304,7 @@ not_home:
         bne     not_end_key
 
         ; set cursor to buf len (end of editing buffer)
-        mva     fe_buf_len, fe_crs_idx
+        mva     el_buf_len, el_crs_idx
         jsr     cap_cursor
 
         jsr     refresh_line
@@ -326,10 +317,13 @@ not_end_key:
         cmp     #FNK_KILL ; kill text to end of buffer
         bne     not_kill
 
+        ; set buffer length to current char index (y)
+        sty     el_buf_len
+
         lda     #$00
 :       sta     (ptr3), y       ; current cursor position forward should become 0s
         iny
-        cpy     fe_max_len
+        cpy     el_max_len
         bcc     :-
 
         jsr     refresh_line
@@ -348,7 +342,7 @@ space_or_more:
         sta     tmp1            ; save it while we check bounds
 
         ; check bounds, if current edit position is on last char, we can't add more
-        ldx     fe_max_len
+        ldx     el_max_len
         dex
         stx     tmp2
         cpy     tmp2
@@ -359,17 +353,16 @@ space_or_more:
 
         ; did we extend the buffer, or overwrite a char?
         ; we are overwriting if y index is less than buf len
-        cpy     fe_buf_len
+        cpy     el_buf_len
         bcc     :+
-        inc     fe_buf_len
+        inc     el_buf_len
 
         ; can we move cursor on? yes if not now at end
-:       jsr     tmp1_as_len_min_2
-        cpy     tmp1
+:       cpy     el_max_len_min2
         beq     :+
 
         ; allowed to move cursor
-        inc     fe_crs_idx
+        inc     el_crs_idx
 
 :       jsr     refresh_line
         jmp     keyboard_loop
@@ -391,33 +384,20 @@ not_ascii:
 
         ; ptr2 is now pointing to real start of string to copy
         ; save the buffer into the original string's memory
-        pushax  fe_str
+        pushax  el_str
         pushax  ptr2
-        lda     fe_max_len
+        lda     el_max_len
         ; reduce it by any leading whitespace we found
         sec
         sbc     tmp1
         jsr     _fn_strncpy     ; trashes ptr3/4
         ; restore screen pointer for print routines
-        mwa     fe_screen_loc, ptr4
+        mwa     el_screen_loc, ptr4
 
-        ; if string is empty, display empty message again if needed
-        lda     fe_show_empty
-        beq     :+
-
-        mwa     fe_str, ptr3
-        ldy     #$00
-        lda     (ptr3), y
-        bne     :+
-
-        mwa     #s_empty, ptr1
-        jsr     put_ptr1_s      ; exits with A = 0
-        beq     end_enter
-
-:       ; write ptr2 (which points to first non whitespace) string to screen
+        ; write ptr2 (which points to first non whitespace) string to screen
         jsr     clear_edit
         mwa     ptr2, ptr1
-        jsr     put_ptr1_s
+        jsr     put_s_p1p4
 
 end_enter:
         ; mark that we made an edit, so caller must act appropriately.
@@ -440,22 +420,8 @@ clear_edit:
         ldy     #$00
 :       sta     (ptr4), y
         iny
-        cpy     fe_max_len
+        cpy     el_max_len
         bne     :-
-        rts
-
-; write the string at ptr1 to screen location fe_screen_loc (ptr4)
-; no bounds checking. copies until finds 0
-put_ptr1_s:
-        ldy     #$00
-:       lda     (ptr1), y
-        beq     :+
-
-        jsr     ascii_to_code
-        sta     (ptr4), y
-        iny
-        bne     :-
-:
         rts
 
 ; show current editing string at screen location and show cursor
@@ -463,23 +429,16 @@ refresh_line:
         ; copy buffer to screen memory and deal with last char by blanking whole line out first
         jsr     clear_edit
         mwa     ptr3, ptr1
-        jsr     put_ptr1_s
+        jsr     put_s_p1p4
 
         ; load Y with current location index
-        ldy     fe_crs_idx
+        ldy     el_crs_idx
 
         ; invert the screen location's char for cursor display, which handles cursor INSIDE a string
         ; this is visual only, and doesn't affect buffer
         lda     (ptr4), y
         ora     #$80
         sta     (ptr4), y
-        rts
-
-tmp1_as_len_min_2:
-        ldx     fe_max_len
-        dex
-        dex
-        stx     tmp1
         rts
 
 ; Removes Trailing whitespace in buffer by replacing with 0
@@ -493,7 +452,7 @@ trim_whitespace:
         mva     #$00, tmp1
 
         ; find first non zero char from the end
-        ldy     fe_max_len
+        ldy     el_max_len
         dey
 
 :       dey
@@ -543,32 +502,31 @@ end_trimming:
 
 cap_cursor:
         ; if we're at max-1, put us at max-2 as can't move cursor into last byte
-        ldx     fe_max_len
+        ldx     el_max_len
         dex
-        cpx     fe_crs_idx
+        cpx     el_crs_idx
         bne     :+
         dex
-        stx     fe_crs_idx
+        stx     el_crs_idx
 
 :       rts
 
 cleanup:
-        ; FREE s_copy
-        setax   s_copy
+        ; FREE el_copy
+        setax   el_copy
         jsr     _free
         ; set A=0 so our callers can beq away
         lda     #$00
         rts
-
 .endproc
 
 .bss
-fe_show_empty:  .res 1  ; bool to show empty or leave blank when ESC hit
-fe_max_len:     .res 1  ; max length of string being edit. includes 0 char for end of string
-fe_screen_loc:  .res 2  ; pointer to screen location to print to
-fe_str:         .res 2  ; pointer to original string location being edit
+el_screen_loc:    .res 2  ; pointer to screen location to print to
 
-fe_buf_len:     .res 1  ; buffer length, keep track as we make edits so don't have to redo strlen
-fe_crs_idx:     .res 1  ; the index in the string of cursor position
+el_max_len:       .res 1  ; max length of string being edit. includes 0 char for end of string
+el_max_len_min2:  .res 1  ; max length of string being edit. includes 0 char for end of string
 
-s_copy:         .res 2  ; pointer to malloc'd data
+el_str:           .res 2  ; pointer to original string location being edit
+el_crs_idx:       .res 1  ; the index in the string of cursor position
+el_buf_len:       .res 1  ; buffer length, keep track as we make edits so don't have to redo strlen
+el_copy:          .res 2  ; pointer to malloc'd data

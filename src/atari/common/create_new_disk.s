@@ -120,7 +120,7 @@ do_custom:
         pushax  ptr4            ; dst
         pushax  ptr3            ; src
         setax   #$100           ; copy up to 256 bytes
-        jsr     _strncpy        ; this leaves only ptr4 intact
+        jsr     _strncpy        ; should we move entirely to standard version?
 
         ; restore ptr4 to start of buffer
         sbw     ptr4, #NewDisk::filename

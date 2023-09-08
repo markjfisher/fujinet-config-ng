@@ -45,9 +45,5 @@
         put_s   #16, #7, {#(mw_adapter_config + AdapterConfigExtended::sBssid)}
         put_s   #16, #8, {#(mw_adapter_config + AdapterConfigExtended::fn_version)}
 
-        lda     #$02
-        jsr     _pause
-        jsr     debug
-
         rts
 .endproc

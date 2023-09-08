@@ -1,5 +1,6 @@
         .export     mw_adapter_config
         .export     mw_is_ac_data_fetched
+        .export     mw_selected
 
         .include    "fn_io.inc"
 
@@ -11,3 +12,5 @@ mw_adapter_config:      .tag AdapterConfigExtended
 .data
 ; flag to decide if we need to fetch AdapterConfig data. User must be able to refresh
 mw_is_ac_data_fetched:  .byte 0
+
+mw_selected:            .byte 0
