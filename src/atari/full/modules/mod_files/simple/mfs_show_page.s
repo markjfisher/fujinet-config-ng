@@ -2,15 +2,22 @@
 
         .import     _fn_io_close_directory
         .import     _fn_io_read_directory
+        .import     _fn_io_set_directory_position
         .import     _fn_strlen
         .import     _put_s
+        .import     ascii_to_code
         .import     fn_io_buffer
         .import     get_scrloc
         .import     mf_dir_or_file
+        .import     mf_dir_pos
+        .import     mf_next
+        .import     mf_prev
         .import     mfs_entries_cnt
         .import     mfs_entry_index
+        .import     mfs_is_eod
         .import     mfs_y_offset
         .import     pusha
+        .import     sline2
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -24,35 +31,107 @@ l_entries:
         ldx     mfs_entry_index
         mva     #$00, {mf_dir_or_file, x}
 
-        pusha   #DIR_MAX_LEN    ; the max length of each line for directory/file names
-        pusha   #$00            ; special aux2 param
-        setax   #fn_io_buffer
-        jsr     _fn_io_read_directory
+        jsr     read_dir_is_eod
+        bne     :+              ; is it a dir?
 
-        ; A/X contain pointer to the data just read (which is also just fn_io_buffer)
-        ; an end of dir is 0x7f, 0x7f
-        axinto  ptr1
-        ldy     #$01
-        lda     (ptr1), y
+        ; we are at EOD, so mark it, and skip over any printing
+        mva     #$01, mfs_is_eod
+        bne     finish_list
 
-        cmp     #$7f            ; magic marker
-        beq     finish_list
-
-        jsr     print_entry
-
+:       jsr     print_entry
         inc     mfs_entry_index
         lda     mfs_entry_index
         cmp     #DIR_PG_CNT     ; are there more to do?
         bcc     l_entries
 
 finish_list:
-        ; make mfs_entries_cnt be 0 based
-        ; save the number we showed, so we know if we can move highlight down, and if we are at EOD yet
-        ; (if it's equal to DIR_PG_CNT, we still have more pages to show)
-        ; TODO WHAT IF IT'S LAST? TRY 16 EXACT
-        mva     mfs_entry_index, mfs_entries_cnt
-        jmp     _fn_io_close_directory
+        ; if we have a full page, check if we have any more to come, and set mfs_is_eod. this stops us showing empty pages if there were exactly number of dirs to fill page
+        ; Z is set if we have a full page
+        bne     :+
+        jsr     check_for_next_page
 
+:       mva     mfs_entry_index, mfs_entries_cnt
+
+        ; show the status text arrows if they are relevant
+        ; if mf_dir_pos > 0, we can show "prev"
+        ; if mfs_is_eod is false we can show "next", this was set if the next page would be empty too
+        jsr     clear_status_2
+        lda     mf_dir_pos
+        beq     :+
+        jsr     show_prev
+
+:       lda     mfs_is_eod
+        bne     :+
+        jsr     show_next
+
+:       jmp     _fn_io_close_directory
+
+.endproc
+
+.proc clear_status_2
+        mwa     #sline2, ptr1
+        ldy     #SCR_WIDTH-1
+        lda     #FNC_FULL
+:       sta     (ptr1), y
+        dey
+        bpl     :-
+        rts
+.endproc
+
+.proc show_prev
+        mwa     #sline2, ptr1
+        adw1    ptr1, #$01      ; 1 char into line
+        mwa     #mf_prev, ptr2
+        jmp     put_mf_s
+.endproc
+
+.proc show_next
+        mwa     #sline2, ptr1
+        adw1    ptr1, #(SCR_WIDTH - 8)          ; string is 8 chars, adjust for end of line
+        mwa     #mf_next, ptr2
+        jmp     put_mf_s
+.endproc
+
+.proc put_mf_s
+        ldy     #$00
+:       lda     (ptr2), y
+        beq     :+              ; string terminator
+        jsr     ascii_to_code
+        sta     (ptr1), y
+        iny
+        bne     :-
+        rts
+.endproc
+
+; reads the next entry and compares to EOD marker
+.proc read_dir_is_eod
+        pusha   #DIR_MAX_LEN    ; the max length of each line for directory/file names
+        pusha   #$00            ; special aux2 param
+        setax   #fn_io_buffer
+        jsr     _fn_io_read_directory   ; this reads current and moves FN internal directory pointer on 1 position
+
+        ; A/X contain pointer to the data just read
+        ; an end of dir is 0x7f, 0x7f
+        axinto  ptr1
+        ldy     #$01
+        lda     (ptr1), y
+        cmp     #$7f            ; magic marker
+        rts
+.endproc
+
+.proc check_for_next_page
+        ; set mfs_is_eod if the next page of results only has 7f as first entry
+        mwa     mf_dir_pos, ptr1
+        adw1    ptr1, #DIR_PG_CNT
+        setax   ptr1
+        jsr     _fn_io_set_directory_position
+
+        ; read first dir, and check if it's 7f
+        jsr     read_dir_is_eod
+        bne     :+
+        mva     #$01, mfs_is_eod
+
+:       rts
 .endproc
 
 

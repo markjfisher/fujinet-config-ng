@@ -24,7 +24,7 @@
         ldy     #$00
         jsr     get_scrloc
 
-        ldx     #19     ; rows-1
+        ldx     #21     ; rows-1
 ycol:   ldy     #SCR_WID_NB-1 ; usable width - 1 
         lda     #$00    ; screen code for ' '
 xrow:   sta     (ptr4), y
@@ -81,7 +81,7 @@ do_separator:
         ldx     tmp3
         inx
 next:
-        cpx     #20
+        cpx     #22
         bne     all_loop
         rts
 .endproc
@@ -98,9 +98,9 @@ next:
 .endproc
 
 .proc _clr_help
-        ; clear help texts. Currently 2 lines of SCR_WIDTH bytes, stored as SCR_BWX2 to save calculating
+        ; clear help texts. Currently 1 lines of SCR_WIDTH bytes, stored as SCR_BWX2 to save calculating
         mwa     #mhlp1, ptr4
-        ldx     #SCR_BWX2
+        ldx     #SCR_WIDTH
         jmp     x_inv_spaces
 .endproc
 

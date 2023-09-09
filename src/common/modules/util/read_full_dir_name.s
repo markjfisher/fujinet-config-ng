@@ -14,7 +14,6 @@
 ; gets current dir name into AX, max 255 chars.
 ; CALLER MUST RELEASE MEMORY AFTER USING RETURN STRING.
 .proc read_full_dir_name
-
         jsr     get_to_dir_pos                          ; get ourselves at the directory position
 
         ; get filename to 255 chars

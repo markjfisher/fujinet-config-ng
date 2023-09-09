@@ -25,7 +25,7 @@ p2l_err_info:
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
-.segment "SCREEN"
+.segment "SCR_DATA"
                 NORMAL_CHARMAP
 p2l_err_msg:
                 .byte " Path too long!", 0

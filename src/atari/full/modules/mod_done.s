@@ -5,7 +5,7 @@
         .import     _put_status
         .import     _scr_clr_highlight
         .import     _put_s
-        .import     mx_h1, mx_s1, mx_s3, mx_m1, mx_m2
+        .import     mx_h1, mx_s1, mx_s2, mx_m1, mx_m2
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -30,7 +30,7 @@
 not_booting:
         ; module shown, let user choose what they want to do
         put_status #0, #mx_s1
-        put_status #1, #mx_s3
+        put_status #1, #mx_s2
         put_help   #0, #mx_h1
 
         put_s      #7, #3, #mx_m1

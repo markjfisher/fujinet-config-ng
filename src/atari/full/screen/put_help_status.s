@@ -53,6 +53,7 @@ over:
 .endproc
 
 ; void put_help(uint8_t line_num, char *msg)
+; currently only 1 help line, so line_num is always 0
 .proc _put_help
         axinto  ptr1            ; save char* msg
         mwa     #mhlp1, ptr2    ; get location of first help line into ptr2

@@ -8,6 +8,7 @@
         .import     fn_dir_path
         .import     fn_io_buffer
         .import     mf_dir_or_file
+        .import     mf_dir_pos
         .import     mf_selected
         .import     mfs_error_too_long
         .import     pushax
@@ -44,6 +45,7 @@ is_dir:
         jsr     _fn_strncpy
 
         mva     #$00, mf_selected
+        sta     mf_dir_pos
         ldx     #KBH::APP_1
         rts
 

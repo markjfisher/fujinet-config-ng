@@ -1,5 +1,6 @@
         .export     mfs_new_page
 
+        .import     _clr_help
         .import     _clr_src_with_separator
         .import     _ellipsize
         .import     _fn_io_error
@@ -7,7 +8,9 @@
         .import     _fn_io_set_directory_position
         .import     _free
         .import     _malloc
+        .import     _put_help
         .import     _put_s
+        .import     _put_status
         .import     _scr_clr_highlight
         .import     copy_path_filter_to_buffer
         .import     fn_dir_filter
@@ -16,8 +19,11 @@
         .import     get_to_current_hostslot
         .import     mf_dir_pos
         .import     mf_filter
+        .import     mf_h1
         .import     mf_host
         .import     mf_path
+        .import     mf_s1
+        .import     mfs_is_eod
         .import     mh_host_selected
         .import     pusha
         .import     pushax
@@ -30,6 +36,12 @@
 .proc mfs_new_page
         lda     #$04                    ; print a separator on line 4
         jsr     _clr_src_with_separator
+
+        jsr     _clr_help
+        put_status #0, #mf_s1
+        put_help   #0, #mf_h1
+
+        mva     #$00, mfs_is_eod
         jsr     _scr_clr_highlight
         jsr     print_dir_info
         jsr     copy_path_filter_to_buffer

@@ -28,6 +28,6 @@ mw_ac_err_info:
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
-.segment "SCREEN"
+.segment "SCR_DATA"
 mw_ac_err_msg:
                 .byte "  Error loading adapter info!", 0

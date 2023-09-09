@@ -156,8 +156,8 @@ empty:  pushax  #s_empty
         rts
 
 devices_help:
+        jsr     _clr_help
         put_help #0, #mfss_h1
-        put_help #1, #mfss_h2
         rts
 .endproc
 
@@ -185,7 +185,7 @@ pathfile_err_info:
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
-.segment "SCREEN"
+.segment "SCR_DATA"
 
 ; option entry, first string 0 terminated "name", next strings are <len> chars exactly for entries
 sds_mode_name:  .byte "Mode: ", 0
@@ -203,22 +203,19 @@ sds_msg:
         .byte "Select Device Slot", 0
         
 
-.segment "SCREEN"
 mfss_h1:
                 NORMAL_CHARMAP
                 .byte $81, $1c, $1d, $82        ; endL up down endR
                 INVERT_ATASCII
-                .byte "Move "
+                .byte "Move"
                 NORMAL_CHARMAP
                 .byte $81, "TAB", $82
                 INVERT_ATASCII
-                .byte "Next Widget", 0
-
-mfss_h2:
+                .byte "Next"
                 NORMAL_CHARMAP
                 .byte $81, "Ret", $82
                 INVERT_ATASCII
-                .byte "Complete"
+                .byte "Choose"
                 NORMAL_CHARMAP
                 .byte $81, "ESC", $82
                 INVERT_ATASCII

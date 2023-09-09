@@ -14,6 +14,6 @@
         jsr        _clr_scr_all
         put_status #0, #mh_s1
         put_status #1, #mh_s2
-        put_help   #1, #mh_h1
+        put_help   #0, #mh_h1
         rts
 .endproc

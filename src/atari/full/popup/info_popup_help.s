@@ -8,11 +8,11 @@
         .include    "fn_macros.inc"
 
 .proc info_popup_help
-        put_help #1, #pu_err_h1
+        put_help #0, #pu_err_h1
         rts
 .endproc
 
-.segment "SCREEN"
+.segment "SCR_DATA"
 
 pu_err_h1:
                 NORMAL_CHARMAP

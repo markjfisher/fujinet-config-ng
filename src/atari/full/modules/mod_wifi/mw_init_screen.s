@@ -20,6 +20,6 @@
         
         put_status #0, #mw_s1
         put_status #1, #mw_s2
-        ; put_help   #1, #mw_h1
+        ; put_help   #0, #mw_h1
         rts
 .endproc

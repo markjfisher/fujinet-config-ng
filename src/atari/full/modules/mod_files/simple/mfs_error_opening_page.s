@@ -30,6 +30,6 @@ opendir_err_info:
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
-.segment "SCREEN"
+.segment "SCR_DATA"
 opendir_err_msg:
                 .byte "  Error Opening Directory!", 0

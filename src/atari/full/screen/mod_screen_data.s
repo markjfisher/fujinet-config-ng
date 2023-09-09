@@ -1,8 +1,8 @@
         .export mh_s1, mh_s2, mh_h1
         .export md_s1, md_s2, md_h1
         .export mw_s1, mw_s2, mw_h1
-        .export mx_s1, mx_s3, mx_h1, mx_m1, mx_m2
-        .export mf_s1, mf_h1, mf_h2
+        .export mx_s1, mx_s2, mx_h1, mx_m1, mx_m2
+        .export mf_s1, mf_h1, mf_prev, mf_next
         .export mf_host, mf_filter, mf_path
 
         .export     mw_bssid
@@ -19,7 +19,7 @@
 
 ; Data for screen display, help texts etc
 
-.segment "SCREEN"
+.segment "SCR_DATA"
 
 ; ------------------------------------------------------------------
 ; Mod HOSTS data
@@ -101,7 +101,7 @@ mx_s1:
                 INVERT_ATASCII
                 .byte "INFO / EXIT", 0
 
-mx_s3:
+mx_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $82
                 INVERT_ATASCII
@@ -136,17 +136,11 @@ mf_h1:
                 NORMAL_CHARMAP
                 .byte $81, "<", $82
                 INVERT_ATASCII
-                .byte "Up Dir  "
+                .byte "Up "
                 NORMAL_CHARMAP
                 .byte $81, "Ret", $82
                 INVERT_ATASCII
-                .byte "Choose", 0
-
-mf_h2:
-                NORMAL_CHARMAP
-                .byte $81, $1e, $1f, $82
-                INVERT_ATASCII
-                .byte "Prev/Next Pg   "
+                .byte "Select "
                 NORMAL_CHARMAP
                 .byte $81, "ESC", $82
                 INVERT_ATASCII
@@ -156,6 +150,18 @@ mf_h2:
 mf_host:        .byte "Host:", 0
 mf_filter:      .byte "Fltr:", 0
 mf_path:        .byte "Path:", 0
+
+mf_prev:
+                NORMAL_CHARMAP
+                .byte $81, $1e, $82
+                INVERT_ATASCII
+                .byte "Prev", 0
+
+mf_next:
+                INVERT_ATASCII
+                .byte "Next"
+                NORMAL_CHARMAP
+                .byte $81, $1f, $82, 0
 
                 NORMAL_CHARMAP
 mw_ssid:        .byte "SSID:", 0

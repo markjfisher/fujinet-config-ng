@@ -8,6 +8,7 @@
         .import     mf_dir_pos
         .import     mf_selected
         .import     mfs_entries_cnt
+        .import     mfs_is_eod
         .import     mfs_kbh_select_current
         .import     mod_current
         .import     pusha
@@ -31,10 +32,9 @@
         bne     not_right
 
 do_right:
-        ; if there are less than DIR_PG_CNT, we skip as we must be at end of directory on current view
-        lda     mfs_entries_cnt
-        cmp     #DIR_PG_CNT
-        bcc     exit_reloop
+        ; allow right if we're not at EOD. is_eod = 1 if we are on last page
+        lda     mfs_is_eod
+        bne     exit_reloop
 
         mva     #$00, mf_selected
         adw1    mf_dir_pos, #DIR_PG_CNT
@@ -107,7 +107,7 @@ not_up:
         bne     not_down
 
 do_down:
-        ; check if we're at last position, if not, let global handler deal with generic up
+        ; check if we're at last position, if not, let global handler deal with generic down
         lda     mf_selected     ; add 1, as selected is 0 based, and following tests are against counts (1 based)
         clc
         adc     #$01
@@ -115,9 +115,10 @@ do_down:
         cmp     mfs_entries_cnt
         bcc     :+              ; not on last entry for page
 
-        ; it's last position, but is it eod? It is EOD if our position is not DIR_PG_CNT, as that means we're on last one and not all way down bottom of page
-        cmp     #DIR_PG_CNT
-        bne     exit_reloop     ; must be on a EOD page, so ignore this keypress
+        ; it's last position, but is it eod?
+        lda     mfs_is_eod
+        cmp     #$01
+        beq     exit_reloop     ; must be on a EOD page, so ignore this keypress
 
         ; valid down, increase by page count, but set our cursor on first line to look cool
         mva     #$00, mf_selected

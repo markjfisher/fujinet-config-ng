@@ -28,6 +28,7 @@
 
 SCR_WIDTH   := 40           ; the global screen width value, including borders
 SCR_WID_NB  := SCR_WIDTH-2  ; screen width without borders
+SCR_HEIGHT  := 22           ; number of lines in total in screen area
 
 SCR_BYTES_W := 40           ; the number of bytes in a line
 SCR_BWX2    := 80           ; pre-calculate 2 widths so we don't have to keep doing it in code, used for clearing status/help lines which are 2 lines tall
@@ -43,7 +44,7 @@ FNS_N2C     = $10           ; Screen code for '0'. Add this to 0 based index so 
 FNS_C_R     = $32           ; screen code for "R"
 FNS_C_W     = $37           ; screen code for "W"
 
-DIR_PG_CNT  = 16            ; Number of entries to display on a page in the file listing
+DIR_PG_CNT  = 18            ; Number of entries to display on a page in the file listing
 DIR_MAX_LEN = 36            ; old config was 36, but we don't quite have space on screen for 36 with borders.
 
 ; KEYBOARD codes

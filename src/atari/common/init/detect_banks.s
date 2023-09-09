@@ -5,7 +5,7 @@
 
 .segment "INIT"
 
-MAX_BANKS       := 16
+MAX_BANKS       := 64
 ext_b           := $4000
 
 ; adapted from http://atariki.krap.pl/index.php/Obs%C5%82uga_standardowego_rozszerzenia_pami%C4%99ci_RAM

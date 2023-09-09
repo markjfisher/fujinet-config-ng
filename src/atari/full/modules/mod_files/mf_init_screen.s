@@ -16,11 +16,5 @@
         jsr        get_scrloc
 
         jsr        _clr_help
-        jsr        _clr_status
-
-        put_status #0, #mf_s1
-        put_help   #0, #mf_h1
-        put_help   #1, #mf_h2
-
-        rts
+        jmp        _clr_status
 .endproc

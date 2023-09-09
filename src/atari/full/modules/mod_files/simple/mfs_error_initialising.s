@@ -28,6 +28,6 @@ mfs_init_err_info:
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
-.segment "SCREEN"
+.segment "SCR_DATA"
 mfs_init_err_msg:
                 .byte "  Error initialising!", 0

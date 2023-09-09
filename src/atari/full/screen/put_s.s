@@ -24,7 +24,7 @@
         cpx     #SCR_WIDTH-2
         bcs     exit
         ldy     tmp2
-        cpy     #20
+        cpy     #22
         bcs     exit
 
         jsr     get_scrloc   ; use X,Y to get screen location in ptr4

@@ -1,5 +1,5 @@
         .export     _scr_setup, main_dlist
-        .export     m_l1, sline1, sline2, mhlp1, mhlp2
+        .export     m_l1, sline1, sline2, mhlp1
         .export     gbk, gintop1, gintop2, gouttop1, gouttop2
 
         .import     _pause, _wait_scan1, _bar_setup, _bar_clear
@@ -75,7 +75,7 @@ main_dlist:
     LMS DL_MODEF, gintop2
 
     LMS DL_MODE2, m_l1
-    .repeat 19
+    .repeat SCR_HEIGHT-1
     .byte DL_MODE2
     .endrepeat
 
@@ -87,7 +87,6 @@ main_dlist:
     LMS DL_MODEF, gbk, 2
 
     LMS DL_MODE2, mhlp1
-    LMS DL_MODE2, mhlp2
 
     LMS DL_MODEF, gouttop2, 2
     LMS DL_MODEF, gouttop1
@@ -109,15 +108,14 @@ sline2: SPACES_LINE
         NORMAL_CHARMAP
 
         SCREENCODE_CHARMAP
-m_l1:   .repeat 20
+m_l1:   .repeat SCR_HEIGHT
             SPACES_LINE
         .endrepeat
 
 
         SCREENCODE_INVERT_CHARMAP
-; needs to be continuous memory for screen writers
 mhlp1:  SPACES_LINE
-mhlp2:  SPACES_LINE
+; mhlp2:  SPACES_LINE
         NORMAL_CHARMAP
 
 gbk:
