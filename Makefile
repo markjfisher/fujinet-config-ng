@@ -14,7 +14,7 @@
 
 # Space or comma separated list of cc65 supported target platforms to build for.
 # Default: c64 (lowercase!)
-TARGETS := atari.full atari.lite
+TARGETS := atari.full
 
 # Name of the final, single-file executable.
 # Default: name of the current dir with target name appended
@@ -396,6 +396,11 @@ test: $(PROGRAM)
 	$(EMUCMD) $(BUILD_DIR)\\$< \
 	$(POSTEMUCMD)
 
+test-atr: $(PROGRAM) dist
+	$(PREEMUCMD) \
+	$(EMUCMD) autorun.atr \
+	$(POSTEMUCMD)
+
 clean:
 	$(call RMFILES,$(OBJECTS))
 	$(call RMFILES,$(DEPENDS))
@@ -405,8 +410,9 @@ clean:
 # TODO: add the ../fujinet-config-tools/atari/dist/*.com files here?
 dist: $(PROGRAM)
 	mkdir -p dist
+	rm -f dist/*
 	rm -f autorun.atr
-	cp build/$(PROGRAM) dist/
+	cp build/$(PROGRAM) dist/config.xex
 	dir2atr -m -S -B picoboot.bin autorun.atr dist/
 
 else # $(words $(TARGETLIST)),1
