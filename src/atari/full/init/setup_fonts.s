@@ -1,4 +1,4 @@
-        .export     setup_fonts
+        .export     setup_fonts, fn_font_data
 
         .include    "zeropage.inc"
         .include    "atari.inc"

@@ -1,11 +1,20 @@
         .export     mod_done, is_booting
-        .import     pusha, pushax
-        .import     mod_current, _fn_io_set_boot_config, _kb_global, _clr_scr_all, kb_current_line, _scr_highlight_line, _mount_and_boot
+
+        .import     _clr_scr_all
+        .import     _kb_global
+        .import     _mount_and_boot
+        .import     _print_info
         .import     _put_help
+        .import     _put_s
         .import     _put_status
         .import     _scr_clr_highlight
-        .import     _put_s
-        .import     mx_h1, mx_s1, mx_s2, mx_m1, mx_m2
+        .import     mx_h1
+        .import     mx_m1
+        .import     mx_m2
+        .import     mx_s1
+        .import     mx_s2
+        .import     pusha
+        .import     pushax
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -35,6 +44,8 @@ not_booting:
 
         put_s      #7, #3, #mx_m1
         put_s      #13, #4, #mx_m2
+
+        jsr     _print_info
 
         ; highlight current option
         ; mva     done_selected, kb_current_line

@@ -1,4 +1,4 @@
-        .export     detect_banks, bank_table
+        .export     detect_banks, _bank_table, _bank_count
         .include    "zeropage.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
@@ -85,17 +85,17 @@ _p3:    jsr     setpb
         pla
         sta     PORTB
 
-        ; copy MAX_BANKS from banks into bank_table, which is permanent memory
+        ; copy MAX_BANKS from banks into _bank_table, which is permanent memory
         ldx     #$00
 :       lda     banks, x
         beq     finished
-        sta     bank_table, x
+        sta     _bank_table, x
         inx
         cpx     #MAX_BANKS
         bne     :-
 
 finished:
-        stx     bank_count
+        stx     _bank_count
 
         rts
 
@@ -128,5 +128,5 @@ bsav:   .res 16
 banks:  .res 64
 
 .segment "LOW_DATA"
-bank_count:     .byte 0
-bank_table:     .res MAX_BANKS, 0
+_bank_count:     .byte 0
+_bank_table:     .res MAX_BANKS, 0

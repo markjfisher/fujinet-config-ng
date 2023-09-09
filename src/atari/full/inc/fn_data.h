@@ -2,19 +2,24 @@
 #define FN_DATA_H
 
 #include <atari.h>
+#include <stdint.h>
 
+void put_s(uint8_t x, uint8_t y, char *s);
+extern uint8_t bank_count;
+
+#define SCR_WIDTH       40
+#define SCR_WID_NB      38
+#define SCR_HEIGHT      22
+#define SCR_BYTES_W     40
+#define SCR_BWX2        80
 #define SL_EDIT_X       5
 #define SL_Y            2
 #define SL_COUNT        8
-
 #define MF_YOFF         4
-
 #define FNS_N2C         0x10
 #define FNS_C_R         0x32
 #define FNS_C_W         0x37
-
-#define FNC_DIR_C        0x40
-#define DIR_PG_CNT      0x10
+#define DIR_PG_CNT      18
 #define DIR_MAX_LEN     36
 
 #define FNK_ESC         ATESC
@@ -58,6 +63,7 @@
 #define FNC_RT_BLK      0xD9
 #define FNC_BLANK       0x00
 #define FNC_FULL        0x80
+#define FNC_DIR_C       0x40
 #define FNC_L_END       0x41
 #define FNC_R_END       0x42
 #define FNC_M_END       0x44

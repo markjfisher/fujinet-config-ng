@@ -1,5 +1,7 @@
         .export   _dev_init
-        .import   _scr_setup, fn_font
+        .import   _scr_setup
+        .import   fn_font_data
+
         .include  "atari.inc"
         .include  "zeropage.inc"
         .include  "fn_macros.inc"
@@ -17,6 +19,8 @@
         ; do we want a full reboot on pressing RESET? Setting 1 causes that here.
         ; mva #$01, COLDST
         mva     #$00, COLDST
+
+        mva     #>fn_font_data, CHBAS
 
         ; setup main Display List, and screen layout
         jmp     _scr_setup

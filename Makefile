@@ -412,7 +412,7 @@ dist: $(PROGRAM)
 	mkdir -p dist
 	rm -f dist/*
 	rm -f autorun.atr
-	cp build/$(PROGRAM) dist/config.xex
+	cp build/$(PROGRAM) dist/config.com
 	dir2atr -m -S -B picoboot.bin autorun.atr dist/
 
 else # $(words $(TARGETLIST)),1

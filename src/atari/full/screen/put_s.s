@@ -9,11 +9,9 @@
         .include    "fn_data.inc"
 
 ; void put_s(uint8_t X, uint8_t Y, char *s)
-; X, Y contain coordinates for string
-; char *S is on call stack
 ;
-; print a char at the screen location x, y accounting for boundaries
-; x and y are in 36x16 grid, so can assume under these values (i.e. bmi ok)
+; print string at the screen location x, y accounting for boundaries
+; x and y are in small inner grid (about 38x22), so can assume under these values (i.e. bmi ok)
 .proc _put_s
         axinto  ptr3            ; char *s
         popa    tmp2            ; y
