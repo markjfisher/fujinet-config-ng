@@ -5,6 +5,7 @@
         .import     mh_is_hosts_data_fetched
         .import     mod_current
         .import     mw_is_ac_data_fetched
+        .import     mw_selected
         .import     start
 
         .include    "zeropage.inc"
@@ -22,6 +23,7 @@
         mva     #$00, mh_is_hosts_data_fetched
         sta     md_is_devices_data_fetched
         sta     mw_is_ac_data_fetched
+        sta     mw_selected
 
         jsr     _clr_scr_all
         jmp     start

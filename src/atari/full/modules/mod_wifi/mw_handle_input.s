@@ -1,12 +1,15 @@
         .export     _mw_handle_input
 
         .import     _kb_global
+        .import     _put_s
         .import     _scr_clr_highlight
         .import     _scr_highlight_line
         .import     kb_current_line
         .import     kb_max_entries
+        .import     mw_fetching_nets
         .import     mh_host_selected
         .import     mw_net_count
+        .import     mw_nets_msg
         .import     mw_selected
         .import     mw_setting_up
         .import     mw_setup_wifi
@@ -45,7 +48,7 @@
 
         mva     #$01, mw_setting_up
 
-        ; TODO: popup while we are scanning networks
+        put_s   #10, #12, #mw_nets_msg
         jsr     mw_setup_wifi
 
         ; highlight the first entry
@@ -63,10 +66,12 @@ not_setup:
         cmp     #FNK_ESC
         bne     not_esc
 
-        mva     #$00, mw_setting_up
-        sta     kb_max_entries
-        jsr     _scr_clr_highlight
-        ldx     #KBH::EXIT
+        mva     #$00, mw_setting_up     ; stop being in setting up mode
+        sta     kb_max_entries          ; stop anyone selecting anything on the screen
+        ; sta     mw_selected             ; reset selection to start in case some entries drop off the list
+        sta     kb_current_line
+        jsr     _scr_clr_highlight      ; turn off the PMG
+        ldx     #KBH::EXIT              ; go out of kbh mode, which will reload page.
         rts
 
 not_esc:
@@ -101,9 +106,18 @@ not_lr:
         ldx     mw_setting_up
         beq     out                     ; ignore if we're not in setup mode
 
-        ; if the highlight is 0-(max-2), the user picked from list, otherwise they are on the 'custom' option
+        ; if the highlight is 0 to mw_net_count-1, the user picked from list, otherwise they are on the 'custom' option
+        ; mw_selected vs mw_net_count
+        lda     mw_selected
+        cmp     mw_net_count
+        bcc     existing_net
+
+        ; custom option, replace the text with blank, and allow them to edit at this point
 
 
+
+existing_net:
+        jsr     debug
 
 not_enter:
 

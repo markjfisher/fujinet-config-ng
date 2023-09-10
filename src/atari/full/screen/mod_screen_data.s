@@ -13,7 +13,8 @@
         .export     mw_mac
         .export     mw_netmask
         .export     mw_ssid
-        .export     mw_version
+        .export     mw_nets_msg
+        .export     mw_nets_msg2
 
         .include    "fn_macros.inc"
 
@@ -190,4 +191,6 @@ mw_dns:         .byte "DNS:", 0
 mw_netmask:     .byte "Netmask:", 0
 mw_mac:         .byte "MAC:", 0
 mw_bssid:       .byte "BSSID:", 0
-mw_version:     .byte "Version:", 0
+
+mw_nets_msg:    .byte "Fetching Networks", 0
+mw_nets_msg2:   .byte "                 ", 0

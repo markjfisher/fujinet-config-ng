@@ -2,9 +2,11 @@
 
         .import     _fn_io_get_scan_result
         .import     _fn_io_scan_for_networks
+        .import     _put_s
         .import     fn_io_ssidinfo
         .import     get_scrloc
         .import     mw_net_count
+        .import     mw_nets_msg2
         .import     pusha
         .import     put_s_p1p4
 
@@ -31,6 +33,7 @@
         mva     #10, mw_net_count
 
 ok:
+        put_s   #10, #12, #mw_nets_msg2
         ; loop over all the networks, and display their names for now
         ; screen location for first entry in ptr4
         ldx     #4
@@ -39,6 +42,8 @@ ok:
         mwa     ptr4, ptr3
         sbw1    ptr3, #4
         mva     #$00, tmp1              ; loop counter for networks
+
+
 
 :       pusha   tmp1
         setax   #fn_io_ssidinfo

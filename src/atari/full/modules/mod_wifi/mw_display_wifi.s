@@ -39,8 +39,8 @@
         put_s   #11, #1, {#(mw_adapter_config + AdapterConfigExtended::hostname)}
         put_s   #11, #2, {#(mw_adapter_config + AdapterConfigExtended::sLocalIP)}
         put_s   #11, #3, {#(mw_adapter_config + AdapterConfigExtended::sGateway)}
-        put_s   #11, #4, {#(mw_adapter_config + AdapterConfigExtended::sNetmask)}
-        put_s   #11, #5, {#(mw_adapter_config + AdapterConfigExtended::sDnsIP)}
+        put_s   #11, #4, {#(mw_adapter_config + AdapterConfigExtended::sDnsIP)}
+        put_s   #11, #5, {#(mw_adapter_config + AdapterConfigExtended::sNetmask)}
         put_s   #11, #6, {#(mw_adapter_config + AdapterConfigExtended::sMacAddress)}
         put_s   #11, #7, {#(mw_adapter_config + AdapterConfigExtended::sBssid)}
         ; put_s   #16, #8, {#(mw_adapter_config + AdapterConfigExtended::fn_version)}
