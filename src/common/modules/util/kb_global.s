@@ -1,5 +1,6 @@
         .export     _kb_global
         .export     kb_current_line
+        .export     kb_max_entries
 
         .import     _kb_get_c_ucase
         .import     _kb_is_option

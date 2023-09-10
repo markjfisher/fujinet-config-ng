@@ -2,8 +2,8 @@
 
         .import     s_empty
         .import     popax, pushax, popa
-        .import     _fn_strncpy
-        .import     _fn_strlen
+        .import     _fc_strncpy
+        .import     _fc_strlen
         .import     _kb_get_c
         .import     ascii_to_code
         .import     _malloc, _free
@@ -45,7 +45,7 @@
         popax   el_str
 
         ; check length, if it's >= el_max_len, exit with 0
-        jsr     _fn_strlen      ; returns strlen, or #$ff for bad string, so we can always just check >= el_max_len
+        jsr     _fc_strlen      ; returns strlen, or #$ff for bad string, so we can always just check >= el_max_len
         cmp     el_max_len
         bcs     err             ; string was too large (>= el_max_len), see params above
         bcc     :+
@@ -69,7 +69,7 @@ err:
         jsr     pushax          ; dst: pointer to the memory location of buffer, current A/X already set
         pushax  el_str          ; src: ptr to original string
         lda     el_max_len
-        jsr     _fn_strncpy     ; this fills up to max with 0s if string is short (or no string at all)
+        jsr     _fc_strncpy     ; this fills up to max with 0s if string is short (or no string at all)
 
         ; if current String is empty (0 in first byte), clear the Edit box in case it has filler text
         ldy     #$00
@@ -390,7 +390,7 @@ not_ascii:
         ; reduce it by any leading whitespace we found
         sec
         sbc     tmp1
-        jsr     _fn_strncpy     ; trashes ptr3/4
+        jsr     _fc_strncpy     ; trashes ptr3/4
         ; restore screen pointer for print routines
         mwa     el_screen_loc, ptr4
 

@@ -46,8 +46,7 @@ not_edit:
         cmp     #FNK_ENTER
         bne     not_eol
         ; set module to 'files' to show entries of chosen host
-        lda     #Mod::files
-        sta     mod_current
+        mva     #Mod::files, mod_current
 
         ldx     #KBH::EXIT
         rts

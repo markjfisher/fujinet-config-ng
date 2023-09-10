@@ -13,7 +13,7 @@
         .import     ascii_to_code
         .import     get_scrloc
         .import     _clr_help
-        .import     _fn_strlen
+        .import     _fc_strlen
         .import     _put_help
         .import     block_line
         .import     type_at_x
@@ -126,7 +126,7 @@ exit_select:
         mwa     ss_message, ptr2
         pushax  ptr4
         setax   ptr2
-        jsr     _fn_strlen
+        jsr     _fc_strlen
         sta     tmp1            ; save message length
         popax   ptr4
         lda     ss_width

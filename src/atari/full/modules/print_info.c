@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "fn_data.h"
 
+// This is debug only. pulling in sprintf adds 2k to runtime
 void print_info() {
     // char b1[16];
     // sprintf(b1, "CHBAS: %d", OS.chbas);

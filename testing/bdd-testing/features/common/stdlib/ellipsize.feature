@@ -5,7 +5,7 @@ Feature: Ellipsize tests
   Scenario Outline: Strings are ellipsized if they are larger than the max length, or simply copied otherwise
     Given atari application test setup
       And I add common/stdlib src file "ellipsize.s"
-      And I add common/stdlib src file "fn_strncpy.s"
+      And I add common/stdlib src file "fc_strncpy.s"
       And I add common/stdlib src file "fn_strlen.s"
       And I add file for compiling "features/common/stdlib/test_ellipsize.s"
       And I create and load application

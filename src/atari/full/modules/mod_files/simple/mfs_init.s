@@ -37,8 +37,7 @@
 
         ; -----------------------------------------------------
         ; mount the host.
-        pusha   mh_host_selected
-        setax   #fn_io_hostslots
+        lda     mh_host_selected
         jsr     _fn_io_mount_host_slot
         jsr     _fn_io_error
         beq     :+

@@ -1,9 +1,9 @@
-        .export     _fn_strlcpy
+        .export     _fc_strlcpy
         .import     popax, popa
         .include    "fn_macros.inc"
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
 
-; uint8_t fn_strlcpy(char *dst, char *src, uint8_t size)
+; uint8_t fc_strlcpy(char *dst, char *src, uint8_t size)
 ; This is a cutdown version of strlcpy for use on strings up to 256 characters.
 ;
 ; Like strncpy, but:
@@ -13,18 +13,19 @@
 ;  4. returns length of src
 
 ; NOTE: size must be compatible with dst, i.e. it must not exceed its length.
+; uses tmp6-tmp10
 
-.proc   _fn_strlcpy
-        sta     tmp4            ; size (n)
-        popax   ptr4            ; src
-        popax   ptr3            ; dst
+.proc   _fc_strlcpy
+        sta     tmp6            ; size (n)
+        popax   tmp7            ; src
+        popax   tmp9            ; dst
 
-        ldx     tmp4
+        ldx     tmp6
         beq     no_copy
         dex                     ; always do siz-1 at most chars
         ldy     #$00
-:       lda     (ptr4), y
-        sta     (ptr3), y
+:       lda     (tmp7), y
+        sta     (tmp9), y
         beq     found0
         iny
         dex
@@ -36,11 +37,11 @@ no_copy:
         bne     :++
 
         ; yes we ran out of room, need to null terminate
-        lda     tmp4
-        beq     :+              ; actually no! don't null terminate as size was in fact 0.
-        mva     #$00, {(ptr3), y}
+        lda     tmp6
+         beq     :+              ; actually no! don't null terminate as size was in fact 0.
+        mva     #$00, {(tmp9), y}
 
-:       lda     (ptr4), y       ; next byte of src
+:       lda     (tmp7), y       ; next byte of src
         beq     :+
         iny
         bne     :-              ; keep looping until we find the end of src

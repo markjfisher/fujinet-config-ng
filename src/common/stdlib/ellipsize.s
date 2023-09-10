@@ -1,7 +1,7 @@
         .export     _ellipsize
 
-        .import     _fn_strlen
-        .import     _fn_strlcpy
+        .import     _fc_strlen
+        .import     _fc_strlcpy
         .import     popa, popax, pushax
 
         .include    "zeropage.inc"
@@ -20,7 +20,7 @@
 
         ; are we short enough to just copy?
         setax   ptr4
-        jsr     _fn_strlen
+        jsr     _fc_strlen
         sta     tmp4    ; store length
         cmp     tmp1
         bcs     :+
@@ -30,7 +30,7 @@
         pushax  ptr4
         inc     tmp4    ; add 1 for null
         lda     tmp4    ; get length back
-        jmp     _fn_strlcpy
+        jmp     _fc_strlcpy
         ; implicit rts
 
         ; no, we need to elipsize

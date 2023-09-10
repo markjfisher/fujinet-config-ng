@@ -1,6 +1,6 @@
         .export mh_s1, mh_s2, mh_h1
         .export md_s1, md_s2, md_h1
-        .export mw_s1, mw_s2, mw_h1
+        .export mw_s1, mw_s2, mw_h1, mw_h2
         .export mx_s1, mx_s2, mx_h1, mx_m1, mx_m2
         .export mf_s1, mf_h1, mf_prev, mf_next
         .export mf_host, mf_filter, mf_path
@@ -92,7 +92,25 @@ mw_s2:
 
 mw_h1:
                 NORMAL_CHARMAP
-                .byte "TODO", 0
+                .byte $81, "S", $82
+                INVERT_ATASCII
+                .byte "Setup Wifi", 0
+
+mw_h2:
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit"
+                NORMAL_CHARMAP
+                .byte $81, $1c, $1d, $82        ; endL up down endR
+                INVERT_ATASCII
+                .byte "Move "
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "Select", 0
+
+
 
 ; ------------------------------------------------------------------
 ; Mod DONE data
@@ -166,7 +184,7 @@ mf_next:
                 NORMAL_CHARMAP
 mw_ssid:        .byte "SSID:", 0
 mw_hostname:    .byte "Hostname:", 0
-mw_ip_addr:     .byte "IP Address:", 0
+mw_ip_addr:     .byte "IP Addr:", 0
 mw_gateway:     .byte "Gateway:", 0
 mw_dns:         .byte "DNS:", 0
 mw_netmask:     .byte "Netmask:", 0

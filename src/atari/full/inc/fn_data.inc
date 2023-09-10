@@ -47,6 +47,9 @@ FNS_C_W     = $37           ; screen code for "W"
 DIR_PG_CNT  = 18            ; Number of entries to display on a page in the file listing
 DIR_MAX_LEN = 36            ; old config was 36, but we don't quite have space on screen for 36 with borders.
 
+
+MAX_NETS    = 10
+
 ; KEYBOARD codes
 ; defines for fn_edit to use for various key codes
 ; to allow fn_edit to be device agnostic
@@ -111,3 +114,7 @@ FNC_M_END   = $44           ; Middle extra character to widen the string slightl
 
 FNC_L_HL    = $50           ; Pointer to selection L
 FNC_R_HL    = $54           ; Pointer to selection R
+
+FNC_WIFI1   = $56           ; wifi 1 bar
+FNC_WIFI2   = $4D           ; wifi 2 bar
+FNC_WIFI3   = $4E           ; wifi 3 bar

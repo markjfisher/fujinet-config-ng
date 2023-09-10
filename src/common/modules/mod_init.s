@@ -42,9 +42,9 @@
         ; only runs if we aren't connected, which is rare
         setax   #fn_io_netconfig
         jsr     _fn_io_get_ssid
-        setax   ptr1                    ; SSIDInfo in ptr1
-        ldy     #SSIDInfo::ssid
-        lda     (ptr1), y               ; get first char from ssid of SSIDInfo
+        setax   ptr1                    ; NetConfig in ptr1
+        ldy     #NetConfig::ssid
+        lda     (ptr1), y               ; get first char from ssid of NetConfig
         beq     set_wifi                ; if it's 0, there's no SSID information available, so need to setup wifi
 
         ; fall through to wifi (this is "connect wifi", but same module as "set wifi" - maybe simplify logic, as ssid doesn't matter here)

@@ -9,9 +9,9 @@
         .import     _fn_io_read_directory
         .import     _fn_io_set_device_filename
         .import     _put_help
-        .import     _fn_strlcpy
-        .import     _fn_strlen
-        .import     _fn_strncpy
+        .import     _fc_strlcpy
+        .import     _fc_strlen
+        .import     _fc_strncpy
         .import     _free
         .import     _malloc
         .import     _show_select
@@ -144,7 +144,7 @@ l1:     pushax  ptr1    ; dst
 empty:  pushax  #s_empty
 
 :       lda     sds_pu_devs + POPUP_LEN_IDX
-        jsr     _fn_strncpy
+        jsr     _fc_strncpy
 
         ; increment both src/dst pointers
         adw1    ptr1, {sds_pu_devs + POPUP_LEN_IDX}

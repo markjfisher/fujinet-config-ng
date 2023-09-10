@@ -1,7 +1,7 @@
         .export mfs_kbh
 
         .import     _edit_line
-        .import     _fn_strlen
+        .import     _fc_strlen
         .import     fn_dir_filter
         .import     fn_dir_path
         .import     get_scrloc
@@ -161,7 +161,7 @@ not_enter:
 
         ; get the current path's length
         setax   #fn_dir_path
-        jsr     _fn_strlen
+        jsr     _fc_strlen
 
         ; check if path already just "/", and if so ignore this. ESC returns you to HOSTS list
         cmp     #$01

@@ -3,7 +3,7 @@
         .import     popa
         .import     mhlp1, sline1
         .import     ascii_to_code
-        .import     _fn_strlen
+        .import     _fc_strlen
 
         .include    "zeropage.inc"
         .include    "fn_macros.inc"
@@ -18,7 +18,7 @@
 ; ASSUMPTION - screen has been cleared before calling this, so no extra spaces to print
 put_common:
         setax   ptr1
-        jsr     _fn_strlen
+        jsr     _fc_strlen
         sta     tmp2            ; string length
 
         jsr     popa            ; line number

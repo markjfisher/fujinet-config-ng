@@ -1,8 +1,8 @@
         .export     mfs_kbh_select_current
 
-        .import     _fn_strlcpy
-        .import     _fn_strlen
-        .import     _fn_strncpy
+        .import     _fc_strlcpy
+        .import     _fc_strlen
+        .import     _fc_strncpy
         .import     _free
         .import     _scr_clr_highlight
         .import     fn_dir_path
@@ -42,7 +42,7 @@ is_dir:
         pushax  #fn_dir_path
         pushax  #fn_io_buffer
         lda     #$e0
-        jsr     _fn_strncpy
+        jsr     _fc_strncpy
 
         mva     #$00, mf_selected
         sta     mf_dir_pos
@@ -81,11 +81,11 @@ too_long_error:
         ; get the chosen dir into 255 byte temp buffer, and then check it will fit on the end of our current path, i.e. doesn't combined go over 254 (allowing for nul)
         jsr     read_full_dir_name      ; AX holds allocated memory - must free it
         axinto  ptr1
-        jsr     _fn_strlen
+        jsr     _fc_strlen
         sta     tmp2                    ; length of new directory/file chosen
 
         pushax  #fn_dir_path
-        jsr     _fn_strlen             ; returns length of src (i.e. path)
+        jsr     _fc_strlen             ; returns length of src (i.e. path)
         sta     tmp1
 
         ; when added to current path, will it fit? (max #$e0)
@@ -106,7 +106,7 @@ too_long_error:
         pushax  ptr2                    ; dst, where we will apend the entry to.
         pushax  ptr1                    ; src, which has a trailing slash conveniently if it's a dir
         lda     tmp2                    ; we know it will fit and it's this length
-        jsr     _fn_strlcpy
+        jsr     _fc_strlcpy
 
         jsr     free_dir
         jmp     return0

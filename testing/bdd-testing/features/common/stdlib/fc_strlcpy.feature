@@ -2,10 +2,10 @@ Feature: Stdlib library tests
 
   This tests stdlib library.
 
-  Scenario Outline: Copying strings with _fn_strlcpy
+  Scenario Outline: Copying strings with _fc_strlcpy
     Given atari application test setup
-      And I add common/stdlib src file "fn_strlcpy.s"
-      And I add file for compiling "features/common/stdlib/test_fn_strlcpy.s"
+      And I add common/stdlib src file "fc_strlcpy.s"
+      And I add file for compiling "features/common/stdlib/test_fc_strlcpy.s"
       And I create and load application
 
      And I fill memory from t_src to t_src+127 with $ff

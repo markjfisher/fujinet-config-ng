@@ -1,6 +1,6 @@
 ; test the stdlib library
 
-        .import         _fn_strlcpy, pusha, pushax
+        .import         _fc_strlcpy, pusha, pushax
         .export         _main, t_src, t_dst, t_c
         .include        "fn_macros.inc"
 
@@ -10,7 +10,7 @@
         pushax  #t_src
         lda     t_c
 
-        jsr _fn_strlcpy
+        jsr _fc_strlcpy
         rts
 .endproc
 

@@ -3,7 +3,7 @@
         .import     _fn_io_close_directory
         .import     _fn_io_read_directory
         .import     _fn_io_set_directory_position
-        .import     _fn_strlen
+        .import     _fc_strlen
         .import     _put_s
         .import     ascii_to_code
         .import     fn_io_buffer
@@ -138,7 +138,7 @@ finish_list:
 .proc print_entry
         ; is this a dir? last char of name is '/' - ASSUMPTION - string never 0 length
         setax   ptr1
-        jsr     _fn_strlen
+        jsr     _fc_strlen
         tay
         dey
         lda     (ptr1), y       ; the last character of string

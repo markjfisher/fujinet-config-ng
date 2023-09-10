@@ -4,7 +4,7 @@
         .include    "atari.inc"
         .include    "fn_macros.inc"
 
-NUM_CHANGES     := 18           ; can do 28 before we have to loop differently
+NUM_CHANGES     := 21           ; can do 28 before we have to loop differently
 
 ; this is in INIT so it gets overwritten. We don't need to keep this routine once run.
 .segment "INIT"
@@ -71,12 +71,13 @@ font_update:
     .byte $4f, $ff, $ff, $fe, $f8, $00, $00, $00, $00   ; Popup BRW  (ascii 15  = $0F)
     .byte $50, $3f, $7b, $f9, $c0, $c0, $f9, $7b, $3f   ; Left HL    (ascii 16  = $10)
     .byte $54, $fc, $de, $9f, $03, $03, $9f, $de, $fc   ; Right HL   (ascii 20  = $14)
-;     .byte $57, $80, $80, $c0, $ff, $ff, $c0, $80, $80   ; L sep line (ascii 23  = $17)
-;     .byte $58, $01, $01, $03, $ff, $ff, $03, $01, $01   ; R sep line (ascii 24  = $18)
     .byte $57, $f8, $f8, $fc, $ff, $ff, $fc, $f8, $f8   ; L sep line (ascii 23  = $17)
     .byte $58, $1f, $1f, $3f, $ff, $ff, $3f, $1f, $1f   ; R sep line (ascii 24  = $18)
     .byte $7b, $00, $0e, $18, $18, $70, $18, $18, $0e   ; {          (ascii 123 = $7B)
     .byte $7d, $00, $70, $18, $18, $0e, $18, $18, $70   ; }          (ascii 125 = $7D)
+    .byte $56, $00, $00, $00, $00, $00, $00, $03, $33   ; Wifi 1     (ascii 22  = $16)
+    .byte $4d, $00, $00, $00, $03, $33, $33, $33, $33   ; Wifi 2     (ascii 13  = $0D)
+    .byte $4e, $00, $30, $30, $30, $30, $30, $30, $30   ; Wifi 3     (ascii 14  = $0E)
 
 .segment "FONT"
 fn_font_data:   .res $400

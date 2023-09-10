@@ -102,7 +102,7 @@ bool fn_io_get_wifi_enabled(void);
 bool fn_io_get_wifi_status(void);
 uint8_t fn_io_mount_all(void);
 void fn_io_mount_disk_image(uint8_t ds, uint8_t mode);
-void fn_io_mount_host_slot(uint8_t hs, HostSlot *host_slot);
+void fn_io_mount_host_slot(uint8_t hs);
 void fn_io_open_directory(uint8_t hs, char *path_filter);
 void fn_io_put_device_slots(DeviceSlot *d);
 void fn_io_put_host_slots(HostSlot *hs);

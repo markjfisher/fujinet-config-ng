@@ -22,6 +22,8 @@ extern uint8_t bank_count;
 #define DIR_PG_CNT      18
 #define DIR_MAX_LEN     36
 
+#define MAX_NETS        10
+
 #define FNK_ESC         ATESC
 #define FNK_ENTER       ATEOL
 #define FNK_TAB         ATTAB

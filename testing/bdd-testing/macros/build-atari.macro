@@ -32,7 +32,6 @@ Given I add * src file "*"
   And I add file for compiling "../../src/$1/$2"
 
 Given I add common stdlib files
-  And I add common src file "stdlib/fn_strncpy.s"
+  And I add common src file "stdlib/fc_strncpy.s"
   And I add common src file "stdlib/fn_strncat.s"
-  And I add common src file "stdlib/fn_memclr.s"
   And I add common src file "stdlib/fn_strlen.s"

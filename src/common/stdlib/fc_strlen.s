@@ -1,16 +1,17 @@
-        .export     _fn_strlen
-        .include    "zeropage.inc"
+        .export     _fc_strlen
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
-; uint8_t fn_strlen(char *p)
+; uint8_t fc_strlen(char *p)
 ;
 ; returns string length (max 254) of string pointed at by p
 ; if no null was found, returns $ff as error
-.proc _fn_strlen
-        axinto  ptr4        ; store p in ZP
+; uses tmp9/10
+.proc _fc_strlen
+        axinto  tmp9    ; p
 
         ldy     #$00
-:       lda     (ptr4), y
+:       lda     (tmp9), y
         beq     out
         iny
         beq     err     ; rolled over to 0, exit with err

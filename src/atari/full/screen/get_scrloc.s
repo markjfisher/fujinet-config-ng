@@ -18,7 +18,7 @@
         txa
         adw1    ptr4, a
 
-        ; now move down in lines of SCR_WIDTH, y times
+        ; now move down in lines of SCR_BYTES_W, y times
         cpy     #$00
         beq     out
 :       adw1    ptr4, #SCR_BYTES_W

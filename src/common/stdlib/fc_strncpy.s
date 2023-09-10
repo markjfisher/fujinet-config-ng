@@ -1,7 +1,8 @@
-        .export     _fn_strncpy
+        .export     _fc_strncpy
         .import     popax, popa
+
         .include    "fn_macros.inc"
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
 
 ; This is a cutdown version of strncpy for use on strings up to 256 characters.
 ;
@@ -15,19 +16,19 @@
 ; is longer than n. Thus, in this case, destination shall not be considered a
 ; null terminated C string (reading it as such would overflow).
 
-; void fn_strncpy(char *dst, char *src, uint8_t count)
+; void fc_strncpy(char *dst, char *src, uint8_t count)
 ;
-; THIS FUNCTION TRASHES tmp4, ptr3, ptr4
-.proc   _fn_strncpy
-        sta     tmp4
-        popax   ptr4
-        popax   ptr3
+; THIS FUNCTION TRASHES tmp6-10
+.proc   _fc_strncpy
+        sta     tmp6    ; count
+        popax   tmp7    ; src : 13/14
+        popax   tmp9    ; dst : 15/16
 
         ldy     #$00
-:       mva     {(ptr4), y}, {(ptr3), y}
+:       mva     {(tmp7), y}, {(tmp9), y}
         beq     fill_zeroes ; hit end of string
         iny
-        cpy     tmp4
+        cpy     tmp6
         bne :-
         beq     out
 
@@ -35,9 +36,9 @@ fill_zeroes:
         ; fill to count with 0
         lda     #$00
 :       iny
-        cpy     tmp4
+        cpy     tmp6
         beq     out
-        sta     (ptr3), y
+        sta     (tmp9), y
         bne :-
 
 out:    rts

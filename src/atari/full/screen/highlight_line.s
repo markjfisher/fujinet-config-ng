@@ -28,4 +28,4 @@
 ; the offset for each module (see Mod enum), i.e. host, device, ...
 ; with host and device having first row of information at y = 2 (3rd row) down screen
 mod_highlight_offsets:
-        .byte   $1a, $1a, $12, $12, $12, $22, $12, $12
+        .byte   $1a, $1a, $36, $12, $12, $22, $12, $12

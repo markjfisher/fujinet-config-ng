@@ -2,9 +2,8 @@
 
         .import     _fn_io_open_directory
         .import     _fn_io_set_directory_position
-        .import     _fn_memclr_page
         .import     _fn_io_error
-        .import     _fn_strlcpy
+        .import     _fc_strlcpy
         .import     fn_io_buffer
         .import     fn_dir_filter
         .import     fn_dir_path
@@ -13,7 +12,7 @@
         .import     mf_dir_pos
         .import     pusha, pushax
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
 .proc get_to_dir_pos
@@ -24,23 +23,29 @@
         jsr     _fn_io_open_directory
 
         ; set the directory position to top + highlighted
-        mwa     mf_dir_pos, ptr1
-        adw1    ptr1, mf_selected
+        mwa     mf_dir_pos, tmp15
+        adw1    tmp15, mf_selected
 
-        ; setax   ptr1  ; a is already ptr1
-        ldx     ptr1+1
+        ; setax   tmp15  ; a is already tmp15
+        ldx     tmp15+1
         jmp     _fn_io_set_directory_position
 .endproc
 
 ; copies the path to buffer, adding on filter if set
 .proc copy_path_filter_to_buffer
-        setax   #fn_io_buffer
-        jsr     _fn_memclr_page         ; relies on our buffer being 256 bytes
+        mwa     #fn_io_buffer, tmp15
+
+        ; clear a page of memory
+        ldy     #$00
+        lda     #$00
+:       sta     (tmp15), y
+        iny
+        bne     :-
 
         pushax  #fn_io_buffer
         pushax  #fn_dir_path
         lda     #$e0
-        jsr     _fn_strlcpy
+        jsr     _fc_strlcpy
         sta     tmp4                    ; A/X hold length, will only be low byte
 
         lda     fn_dir_filter           ; if filter set, we need to cat it on end
