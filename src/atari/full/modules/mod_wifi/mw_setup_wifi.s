@@ -18,8 +18,6 @@
         .include    "fn_io.inc"
 
 .proc mw_setup_wifi
-        ; read network scan
-
         jsr     _fn_io_scan_for_networks
         sta     mw_net_count
 
@@ -43,8 +41,6 @@ ok:
         sbw1    ptr3, #4
         mva     #$00, tmp1              ; loop counter for networks
 
-
-
 :       pusha   tmp1
         setax   #fn_io_ssidinfo
         jsr     _fn_io_get_scan_result
@@ -61,7 +57,7 @@ ok:
         mva     #FNC_WIFI3, {(ptr3), y}
 
         lda     #$00            ; space char to overwrite the power values
-        ldy     #$01            ; first char to erase
+        ldy     #$01            ; index of first char to erase, out of 0, 1, 2
         ; print the signal strength. this is in SSIDInfo::rssi
         ; boundaries for 3 chars are:
         ; -40 = 3 bars
