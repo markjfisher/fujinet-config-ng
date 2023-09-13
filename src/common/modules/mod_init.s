@@ -1,4 +1,5 @@
         .export     mod_init
+        .export     fc_connected
 
         .import     _dev_init
         .import     _fn_io_get_ssid
@@ -30,6 +31,7 @@
         sta           md_device_selected
         sta           kb_current_line
         sta           is_booting
+        sta           fc_connected
 
         ; Start getting information from FN to decide what module to load next
         jsr     _fn_io_get_wifi_enabled
@@ -56,6 +58,7 @@ not_enabled:
         rts
 
 connected:
+        mva     #$01, fc_connected
         mva     #Mod::hosts, mod_current
         rts
 
@@ -64,3 +67,6 @@ set_wifi:
         rts
 
 .endproc
+
+.bss
+fc_connected:   .res 1

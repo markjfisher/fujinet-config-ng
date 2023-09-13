@@ -70,7 +70,7 @@
         tax
 
         ldy     #$04
-        lda     #$ff    ; shape data in A - with half chars on the borders, we can't get 4 pixels short anymore
+        lda     #$ff    ; shape data in A
 :       sta     __PMG_START__+$180, x
         sta     __PMG_START__+$200, x
         sta     __PMG_START__+$280, x

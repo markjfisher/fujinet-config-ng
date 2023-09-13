@@ -1,11 +1,17 @@
         .export     _scr_highlight_line
-        .import     _bar_show, kb_current_line, mod_current
+
+        .import     _bar_show
+        .import     kb_current_line
+        .import     mod_current
+        .import     set_highlight_colour
 
         .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
-; void __fastcall__ dev_highlight_line(uint8_t line)
+; void __fastcall__ dev_highlight_line()
 .proc _scr_highlight_line
+        jsr     set_highlight_colour
+
         ; read the highlight offset for current module
         ldx     mod_current
         lda     mod_highlight_offsets, x

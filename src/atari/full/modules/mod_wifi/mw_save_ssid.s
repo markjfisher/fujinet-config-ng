@@ -6,6 +6,7 @@
         .import     _pause
         .import     _put_s
         .import     _scr_clr_highlight
+        .import     fc_connected
         .import     fn_io_netconfig
         .import     mw_error_connecting
         .import     mw_is_ac_data_fetched
@@ -40,11 +41,13 @@
         jsr     _fn_io_get_wifi_status
         cmp     #WifiStatus::connected
         bne     err_status
+        mva     #$01, fc_connected
         jmp     return0
 
         ; display an error that the connection didn't work
 err_status:
         mva     #$00, mw_is_ac_data_fetched
+        sta     fc_connected
         jsr     mw_error_connecting
         jmp     return1
 
