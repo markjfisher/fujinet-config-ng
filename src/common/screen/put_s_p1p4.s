@@ -1,7 +1,7 @@
         .export     put_s_p1p4
         .import     ascii_to_code
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
 
 ; Internal simple print to screen function using ptr1/4
 ;

@@ -5,10 +5,14 @@
         .import     _put_s
         .import     fn_io_ssidinfo
         .import     get_scrloc
+        .import     mw_custom_msg
+        .import     mw_error_no_networks
         .import     mw_net_count
         .import     mw_nets_msg2
         .import     pusha
         .import     put_s_p1p4
+        .import     return0
+        .import     return1
 
         .import     debug
 
@@ -21,9 +25,13 @@
         jsr     _fn_io_scan_for_networks
         sta     mw_net_count
 
-        ; TODO: test for error, show popup
+        ; were there any networks? must be > 0 - caught me out!
+        lda     mw_net_count
+        bne     :+
+        jsr     mw_error_no_networks
+        jmp     return1
 
-        cmp     #MAX_NETS
+:       cmp     #MAX_NETS
         bcc     ok
         beq     ok
 
@@ -85,5 +93,9 @@ bar3:
         cmp     mw_net_count
         bne     :-
 
-        rts
+        ; now print the <custom> line
+        mwa     #mw_custom_msg, ptr1
+        jsr     put_s_p1p4
+
+        jmp     return0
 .endproc

@@ -4,7 +4,7 @@
     .import     initlib
     .import     zerobss
 
-    .include    "zeropage.inc"
+    .include    "fc_zp.inc"
     .include    "fn_macros.inc"
 
 .proc start

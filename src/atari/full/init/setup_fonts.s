@@ -1,6 +1,6 @@
         .export     setup_fonts, fn_font_data
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
 

@@ -7,7 +7,7 @@
         .import     ss_width
         .import     ss_pu_entry
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"

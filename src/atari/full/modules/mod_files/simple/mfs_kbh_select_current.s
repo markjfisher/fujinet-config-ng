@@ -17,7 +17,7 @@
         .import     return1
         .import     select_device_slot
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
         .include    "fn_data.inc"

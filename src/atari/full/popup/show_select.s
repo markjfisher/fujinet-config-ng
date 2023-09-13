@@ -22,7 +22,7 @@
         .import     handle_kb
         .import     _wait_scan1
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"

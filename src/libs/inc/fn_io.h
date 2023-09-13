@@ -99,7 +99,7 @@ void fn_io_get_host_slots(HostSlot *h);
 void fn_io_get_scan_result(uint8_t n, SSIDInfo *ssid_info);
 void fn_io_get_ssid(NetConfig *net_config);
 bool fn_io_get_wifi_enabled(void);
-bool fn_io_get_wifi_status(void);
+int fn_io_get_wifi_status(void);
 uint8_t fn_io_mount_all(void);
 void fn_io_mount_disk_image(uint8_t ds, uint8_t mode);
 void fn_io_mount_host_slot(uint8_t hs);

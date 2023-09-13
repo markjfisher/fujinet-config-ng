@@ -8,7 +8,7 @@
         .import     mw_selected
         .import     start
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_mods.inc"
         .include    "atari.inc"

@@ -409,10 +409,10 @@ clean:
 
 # TODO: add the ../fujinet-config-tools/atari/dist/*.com files here?
 dist: $(PROGRAM)
-	mkdir -p dist
-	rm -f dist/*
-	rm -f autorun.atr
-	cp build/$(PROGRAM) dist/config.com
+	$(call MKDIR,dist/)
+	$(call RMFILES,dist/*)
+	$(call RMFILES,autorun.atr)rm -f autorun.atr
+	cp build/$(PROGRAM) dist/$(PROGRAM)
 	dir2atr -m -S -B picoboot.bin autorun.atr dist/
 
 else # $(words $(TARGETLIST)),1

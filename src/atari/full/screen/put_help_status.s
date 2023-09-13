@@ -5,28 +5,28 @@
         .import     ascii_to_code
         .import     _fc_strlen
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_data.inc"
 
 ; void put_status(uint8_t line_num, char *msg)
 .proc _put_status
-        axinto  ptr1            ; save char* msg
-        mwa     #sline1, ptr2   ; get location of first status line into ptr2
+        axinto  tmp9            ; save char* msg
+        mwa     #sline1, tmp7   ; get location of first status line into tmp7
         ; fall into put_common
 
 ; ASSUMPTION - screen has been cleared before calling this, so no extra spaces to print
 put_common:
-        setax   ptr1
-        jsr     _fc_strlen
-        sta     tmp2            ; string length
+        setax   tmp9
+        jsr     _fc_strlen      ; doesn't trash tmp9 in this instance
+        sta     tmp6            ; string length
 
         jsr     popa            ; line number
         tax                     ; this also sets the Z flag, as popa doesn't set it correctly
         beq     over
 
         ; jump to correct line
-:       adw1    ptr2, #SCR_BYTES_W
+:       adw1    tmp7, #SCR_BYTES_W
         dex
         bne     :-
 
@@ -34,19 +34,18 @@ over:
         ; calculate shift for centring the string in SCR_WIDTH wide screen
         lda     #SCR_WIDTH
         sec
-        sbc     tmp2
+        sbc     tmp6
         lsr     a               ; (SCR_WIDTH-len)/2 = padding
-        sta     tmp3
 
-        ; increase ptr2 by padding
-        adw1    ptr2, tmp3
+        ; increase tmp7 by padding
+        adw1    tmp7, a
 
         ldy     #$00
-:       lda     (ptr1), y
+:       lda     (tmp9), y
         jsr     ascii_to_code
-        sta     (ptr2), y
+        sta     (tmp7), y
         iny
-        cpy     tmp2
+        cpy     tmp6
         bne     :-
 
         rts
@@ -55,8 +54,8 @@ over:
 ; void put_help(uint8_t line_num, char *msg)
 ; currently only 1 help line, so line_num is always 0
 .proc _put_help
-        axinto  ptr1            ; save char* msg
-        mwa     #mhlp1, ptr2    ; get location of first help line into ptr2
+        axinto  tmp9            ; save char* msg
+        mwa     #mhlp1, tmp7    ; get location of first help line into tmp7
         jmp     _put_status::put_common
 .endproc
 

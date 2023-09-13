@@ -10,7 +10,7 @@
         .import     return0
         .import     return1
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
         .include    "fn_macros.inc"
@@ -19,7 +19,7 @@
 ;
 ; fetches AdapterConfig data if not yet done.
 ; On an error, it will return 1 and already have zero'd AC data, otherwise returns 0 after setting data in mw_adapter_config
-; also stores it in mw_adapter_config, but for any C callers, they can read it from return value
+; also stores it in mw_adapter_config
 
 .proc _mw_get_wifi_data
         lda     mw_is_ac_data_fetched
@@ -32,8 +32,7 @@ fetch_ac:
         jsr     _fn_io_error
         bne     fetch_ac_error
         mva     #$01, mw_is_ac_data_fetched
-        jsr     return0
-        rts
+        jmp     return0
 
 fetch_ac_error:
         lda     #$00

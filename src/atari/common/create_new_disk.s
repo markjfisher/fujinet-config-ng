@@ -10,7 +10,7 @@
         .import     return0
         .import     return1
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"

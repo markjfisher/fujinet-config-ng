@@ -11,7 +11,7 @@
         .import     mw_setting_up
         .import     pusha
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
 

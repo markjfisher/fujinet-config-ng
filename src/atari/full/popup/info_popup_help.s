@@ -4,7 +4,7 @@
         .import     _put_help
         .import     pusha
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
 .proc info_popup_help

@@ -16,7 +16,7 @@
         .import     mh_host_selected
         .import     pusha
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
 .proc mfs_init

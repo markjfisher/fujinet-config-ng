@@ -13,7 +13,7 @@
 
         .import     debug
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_mods.inc"

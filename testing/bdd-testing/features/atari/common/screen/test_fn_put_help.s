@@ -3,7 +3,7 @@
 
         .include        "fn_macros.inc"
         .include        "fn_io.inc"
-        .include        "zeropage.inc"
+        .include        "fc_zp.inc"
 
 .proc _main
         ; call the function under test

@@ -1,5 +1,5 @@
 ; test mva macro
-    .include    "zeropage.inc"
+    .include    "fc_zp.inc"
     .include    "fn_macros.inc"
 
     .export test_mway

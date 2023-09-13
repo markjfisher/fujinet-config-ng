@@ -3,7 +3,7 @@
         .import   fn_font_data
 
         .include  "atari.inc"
-        .include  "zeropage.inc"
+        .include  "fc_zp.inc"
         .include  "fn_macros.inc"
         .include  "fn_mods.inc"
 

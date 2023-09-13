@@ -15,7 +15,7 @@
 
         .import     _pause, debug
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
         .include    "fn_macros.inc"

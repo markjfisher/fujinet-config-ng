@@ -29,7 +29,7 @@
         .import     pushax
         .import     return1
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory

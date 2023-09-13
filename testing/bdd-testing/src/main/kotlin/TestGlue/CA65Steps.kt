@@ -85,7 +85,7 @@ al 003000 .start
                     .import _main, initlib
                     
                     .import __MAIN_START__, __MAIN_SIZE__, __STACKSIZE__
-                    .include "zeropage.inc"
+                    .include "fc_zp.inc"
     
                 _init:
                     ; setup stack pointer

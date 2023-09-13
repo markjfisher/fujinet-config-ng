@@ -5,7 +5,7 @@
         .import     _malloc
         .import     pusha
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
 

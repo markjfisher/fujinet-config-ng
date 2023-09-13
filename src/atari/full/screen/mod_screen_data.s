@@ -1,6 +1,6 @@
         .export mh_s1, mh_s2, mh_h1
         .export md_s1, md_s2, md_h1
-        .export mw_s1, mw_s2, mw_h1, mw_h2
+        .export mw_s1, mw_s2, mw_h1, mw_h2, mw_help_setup, mw_help_password, mw_custom_msg, mw_help_custom
         .export mx_s1, mx_s2, mx_h1, mx_m1, mx_m2
         .export mf_s1, mf_h1, mf_prev, mf_next
         .export mf_host, mf_filter, mf_path
@@ -111,7 +111,38 @@ mw_h2:
                 INVERT_ATASCII
                 .byte "Select", 0
 
+mw_help_setup:
+                NORMAL_CHARMAP
+                .byte $81, $1c, $1d, $82        ; endL up down endR
+                INVERT_ATASCII
+                .byte "Move"
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "Select"
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit", 0
 
+mw_help_password:
+                INVERT_ATASCII
+                .byte "Enter SSID Password  "
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit", 0
+mw_help_custom:
+                INVERT_ATASCII
+                .byte "Enter Custom SSID  "
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit", 0
+
+mw_custom_msg:
+                NORMAL_CHARMAP
+                .byte "<Enter Custom SSID>", 0
 
 ; ------------------------------------------------------------------
 ; Mod DONE data
@@ -136,7 +167,7 @@ mx_h1:
 
                 NORMAL_CHARMAP
 mx_m1:          .byte "Config-NG by Fenrock", 0
-mx_m2:          .byte "Version: 0.8.1", 0
+mx_m2:          .byte "Version: 0.9.0", 0
 
 
 ; ------------------------------------------------------------------

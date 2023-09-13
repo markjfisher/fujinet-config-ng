@@ -1,7 +1,7 @@
         .export     _scr_highlight_line
         .import     _bar_show, kb_current_line, mod_current
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
 
 ; void __fastcall__ dev_highlight_line(uint8_t line)

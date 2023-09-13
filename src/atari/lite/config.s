@@ -10,7 +10,7 @@
     .import     zerobss
 
     .include    "atari.inc"
-    .include    "zeropage.inc"
+    .include    "fc_zp.inc"
     .include    "fn_macros.inc"
 
 ; This is a cut down version of cc65's atari crt0.s

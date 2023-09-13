@@ -1,5 +1,5 @@
         .export     detect_banks, _bank_table, _bank_count
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "atari.inc"
         .include    "fn_macros.inc"
 

@@ -3,7 +3,7 @@
 
         .include    "atari.inc"
         .include    "fn_macros.inc"
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
 
 .proc _bar_setup
         lda     #$44

@@ -6,7 +6,7 @@
         .import     mh_h1, mh_s1, mh_s2
         .import     pusha
 
-        .include    "zeropage.inc"
+        .include    "fc_zp.inc"
         .include    "fn_macros.inc"
         .include    "fn_io.inc"
 
