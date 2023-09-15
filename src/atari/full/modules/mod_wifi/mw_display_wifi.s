@@ -13,8 +13,6 @@
         .import     mw_version
         .import     pusha
 
-        .import     _pause, debug
-
         .include    "fc_zp.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"

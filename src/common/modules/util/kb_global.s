@@ -7,13 +7,18 @@
         .import     _scr_highlight_line
         .import     booting_mode
         .import     mod_current
+        .import     mx_ask_lobby
+        .import     mx_ask_lobby_info
+        .import     mx_ask_lobby_option
         .import     popa
         .import     popax
+        .import     debug
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
         .include    "fc_mods.inc"
         .include    "fn_data.inc"
+        .include    "popup.inc"
 
 ; void kb_global(uint8_t kb_max_entries, uint8_t kb_prev_mod, uint8_t kb_next_mod, void *kb_current_line, void * kb_mod_proc)
 ;
@@ -147,9 +152,19 @@ not_down:
         cmp     #FNK_LOBBY
         bne     cont_kb
 
-        ; TODO: popup to choose Y/N, then if it's Y...
+        jsr     mx_ask_lobby
+        cmp     #PopupItemReturn::escape
+        beq     lobby_exit
+
+        ; option value is in mx_ask_lobby_option + POPUP_VAL_IDX, 0 = Y, 1 = N
+        lda     mx_ask_lobby_option + POPUP_VAL_IDX
+        bne     lobby_exit
+
+        ; exit the kb handler, but with the next mode set as Exit, and the mode as booting lobby
         mva     #ExitMode::lobby, booting_mode
         mva     #Mod::exit, mod_current
+
+lobby_exit:
         rts
 
 cont_kb:

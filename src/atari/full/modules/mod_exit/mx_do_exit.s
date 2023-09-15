@@ -1,6 +1,7 @@
         .export     _mx_do_exit
 
         .import     _fn_io_set_boot_config
+        .import     _fn_io_set_boot_mode
         .import     _pause
         .import     _put_s
         .import     boot_anim_1_1
@@ -13,15 +14,13 @@
         .import     pusha
         .import     return1
 
-        .import     debug
-
         .include    "atari.inc"
         .include    "fc_macros.inc"
         .include    "fc_mods.inc"
         .include    "fc_zp.inc"
+        .include    "fn_io.inc"
 
 .proc _mx_do_exit
-        jsr     debug
         ; pick from the booting mode
         lda     booting_mode
         cmp     #ExitMode::boot
@@ -40,23 +39,23 @@ normal_boot:
         put_s   #10, #6, #boot_anim_1_2
 
         jsr     mx_mount
-        mva     #$00, tmp1      ; normal boot config value
-        beq     :+
-
-lobby_boot:
-        jsr     show_box
-        mva     #$02, tmp1      ; lobby boot config value
-
+        pause   #$10
         ; "booting!"
-:       put_s   #10, #6, #boot_anim_2_1
-
-        ; courtesy pause to catch the message for half a second
+        put_s   #10, #6, #boot_anim_2_1
         pause   #$20
 
-        ; CHARGE!
-        ; set appropriate boot config mode, and cold start
-        lda     tmp1
+        lda     #$00            ; don't read config
         jsr     _fn_io_set_boot_config
+        jmp     COLDSV
+
+lobby_boot:
+        ; "booting!"
+        jsr     show_box
+        put_s   #10, #6, #boot_anim_2_1
+        pause   #$20
+
+        lda     #$02            ; lobby mode
+        jsr     _fn_io_set_boot_mode
         jmp     COLDSV
 
 error:

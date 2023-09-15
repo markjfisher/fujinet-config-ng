@@ -6,8 +6,6 @@
         .import     pushax
         .import     show_list
 
-        .import     debug, _pause
-
         .include    "fc_macros.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"

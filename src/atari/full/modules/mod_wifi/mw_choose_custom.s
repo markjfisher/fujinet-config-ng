@@ -5,7 +5,6 @@
         .import     _fc_strncpy
         .import     _fn_io_get_scan_result
         .import     _put_help
-        .import     debug
         .import     fn_io_netconfig
         .import     fn_io_ssidinfo
         .import     get_scrloc

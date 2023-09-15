@@ -1,16 +1,16 @@
         .export     handle_kb
         .export     type_at_x
 
-        .import     copy_entry
-        .import     ss_widget_idx
-        .import     ss_items
-        .import     ss_has_sel
-        .import     ss_ud_idx
-        .import     ss_lr_idx
-
         .import     _kb_get_c_ucase
-        .import     ss_pu_entry
+        .import     copy_entry
         .import     pui_sizes
+        .import     set_next_selectable_widget
+        .import     ss_has_sel
+        .import     ss_items
+        .import     ss_lr_idx
+        .import     ss_pu_entry
+        .import     ss_ud_idx
+        .import     ss_widget_idx
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -60,25 +60,12 @@ start_kb_get:
         lda     ss_has_sel
         bne     :+
         
-        ; ignore tab, as we have no selectable widgets. e.g. info
-        jmp     start_kb_get
+        ; ignore tab, as we have no selectable widgets
+        beq     start_kb_get
 
         ; we want to move to next widget that is selectable, with wrap to top if next index = finish
-:       ldx     ss_widget_idx
-add_1:
-        inx
-get_type:
-        jsr     type_at_x               ; get type of x'th popup Item
-        cmp     #PopupItemType::finish
-        bne     :+
-        ldx     #$00
-        beq     get_type
-:       cmp     #PopupItemType::space
-        beq     add_1
-        cmp     #PopupItemType::string
-        beq     add_1
+:       jsr     set_next_selectable_widget
 
-        stx     ss_widget_idx
         ldx     #$00
         lda     #PopupItemReturn::redisplay
         rts
@@ -288,10 +275,10 @@ copy_ret:
         beq     kb_lr_yes
         
         lda     ss_lr_idx
-        bmi     :+
+        bmi     :+                              ; $ff means there is no U/D option on page
 
         ; only 1 other can handle this key press, but not current widget
-        lda     #PopupHandleKBEvent::other       ; indicate there's another widget that can use this press
+        lda     #PopupHandleKBEvent::other      ; indicate there's another widget that can use this press
         rts 
 
         ; default to NO, if more types need adding, add them above
@@ -299,7 +286,7 @@ copy_ret:
         rts
 
 kb_lr_yes:
-        lda     #PopupHandleKBEvent::self        ; indicate this widget can move L/R
+        lda     #PopupHandleKBEvent::self       ; indicate this widget can move L/R
         rts
 .endproc
 
@@ -309,10 +296,10 @@ kb_lr_yes:
         beq     kb_ud_yes
         
         lda     ss_ud_idx
-        bmi     :+
+        bmi     :+                              ; $ff means there is no U/D option on page
 
         ; only 1 other can handle this key press, but not current widget
-        lda     #PopupHandleKBEvent::other       ; indicate there's another widget that can use this press
+        lda     #PopupHandleKBEvent::other      ; indicate there's another widget that can use this press
         rts 
 
         ; default to NO, if more types need adding, add them above
@@ -320,7 +307,7 @@ kb_lr_yes:
         rts
 
 kb_ud_yes:
-        lda     #PopupHandleKBEvent::self        ; indicate this widget can move L/R
+        lda     #PopupHandleKBEvent::self       ; indicate this widget can move L/R
         rts
 
 .endproc

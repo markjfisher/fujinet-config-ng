@@ -39,7 +39,7 @@ all_text:
 
         mva     #$80, tmp3              ; current line, so invert text
 
-        ; are we the current widget
+        ; are we the current widget?
         lda     ss_widget_idx
         cmp     di_current_item
         bne     :+

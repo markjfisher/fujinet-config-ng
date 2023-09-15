@@ -14,8 +14,7 @@
         pushax  #mw_no_networks_info
         pushax  #info_popup_help
         setax   #pu_err_title
-        jsr     _show_select
-        rts
+        jmp     _show_select
 .endproc
 
 .rodata

@@ -15,9 +15,7 @@
         pushax  #mw_connect_error_info
         pushax  #info_popup_help
         setax   #pu_err_title
-        jsr     _show_select
-        ; mva     #Mod::wifi, mod_current
-        rts
+        jmp     _show_select
 .endproc
 
 .rodata

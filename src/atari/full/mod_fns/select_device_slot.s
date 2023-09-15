@@ -1,4 +1,6 @@
         .export     select_device_slot
+
+        .export     mx_ask_help
         .export     pathfile_err_info
 
         .import     _clr_help
@@ -57,13 +59,13 @@
         pushax  #devices_help
         setax   #sds_msg
         jsr     _show_select
-        sta     tmp1            ; save the return from select
+        sta     tmp1            ; save the return from select (type PopupItemReturn)
 
         ; free the strings
         setax   sds_pu_devs+4
         jsr     _free
 
-        ; CHECK IF ESC pressed (return value from _show_select is 0 for esc)
+        ; CHECK IF ESC pressed (return value from _show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
         lda     tmp1
         bne     save_device_choice
 
@@ -212,6 +214,8 @@ mfss_h1:
                 .byte $81, "TAB", $82
                 INVERT_ATASCII
                 .byte "Next"
+; reuse this section of the data for other popup helps
+mx_ask_help:
                 NORMAL_CHARMAP
                 .byte $81, "Ret", $82
                 INVERT_ATASCII

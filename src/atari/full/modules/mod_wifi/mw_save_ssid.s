@@ -3,7 +3,6 @@
         .import     _fn_io_get_wifi_status
         .import     _fn_io_set_ssid
         .import     _mw_init_screen
-        .import     _pause
         .import     _put_s
         .import     _scr_clr_highlight
         .import     fc_connected
@@ -14,8 +13,6 @@
         .import     pusha
         .import     return0
         .import     return1
-
-        .import     debug
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -32,10 +29,7 @@
         jsr     _mw_init_screen
 
         jsr     _scr_clr_highlight      ; turn off the PMG highlight
-        put_s   #10, #12, #mw_nets_msg  ; print "fetching" message that ill be erased when we start printing results
-
-        lda     #$02                    ; Give the FN time to connect - NOT NEEDED NOW
-        jsr     _pause
+        put_s   #10, #12, #mw_nets_msg  ; print "fetching" message that will be erased when we start printing results
 
         ; check connection status
         jsr     _fn_io_get_wifi_status

@@ -9,14 +9,14 @@
         .export     ss_widget_idx
         .export     ss_help_cb
 
-        .import     popax, popa, pusha, pushax
-        .import     ascii_to_code
-        .import     get_scrloc
         .import     _clr_help
         .import     _fc_strlen
         .import     _put_help
+        .import     popax, popa, pusha, pushax
+        .import     ascii_to_code
+        .import     get_scrloc
         .import     block_line
-        .import     type_at_x
+        .import     set_next_selectable_widget
 
         .import     display_items
         .import     handle_kb
@@ -74,9 +74,6 @@ exit_select:
 
 ; draw top part of select with title/help/status, and initialise some values
 .proc initialise_select
-        ; initialise some variables
-        mva     #$00, ss_widget_idx     ; start on first widget
-
         ; store the popup info in locations we can directly read rather than faffing with Y indexing
         mwa     ss_items, ptr1
         ldy     #$00
@@ -177,6 +174,10 @@ str_nul:
         ; save the current screen location as start of display lines after the title
         adw1    ptr4, #SCR_BYTES_W
         mwa     ptr4, ss_scr_l_strt
+
+        ; get the first selectable widget. Start with $ff, as the set_next will increment to 0 to start
+        mva     #$ff, ss_widget_idx
+        jsr     set_next_selectable_widget
 
         rts
 .endproc
