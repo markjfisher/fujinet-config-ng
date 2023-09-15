@@ -411,8 +411,8 @@ clean:
 dist: $(PROGRAM)
 	$(call MKDIR,dist/)
 	$(call RMFILES,dist/*)
-	$(call RMFILES,autorun.atr)rm -f autorun.atr
-	cp build/$(PROGRAM) dist/$(PROGRAM)
+	$(call RMFILES,autorun.atr)
+	cp build/$(PROGRAM) dist/config.com
 	dir2atr -m -S -B picoboot.bin autorun.atr dist/
 
 else # $(words $(TARGETLIST)),1
