@@ -4,7 +4,7 @@
         .import    display_textlist
         .import    display_option
         .import    display_space
-        .import    display_string
+        .import    display_text
 
         .import    ss_items
         .import    ss_num_lr
@@ -76,11 +76,11 @@ not_option:
 not_space:
 ; --------------------------------------------------
 ; STRING LINES (string)
-        cmp     #PopupItemType::string
+        cmp     #PopupItemType::text
         bne     not_string
 
         adw1    ptr1, #.sizeof(PopupItemString)
-        jsr     display_string
+        jsr     display_text
         ; beq     next_item
 
 not_string:

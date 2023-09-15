@@ -17,3 +17,11 @@ mfs_y_offset:    .res 1
 mfs_kbh_running: .res 1
 ; flag to indicate if we are on EOD
 mfs_is_eod:      .res 1
+
+
+.rodata
+mfs_ask_new_disk_info:
+                .byte 30, 0, 1, 0, $ff, $ff
+
+.segment "SCR_DATA"
+

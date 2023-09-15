@@ -21,7 +21,7 @@
 mw_no_networks_info:
                 .byte 17, 5, 0, $ff, $ff
                 .byte PopupItemType::space
-                .byte PopupItemType::string, 1, <mw_no_networks_error_msg, >mw_no_networks_error_msg
+                .byte PopupItemType::text, 1, <mw_no_networks_error_msg, >mw_no_networks_error_msg
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 

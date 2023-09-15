@@ -7,6 +7,7 @@
         .import     get_scrloc
         .import     mf_dir_pos
         .import     mf_selected
+        .import     mfs_ask_new_disk
         .import     mfs_entries_cnt
         .import     mfs_is_eod
         .import     mfs_kbh_select_current
@@ -190,7 +191,7 @@ not_enter:
 
 not_parent:
 ; --------------------------------------------------------------------------
-; F/f - Set Filter
+; F - Set Filter
         cmp     #FNK_FILTER
         bne     not_filter
 
@@ -214,6 +215,20 @@ no_edit:
         rts
 
 not_filter:
+
+; --------------------------------------------------------------------------
+; N - New Disk
+
+        cmp     #FNK_NEWDISK
+        bne     not_new_disk
+
+        jsr     mfs_ask_new_disk
+        ; handle exit code? is there a case where we would do differently?
+        
+        ldx     #KBH::APP_1
+        rts
+
+not_new_disk:
 ; -------------------------------------------------
 ; NOT HANDLED
         ldx     #KBH::NOT_HANDLED    ; flag main kb handler it should handle this code, still in A

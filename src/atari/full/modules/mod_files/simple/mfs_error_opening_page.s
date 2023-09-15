@@ -26,7 +26,7 @@
 opendir_err_info:
                 .byte 30, 4, 0, $ff, $ff
                 .byte PopupItemType::space
-                .byte PopupItemType::string, 1, <opendir_err_msg, >opendir_err_msg
+                .byte PopupItemType::text, 1, <opendir_err_msg, >opendir_err_msg
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 

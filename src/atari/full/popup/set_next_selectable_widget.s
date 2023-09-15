@@ -18,7 +18,7 @@ get_type:
         beq     get_type
 :       cmp     #PopupItemType::space
         beq     add_1
-        cmp     #PopupItemType::string
+        cmp     #PopupItemType::text
         beq     add_1
 
         stx     ss_widget_idx

@@ -63,7 +63,8 @@ POPUP_VAL_IDX   := 3
         space                   ; just a line of space
         textList                ; simple text list display with numbers, non editable, but selectable
         option                  ; like radio buttons, only 1 can be selected
-        string                  ; a non selectable string to be displayed on line. num determines number of strings to display
+        text                    ; a non selectable string to be displayed on line. num determines number of strings to display
+
         ; select                  ; drop down select
         ; checkbox                ; individual on/off
         ; button                  ; highlight it and press enter to enact - a 1 item option with no "name" will do for this

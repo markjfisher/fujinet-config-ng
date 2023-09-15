@@ -22,7 +22,7 @@
 mw_connect_error_info:
                 .byte 21, 5, 0, $ff, $ff
                 .byte PopupItemType::space
-                .byte PopupItemType::string, 2, <mw_connect_error_msg, >mw_connect_error_msg
+                .byte PopupItemType::text, 2, <mw_connect_error_msg, >mw_connect_error_msg
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 

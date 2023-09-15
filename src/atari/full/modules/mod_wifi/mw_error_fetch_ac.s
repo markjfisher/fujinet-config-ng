@@ -24,7 +24,7 @@
 mw_ac_err_info:
                 .byte 32, 4, 0, $ff, $ff
                 .byte PopupItemType::space
-                .byte PopupItemType::string, 1, <mw_ac_err_msg, >mw_ac_err_msg
+                .byte PopupItemType::text, 1, <mw_ac_err_msg, >mw_ac_err_msg
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 

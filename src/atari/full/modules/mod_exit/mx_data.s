@@ -24,11 +24,11 @@ boot_anim_1_3:  .byte $1A, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12
 ; Booting!
 boot_anim_2_1:  .byte $7C, $99, $A0, $A0, $C2, $EF, $EF, $F4, $E9, $EE, $E7, $A1, $A0, $A0, $19, $7C, 0
 
-.data
+.rodata
 mx_ask_lobby_info:
                 ; width, y-offset, has_selectable, up/down option (none), l/r option index
                 .byte 18, 2, 1, $ff, 2
-                .byte PopupItemType::string, 1, <mx_ask_msg, >mx_ask_msg
+                .byte PopupItemType::text, 1, <mx_ask_msg, >mx_ask_msg
                 .byte PopupItemType::space
 mx_ask_lobby_option:
                 ; num, len, val, #texts, #space

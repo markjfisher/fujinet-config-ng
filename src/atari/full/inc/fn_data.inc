@@ -77,6 +77,7 @@ FNK_KILL    = $0B           ; ctrl-k, kill to end of line
 FNK_PARENT  = $3C           ; "<" used in files to go to parent dir
 FNK_FILTER  = $46           ; "F" Filter
 FNK_LOBBY   = $4C           ; "L" Lobby
+FNK_NEWDISK = $4E           ; "N" New Disk (Files)
 
 ; CHARACTER SCREEN CODES FOR HIGHLIGHTING/POPUP BOX etc
 FNC_TLW     = $4A           ; Top Left WIDE

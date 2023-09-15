@@ -1,4 +1,4 @@
-        .export     display_string
+        .export     display_text
 
         .import     ascii_to_code
         .import     left_border
@@ -12,7 +12,7 @@
         .include    "popup.inc"
 
 ; print a list of non-editable or selectable strings
-.proc display_string
+.proc display_text
         mva     {ss_pu_entry + POPUP_NUM_IDX}, tmp4
         mwa     {ss_pu_entry + PopupItemString::text}, ptr2
         sbw1    ptr2, #$01
