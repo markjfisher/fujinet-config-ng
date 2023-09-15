@@ -1,6 +1,6 @@
         .export     _fc_strlcpy
         .import     popax, popa
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fc_zp.inc"
 
 ; uint8_t fc_strlcpy(char *dst, char *src, uint8_t size)

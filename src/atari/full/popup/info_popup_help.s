@@ -5,7 +5,7 @@
         .import     pusha
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 .proc info_popup_help
         put_help #0, #pu_err_h1

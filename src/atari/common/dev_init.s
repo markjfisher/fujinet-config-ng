@@ -4,8 +4,8 @@
 
         .include  "atari.inc"
         .include  "fc_zp.inc"
-        .include  "fn_macros.inc"
-        .include  "fn_mods.inc"
+        .include  "fc_macros.inc"
+        .include  "fc_mods.inc"
 
 ; void _dev_init()
 ;

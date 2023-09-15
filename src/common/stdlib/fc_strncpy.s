@@ -1,7 +1,7 @@
         .export     _fc_strncpy
         .import     popax, popa
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fc_zp.inc"
 
 ; This is a cutdown version of strncpy for use on strings up to 256 characters.

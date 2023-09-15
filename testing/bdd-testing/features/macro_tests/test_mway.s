@@ -1,6 +1,6 @@
 ; test mva macro
     .include    "fc_zp.inc"
-    .include    "fn_macros.inc"
+    .include    "fc_macros.inc"
 
     .export test_mway
     .export t_t1, t_t2, t_t3

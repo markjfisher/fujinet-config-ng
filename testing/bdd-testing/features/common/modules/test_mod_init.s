@@ -3,7 +3,7 @@
         .export         t_wifi_enabled, t_wifi_status, t_ssid_fetched, t_ssid_info
         .import         mod_init, setax
 
-        .include        "fn_macros.inc"
+        .include        "fc_macros.inc"
         .include        "fn_io.inc"
 
 .proc _main

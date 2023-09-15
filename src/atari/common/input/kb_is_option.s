@@ -1,6 +1,6 @@
         .export     _kb_is_option
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "atari.inc"
 
 ; CONSOL codes:

@@ -1,8 +1,12 @@
         .export     _bar_setup, _bar_clear, _bar_setcolor, _bar_show
-        .import     __PMG_START__, _wait_scan1
+
+        .import     __PMG_START__
+        .import     _wait_scan1
+        .import     popa
+        .import     return0
 
         .include    "atari.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fc_zp.inc"
 
 .proc _bar_setup
@@ -19,9 +23,9 @@
         sta           SIZEM
 
         ; set positions M0PF to P3PF from bar_positions table
-        mwa     #bar_positions, ptr1
+        mwa     #bar_positions, tmp9
         ldy     #$07
-:       mva     {(ptr1), y}, {M0PF, y}
+:       mva     {(tmp9), y}, {M0PF, y}
         dey
         bpl     :-
 
@@ -29,17 +33,15 @@
 .endproc
 
 .proc _bar_clear
-        ; clear __PMG_START__ for from 384+28 to 1024 bytes
-        ; The extra 28 come from the fact the PMG is not shown in first 7 lines (4 bytes per line)
-        mwa     #__PMG_START__+384, ptr2        ; slight overlap here, but really doesn't matter
-        mwa     #__PMG_START__+512, ptr3
-        mwa     #__PMG_START__+768, ptr4
+        mwa     #__PMG_START__+384, tmp5
+        mwa     #__PMG_START__+512, tmp7
+        mwa     #__PMG_START__+768, tmp9
+
         lda     #$00
-        ldy     #$00
-:
-        sta     (ptr2), y
-        sta     (ptr3), y
-        sta     (ptr4), y
+        tay
+:       sta     (tmp5), y
+        sta     (tmp7), y
+        sta     (tmp9), y
         iny
         bne     :-
         rts
@@ -54,15 +56,16 @@
         rts
 .endproc
 
-; void bar_show(uint8_t row(A), uint8_t offset(X))
+; void bar_show(uint8_t row, uint8_t offset)
 .proc _bar_show
-        stx     tmp1    ; highlight offset for currently viewed module, forces PMG down screen a bit as we don't always start on first line.
+        sta     tmp10   ; highlight offset for currently viewed module, forces PMG down screen a bit as we don't always start on first line.
+
+        jsr     popa
         sec
         adc     #$00    ; get row 1 based
-
         asl     a       ; row x 2
         asl     a       ; row x 4
-        adc     tmp1    ; adjustment fudge, this positions the bar over current item
+        adc     tmp10   ; adjustment fudge, this positions the bar over current item
         pha             ; save a
         jsr     _wait_scan1
         jsr     _bar_clear
@@ -80,10 +83,7 @@
         dey
         bne     :-
 
-        ; exit with 0 in A, X
-        ldx     #$00
-        lda     #$00
-        rts
+        jmp     return0
 .endproc
 
 .rodata

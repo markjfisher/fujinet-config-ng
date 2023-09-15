@@ -13,7 +13,7 @@
         .include    "fc_zp.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; int mw_get_wifi_data()
 ;

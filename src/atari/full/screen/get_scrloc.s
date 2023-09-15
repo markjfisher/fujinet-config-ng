@@ -1,7 +1,7 @@
         .export     get_scrloc
         .import     m_l1
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
 
 ; INTERNAL routine to set ptr4 to the screen location for the given X,Y coordinates

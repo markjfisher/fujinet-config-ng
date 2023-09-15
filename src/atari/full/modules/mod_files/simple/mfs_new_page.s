@@ -30,7 +30,7 @@
         .import     return1
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 .proc mfs_new_page

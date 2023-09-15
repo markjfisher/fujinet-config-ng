@@ -36,7 +36,6 @@ SCR_BWX2    := 80           ; pre-calculate 2 widths so we don't have to keep do
 ; show_list constants for screen coordinate starting points etc.
 SL_EDIT_X   := 5            ; x offset for list entry
 SL_Y        := 2            ; the top left corner Y position to start printing the list
-SL_COUNT    := 8            ; how many entries are in a Screen List
 
 MF_YOFF     := 4            ; Mod Files Y Offset for shifting file list down screen
 
@@ -47,8 +46,9 @@ FNS_C_W     = $37           ; screen code for "W"
 DIR_PG_CNT  = 18            ; Number of entries to display on a page in the file listing
 DIR_MAX_LEN = 36            ; old config was 36, but we don't quite have space on screen for 36 with borders.
 
-
-MAX_NETS    = 10
+MAX_NETS    = 10            ; networks to show when scanning for wifis
+MAX_HOSTS   = 8             ; how many hosts can be displayed
+MAX_DEVICES = 8             ; how many devices can be displayed
 
 ; KEYBOARD codes
 ; defines for fn_edit to use for various key codes
@@ -76,7 +76,7 @@ FNK_END     = $05           ; ctrl-e, end of line char
 FNK_KILL    = $0B           ; ctrl-k, kill to end of line
 FNK_PARENT  = $3C           ; "<" used in files to go to parent dir
 FNK_FILTER  = $46           ; "F" Filter
-FNK_FILTER2 = $66           ; "f" Filter
+FNK_LOBBY   = $4C           ; "L" Lobby
 
 ; CHARACTER SCREEN CODES FOR HIGHLIGHTING/POPUP BOX etc
 FNC_TLW     = $4A           ; Top Left WIDE

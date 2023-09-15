@@ -16,7 +16,7 @@
         .export     mw_nets_msg
         .export     mw_nets_msg2
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; Data for screen display, help texts etc
 
@@ -33,7 +33,7 @@ mh_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $82
                 INVERT_ATASCII
-                .byte "Info/Exit            Drive Slots"
+                .byte "Info                 Drive Slots"
                 NORMAL_CHARMAP
                 .byte $81, $1f, $82, 0
 
@@ -87,7 +87,7 @@ mw_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $82
                 INVERT_ATASCII
-                .byte "Drive Slots            Info/Exit"
+                .byte "Drive Slots                 Info"
                 NORMAL_CHARMAP
                 .byte $81, $1f, $82, 0
 
@@ -149,7 +149,7 @@ mw_custom_msg:
 ; ------------------------------------------------------------------
 mx_s1:
                 INVERT_ATASCII
-                .byte "INFO / EXIT", 0
+                .byte "INFO", 0
 
 mx_s2:
                 NORMAL_CHARMAP

@@ -4,7 +4,7 @@
         .import     fn_io_deviceslots
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 

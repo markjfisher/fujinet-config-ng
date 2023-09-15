@@ -6,7 +6,7 @@
         .import     _fc_strlen
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
 
 ; void put_status(uint8_t line_num, char *msg)

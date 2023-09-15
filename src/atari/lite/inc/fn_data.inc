@@ -62,8 +62,7 @@ FNK_END     = $05           ; ctrl-e, end of line char
 FNK_KILL    = $0B           ; ctrl-k, kill to end of line
 FNK_PARENT  = $3C           ; "<" used in files to go to parent dir
 FNK_FILTER  = $46           ; "F" Filter
-FNK_FILTER2 = $66           ; "f" Filter
-
+FNK_LOBBY   = $4C           ; "L" Lobby
 
 FNC_DIR_C   = $40           ; directory character SCREEN CODE
 FNC_L_END   = $41           ; Left extra character to widen the string slightly, used for Help text

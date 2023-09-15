@@ -10,16 +10,16 @@
         .import     pushax
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_mods.inc"
 
 .proc _mh_handle_input
         mva     mh_host_selected, kb_current_line
 
         pusha   #7              ; only 8 entries on screen
-        pusha   #Mod::done      ; prev
+        pusha   #Mod::info      ; prev
         pusha   #Mod::devices   ; next
         pushax  #mh_host_selected  ; memory address of our current host so it can be updated
         setax   #mh_kb_handler  ; hosts kb handler
@@ -56,21 +56,21 @@ not_eol:
 ; 1-8
         cmp     #'1'
         bcs     one_or_over
-        bcc     not_1_8
+        bcc     not_1_max
 one_or_over:
-        cmp     #'9'
-        bcs     not_1_8
+        cmp     #('1' + MAX_HOSTS)
+        bcs     not_1_max
 
         ; in range 1-8
         sec
-        sbc     #'1' ; convert from ascii for 1-8 to index 0-7
+        sbc     #'1' ; convert to 0 based index
         sta     mh_host_selected
         sta     kb_current_line         ; tell global kb handler the latest value too
         jsr     _scr_highlight_line
         ldx     #KBH::RELOOP
         rts
 
-not_1_8:
+not_1_max:
 ; ----------------------------------------------------------------------
 ; EXIT - didn't handle it
 ; ----------------------------------------------------------------------

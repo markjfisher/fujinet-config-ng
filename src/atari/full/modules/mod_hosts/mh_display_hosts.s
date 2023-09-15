@@ -6,11 +6,13 @@
         .import     pushax
         .import     show_list
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
+        .include    "fn_data.inc"
         .include    "fn_io.inc"
 
 .proc _mh_display_hosts
         pushax  #mod_hosts_show_list_num
+        pusha   #MAX_HOSTS
         pusha   #.sizeof(HostSlot)
         setax   #fn_io_hostslots
         jmp     show_list

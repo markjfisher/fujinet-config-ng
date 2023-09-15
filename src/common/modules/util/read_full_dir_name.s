@@ -6,7 +6,7 @@
         .import     pusha
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 
 ; char *read_full_dir_name()

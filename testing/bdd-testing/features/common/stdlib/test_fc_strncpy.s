@@ -2,7 +2,7 @@
 
         .import         _fc_strncpy, pusha, pushax
         .export         _main, t_src, t_dst, t_c
-        .include        "fn_macros.inc"
+        .include        "fc_macros.inc"
 
 .proc _main
         ; args:  #dst #src count

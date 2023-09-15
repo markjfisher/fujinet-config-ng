@@ -1,5 +1,5 @@
 ; test ada macro
-    .include    "fn_macros.inc"
+    .include    "fc_macros.inc"
 
     .export test_ada
     .export t_t1

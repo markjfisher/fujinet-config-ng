@@ -1,25 +1,25 @@
         .export     _scr_highlight_line
 
         .import     _bar_show
+        .import     _set_highlight_colour
         .import     kb_current_line
         .import     mod_current
-        .import     set_highlight_colour
+        .import     pusha
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
-; void __fastcall__ dev_highlight_line()
+; void _scr_highlight_line()
 .proc _scr_highlight_line
-        jsr     set_highlight_colour
+        jsr     _set_highlight_colour
+
+        pusha   kb_current_line
 
         ; read the highlight offset for current module
         ldx     mod_current
         lda     mod_highlight_offsets, x
-        tax
 
-        lda     kb_current_line
-        jsr     _bar_show
-        rts
+        jmp     _bar_show
 .endproc
 
 .rodata
@@ -33,5 +33,23 @@
 
 ; the offset for each module (see Mod enum), i.e. host, device, ...
 ; with host and device having first row of information at y = 2 (3rd row) down screen
+
+
+;; must be in the same order as Mod enum:
+; hosts
+; devices
+; wifi
+; info
+; files
+; init
+; exit
+
+
 mod_highlight_offsets:
-        .byte   $1a, $1a, $36, $12, $12, $22, $12, $12
+        .byte   $1a             ; hosts
+        .byte   $1a             ; devices
+        .byte   $36             ; wifi (only when choosing network)
+        .byte   $12             ; info (no highlight)
+        .byte   $22             ; files
+        .byte   $12             ; init (no highlight)
+        .byte   $12             ; exit (no highlight)

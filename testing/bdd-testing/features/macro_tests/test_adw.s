@@ -1,5 +1,5 @@
 ; test adw macro
-    .include    "fn_macros.inc"
+    .include    "fc_macros.inc"
 
     .export test_adw_word_immw
     .export test_adw_word_word

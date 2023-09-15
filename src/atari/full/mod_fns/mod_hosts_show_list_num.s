@@ -3,7 +3,7 @@
         .import     sl_list_num
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_io.inc"
 
 .proc mod_hosts_show_list_num

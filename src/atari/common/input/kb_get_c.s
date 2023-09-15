@@ -3,7 +3,7 @@
 
         .import     _kbhit
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "atari.inc"
 
 ; char _kb_get_c()

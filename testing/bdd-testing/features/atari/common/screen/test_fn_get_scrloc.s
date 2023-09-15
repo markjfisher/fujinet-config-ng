@@ -1,7 +1,7 @@
         .export         _main, t_x, t_y
         .import         get_scrloc
 
-        .include        "fn_macros.inc"
+        .include        "fc_macros.inc"
         .include        "fn_io.inc"
         .include        "fc_zp.inc"
 

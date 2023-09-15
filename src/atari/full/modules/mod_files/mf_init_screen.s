@@ -8,7 +8,7 @@
         .import     mf_s1, mf_h1, mf_h2
         .import     pusha
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 .proc _mf_init_screen
         ldx        #$00

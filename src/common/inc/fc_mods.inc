@@ -3,8 +3,7 @@
     hosts               ; show the host slots, and allow drilling into them to pick a device to mount
     devices             ; show device list from hosts files navigated to
     wifi                ; view/pick wifi
-    info                ; show various information about FN, e.g. version, memory, ...?
-    done                ; screen to allow user to see exit/boot options etc
+    info                ; show various information about FN, e.g. version, memory, help, ...
 
     files               ; file selection screen when browsing chosen host
 
@@ -19,8 +18,12 @@
     RELOOP              ; handled by module, start main handler loop again
     EXIT                ; main kb handler should exit
     ; following allow modules to return different codes that can be act on instead of explicitly exiting
-    APP_1               ; app specific code 1
-    APP_2               ; app specific code 2
-    APP_3               ; app specific code 3
-    APP_4               ; app specific code 4
+    APP_1               ; app specific code 1, ... not really being used other than an exit
+.endenum
+
+; EXIT mod modes
+.enum ExitMode
+    none                ; make 0 the default no boot option, so we can detect if anyone asked to exit, but didn't set a mode
+    boot                ; normal "option" boot
+    lobby               ; our friend the LOBBY!
 .endenum

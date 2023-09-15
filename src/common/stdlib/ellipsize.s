@@ -5,7 +5,7 @@
         .import     popa, popax, pushax
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; void ellipsize(uint8_t max, char *dst, char *src)
 ;

@@ -5,14 +5,14 @@
         .import     _kb_get_c_ucase
         .import     _kb_is_option
         .import     _scr_highlight_line
-        .import     is_booting
+        .import     booting_mode
         .import     mod_current
         .import     popa
         .import     popax
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_macros.inc"
+        .include    "fc_mods.inc"
         .include    "fn_data.inc"
 
 ; void kb_global(uint8_t kb_max_entries, uint8_t kb_prev_mod, uint8_t kb_next_mod, void *kb_current_line, void * kb_mod_proc)
@@ -43,9 +43,9 @@ start_kb_get:
         jsr     _kb_is_option
         beq     not_option
 
-        ; set done module with a flag to say boot
-        mva     #$01, is_booting
-        mva     #Mod::done, mod_current
+        ; set exit module with a flag to say boot
+        mva     #ExitMode::boot, booting_mode
+        mva     #Mod::exit, mod_current
         ldx     #KBH::EXIT
         rts
 
@@ -121,7 +121,7 @@ do_up:
         beq     do_down
         cmp     #FNK_DOWN2
         beq     do_down
-        bne     cont_kb                 ; CHANGE THIS IF MORE KEYBOARD OPTIONS ADDED
+        bne     not_down
 
 do_down:
         lda     kb_current_line
@@ -139,6 +139,18 @@ save_state:
         lda     kb_max_entries
         beq     cont_kb
         jsr     _scr_highlight_line
+        jmp     cont_kb
+
+not_down:
+; -------------------------------------------------
+; LOBBY
+        cmp     #FNK_LOBBY
+        bne     cont_kb
+
+        ; TODO: popup to choose Y/N, then if it's Y...
+        mva     #ExitMode::lobby, booting_mode
+        mva     #Mod::exit, mod_current
+        rts
 
 cont_kb:
         ; and reloop if we didn't leave this routine through a kb option

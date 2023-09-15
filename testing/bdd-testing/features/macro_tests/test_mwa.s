@@ -1,5 +1,5 @@
 ; test mva macro
-    .include    "fn_macros.inc"
+    .include    "fc_macros.inc"
 
     .export test_mwa
     .export t_t1, t_t2, t_t3

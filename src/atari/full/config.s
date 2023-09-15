@@ -5,7 +5,7 @@
     .import     zerobss
 
     .include    "fc_zp.inc"
-    .include    "fn_macros.inc"
+    .include    "fc_macros.inc"
 
 .proc start
     ; mini crt0, setup real stack and software stack

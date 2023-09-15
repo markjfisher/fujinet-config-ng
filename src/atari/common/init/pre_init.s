@@ -1,7 +1,7 @@
         .export     pre_init
         .import     _reset_handler, detect_banks, setup_fonts
         .include    "atari.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; https://www.wudsn.com/index.php/productions-atari800/tutorials/tips
 

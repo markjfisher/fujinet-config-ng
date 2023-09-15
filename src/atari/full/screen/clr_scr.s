@@ -9,7 +9,7 @@
         .import     debug, _pause
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
 
 ; clears the internal screen and the help and status texts

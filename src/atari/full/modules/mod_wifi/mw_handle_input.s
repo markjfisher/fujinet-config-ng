@@ -16,10 +16,10 @@
         .import     pushax
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_mods.inc"
 
 .proc _mw_handle_input
         mva     #$00, mw_setting_up
@@ -27,7 +27,7 @@
 
         pusha   #0
         pusha   #Mod::devices   ; prev
-        pusha   #Mod::done      ; next
+        pusha   #Mod::info      ; next
         pushax  #mw_selected    ; memory address of our current host so it can be updated
         setax   #mw_kb_handler  ; hosts kb handler
         jmp     _kb_global      ; rts from this will drop out of module

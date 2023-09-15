@@ -2,7 +2,7 @@
 
         .include    "atari.inc"
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; void _pause(uint8_t jiffies)
 ;

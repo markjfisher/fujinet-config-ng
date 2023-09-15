@@ -4,7 +4,7 @@
         .import     fn_io_hostslots
         .import     mh_is_hosts_data_fetched
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 .proc _mh_get_hosts_data
         lda     mh_is_hosts_data_fetched

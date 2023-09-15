@@ -1,6 +1,6 @@
         .export    _wait_scan1
         .include    "atari.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; void _wait_scan1()
 ;

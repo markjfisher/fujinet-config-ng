@@ -17,7 +17,7 @@
         .import     pusha
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 .proc mfs_init
         jsr     _fn_io_close_directory

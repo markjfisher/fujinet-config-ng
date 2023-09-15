@@ -1,6 +1,7 @@
         .export     _reset_handler
 
         .import     _clr_scr_all
+        .import     booting_mode
         .import     md_is_devices_data_fetched
         .import     mh_is_hosts_data_fetched
         .import     mod_current
@@ -9,8 +10,8 @@
         .import     start
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_macros.inc"
+        .include    "fc_mods.inc"
         .include    "atari.inc"
 
 ; needs to be in writable RAM to capture the DOSINI original vector
@@ -24,6 +25,7 @@
         sta     md_is_devices_data_fetched
         sta     mw_is_ac_data_fetched
         sta     mw_selected
+        sta     booting_mode
 
         jsr     _clr_scr_all
         jmp     start

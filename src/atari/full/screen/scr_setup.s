@@ -5,7 +5,7 @@
         .import     _pause, _wait_scan1, _bar_setup, _bar_clear
 
         .include    "atari.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
 
 ; Convenience defines
@@ -29,24 +29,24 @@ DL_MODEF      = $0F
 .proc _scr_setup
 
         ; Screen is already off in the pre_init stage.
-        mva #$00, NMIEN
-        jsr _bar_setup
-        jsr _bar_clear
+        mva     #$00, NMIEN
+        jsr     _bar_setup
+        jsr     _bar_clear
 
-        mwa #main_dlist, SDLSTL
+        mwa     #main_dlist, SDLSTL
 
-        mva #$02, CHACTL
-        mva #$3c, PACTL
+        mva     #$02, CHACTL
+        mva     #$3c, PACTL
 
         ; setup some colors
-        mva #$0d, COLOR1    ; glyph pixel luma
-        mva #$00, COLOR2    ; b/g
-        mva #$00, COLOR4    ; border
-        jsr _wait_scan1     ; at top of screen, everything is now setup
+        mva     #$0d, COLOR1    ; glyph pixel luma
+        mva     #$00, COLOR2    ; b/g
+        sta           COLOR4    ; border
+        jsr     _wait_scan1     ; at top of screen, everything is now setup
 
         ; turn screen and interrupts back on with DMA enabled for PMG
-        mva #$40, NMIEN
-        mva #$2e, SDMCTL
+        mva     #$40, NMIEN
+        mva     #$2e, SDMCTL
 
         rts
 .endproc

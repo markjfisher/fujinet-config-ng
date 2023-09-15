@@ -11,7 +11,7 @@
 
     .include    "atari.inc"
     .include    "fc_zp.inc"
-    .include    "fn_macros.inc"
+    .include    "fc_macros.inc"
 
 ; This is a cut down version of cc65's atari crt0.s
 

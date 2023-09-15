@@ -15,8 +15,8 @@
         .import     pushax
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_macros.inc"
+        .include    "fc_mods.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
 
@@ -192,8 +192,6 @@ not_parent:
 ; --------------------------------------------------------------------------
 ; F/f - Set Filter
         cmp     #FNK_FILTER
-        beq     :+
-        cmp     #FNK_FILTER2
         bne     not_filter
 
 :       ldx     #5

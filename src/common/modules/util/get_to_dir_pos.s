@@ -13,7 +13,7 @@
         .import     pusha, pushax
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 .proc get_to_dir_pos
         jsr     copy_path_filter_to_buffer

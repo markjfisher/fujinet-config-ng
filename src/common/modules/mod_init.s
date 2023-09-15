@@ -5,19 +5,19 @@
         .import     _fn_io_get_ssid
         .import     _fn_io_get_wifi_enabled
         .import     _fn_io_get_wifi_status
-        .import     md_device_selected
+        .import     booting_mode
         .import     fn_io_netconfig
-        .import     mh_host_selected
-        .import     is_booting
         .import     kb_current_line
+        .import     md_device_selected
+        .import     mh_host_selected
         .import     mod_current
 
         .import     debug
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_io.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_mods.inc"
 
 ; void mod_init()
 ;
@@ -28,10 +28,10 @@
 
         ; initialise some module values
         mva     #$00, mh_host_selected
-        sta           md_device_selected
-        sta           kb_current_line
-        sta           is_booting
-        sta           fc_connected
+        sta     md_device_selected
+        sta     kb_current_line
+        sta     booting_mode
+        sta     fc_connected
 
         ; Start getting information from FN to decide what module to load next
         jsr     _fn_io_get_wifi_enabled

@@ -18,7 +18,7 @@
         .include    "fc_zp.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; void mw_display_wifi()
 ;

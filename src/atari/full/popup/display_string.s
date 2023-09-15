@@ -7,7 +7,7 @@
         .import     return0
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 
@@ -20,8 +20,7 @@
 all_strings:
         jsr     left_border
 
-:
-        lda     (ptr2), y       ; fetch a character
+:       lda     (ptr2), y       ; fetch a character
         beq     :+
         jsr     ascii_to_code
         sta     (ptr4), y
@@ -29,8 +28,7 @@ all_strings:
         bne     :-              ; always
 
         ; increment ptr2, the string pointer to next string
-:
-        tya
+:       tya
         adw1    ptr2, a
 
         ; fill up to the end of line
@@ -53,7 +51,7 @@ no_x_space:
 
         ; move to next line, and string then reloop
         adw1    ptr4, #SCR_BYTES_W
-        jmp     all_strings                ; always branch
+        jmp     all_strings
 :
         jmp     return0
 .endproc

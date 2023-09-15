@@ -6,8 +6,8 @@
         .import     pu_err_title
         .import     pushax
 
-        .include    "fn_macros.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_macros.inc"
+        .include    "fc_mods.inc"
         .include    "popup.inc"
 
 .proc mfs_error_opening_page

@@ -8,7 +8,7 @@ Feature: Module mod_init test
     Given atari application test setup
     #   And I add atari src file "screen/clr_scr.s"
     #   And I add common/modules src file "kb_global.s"
-    #   And I add common/modules src file "mod_done.s"
+    #   And I add common/modules src file "mod_exit.s"
     #   And I add common/modules src file "mod_init.s"
     #   And I add file for compiling "features/common/modules/test_mod_init.s"
     #   And I create and load application

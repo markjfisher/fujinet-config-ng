@@ -7,8 +7,8 @@
         .import     pusha
         .import     pushax
 
-        .include    "fn_macros.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_macros.inc"
+        .include    "fc_mods.inc"
         .include    "fn_data.inc"
 
 .proc mfs_handle_input

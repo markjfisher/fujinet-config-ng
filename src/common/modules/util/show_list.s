@@ -3,18 +3,20 @@
         .import     popa, pushax, popax
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_mods.inc"
 
-; void show_list(uint8_t dataSize, char *str)
+; void show_list(void *index_print_cb, uint8_t max_count, uint8_t dataSize, char *str)
 ;
 ; show 8 strings on screen in list fashion, used on hosts and devices.
 .proc show_list
         axinto  ptr1            ; str, the string to display's location
         popa    sl_size         ; how much to move down each data block
+        popa    sl_max_cnt      ; maximum number to display in list
         popax   sl_callback     ; routine to call that takes list number in A and prints up to 5 chars for index value (allowing customisation). It expects ptr4 to point to start of printing area
+
 
         mva     #$00, sl_index
 
@@ -52,7 +54,7 @@ next_char:
         adw1    ptr4, {#(SCR_BYTES_W-SL_EDIT_X)}       ; 40 - 5 chars for the next list number
 
         lda     sl_index
-        cmp     #SL_COUNT
+        cmp     sl_max_cnt
         ; repeat for all N items in list
         bne     all_list
 
@@ -68,3 +70,4 @@ call_cb:
 sl_index:    .res 1
 sl_size:     .res 1
 sl_callback: .res 2
+sl_max_cnt:  .res 1

@@ -24,8 +24,8 @@
 
         .include    "fc_zp.inc"
         .include    "atari.inc"
-        .include    "fn_macros.inc"
-        .include    "fn_mods.inc"
+        .include    "fc_macros.inc"
+        .include    "fc_mods.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 

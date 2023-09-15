@@ -4,7 +4,7 @@
         .import     fn_io_deviceslots
         .import     md_is_devices_data_fetched
 
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 .proc _md_get_devices_data
         lda     md_is_devices_data_fetched

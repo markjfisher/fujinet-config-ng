@@ -11,7 +11,7 @@
         .import     put_s_p1p4
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
         .include    "fn_data.inc"
 
 ; bool edit_line(char* str, void *scr_loc, uint8_t max_len)

@@ -2,7 +2,7 @@
         .export     t_b
 
         .include    "fc_zp.inc"
-        .include    "fn_macros.inc"
+        .include    "fc_macros.inc"
 
 ; test that sbc/eor #$ff/adc #1 is same as swapping bytes and doing subtraction
 ; we will perform (t_b - A) in all cases. which is faster and less bytes of memory?
