@@ -6,6 +6,7 @@
 ; val     .word           ; ptr to memory location to store chosen value for this widget
 ; text    .word           ; ptr to strings to use, type specific arrangement.
 ; spc     .word           ; ptr to table of num+1 spacing values for placing widget on screen
+; x_off   .byte           ; left padding to apply
 
 ; for allocating space to work with popups, need largest struct size
 POPUP_MAX_SZ    := 9
@@ -24,6 +25,7 @@ POPUP_VAL_IDX   := 3            ; word pointer to memory value
         has_sel .byte           ; 1 if there are any selectable widgets, 0 if info type
         ud_idx  .byte           ; the entry index to use for Up / Down move if current doesn't support it. $ff for none
         lr_idx  .byte           ; the entry index to use for Left / Right move if current doesn't support it. $ff for none
+        str_idx .byte           ; the index to use for E (Edit) to edit string
 .endstruct
 
 .struct PopupItemTextList
@@ -32,6 +34,7 @@ POPUP_VAL_IDX   := 3            ; word pointer to memory value
         len     .byte
         val     .word
         text    .word
+        x_off   .byte
 .endstruct
 
 .struct PopupItemOption
@@ -54,7 +57,7 @@ POPUP_VAL_IDX   := 3            ; word pointer to memory value
         num     .byte
         len     .byte
         val     .word
-        mem     .word
+        text    .word
 .endstruct
 
 .struct PopupItemSpace

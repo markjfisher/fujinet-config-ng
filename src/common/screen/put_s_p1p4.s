@@ -1,4 +1,6 @@
         .export     put_s_p1p4
+        .export     put_s_p1p4_at_y
+
         .import     ascii_to_code
 
         .include    "fc_zp.inc"
@@ -7,8 +9,10 @@
 ;
 ; write the string at ptr1 to screen location (ptr4)
 ; no bounds checking. copies until finds 0
-.proc put_s_p1p4
+put_s_p1p4:
         ldy     #$00
+
+put_s_p1p4_at_y:
 :       lda     (ptr1), y
         beq     :+
 
@@ -18,4 +22,3 @@
         bne     :-
 :
         rts
-.endproc

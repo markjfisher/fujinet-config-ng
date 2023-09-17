@@ -19,7 +19,7 @@
 
 .rodata
 p2l_err_info:
-                .byte 16, 4, 0, $ff, $ff
+                .byte 16, 4, 0, $ff, $ff, $ff
                 .byte PopupItemType::space
                 .byte PopupItemType::text, 1, <p2l_err_msg, >p2l_err_msg
                 .byte PopupItemType::space

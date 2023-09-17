@@ -1,4 +1,5 @@
         .export     left_border
+        .export     right_border
         .export     block_line
         .export     copy_entry
         .export     pui_is_selectable
@@ -65,6 +66,25 @@
         rts
 .endproc
 
+.proc right_border
+        ; print extra spaces now until width chars printed to remove screen data for shorter lines
+        ; this is important as we will shorten the line by 1 to allow the selection indicator char to be placed before border
+        lda     #FNC_BLANK
+x_space_loop:
+        cpy     ss_width
+        beq     :+
+        bcs     no_x_space      ; finish only when screen index > ss_width
+
+:       sta     (ptr4), y
+        iny
+        bne     x_space_loop  ; always loop, exit will be when we are > width
+
+no_x_space:
+        ; right border
+        mva     #FNC_RT_BLK, {(ptr4), y}
+        rts
+.endproc
+
 .rodata
 
 ; sizes, and is_selectable of each PopupItemType
@@ -78,5 +98,5 @@
 ; string
 
 
-pui_sizes:          .byte 1, 1, 7, 9, 4, 7
+pui_sizes:          .byte 1, 1, 8, 9, 4, 7
 pui_is_selectable:  .byte 0, 0, 1, 1, 0, 1

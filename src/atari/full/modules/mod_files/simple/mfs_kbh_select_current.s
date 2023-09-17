@@ -5,6 +5,7 @@
         .import     _fc_strncpy
         .import     _free
         .import     _scr_clr_highlight
+        .import     debug
         .import     fn_dir_path
         .import     fn_io_buffer
         .import     mf_dir_or_file

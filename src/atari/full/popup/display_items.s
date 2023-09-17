@@ -1,10 +1,11 @@
         .export    display_items
         .export    di_current_item
 
-        .import    display_textlist
         .import    display_option
+        .import    display_string
         .import    display_space
         .import    display_text
+        .import    display_textlist
 
         .import    ss_items
         .import    ss_num_lr
@@ -75,21 +76,31 @@ not_option:
 
 not_space:
 ; --------------------------------------------------
-; STRING LINES (string)
+; TEXT LINES (text)
         cmp     #PopupItemType::text
-        bne     not_string
+        bne     not_text
 
         adw1    ptr1, #.sizeof(PopupItemText)
         jsr     display_text
-        ; beq     next_item
+        beq     next_item
+
+not_text:
+; --------------------------------------------------
+; EDITABLE STRING (string)
+        cmp     #PopupItemType::string
+        bne     not_string
+
+        adw1    ptr1, #.sizeof(PopupItemString)
+        jsr     display_string
+        ; beq   next_item
 
 not_string:
-
 ; TODO: IMPLEMENT OTHER PopupItemType VALUES 
 
 next_item:
         inc     di_current_item                 ; increment the current item being displayed
         ; ptr1 moves to next widget in each type above
+        ; move ptr4 along to next start of line
         adw1    ptr4, #SCR_BYTES_W
         jmp     l_all_items
 

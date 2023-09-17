@@ -5,6 +5,7 @@
         .export     ss_has_sel
         .export     ss_ud_idx
         .export     ss_lr_idx
+        .export     ss_str_idx
         .export     ss_scr_l_strt
         .export     ss_widget_idx
         .export     ss_help_cb
@@ -32,9 +33,6 @@
 ; void show_select(uint8_t width, void *items, char *msg)
 ; 
 ; A generic selection popup window that can display different types of widgets
-;
-; ptr4 is set to the screen location needed at any one time in the showing of the widget
-; be careful not to trash it.
 .proc _show_select
         axinto  ss_message              ; the header message to display in popup
         popax   ss_help_cb              ; the cb function to setup help messages for this particular popup
@@ -86,6 +84,8 @@ exit_select:
         mva     {(ptr1), y}, ss_ud_idx
         iny
         mva     {(ptr1), y}, ss_lr_idx
+        iny
+        mva     {(ptr1), y}, ss_str_idx
         ; move ss_items pointer forward to entries
         adw1    ss_items, #.sizeof(PopupItemInfo)
 
@@ -215,3 +215,4 @@ ss_help_cb:     .res 2
 ss_has_sel:     .res 1
 ss_ud_idx:      .res 1
 ss_lr_idx:      .res 1
+ss_str_idx:     .res 1

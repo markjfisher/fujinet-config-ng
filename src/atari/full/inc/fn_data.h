@@ -44,6 +44,7 @@ extern uint8_t bank_count;
 #define FNK_END         0x05
 #define FNK_KILL        0x0B
 #define FNK_PARENT      0x3C
+#define FNK_EDIT        0x45
 #define FNK_FILTER      0x46
 #define FNK_FILTER2     0x66
 

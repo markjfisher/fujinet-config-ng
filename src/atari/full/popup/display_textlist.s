@@ -3,6 +3,7 @@
         .import     ascii_to_code
         .import     di_current_item
         .import     left_border
+        .import     right_border
         .import     return0
         .import     ss_pu_entry
         .import     ss_widget_idx
@@ -17,8 +18,9 @@
         mva     {ss_pu_entry + POPUP_NUM_IDX}, tmp4
         mwa     {ss_pu_entry + PopupItemTextList::text}, ptr2
         mva     #$11, tmp1              ; list number as screen code so don't have to convert it
-        ; align ptr2 with Y being a 3 based index (it's screen offset)
-        sbw     ptr2, #$03
+        ; align ptr2 with Y being a 3+x_off based index (it's screen offset after the index is printed plus padding)
+        sbw1    ptr2, #$03
+        sbw1    ptr2, {ss_pu_entry + PopupItemTextList::x_off}
 
         ; get the value of the textlist item
         mwa     {ss_pu_entry + POPUP_VAL_IDX}, tmp5
@@ -26,10 +28,18 @@
         mva     {(tmp5), y}, tmp5
 
 all_text:
-
         mva     #$00, tmp3              ; the inverse value to apply to text, this gets ora'd onto char
-        sta     dt_display_arrow
+        sta     tmp6                    ; flag to show we're priting the Arrow for current widget
         jsr     left_border
+
+        ; print any left padding spaces (x_off)
+        lda     #FNC_BLANK
+        ldx     ss_pu_entry + PopupItemTextList::x_off
+        beq     :+
+:       sta     (ptr4), y
+        iny
+        dex
+        bne     :-
 
         ; print digit for current index+1
         mva     tmp1, {(ptr4), y}
@@ -50,7 +60,7 @@ all_text:
         cmp     di_current_item
         bne     :+
 
-        inc     dt_display_arrow
+        inc     tmp6                    ; this is the current, so mark we have to print the closing arrow
         mva     #FNC_L_HL, {(ptr4), y}  ; print the left side indicator arrow
         bne     :++
 
@@ -68,29 +78,14 @@ no_trans:
         dex
         bne     :-
 
-        lda     dt_display_arrow
-        cmp     #$01
-        bne     :+
+        lda     tmp6                    ; do we need a closing arrow?
+        beq     :+
 
+        ; yes, print it
         mva     #FNC_R_HL, {(ptr4), y}
         iny
 
-:
-        ; print extra spaces now until width chars printed to remove screen data for shorter lines
-        ; this is important as we will shorten the line by 1 to allow the selection indicator char to be placed before border
-x_space_loop:
-        cpy     ss_width
-        beq     :+
-        bcs     no_x_space      ; finish only when screen index > ss_width
-
-:       lda     #FNC_BLANK
-        sta     (ptr4), y
-        iny
-        bne     x_space_loop  ; always loop, exit will be when we are > width
-
-no_x_space:
-        ; right border
-        mva     #FNC_RT_BLK, {(ptr4), y}
+:       jsr     right_border
 
         ; any more lines?
         dec     tmp4
@@ -104,6 +99,3 @@ no_x_space:
 :
         jmp     return0
 .endproc
-
-.bss
-dt_display_arrow:       .res 1

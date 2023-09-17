@@ -2,6 +2,7 @@
 
         .import     ascii_to_code
         .import     left_border
+        .import     right_border
         .import     ss_pu_entry
         .import     ss_width
         .import     return0
@@ -31,19 +32,7 @@ all_strings:
 :       tya
         adw1    ptr2, a
 
-        ; fill up to the end of line
-x_space_loop:
-        cpy     ss_width
-        beq     :+
-        bcs     no_x_space
-
-:       lda     #FNC_BLANK
-        sta     (ptr4), y
-        iny
-        bne     x_space_loop
-
-no_x_space:
-        mva     #FNC_RT_BLK, {(ptr4), y}
+        jsr     right_border
 
         ; any more lines?
         dec     tmp4

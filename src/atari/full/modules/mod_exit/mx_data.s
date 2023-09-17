@@ -27,8 +27,8 @@ boot_anim_2_1:  .byte $7C, $99, $A0, $A0, $C2, $EF, $EF, $F4, $E9, $EE, $E7, $A1
 
 .rodata
 mx_ask_lobby_info:
-                ; width, y-offset, has_selectable, up/down option (none), l/r option index
-                .byte 18, 2, 1, $ff, 2
+                ; width, y-offset, has_selectable, up/down option (none), l/r option index, edit index (none)
+                .byte 18, 2, 1, $ff, 2, $ff
                 .byte PopupItemType::text, 1, <mx_ask_msg, >mx_ask_msg
                 .byte PopupItemType::space
 mx_ask_lobby_option:

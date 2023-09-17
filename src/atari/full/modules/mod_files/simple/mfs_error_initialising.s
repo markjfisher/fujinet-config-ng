@@ -22,7 +22,7 @@
 
 .rodata
 mfs_init_err_info:
-                .byte 26, 4, 0, $ff, $ff
+                .byte 26, 4, 0, $ff, $ff, $ff
                 .byte PopupItemType::space
                 .byte PopupItemType::text, 1, <mfs_init_err_msg, >mfs_init_err_msg
                 .byte PopupItemType::space

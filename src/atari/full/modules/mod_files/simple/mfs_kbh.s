@@ -2,6 +2,7 @@
 
         .import     _edit_line
         .import     _fc_strlen
+        .import     debug
         .import     fn_dir_filter
         .import     fn_dir_path
         .import     get_scrloc
@@ -150,7 +151,6 @@ not_esc:
         cmp     #FNK_ENTER
         bne     not_enter
         ; go into the dir, or choose the file
-
         jmp     mfs_kbh_select_current
         ; implicit rts with X containing status
 

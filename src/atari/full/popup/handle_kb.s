@@ -7,6 +7,7 @@
         .import     set_next_selectable_widget
         .import     ss_has_sel
         .import     ss_items
+        .import     ss_str_idx
         .import     ss_lr_idx
         .import     ss_pu_entry
         .import     ss_ud_idx
@@ -33,20 +34,25 @@ start_kb_get:
 ; main popup select  kb switch
 ; --------------------------------------------------------------------
 
-; valid keys are up/down/enter/esc/tab/left/right
+; valid keys are up/down/enter/esc/tab/left/right/E(dit)
 
 ; - enter selects current options that are highlighted
 ; - ESC always exits with no changes to be made (return '1' in A).
 ; - tab moves between widgets
 ; - in an option widget, L/R are allowed, not up/down
 ; - in a list, U/D allowed, L/R not
-; - HOWEVER, if there's only 1 widget of each type, then allow either movement type
+; - HOWEVER, the popup item can define which widget allows L/R, U/D movement without it being highlighted.
 ;   to remove the need to press tab.
-; - Space widget should be skipped
+; - Non selectable widgets are skipped over when pretting tab.
+; - STRING fields:
+;      - Press E to Edit it, so like on HOSTS screen.
+;      - Popup Item can also define which widget the E key will immediately edit if it isn't currently selected
+;      - when not being edit, the entry is just text on screen, when selected, arrows appear and text inverted
 
 ; Highlighting:
 ; - options text is inverted with 2 chars around current option
 ; - list entry is inverted for entire line
+; - String entry is inverted when not editing
 ;
 ; Current selected is stored in popupItem.val for each item, 0 index
 
@@ -65,14 +71,11 @@ start_kb_get:
 
         ; we want to move to next widget that is selectable, with wrap to top if next index = finish
 :       jsr     set_next_selectable_widget
-
-        ldx     #$00
-        lda     #PopupItemReturn::redisplay
-        rts
+        jmp     redisplay
 
 not_tab:
 ; --------------------------------------------------------------------
-; LEFT - option only
+; LEFT - option only currently
 ; --------------------------------------------------------------------
         cmp     #FNK_LEFT
         beq     is_left
@@ -82,7 +85,7 @@ not_tab:
 is_left:
         jsr     kb_can_do_LR
         bne     :+
-        jmp     start_kb_get        ; 0 is also PopupHandleKBEvent::no
+        beq     start_kb_get        ; 0 is also PopupHandleKBEvent::no
 
 :       cmp     #PopupHandleKBEvent::other
         beq     :+
@@ -99,7 +102,7 @@ is_left:
 
 not_left:
 ; --------------------------------------------------------------------
-; RIGHT - option only
+; RIGHT - option only currently
 ; --------------------------------------------------------------------
         cmp     #FNK_RIGHT
         beq     is_right
@@ -109,7 +112,7 @@ not_left:
 is_right:
         jsr     kb_can_do_LR
         bne     :+
-        jmp     start_kb_get
+        beq     start_kb_get
 
 :       cmp     #PopupHandleKBEvent::other
         beq     :+
@@ -135,7 +138,7 @@ not_right:
 is_up:
         jsr     kb_can_do_UD
         bne     :+
-        jmp     start_kb_get
+        beq     start_kb_get
 
 :       cmp     #PopupHandleKBEvent::other
         beq     :+
@@ -198,7 +201,40 @@ not_esc:
         rts
 
 not_enter:
+; --------------------------------------------------------------------
+; EDIT - String field edit
+; --------------------------------------------------------------------
+        cmp     #FNK_EDIT
+        bne     not_edit
 
+        ; is this a string widget? or is there an editable widget?
+        jsr     kb_can_do_edit
+        bne     :+
+        jmp     start_kb_get
+
+:       cmp     #PopupHandleKBEvent::other
+        beq     edit_other
+
+        ; this widget is the one being edit
+
+        ; get location of widget's text field on screen
+        
+
+        ; display it in normal text
+        
+        ; start editing
+
+        ; handle return value (ESC = no edit)
+
+
+        jmp     redisplay
+edit_other:
+        ; another widget can do editing
+        ; TODO
+
+        jmp     redisplay
+
+not_edit:
 ; --------------------------------------------------------------------
 ; end of keyboard switch, reloop until ESC or Enter is hit
 ; --------------------------------------------------------------------
@@ -220,12 +256,17 @@ not_enter:
         tax
         jsr     item_x_to_ptr1
         jsr     copy_entry
-        lda     #PopupItemReturn::redisplay
-        rts
+        jmp     redisplay
 
 do_jmp:
         jmp     (ptr3)
         ; the rts in the call will return us back into handle_by_other
+.endproc
+
+.proc redisplay
+        ldx     #$00
+        lda     #PopupItemReturn::redisplay
+        rts
 .endproc
 
 ; read the value of the popup item - indirect pointer so we can use RODATA for all popup item definitions
@@ -275,8 +316,27 @@ do_jmp:
 
 .proc copy_ret
         jsr     copy_new_val
-        ldx     #$00
-        lda     #PopupItemReturn::redisplay
+        jmp     redisplay
+.endproc
+
+.proc kb_can_do_edit
+        jsr     get_current_item_type
+        cmp     #PopupItemType::string
+        beq     kb_edit_yes
+        
+        lda     ss_str_idx
+        bmi     :+                              ; $ff means there is no EDIT option on page
+
+        ; only 1 other can handle this key press, but not current widget
+        lda     #PopupHandleKBEvent::other      ; indicate there's another widget that can use this press
+        rts 
+
+        ; default to NO, if more types need adding, add them above
+:       lda     #PopupHandleKBEvent::no
+        rts
+
+kb_edit_yes:
+        lda     #PopupHandleKBEvent::self       ; indicate this widget can move L/R
         rts
 .endproc
 
@@ -390,6 +450,5 @@ out:
 ; sets ptr1 to current popup item
 .proc get_current_item_type
         ldx     ss_widget_idx
-        jsr     type_at_x
-        rts
+        jmp     type_at_x
 .endproc

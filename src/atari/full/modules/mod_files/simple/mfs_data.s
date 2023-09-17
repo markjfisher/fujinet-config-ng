@@ -4,6 +4,15 @@
         .export     mfs_kbh_running
         .export     mfs_y_offset
 
+        .export     mfs_ask_new_disk_pu_msg
+        .export     mfs_ask_new_disk_std_info
+        .export     mfs_ask_new_disk_name_std
+        .export     mfs_ask_new_disk_std_sizes
+
+        .export     mfs_ask_new_disk_cst_info
+
+        .import     fn_io_buffer
+
         .include    "popup.inc"
 
 .bss
@@ -20,10 +29,13 @@ mfs_kbh_running: .res 1
 mfs_is_eod:      .res 1
 
 ; values for popups
-mfs_ask_new_disk_name_std_val:          .res 1
+
+;; not setting these, will reuse fn_io_buffer to save 42 bytes of memory that's almost never used
+; mfs_ask_new_disk_name_std_val:          .res 18 ; TODO: do we need 1 more char?
+; mfs_ask_new_disk_name_cst_val:          .res 18
+; mfs_ask_new_disk_sectors_cst_val:       .res 6
+
 mfs_ask_new_disk_std_sizes_val:         .res 1
-mfs_ask_new_disk_name_cst_val:          .res 1
-mfs_ask_new_disk_sectors_cst_val:       .res 1
 mfs_ask_new_disk_cust_sector_size_val:  .res 1
 
 .rodata
@@ -31,13 +43,13 @@ mfs_ask_new_disk_cust_sector_size_val:  .res 1
 ; both popups are the size size, so we don't worry about screen corruption between them
 
 ; STANDARD SIZE
-mfs_ask_new_disk_info_std:
-                ; width, y-offset, has_selectable, up/down option (size), l/r option index
-                .byte 28, 2, 1, 0, 3, $ff
+mfs_ask_new_disk_std_info:
+                ; width, y-offset, has_selectable, up/down option (size), l/r option index, edit index (name field)
+                .byte 26, 2, 1, 3, $ff, 0
 
 mfs_ask_new_disk_name_std:
                 ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::string, 1, 18, <mfs_ask_new_disk_name_std_val, >mfs_ask_new_disk_name_std_val, <mfs_ask_new_disk_name_msg, >mfs_ask_new_disk_name_msg
+                .byte PopupItemType::string, 1, 18, <fn_io_buffer, >fn_io_buffer, <mfs_ask_new_disk_name_msg, >mfs_ask_new_disk_name_msg
 
                 .byte PopupItemType::space
 
@@ -46,26 +58,26 @@ mfs_ask_new_disk_name_std:
 
 mfs_ask_new_disk_std_sizes:
                 ; num, len (chars), val, texts (non-zero terminated)
-                .byte PopupItemType::textList, 6, 5, <mfs_ask_new_disk_std_sizes_val, >mfs_ask_new_disk_std_sizes_val, <mfs_ask_new_disk_std_sizes_str, >mfs_ask_new_disk_std_sizes_str
+                .byte PopupItemType::textList, 6, 5, <mfs_ask_new_disk_std_sizes_val, >mfs_ask_new_disk_std_sizes_val, <mfs_ask_new_disk_std_sizes_str, >mfs_ask_new_disk_std_sizes_str, 9
 
+                .byte PopupItemType::space
                 .byte PopupItemType::finish
 
 
-
-; CUSTOM SIZE
-mfs_ask_new_disk_info_cst:
-                ; width, y-offset, has_selectable, up/down option (none), l/r option index
-                .byte 28, 2, 1, 0, 5, $ff
+; CUSTOM SIZE - Complicated by having 2 editable strings, but probably not used enough to annoy people they have to tab to 2nd editable field
+mfs_ask_new_disk_cst_info:
+                ; width, y-offset, has_selectable, up/down option (none), l/r option index, edit index (name field)
+                .byte 30, 2, 1, 5, $ff, 0
 
 mfs_ask_new_disk_name_cst:
                 ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::string, 1, 18, <mfs_ask_new_disk_name_cst_val, >mfs_ask_new_disk_name_cst_val, <mfs_ask_new_disk_name_msg, >mfs_ask_new_disk_name_msg
+                .byte PopupItemType::string, 1, 18, <(fn_io_buffer+20), >(fn_io_buffer+20), <mfs_ask_new_disk_name_msg, >mfs_ask_new_disk_name_msg
 
                 .byte PopupItemType::space
 
 mfs_ask_new_disk_sectors_cst:
                 ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::string, 1, 8, <mfs_ask_new_disk_sectors_cst_val, >mfs_ask_new_disk_sectors_cst_val, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
+                .byte PopupItemType::string, 1, 10, <(fn_io_buffer+40), >(fn_io_buffer+40), <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
 
                 .byte PopupItemType::space
 
@@ -74,15 +86,18 @@ mfs_ask_new_disk_sectors_cst:
 
 
 mfs_ask_new_disk_cust_sector_size:
-                .byte PopupItemType::textList, 3, 3, <mfs_ask_new_disk_cust_sector_size_val, >mfs_ask_new_disk_cust_sector_size_val, <mfs_ask_new_disk_cust_sector_size_txt, >mfs_ask_new_disk_cust_sector_size_txt
+                .byte PopupItemType::textList, 3, 3, <mfs_ask_new_disk_cust_sector_size_val, >mfs_ask_new_disk_cust_sector_size_val, <mfs_ask_new_disk_cust_sector_size_txt, >mfs_ask_new_disk_cust_sector_size_txt, 15
 
                 .byte PopupItemType::finish
 
 
 .segment "SCR_DATA"
 
+mfs_ask_new_disk_pu_msg:
+                .byte "Create New Disk", 0
+
 mfs_ask_new_disk_name_msg:
-                .byte "Name:    ", 0
+                .byte "Name: ", 0
 
 mfs_nd_cust_sector_count_name_msg:
                 .byte "Sectors: ", 0
