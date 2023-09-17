@@ -1,12 +1,22 @@
-        .export     left_border
-        .export     right_border
         .export     block_line
         .export     copy_entry
+        .export     get_pu_loc
+        .export     get_edit_loc
+        .export     left_border
         .export     pui_is_selectable
         .export     pui_sizes
+        .export     right_border
+        .export     show_edit_value
 
-        .import     ss_width
+        .import     _fc_strlen
+        .import     debug
+        .import     _pause
+        .import     get_scrloc
+        .import     put_s_p1p4
         .import     ss_pu_entry
+        .import     ss_widget_idx
+        .import     ss_width
+        .import     ss_y_offset
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -85,10 +95,77 @@ no_x_space:
         rts
 .endproc
 
+; This sets ptr4 to the location of the first byte of the popup on screen.
+; assumes ss_width and ss_y_offset are already set correctly for the popup
+.proc get_pu_loc
+        ; calculate the x-offset to show box. In the inner-box, it's (SCR_WIDTH - width) / 2
+        lda     #SCR_WIDTH-3
+        sec
+        sbc     ss_width
+        lsr     a       ; divide by 2
+        tax             ; the x offset, in x!
+
+        ldy     #$00
+        jsr     get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
+
+        ; move location down by ss_y_offset lines
+        ldx     ss_y_offset
+        beq     :++
+:       adw1    ptr4, #SCR_BYTES_W
+        dex
+        bne     :-
+        rts
+.endproc
+
+; get location of widget's text field on screen
+.proc get_edit_loc
+        jsr     get_pu_loc
+
+        ; need to increment it by 2 lines for top bar and heading
+        adw1    ptr4, #SCR_BWX2
+
+        ; then 1 line for which widget we currently are
+        ldx     ss_widget_idx
+        inx
+:       adw1    ptr4, #SCR_BYTES_W
+        dex
+        bne     :-
+
+no_add_x:
+        ; now add on the TEXT field length
+        setax   ss_pu_entry + PopupItemTextList::text
+        jsr     _fc_strlen
+        clc
+        adc     #$02            ; plus 2 for border and left highlight arrow
+        adw1    ptr4, a
+        rts
+.endproc
+
+.proc show_edit_value
+        ; location = ptr4
+        ; blank out LEN-1 chars with normal spaces, then print the string. -1 for the nul char which isn't shown
+        lda     #FNC_BLANK
+        ldx     ss_pu_entry + POPUP_LEN_IDX
+        dex
+        ldy     #$00
+:       sta     (ptr4), y
+        iny
+        dex
+        bne     :-
+
+        ; get the string location into ptr1
+        lda     ss_pu_entry + POPUP_VAL_IDX
+        sta     ptr1
+        lda     ss_pu_entry + POPUP_VAL_IDX+1
+        sta     ptr1+1
+
+        ; print it
+        jmp     put_s_p1p4
+.endproc
+
 .rodata
 
 ; sizes, and is_selectable of each PopupItemType
-
 ; Types order:
 ; finish
 ; space

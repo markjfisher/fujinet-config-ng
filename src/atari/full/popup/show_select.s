@@ -9,6 +9,7 @@
         .export     ss_scr_l_strt
         .export     ss_widget_idx
         .export     ss_help_cb
+        .export     ss_y_offset
 
         .import     _clr_help
         .import     _fc_strlen
@@ -21,6 +22,7 @@
 
         .import     display_items
         .import     handle_kb
+        .import     get_pu_loc
         .import     _wait_scan1
 
         .include    "fc_zp.inc"
@@ -91,24 +93,7 @@ exit_select:
 
         jsr     _clr_help
         jsr     show_help               ; show the custom help messages for this popup
-
-        ; calculate the x-offset to show box. In the inner-box, it's (SCR_WIDTH - width) / 2
-        lda     #SCR_WIDTH-3
-        sec
-        sbc     ss_width
-        lsr     a       ; divide by 2
-        tax             ; the x offset, in x!
-
-        ; we'll manipulate screen location directly for speed, so only call scrloc once
-        ldy     #$00
-        jsr     get_scrloc          ; saves top left corner into ptr4. careful not to lose ptr4
-
-        ; move location down by ss_y_offset lines
-        ldx     ss_y_offset
-        beq     :++
-:       adw1    ptr4, #SCR_BYTES_W
-        dex
-        bne     :-
+        jsr     get_pu_loc              ; set ptr4 to popup screen location
 
         ; ----------------------------------------------------------
         ; show top line down

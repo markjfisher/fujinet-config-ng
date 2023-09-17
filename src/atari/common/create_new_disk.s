@@ -22,10 +22,10 @@
 ; creates new disk from params
 ; returns completed indicator, 0 = nothing written, 1 = disk created
 .proc _create_new_disk
-        axinto  ptr3            ; directory path src
+        axinto  ptr3            ; directory path src - this will need the full dir pre-pended to the disk name
         popax   ptr1            ; custom size, if size_index is custom
         popax   ptr2            ; custom sectors number, if size_index is custom
-        popa    tmp3            ; DiskSize
+        popa    tmp3            ; size_index
         popa    tmp1            ; device_slot (byte)
         popa    tmp2            ; host_slot (byte)
 

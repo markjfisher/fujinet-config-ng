@@ -9,6 +9,8 @@
         .import     _malloc, _free
         .import     return0, return1
         .import     put_s_p1p4
+        .import     debug
+        .import     _pause
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -35,7 +37,6 @@
 
 ; TODO: 
 ;  - this needs some rework to be cross platform, i.e. cgetc, cputc etc
-;  - clean up the 'minus 2' stuff
 ;  - take x,y instead of screen location and then use getscrloc functions to set position
 
 .proc _edit_line
@@ -414,13 +415,15 @@ not_eol:
 ; supporting procedures
 ; -------------------------------------------------------------------
 
-; write blanks to screen up to max len
+; write blanks to screen up to max len - 1 (max len includes the nul char, we don't need a space for that)
 clear_edit:
+        mva     el_max_len, tmp10
+        dec     tmp10
         lda     #FNC_BLANK    ; screen space
         ldy     #$00
 :       sta     (ptr4), y
         iny
-        cpy     el_max_len
+        cpy     tmp10
         bne     :-
         rts
 

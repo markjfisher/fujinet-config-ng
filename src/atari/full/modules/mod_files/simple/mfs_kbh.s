@@ -9,6 +9,7 @@
         .import     mf_dir_pos
         .import     mf_selected
         .import     mfs_ask_new_disk
+        .import     mfs_ask_cst_disk
         .import     mfs_entries_cnt
         .import     mfs_is_eod
         .import     mfs_kbh_select_current
@@ -218,17 +219,24 @@ not_filter:
 
 ; --------------------------------------------------------------------------
 ; N - New Disk
-
         cmp     #FNK_NEWDISK
         bne     not_new_disk
 
         jsr     mfs_ask_new_disk
-        ; handle exit code? is there a case where we would do differently?
-        
         ldx     #KBH::APP_1
         rts
 
 not_new_disk:
+; --------------------------------------------------------------------------
+; C - Custom Disk
+        cmp     #FNK_CUSTOM
+        bne     not_cst_disk
+
+        jsr     mfs_ask_cst_disk
+        ldx     #KBH::APP_1
+        rts
+
+not_cst_disk:
 ; -------------------------------------------------
 ; NOT HANDLED
         ldx     #KBH::NOT_HANDLED    ; flag main kb handler it should handle this code, still in A

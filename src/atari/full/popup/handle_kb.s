@@ -1,15 +1,20 @@
         .export     handle_kb
         .export     type_at_x
 
+        .import     _edit_line
         .import     _kb_get_c_ucase
+        .import     _create_new_disk
         .import     copy_entry
+        .import     get_edit_loc
         .import     pui_sizes
+        .import     pushax
         .import     set_next_selectable_widget
+        .import     show_edit_value
         .import     ss_has_sel
         .import     ss_items
-        .import     ss_str_idx
         .import     ss_lr_idx
         .import     ss_pu_entry
+        .import     ss_str_idx
         .import     ss_ud_idx
         .import     ss_widget_idx
 
@@ -215,17 +220,18 @@ not_enter:
 :       cmp     #PopupHandleKBEvent::other
         beq     edit_other
 
-        ; this widget is the one being edit
-
-        ; get location of widget's text field on screen
-        
+        ; set ptr4 to the location of the edit field
+        jsr     get_edit_loc            ; sets ptr4 to location on screen of string to edit
 
         ; display it in normal text
+        jsr     show_edit_value         ; sets ptr1 to start of the string editing
         
         ; start editing
-
-        ; handle return value (ESC = no edit)
-
+        pushax  ptr1
+        pushax  ptr4
+        lda     ss_pu_entry + POPUP_LEN_IDX
+        jsr     _edit_line
+        ; enter or cancel doesn't matter, as this is just editing a string box, not finishing the popup
 
         jmp     redisplay
 edit_other:

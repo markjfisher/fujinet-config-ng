@@ -9,6 +9,8 @@
         .import     ss_pu_entry
         .import     ss_widget_idx
 
+        .import     debug
+
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
         .include    "fn_data.inc"
@@ -42,13 +44,7 @@
         sbw1    ptr1, #1                ; adjust it so the y index reads correct chars as it moves along screen (i.e. account for border forcing y = 1)
 
         ; get the memory location of the string we are editing into tmp5/6
-        mwa     {ss_pu_entry + POPUP_VAL_IDX}, tmp7
-        ldy     #$00
-        lda     (tmp7), y
-        sta     tmp5
-        iny
-        lda     (tmp7), y
-        sta     tmp6
+        mwa     {ss_pu_entry + POPUP_VAL_IDX}, tmp5
 
 ; -----------------------------------------------------
 ; LEFT BORDER
@@ -94,9 +90,13 @@
 
 ; -----------------------------------------------------
 ; STRING PADDING
-:       lda     #FNC_FULL
+:       lda     ss_pu_entry+POPUP_LEN_IDX
+        sec
+        sbc     #$01
+        sta     tmp2
+        lda     #FNC_FULL
         ; print inverted spaces until x is string width
-:       cpx     ss_pu_entry+POPUP_LEN_IDX
+:       cpx     tmp2
         beq     :+
         sta     (ptr4), y
         inx
