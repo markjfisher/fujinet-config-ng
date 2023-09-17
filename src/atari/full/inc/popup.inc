@@ -3,12 +3,12 @@
 ; type    .byte           ; the widget type
 ; num     .byte           ; number of them
 ; len     .byte           ; length of each individual text entry
-; val     .byte           ; chosen option/select. if checkbox, bit number is on if option set, so limited to 8 checkboxes
+; val     .word           ; ptr to memory location to store chosen value for this widget
 ; text    .word           ; ptr to strings to use, type specific arrangement.
 ; spc     .word           ; ptr to table of num+1 spacing values for placing widget on screen
 
 ; for allocating space to work with popups, need largest struct size
-POPUP_MAX_SZ    := 8
+POPUP_MAX_SZ    := 9
 
 ; type is always first byte
 POPUP_TYPE_IDX  := 0
@@ -16,7 +16,7 @@ POPUP_TYPE_IDX  := 0
 ; for any selectable item (see pui_is_selectable), the NUM/LEN/VAL values must be at these indexes
 POPUP_NUM_IDX   := 1
 POPUP_LEN_IDX   := 2
-POPUP_VAL_IDX   := 3
+POPUP_VAL_IDX   := 3            ; word pointer to memory value
 
 .struct PopupItemInfo
         width   .byte           ; the width of the input area excluding the borders which add 1 each side for the border
@@ -30,7 +30,7 @@ POPUP_VAL_IDX   := 3
         type    .byte
         num     .byte
         len     .byte
-        val     .byte
+        val     .word
         text    .word
 .endstruct
 
@@ -38,15 +38,23 @@ POPUP_VAL_IDX   := 3
         type    .byte
         num     .byte
         len     .byte
-        val     .byte
+        val     .word
         text    .word
         spc     .word
+.endstruct
+
+.struct PopupItemText
+        type    .byte
+        num     .byte
+        text    .word
 .endstruct
 
 .struct PopupItemString
         type    .byte
         num     .byte
-        text    .word
+        len     .byte
+        val     .word
+        mem     .word
 .endstruct
 
 .struct PopupItemSpace
@@ -64,6 +72,7 @@ POPUP_VAL_IDX   := 3
         textList                ; simple text list display with numbers, non editable, but selectable
         option                  ; like radio buttons, only 1 can be selected
         text                    ; a non selectable string to be displayed on line. num determines number of strings to display
+        string                  ; editable string
 
         ; select                  ; drop down select
         ; checkbox                ; individual on/off

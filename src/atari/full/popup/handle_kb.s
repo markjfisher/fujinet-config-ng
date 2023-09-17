@@ -204,19 +204,19 @@ not_enter:
 ; --------------------------------------------------------------------
         jmp     start_kb_get
 
+.endproc
+
 ; x = other index to change
 ; ptr3 = next/prev function to jsr into
-handle_by_other:
-        lda     ss_widget_idx
-        pha
+.proc handle_by_other
+        mva     ss_widget_idx, tmp7
         stx     ss_widget_idx
         jsr     item_x_to_ptr1
         jsr     copy_entry
         jsr     do_jmp
 
         ; reset back to the current index
-        pla
-        sta     ss_widget_idx
+        mva     tmp7, ss_widget_idx
         tax
         jsr     item_x_to_ptr1
         jsr     copy_entry
@@ -226,11 +226,19 @@ handle_by_other:
 do_jmp:
         jmp     (ptr3)
         ; the rts in the call will return us back into handle_by_other
+.endproc
 
+; read the value of the popup item - indirect pointer so we can use RODATA for all popup item definitions
+.proc get_pu_val
+        ldy     #$00
+        mwa     {ss_pu_entry + POPUP_VAL_IDX}, tmp5
+        lda     (tmp5), y
+        rts
+.endproc
 
-do_next_val:
+.proc do_next_val
         ; move to next value, rotating if at end
-        lda     ss_pu_entry + POPUP_VAL_IDX
+        jsr     get_pu_val
         clc
         adc     #$01
         cmp     ss_pu_entry + POPUP_NUM_IDX
@@ -238,10 +246,11 @@ do_next_val:
         lda     #$00
 
 :       rts
+.endproc
 
-do_prev_val:
+.proc do_prev_val
         ; move to previous value, rotating if at end
-        lda     ss_pu_entry + POPUP_VAL_IDX
+        jsr     get_pu_val
         sec
         sbc     #$01
         cmp     #$ff
@@ -252,21 +261,23 @@ do_prev_val:
         txa
 
 :       rts
+.endproc
 
-do_prev:
+.proc do_prev
         jsr     do_prev_val
         jmp     copy_ret
+.endproc
 
-do_next:
+.proc do_next
         jsr     do_next_val
         jmp     copy_ret
+.endproc
 
-copy_ret:
+.proc copy_ret
         jsr     copy_new_val
         ldx     #$00
         lda     #PopupItemReturn::redisplay
         rts
-
 .endproc
 
 .proc kb_can_do_LR
@@ -323,12 +334,23 @@ kb_ud_yes:
 
 .proc copy_new_val
         pha     ; push new value so we can retrieve it after getting to correct item
-        sta     ss_pu_entry + POPUP_VAL_IDX
+
+        ; get location of our widget table into ptr1
         ldx     ss_widget_idx
         jsr     item_x_to_ptr1
+        ; now get the location of the VALUE for this widget
         ldy     #POPUP_VAL_IDX
+        lda     (ptr1), y
+        sta     tmp5
+        iny
+        lda     (ptr1), y
+        sta     tmp6
+        ; tmp5/6 points to real memory location to save value into. this will update su_pu_entry as that ALSO points to same location
+
+        ldy     #$00
         pla
-        sta     (ptr1), y
+        ; save the value into its memory location
+        sta     (tmp5), y
         rts
 .endproc
 

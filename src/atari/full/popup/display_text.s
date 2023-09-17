@@ -14,7 +14,7 @@
 ; print a list of non-editable or selectable strings
 .proc display_text
         mva     {ss_pu_entry + POPUP_NUM_IDX}, tmp4
-        mwa     {ss_pu_entry + PopupItemString::text}, ptr2
+        mwa     {ss_pu_entry + PopupItemText::text}, ptr2
         sbw1    ptr2, #$01
 
 all_strings:

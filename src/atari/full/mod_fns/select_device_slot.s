@@ -2,6 +2,7 @@
 
         .export     mx_ask_help
         .export     pathfile_err_info
+        .export     sds_pu_info
 
         .import     _clr_help
         .import     _scr_clr_highlight
@@ -43,15 +44,8 @@
         ; we will put all the relevant selection details into memory starting at sds_pu_devs, and it
         ; is the job of the _show_select to display this, calling back to kb handler here
 
-        ; get memory for 8 * devices list width strings
-        lda     sds_pu_devs+2
-        asl     a
-        asl     a
-        asl     a       ; * 8
-        ldx     #$00
-
-        jsr     _malloc
-        axinto  sds_pu_devs+4
+        ; reusing fn_io_buffer for our memory area for the devices strings
+        setax   #fn_io_buffer
         jsr     copy_dev_strings
 
         ; show the selector
@@ -59,14 +53,9 @@
         pushax  #devices_help
         setax   #sds_msg
         jsr     _show_select
-        sta     tmp1            ; save the return from select (type PopupItemReturn)
-
-        ; free the strings
-        setax   sds_pu_devs+4
-        jsr     _free
 
         ; CHECK IF ESC pressed (return value from _show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
-        lda     tmp1
+        cmp     #PopupItemReturn::escape
         bne     save_device_choice
 
         ; ESC was pressed, don't do anything, the caller will simply reload main screen
@@ -75,13 +64,17 @@
 save_device_choice:
         ; the selected option was sds_pu_devs+val
         ; the selected mode was sds_pu_mode+val
-        mva     {sds_pu_devs + POPUP_VAL_IDX}, sds_dev     ; device slot is 0 based
-        mva     {sds_pu_mode + POPUP_VAL_IDX}, sds_mode
-        inc     sds_mode                                ; mode is 1/2, we have 0/1, add 1 to align
+        ldy     #$00
+        mwa     {sds_pu_devs + POPUP_VAL_IDX}, ptr3
+        mva     {(ptr3), y}, sds_dev     ; device slot is 0 based, no increment needed
+
+        mwa     {sds_pu_mode + POPUP_VAL_IDX}, ptr3
+        mva     {(ptr3), y}, sds_mode
+        inc     sds_mode                ; mode is 1/2, we have 0/1, add 1 to align
 
         ; set the device filename, this now works without need to save all slots
         pusha   sds_mode                ; read/write mode
-        pusha   mh_host_selected           ; host_slot
+        pusha   mh_host_selected        ; host_slot
         pusha   sds_dev                 ; device slot
         setax   #fn_io_buffer
         jsr     _fn_io_set_device_filename
@@ -164,15 +157,18 @@ devices_help:
 .endproc
 
 .bss
-sds_mode:       .res 1
-sds_dev:        .res 1
+sds_mode:               .res 1
+sds_dev:                .res 1
+sds_pu_device_val:      .res 1
+sds_pu_mode_val:        .res 1
+
 
 .rodata
 ; the width of textList should be 3 less than the overall width. 2 for list number and space, 1 for end selection char
 sds_pu_info:    .byte 24, 0, 1, 0, 2           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option
-sds_pu_devs:    .byte PopupItemType::textList, 8, 21, 0, $ff, $ff
+sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, <fn_io_buffer, >fn_io_buffer
 sds_pu_spc1:    .byte PopupItemType::space
-sds_pu_mode:    .byte PopupItemType::option,   2,  5, 0, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
+sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mode_val, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
 sds_pu_end:     .byte PopupItemType::finish
 
 

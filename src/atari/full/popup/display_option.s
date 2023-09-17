@@ -41,6 +41,15 @@
         ldy     #$00
         sty     tmp1                    ; tmp1 now our main loop variable
 
+        ; get the widget value
+        lda     ss_pu_entry+POPUP_VAL_IDX
+        sta     tmp5
+        lda     ss_pu_entry+POPUP_VAL_IDX+1
+        sta     tmp6
+        ldy     #$00
+        lda     (tmp5), y
+        sta     tmp5
+
         mva     #$00, dopt_reduce_next_space
 widget_loop:
         mva     #$00, tmp4              ; the inverse char if option is highlighted
@@ -48,10 +57,11 @@ widget_loop:
         sty     tmp2                    ; save new position
 
         ; are we printing the currently selected option?
-        lda     ss_pu_entry + POPUP_VAL_IDX
+        lda     tmp5
         cmp     tmp1
         bne     :+                      ; no
 
+        ldy     tmp2                    ; restore y as it was required to get the VAL location
         ; set inverse on, we are the current 
         mva     #$80, tmp4              ; turn inverting on
 
@@ -88,13 +98,13 @@ widget_loop:
 
         
         ; other side of the text print other arrow if we the current widget that's highlighted
-        lda     ss_pu_entry + POPUP_VAL_IDX
+        lda     tmp5                    ; restore the VAL of option
         cmp     tmp1
-        bne     :+              ; no we should not print arrow
+        bne     :+                      ; no we should not print arrow
 
         lda     ss_widget_idx
         cmp     di_current_item
-        bne     :+              ; no we should not print arrow
+        bne     :+                      ; no we should not print arrow
 
         ldy     tmp2
         mva     #FNC_R_HL, {(ptr4), y}

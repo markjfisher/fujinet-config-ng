@@ -156,8 +156,10 @@ not_down:
         cmp     #PopupItemReturn::escape
         beq     lobby_exit
 
-        ; option value is in mx_ask_lobby_option + POPUP_VAL_IDX, 0 = Y, 1 = N
-        lda     mx_ask_lobby_option + POPUP_VAL_IDX
+        ; option value is in ptr at mx_ask_lobby_option + POPUP_VAL_IDX, 0 = Y, 1 = N
+        ldy     #$00
+        mwa     {mx_ask_lobby_option + POPUP_VAL_IDX}, tmp5
+        lda     (tmp5), y
         bne     lobby_exit
 
         ; exit the kb handler, but with the next mode set as Exit, and the mode as booting lobby

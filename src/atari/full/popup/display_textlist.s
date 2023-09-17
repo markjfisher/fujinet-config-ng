@@ -1,12 +1,12 @@
         .export     display_textlist
 
-        .import     ss_pu_entry
-        .import     ss_width
-        .import     left_border
         .import     ascii_to_code
         .import     di_current_item
-        .import     ss_widget_idx
+        .import     left_border
         .import     return0
+        .import     ss_pu_entry
+        .import     ss_widget_idx
+        .import     ss_width
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -20,7 +20,13 @@
         ; align ptr2 with Y being a 3 based index (it's screen offset)
         sbw     ptr2, #$03
 
+        ; get the value of the textlist item
+        mwa     {ss_pu_entry + POPUP_VAL_IDX}, tmp5
+        ldy     #$00
+        mva     {(tmp5), y}, tmp5
+
 all_text:
+
         mva     #$00, tmp3              ; the inverse value to apply to text, this gets ora'd onto char
         sta     dt_display_arrow
         jsr     left_border
@@ -34,7 +40,7 @@ all_text:
         lda     tmp1
         sec
         sbc     #$11            ; the list number makes a convenient loop index, but it starts at #$11
-        cmp     ss_pu_entry + POPUP_VAL_IDX
+        cmp     tmp5
         bne     :+
 
         mva     #$80, tmp3              ; current line, so invert text
@@ -94,7 +100,7 @@ no_x_space:
         adw1    ptr4, #SCR_BYTES_W
         adw1    ptr2, {ss_pu_entry + POPUP_LEN_IDX}
         inc     tmp1                    ; next print index
-        jmp     all_text                ; always branch
+        jmp     all_text
 :
         jmp     return0
 .endproc

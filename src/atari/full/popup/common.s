@@ -74,8 +74,9 @@
 ; space
 ; textList
 ; option
+; text
 ; string
 
 
-pui_sizes:          .byte 1, 1, 6, 8, 4
-pui_is_selectable:  .byte 0, 0, 1, 1, 0
+pui_sizes:          .byte 1, 1, 7, 9, 4, 7
+pui_is_selectable:  .byte 0, 0, 1, 1, 0, 1

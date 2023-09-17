@@ -79,7 +79,7 @@ not_space:
         cmp     #PopupItemType::text
         bne     not_string
 
-        adw1    ptr1, #.sizeof(PopupItemString)
+        adw1    ptr1, #.sizeof(PopupItemText)
         jsr     display_text
         ; beq     next_item
 

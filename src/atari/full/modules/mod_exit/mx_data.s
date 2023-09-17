@@ -12,7 +12,8 @@
         .include    "popup.inc"
 
 .bss
-booting_mode:        .res 1
+booting_mode:           .res 1
+mx_ask_lobby_val:       .res 1
 
 .segment "SCR_DATA"
 
@@ -32,7 +33,7 @@ mx_ask_lobby_info:
                 .byte PopupItemType::space
 mx_ask_lobby_option:
                 ; num, len, val, #texts, #space
-                .byte PopupItemType::option, 2, 3, 0, <mx_ask_txt, >mx_ask_txt, <mx_ask_opt, >mx_ask_opt
+                .byte PopupItemType::option, 2, 3, <mx_ask_lobby_val, >mx_ask_lobby_val, <mx_ask_txt, >mx_ask_txt, <mx_ask_opt, >mx_ask_opt
                 .byte PopupItemType::finish
 
 .segment "SCR_DATA"
