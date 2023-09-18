@@ -1,7 +1,6 @@
         .export     select_device_slot
 
         .export     mx_ask_help
-        .export     pathfile_err_info
         .export     sds_pu_info
 
         .import     _clr_help
@@ -177,22 +176,15 @@ sds_pu_device_val:      .res 1
 sds_pu_mode_val:        .res 1
 
 
-; can't be RODATA, as we don't have a big enough unused buffer to use for the strings for device list.
-.data
+; SHOULD NOT be RODATA, the buffer isn't a fixed location, needs to be malloc'd
+
+.rodata
 ; the width of textList should be 3+x_off less than the overall width. 2 for list number and space, 1 for end selection char
 sds_pu_info:    .byte 26, 0, 1, 0, 2, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
 sds_pu_spc1:    .byte PopupItemType::space
 sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mode_val, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
 sds_pu_end:     .byte PopupItemType::finish
-
-.rodata
-pathfile_err_info:
-                .byte 24, 4, 0, $ff, $ff, $ff
-                .byte PopupItemType::space
-                .byte PopupItemType::text, 1, <pathfile_err_msg, >pathfile_err_msg
-                .byte PopupItemType::space
-                .byte PopupItemType::finish
 
 .segment "SCR_DATA"
 
@@ -231,7 +223,3 @@ mx_ask_help:
                 .byte $81, "ESC", $82
                 INVERT_ATASCII
                 .byte "Exit", 0
-
-pathfile_err_msg:
-                NORMAL_CHARMAP
-                .byte "  Path + File too long", 0

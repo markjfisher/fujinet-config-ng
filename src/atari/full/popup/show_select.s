@@ -13,17 +13,19 @@
 
         .import     _clr_help
         .import     _fc_strlen
-        .import     _put_help
-        .import     popax, popa, pusha, pushax
-        .import     ascii_to_code
-        .import     get_scrloc
-        .import     block_line
-        .import     set_next_selectable_widget
-
-        .import     display_items
-        .import     handle_kb
-        .import     get_pu_loc
+        .import     _pause
         .import     _wait_scan1
+        .import     ascii_to_code
+        .import     block_line
+        .import     block_line
+        .import     debug
+        .import     display_items
+        .import     get_pu_loc
+        .import     handle_kb
+        .import     popax
+        .import     popax
+        .import     pushax
+        .import     set_next_selectable_widget
 
         .include    "fc_zp.inc"
         .include    "atari.inc"
@@ -106,11 +108,9 @@ exit_select:
         ; print the popup header message. centre the text, and invert it. we are given simple ascii string
         adw1    ptr4, #SCR_BYTES_W
         mwa     ss_message, ptr2
-        pushax  ptr4
         setax   ptr2
         jsr     _fc_strlen
         sta     tmp1            ; save message length
-        popax   ptr4
         lda     ss_width
         sec
         sbc     tmp1
