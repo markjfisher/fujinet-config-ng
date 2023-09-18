@@ -10,9 +10,11 @@
 .proc set_next_selectable_widget
         ; first check if this is info popup only
         lda     ss_has_sel
-        beq     out
+        bne     :+
+        sta     ss_widget_idx           ; set index to 0 and return. we are not a selectable popup.
+        rts
 
-        ldx     ss_widget_idx
+:       ldx     ss_widget_idx
 add_1:
         inx
 get_type:
@@ -27,6 +29,5 @@ get_type:
         beq     add_1
 
         stx     ss_widget_idx
-out:
         rts
 .endproc

@@ -177,15 +177,15 @@ not_lobby:
         cmp     #'X'
         bne     not_x
 
-        jmp     _mx_error_booting
+        jsr     _mx_error_booting
+        ldx     #KBH::EXIT
+        rts
 
 not_x:
 
 cont_kb:
         ; and reloop if we didn't leave this routine through a kb option
-        jsr     start_kb_get
-        ldx     #KBH::EXIT
-        rts
+        jmp     start_kb_get
 
 do_kb_module:
         jmp     (kb_mod_proc)

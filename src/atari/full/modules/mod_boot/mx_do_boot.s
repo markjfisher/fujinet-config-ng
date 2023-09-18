@@ -39,6 +39,9 @@ normal_boot:
         put_s   #10, #6, #boot_anim_1_2
 
         jsr     mx_mount
+        ; check if we got an error
+        bne     error
+
         pause   #$10
         ; "booting!"
         put_s   #10, #6, #boot_anim_2_1

@@ -1,5 +1,6 @@
         .export     mx_mount
 
+        .import     _fn_io_error
         .import     _fn_io_get_device_slots
         .import     _fn_io_get_host_slots
         .import     _fn_io_mount_all
@@ -8,6 +9,8 @@
         .import     fn_io_hostslots
         .import     return0
         .import     return1
+
+        .import     debug
 
         .include    "fc_macros.inc"
 
