@@ -8,7 +8,7 @@
         .import     get_scrloc
         .import     mf_dir_pos
         .import     mf_selected
-        .import     mfs_ask_new_disk
+        .import     mf_ask_new_disk
         .import     mfs_ask_cst_disk
         .import     mfs_entries_cnt
         .import     mfs_is_eod
@@ -222,7 +222,7 @@ not_filter:
         cmp     #FNK_NEWDISK
         bne     not_new_disk
 
-        jsr     mfs_ask_new_disk
+        jsr     mf_ask_new_disk
         ldx     #KBH::APP_1
         rts
 

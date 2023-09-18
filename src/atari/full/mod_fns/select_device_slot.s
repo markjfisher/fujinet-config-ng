@@ -26,7 +26,6 @@
         .import     pu_err_title
         .import     pusha
         .import     pushax
-        .import     read_full_dir_name
         .import     s_empty
 
         .include    "fc_zp.inc"

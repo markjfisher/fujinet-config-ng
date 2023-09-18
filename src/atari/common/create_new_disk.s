@@ -2,8 +2,11 @@
         .export     t_disk_num_sectors
         .export     t_disk_sector_sizes
 
+        .import     _free
         .import     _fn_io_create_new
+        .import     _malloc
         .import     _strncpy
+        .import     debug
         .import     popa
         .import     popax
         .import     pushax
@@ -29,9 +32,11 @@
         popa    tmp1            ; device_slot (byte)
         popa    tmp2            ; host_slot (byte)
 
+        jsr     debug
         ; TODO: malloc NewDisk size into ptr4
-        popax   ptr4            ; buffer for new disk, caller responsible for memory. IMPORTANT! ptr4 not trashed by _strncpy
-
+        setax   #.sizeof(NewDisk)
+        jsr     _malloc
+        axinto  ptr4
 
         ; convert selected_size into DiskSize index
         lda     tmp3
@@ -126,6 +131,10 @@ do_custom:
         sbw     ptr4, #NewDisk::filename
         pushax  ptr4
         jsr     _fn_io_create_new
+        ; TODO: react to result. Did it error?
+
+        setax   ptr4
+        jsr     _free
 
         jmp     return1
 
