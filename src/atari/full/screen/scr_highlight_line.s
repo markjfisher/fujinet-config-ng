@@ -52,4 +52,4 @@ mod_highlight_offsets:
         .byte   $12             ; info (no highlight)
         .byte   $22             ; files
         .byte   $12             ; init (no highlight)
-        .byte   $12             ; exit (no highlight)
+        .byte   $12             ; boot (no highlight)

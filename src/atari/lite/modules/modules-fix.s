@@ -7,8 +7,8 @@
         .export     mf_dir_pos
         .export     mf_selected
         .export     mod_devices
-        .export     mod_exit
-        .export     mod_files
+        .export     mod_boot
+        .export     _mod_files
         .export     mod_hosts
         .export     mod_info
         .export     mod_wifi
@@ -31,8 +31,8 @@ booting_mode: .res 1
 mf_dir_pos: .res 1
 mf_selected: .res 1
 mod_devices: .res 1
-mod_exit: .res 1
-mod_files: .res 1
+mod_boot: .res 1
+_mod_files: .res 1
 mod_hosts: .res 1
 mod_info: .res 1
 mod_wifi: .res 1

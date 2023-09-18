@@ -1,4 +1,4 @@
-        .export     mod_init
+        .export     _mod_init
         .export     fc_connected
 
         .import     _dev_init
@@ -19,11 +19,11 @@
         .include    "fn_io.inc"
         .include    "fc_mods.inc"
 
-; void mod_init()
+; void _mod_init()
 ;
 ; First Module to load when application starts.
 ; Connects to wifi if possible, and moves to first screen module
-.proc mod_init
+.proc _mod_init
         jsr     _dev_init               ; call device specific initialization
 
         ; initialise some module values

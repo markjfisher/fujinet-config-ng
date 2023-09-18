@@ -1,4 +1,4 @@
-        .export     _mx_do_exit
+        .export     _mx_do_boot
 
         .import     _fn_io_set_boot_config
         .import     _fn_io_set_boot_mode
@@ -20,7 +20,7 @@
         .include    "fc_zp.inc"
         .include    "fn_io.inc"
 
-.proc _mx_do_exit
+.proc _mx_do_boot
         ; pick from the booting mode
         lda     booting_mode
         cmp     #ExitMode::boot

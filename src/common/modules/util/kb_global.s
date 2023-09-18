@@ -12,7 +12,9 @@
         .import     mx_ask_lobby_option
         .import     popa
         .import     popax
+
         .import     debug
+        .import     _mx_error_booting
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -50,7 +52,7 @@ start_kb_get:
 
         ; set exit module with a flag to say boot
         mva     #ExitMode::boot, booting_mode
-        mva     #Mod::exit, mod_current
+        mva     #Mod::boot, mod_current
         ldx     #KBH::EXIT
         rts
 
@@ -150,7 +152,7 @@ not_down:
 ; -------------------------------------------------
 ; LOBBY
         cmp     #FNK_LOBBY
-        bne     cont_kb
+        bne     not_lobby
 
         jsr     mx_ask_lobby
         cmp     #PopupItemReturn::escape
@@ -164,15 +166,26 @@ not_down:
 
         ; exit the kb handler, but with the next mode set as Exit, and the mode as booting lobby
         mva     #ExitMode::lobby, booting_mode
-        mva     #Mod::exit, mod_current
+        mva     #Mod::boot, mod_current
 
 lobby_exit:
         rts
 
+not_lobby:
+; -------------------------------------------------
+; X - debug stuff
+        cmp     #'X'
+        bne     not_x
+
+        jmp     _mx_error_booting
+
+not_x:
+
 cont_kb:
         ; and reloop if we didn't leave this routine through a kb option
-        jmp     start_kb_get
-
+        jsr     start_kb_get
+        ldx     #KBH::EXIT
+        rts
 
 do_kb_module:
         jmp     (kb_mod_proc)

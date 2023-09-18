@@ -1,14 +1,14 @@
         .export         _main
         .export         mod_current, _fn_io_get_wifi_enabled, _fn_io_get_wifi_status, _fn_io_get_ssid, _dev_init
         .export         t_wifi_enabled, t_wifi_status, t_ssid_fetched, t_ssid_info
-        .import         mod_init, setax
+        .import         _mod_init, setax
 
         .include        "fc_macros.inc"
         .include        "fn_io.inc"
 
 .proc _main
         ; call the function under test
-        jmp     mod_init
+        jmp     _mod_init
 .endproc
 
 ; -----------------------------------------

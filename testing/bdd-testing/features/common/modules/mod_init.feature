@@ -1,6 +1,6 @@
 Feature: Module mod_init test
 
-  This tests mod_init module.
+  This tests _mod_init module.
 
   TODO: rework this module test
 
@@ -8,7 +8,7 @@ Feature: Module mod_init test
     Given atari application test setup
     #   And I add atari src file "screen/clr_scr.s"
     #   And I add common/modules src file "kb_global.s"
-    #   And I add common/modules src file "mod_exit.s"
+    #   And I add common/modules src file "mod_boot.s"
     #   And I add common/modules src file "mod_init.s"
     #   And I add file for compiling "features/common/modules/test_mod_init.s"
     #   And I create and load application

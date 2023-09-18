@@ -1,4 +1,9 @@
-; Modules 
+; Modules
+
+; if more modules are defined, also change:
+;  run_module
+;  mod_highlight_offsets
+
 .enum Mod
     hosts               ; show the host slots, and allow drilling into them to pick a device to mount
     devices             ; show device list from hosts files navigated to
@@ -9,6 +14,7 @@
 
     ; no real screen associated with next entries, so no need to allocate device specific data to them
     init                ; the initial module to load, runs all module initialisation before moving to appropriate next module, e.g. wifi if no wifi selected, or hosts if there is
+    boot                ; boot options, either lobby or mount current devices
     exit                ; this is a marker to exit application
 .endenum
 

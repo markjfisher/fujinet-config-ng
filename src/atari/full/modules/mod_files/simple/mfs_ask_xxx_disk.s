@@ -43,12 +43,11 @@ mfs_ask_new_disk:
         ; save the disk
 
 end_ask:
-        setax   tmp9
+        setax   mfs_ask_new_disk_name_std + POPUP_VAL_IDX
         jsr     _free
         jmp     return0
 
 mfs_ask_cst_disk:
-        jsr     debug
         jsr     nd_common
         jsr     alloc_sector_cnt
 
@@ -64,7 +63,7 @@ mfs_ask_cst_disk:
 
         ; save the disk
 
-        setax   tmp7
+        setax   mfs_ask_new_disk_sectors_cst + POPUP_VAL_IDX
         jsr     _free
         jmp     end_ask
 
@@ -100,18 +99,18 @@ nd_common:
 
 alloc_sector_cnt:
         lda     mfs_ask_new_disk_sectors_cst + POPUP_LEN_IDX
-        sta     tmp6            ; save size
+        sta     tmp8            ; save size
         jsr     _malloc
-        axinto  tmp7
+        axinto  tmp9
         sta     mfs_ask_new_disk_sectors_cst + POPUP_VAL_IDX
         stx     mfs_ask_new_disk_sectors_cst + POPUP_VAL_IDX+1
 
         ; zero the memory
         lda     #$00
         ldy     #$00
-:       sta     (tmp7), y
+:       sta     (tmp9), y
         iny
-        cpy     tmp6
+        cpy     tmp8
         bne     :-
 
         rts
@@ -125,3 +124,4 @@ cst_help:
         jsr     _clr_help
 ;        put_help #0, #mfss_h1
         rts
+

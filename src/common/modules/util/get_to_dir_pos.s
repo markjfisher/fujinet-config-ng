@@ -23,22 +23,22 @@
         jsr     _fn_io_open_directory
 
         ; set the directory position to top + highlighted
-        mwa     mf_dir_pos, tmp15
-        adw1    tmp15, mf_selected
+        mwa     mf_dir_pos, tmp9
+        adw1    tmp9, mf_selected
 
-        ; setax   tmp15  ; a is already tmp15
-        ldx     tmp15+1
+        ; setax   tmp9  ; a is already tmp9
+        ldx     tmp9+1
         jmp     _fn_io_set_directory_position
 .endproc
 
 ; copies the path to buffer, adding on filter if set
 .proc copy_path_filter_to_buffer
-        mwa     #fn_io_buffer, tmp15
+        mwa     #fn_io_buffer, tmp9
 
         ; clear a page of memory
         ldy     #$00
         lda     #$00
-:       sta     (tmp15), y
+:       sta     (tmp9), y
         iny
         bne     :-
 
