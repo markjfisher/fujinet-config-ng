@@ -110,10 +110,11 @@ no_x_space:
 
         ; move location down by ss_y_offset lines
         ldx     ss_y_offset
-        beq     :++
+        beq     out
 :       adw1    ptr4, #SCR_BYTES_W
         dex
         bne     :-
+out:
         rts
 .endproc
 
