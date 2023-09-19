@@ -2,6 +2,7 @@
         .export     mf_dir_pos
         .export     mf_selected
 
+        .export     mf_ask_new_disk_cust_sector_size_val
         .export     mf_ask_new_disk_pu_msg
         .export     mf_ask_new_disk_std_info
         .export     mf_ask_new_disk_name_std
@@ -68,8 +69,9 @@ mf_ask_new_disk_name_cst:
                 .byte PopupItemType::space
 
 mf_ask_new_disk_sectors_cst:
+                ; largest value is "65535" so 5 chars+nul = 6
                 ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::string, 1, 10, $ff, $ff, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
+                .byte PopupItemType::string, 1, 6, $ff, $ff, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
 
                 ; "Sector Size:"
                 .byte PopupItemType::text, 1, <mfs_sector_size_msg, >mfs_sector_size_msg

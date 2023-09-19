@@ -62,15 +62,14 @@ is_file:
         bne     too_long_error
 
         ; get user's choice of which to device to put the host
+        lda     #$01                            ; show options
         jsr     select_device_slot
 
         ; CHECK IF ESC pressed (return value from _show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
         cmp     #PopupItemReturn::escape
         beq     :+
 
-        ; the selected option was sds_pu_devs+val
-        ; the selected mode was sds_pu_mode+val
-
+        ; use the mode/device_slot from select to save our choice
         ldy     #$00
         mwa     {sds_pu_mode + POPUP_VAL_IDX}, ptr1
         lda     (ptr1), y

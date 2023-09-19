@@ -24,20 +24,18 @@
 ;
 ; creates new disk from params
 ; returns completed indicator, 0 = nothing written, 1 = disk created
-; tmp1,tmp2,tmp3
-; ptr1,ptr2,ptr3,ptr4
+; tmp1,tmp2,tmp3,tmp5/6,tmp7/8
+; ptr3,ptr4 (malloc trashes ptr1/2)
 .proc _create_new_disk
         axinto  ptr3            ; directory path src - this will need the full dir pre-pended to the disk name
-        popax   ptr1            ; custom size, if size_index is custom
-        popax   ptr2            ; custom sectors number, if size_index is custom
+        popax   tmp5            ; custom size, if size_index is custom
+        popax   tmp7            ; custom sectors number, if size_index is custom
         popa    tmp3            ; size_index
         popa    tmp1            ; device_slot (byte)
         popa    tmp2            ; host_slot (byte)
 
-        jsr     debug
-        ; TODO: malloc NewDisk size into ptr4
         setax   #.sizeof(NewDisk)
-        jsr     _malloc
+        jsr     _malloc         ; this craps all over ptr 1/2
         axinto  ptr4
 
         ; convert selected_size into DiskSize index
@@ -48,7 +46,6 @@
 
         ; unmatched, just return 0
         jmp     return0
-        ; implicit rts
 
 ; -------------------------------------------------------------
 ; get sector size/num from tables
@@ -95,10 +92,10 @@
 do_custom:
         ; custom num sectors
         ldy     #NewDisk::numSectors
-        mway    ptr2, {(ptr4), y}
+        mway    tmp7, {(ptr4), y}
 
         ldy     #NewDisk::sectorSize
-        mway    ptr1, {(ptr4), y}
+        mway    tmp5, {(ptr4), y}
 
         iny                     ; set to hostSlot index
         ; fall through to host/device

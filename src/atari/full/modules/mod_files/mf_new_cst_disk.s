@@ -1,19 +1,21 @@
-        .export     mf_ask_new_disk
-        .export     mfs_ask_cst_disk
+        .export     mf_new_disk
+        .export     mf_cst_disk
 
         .import     _clr_help
         .import     _create_new_disk
+        .import     _fc_atoi
         .import     _fc_strlcpy
         .import     _fc_strlen
         .import     _free
+        .import     _fn_io_error
         .import     _malloc
         .import     _scr_clr_highlight
         .import     _show_select
         .import     copy_path_to_buffer
         .import     debug
         .import     fn_io_buffer
-        .import     md_device_selected
         .import     mf_ask_new_disk_cst_info
+        .import     mf_ask_new_disk_cust_sector_size_val
         .import     mf_ask_new_disk_name_cst
         .import     mf_ask_new_disk_name_std
         .import     mf_ask_new_disk_pu_msg
@@ -21,11 +23,15 @@
         .import     mf_ask_new_disk_std_info
         .import     mf_ask_new_disk_std_sizes
         .import     mf_error_too_long
+        .import     mf_nd_err_saving
         .import     mh_host_selected
         .import     pusha
         .import     pushax
         .import     return0
         .import     return1
+        .import     save_device_choice
+        .import     sds_pu_no_opt_devs
+        .import     select_device_slot
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -36,7 +42,7 @@
 
 ; tmp1,tmp2,tmp8,tmp9,tmp10
 ; ptr1,ptr2
-mf_ask_new_disk:
+mf_new_disk:
         jsr     nd_common
 
         ; show the select
@@ -44,26 +50,19 @@ mf_ask_new_disk:
         pushax  #std_help
         setax   #mf_ask_new_disk_pu_msg
         jsr     _show_select
-
-        ; deal with return from select (type PopupItemReturn)
         cmp     #PopupItemReturn::escape
         beq     end_ask
 
-        ; get the device slot to use
-
-
-        jsr     join_path_and_filename
-
-
-        ; fn_io_buffer now holds whole dirpath and filename of new disk
+        jsr     handle_device_slot
+        bne     end_ask
 
         ; -------------------------------------------------------------------------
         ; start of params for save
         ; set host_slot
         pusha   mh_host_selected
 
-        ; set device_slot
-        pusha   md_device_selected
+        ; set device_slot - still in tmp3
+        pusha   tmp3
 
         ; copy the disk size value location into ptr1, we need to double it to become a DiskSize value
         mwa     {mf_ask_new_disk_std_sizes + POPUP_VAL_IDX}, ptr1
@@ -76,15 +75,17 @@ mf_ask_new_disk:
         jsr     pushax          ; not custom (sectors size)
         setax   #fn_io_buffer   ; path to disk to create
         jsr     _create_new_disk
+        jsr     _fn_io_error
+        beq     end_ask
 
-        ; TODO: error?
+        jsr     mf_nd_err_saving
 
 end_ask:
         setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
         jsr     _free
         jmp     return0
 
-mfs_ask_cst_disk:
+mf_cst_disk:
         jsr     nd_common
         jsr     alloc_sector_cnt
 
@@ -96,10 +97,58 @@ mfs_ask_cst_disk:
 
         ; deal with return from select (type PopupItemReturn)
         cmp     #PopupItemReturn::escape
-        beq     end_ask
+        beq     end_ask2
 
-        ; save the disk
+        jsr     handle_device_slot              ; sets tmp3 to device_slot
+        bne     end_ask2
 
+        ; -------------------------------------------------------------------------
+        ; start of params for save
+        ; set host_slot
+        pusha   mh_host_selected
+
+        ; set device_slot - still in tmp3
+        pusha   tmp3
+
+        ; custom size
+        pusha   #DiskSize::sizeCustom
+
+        ; convert the sectors number into word value, atoi!!
+        ; we have a very limited string, 1-65535, do minimal calc from string to word
+        setax   mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
+        jsr     debug
+        jsr     _fc_atoi
+        jsr     pushax
+
+        ; sector size is 0=128, 1=256, 2=512
+        ldy     mf_ask_new_disk_cust_sector_size_val
+        bne     :+
+
+        lda     #$80                    ; 128
+        ldx     #$00
+        beq     push_size               ; always
+
+:       cpy     #$01
+        bne     :+
+
+        ldx     #$01                    ; 256
+        lda     #$00
+        beq     push_size
+
+:       setax   #$200                   ; 512
+
+push_size:
+        jsr     pushax
+
+        setax   #fn_io_buffer   ; path to disk to create
+        jsr     _create_new_disk
+        jsr     _fn_io_error
+        beq     end_ask2
+
+        jsr     mf_nd_err_saving
+
+
+end_ask2:
         setax   mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
         jsr     _free
         jmp     end_ask
@@ -189,9 +238,40 @@ join_path_and_filename:
         pushax  ptr2            ; dst
         pushax  ptr1            ; src
         lda     tmp2
-        jmp     _fc_strlcpy     ; append
-        ; implicit rts
+        jsr     _fc_strlcpy     ; append
+        ; TODO: should we check if the copy worked?
+        jmp     return0
 
 too_long:
         jsr     mf_error_too_long
         jmp     return1
+
+
+handle_device_slot:
+        ; get the device slot to use
+        lda     #$00                    ; don't show options
+        jsr     select_device_slot
+        cmp     #PopupItemReturn::escape
+        beq     :+
+
+        ldy     #$00
+        mwa     {sds_pu_no_opt_devs + POPUP_VAL_IDX}, ptr1
+        lda     (ptr1), y
+        sta     tmp3                    ; store the device slot we want to use
+
+        jsr     join_path_and_filename
+        bne     :+
+
+        ; fn_io_buffer now holds whole dirpath and filename of new disk
+        ; tmp3 holds the device slot to populate
+
+        ; save the device slot choice
+
+        pusha   #1                      ; write mode
+        lda     tmp3                    ; device slot
+        jsr     save_device_choice
+        ; all ok
+        jmp     return0
+
+        ; there was an issue
+:       jmp     return1

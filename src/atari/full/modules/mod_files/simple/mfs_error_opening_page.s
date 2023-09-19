@@ -8,7 +8,7 @@
         .include    "fc_mods.inc"
 
 .proc mfs_error_opening_page
-        pusha   #16
+        pusha   #26
         pusha   #1
         setax   #opendir_err_msg
         jsr     _show_error
@@ -21,4 +21,4 @@
 
 .segment "SCR_DATA"
 opendir_err_msg:
-        .byte "  Error Opening Directory!", 0
+        .byte " Error Opening Directory!", 0

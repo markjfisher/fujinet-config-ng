@@ -2,8 +2,8 @@
 
         .export     mx_ask_help
         .export     sds_pu_devs
-        .export     sds_pu_info
         .export     sds_pu_mode
+        .export     sds_pu_no_opt_devs
 
         .import     _clr_help
         .import     _fc_strncpy
@@ -26,9 +26,15 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
-; tmp1
+; tmp1,tmp2
 ; ptr1,ptr2,ptr3
+
+; uint8_t select_device_slot(uint8_t with_mode)
+;
+; with_mode determines whether to show the R/O, R/W option or not (1=yes, 0=no)
+; as it isn't required for New Disk option
 .proc select_device_slot
+        sta     tmp2                    ; store the with_mode flag
         jsr     _scr_clr_highlight
 
         ; handle the selection of a device slot for the given file from host
@@ -43,12 +49,23 @@
         ldx     #$00
 
         jsr     _malloc
+        ; store it into both rather than caring which is actually being shown
         axinto  sds_pu_devs + PopupItemTextList::text
+        axinto  sds_pu_no_opt_devs + PopupItemTextList::text
         jsr     copy_dev_strings
 
-        ; show the selector
+        ; show the selector, decide which version to show
+        lda     tmp2
+        beq     no_options
+
         pushax  #sds_pu_info
-        pushax  #devices_help
+        clc
+        bcc     :+
+
+no_options:
+        pushax  #sds_pu_no_opt_info
+
+:       pushax  #devices_help
         setax   #sds_msg
         jsr     _show_select
         sta     tmp1
@@ -120,9 +137,17 @@ sds_pu_mode_val:        .res 1
 ; the width of textList should be 3+x_off less than the overall width. 2 for list number and space, 1 for end selection char
 sds_pu_info:    .byte 26, 0, 1, 0, 2, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
-sds_pu_spc1:    .byte PopupItemType::space
+                .byte PopupItemType::space
 sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mode_val, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
-sds_pu_end:     .byte PopupItemType::finish
+                .byte PopupItemType::finish
+
+; NO OPTIONS VERSION
+sds_pu_no_opt_info:
+                .byte 26, 0, 1, 0, $ff, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
+sds_pu_no_opt_devs:
+                .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
+                .byte PopupItemType::finish
+
 
 .segment "SCR_DATA"
 

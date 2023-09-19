@@ -16,6 +16,8 @@
         .include    "fn_data.inc"
 
 ; void save_device_choice(uint8_t mode, uint8_t device_slot)
+;
+; the filename must be set into fn_io_buffer before coming into here
 .proc save_device_choice
         sta     tmp1                    ; device slot, 0 based
         jsr     popa                    ; mode, currently 0 based, but need it 1 based

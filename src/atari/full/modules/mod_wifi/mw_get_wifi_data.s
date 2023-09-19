@@ -2,6 +2,7 @@
 
         .import     _fn_io_error
         .import     _fn_io_get_adapter_config_extended
+        .import     _mw_init_screen
         .import     mw_adapter_config
         .import     mw_error_fetch_ac
         .import     mw_is_ac_data_fetched
@@ -40,5 +41,6 @@ fetch_ac_error:
         bpl     :-
 
         jsr     mw_error_fetch_ac
+        jsr     _mw_init_screen
         jmp     return1
 .endproc
