@@ -13,6 +13,8 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
+; tmp1,tmp2,tmp3,tmp4,tmp5,tmp6
+; ptr2,ptr3,ptr4
 .proc display_option
         mwa     {ss_pu_entry + PopupItemOption::spc}, ptr3           ; spacings ptr
         mwa     {ss_pu_entry + PopupItemOption::text}, ptr2          ; texts ptr

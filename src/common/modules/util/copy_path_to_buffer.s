@@ -10,6 +10,9 @@
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
 
+; tmp4,tmp9
+; ptr3,ptr4
+
 ; just the path to the buffer
 .proc copy_path_to_buffer
         mwa     #fn_io_buffer, tmp9

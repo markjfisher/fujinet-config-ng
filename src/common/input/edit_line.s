@@ -39,6 +39,8 @@
 ;  - this needs some rework to be cross platform, i.e. cgetc, cputc etc
 ;  - take x,y instead of screen location and then use getscrloc functions to set position
 
+; tmp1,tmp2,tmp10
+; ptr1,ptr2,ptr3,ptr4
 .proc _edit_line
         ; pull out the params
         sta     el_max_len      ; this includes the 0 at the end, so strlen should be 1 less. e.g. max = 4: ["abc",0] is ok, so strlen of 3 is ok. but strlen of 4 is too long

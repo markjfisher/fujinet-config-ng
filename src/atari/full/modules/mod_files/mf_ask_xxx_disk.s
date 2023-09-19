@@ -33,8 +33,10 @@
         .include    "fn_io.inc"
         .include    "popup.inc"
 
+; tmp1,tmp2,tmp8,tmp9,tmp10
+; ptr1,ptr2
 mf_ask_new_disk:
-        jsr     nd_common               ; allocates "name" field memory in ptr9/10
+        jsr     nd_common
 
         ; show the select
         pushax  #mf_ask_new_disk_std_info
@@ -137,6 +139,7 @@ nd_common:
         ; we need ~26 bytes (read from appropriate value in popup structure)
         lda     mf_ask_new_disk_name_std + POPUP_LEN_IDX
         sta     tmp8            ; save size
+        ldx     #$00
         jsr     _malloc
         axinto  tmp9
 
@@ -159,6 +162,7 @@ nd_common:
 alloc_sector_cnt:
         lda     mf_ask_new_disk_sectors_cst + POPUP_LEN_IDX
         sta     tmp8            ; save size
+        ldx     #$00
         jsr     _malloc
         axinto  tmp9
         sta     mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX

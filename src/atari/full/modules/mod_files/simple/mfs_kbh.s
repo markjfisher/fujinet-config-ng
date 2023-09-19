@@ -24,6 +24,7 @@
         .include    "fn_io.inc"
 
 ; 'A' contains the keyboard ascii code
+; ptr4
 .proc mfs_kbh
 
 ; -------------------------------------------------

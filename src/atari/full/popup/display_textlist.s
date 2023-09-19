@@ -14,6 +14,8 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
+; tmp1,tmp3,tmp4,tmp5,tmp6
+; ptr2,ptr4
 .proc display_textlist
         mva     {ss_pu_entry + POPUP_NUM_IDX}, tmp4
         mwa     {ss_pu_entry + PopupItemTextList::text}, ptr2

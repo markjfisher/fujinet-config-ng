@@ -13,6 +13,9 @@
         .include    "popup.inc"
 
 ; print a list of non-editable or selectable strings
+
+; tmp4
+; ptr2,ptr4
 .proc display_text
         mva     {ss_pu_entry + POPUP_NUM_IDX}, tmp4
         mwa     {ss_pu_entry + PopupItemText::text}, ptr2

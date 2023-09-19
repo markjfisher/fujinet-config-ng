@@ -32,6 +32,9 @@
 ; ptr1 is tracking the current widget RODATA, but has been copied to ss_pu_entry, must be restored
 ; ptr4 is currently set to screen location to start printing widget line
 ; ss_pu_entry is a copy of the current widget data
+
+; tmp1,tmp2,tmp5,tmp6,tmp9,tmp10
+; ptr1,ptr2,ptr4
 .proc display_string
         ; save ptr1, as it will be trashed by print routine
         mwa     ptr1, tmp9

@@ -24,6 +24,8 @@
 ;
 ; creates new disk from params
 ; returns completed indicator, 0 = nothing written, 1 = disk created
+; tmp1,tmp2,tmp3
+; ptr1,ptr2,ptr3,ptr4
 .proc _create_new_disk
         axinto  ptr3            ; directory path src - this will need the full dir pre-pended to the disk name
         popax   ptr1            ; custom size, if size_index is custom

@@ -19,6 +19,8 @@
 ; void edit_hosts_entry()
 ;
 ; user input in current hosts entry
+
+; ptr1,ptr4
 .proc _edit_hosts_entry
         ; get screen location for current edit position
         ldx     #SL_EDIT_X

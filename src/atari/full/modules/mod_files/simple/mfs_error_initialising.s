@@ -1,33 +1,17 @@
         .export     mfs_error_initialising
 
-        .import     _show_select
-        .import     info_popup_help
-        .import     mod_current
-        .import     pu_err_title
-        .import     pushax
+        .import     _show_error
+        .import     pusha
 
         .include    "fc_macros.inc"
-        .include    "fn_io.inc"
-        .include    "fc_mods.inc"
-        .include    "popup.inc"
 
 .proc mfs_error_initialising
-        pushax  #mfs_init_err_info
-        pushax  #info_popup_help
-        setax   #pu_err_title
-        jsr     _show_select
-        mva     #Mod::hosts, mod_current
-        rts
+        pusha   #26
+        pusha   #1
+        setax   #mfs_init_err_msg
+        jmp     _show_error
 .endproc
-
-.rodata
-mfs_init_err_info:
-                .byte 26, 4, 0, $ff, $ff, $ff
-                .byte PopupItemType::space
-                .byte PopupItemType::text, 1, <mfs_init_err_msg, >mfs_init_err_msg
-                .byte PopupItemType::space
-                .byte PopupItemType::finish
 
 .segment "SCR_DATA"
 mfs_init_err_msg:
-                .byte "  Error initialising!", 0
+        .byte "  Error initialising!", 0

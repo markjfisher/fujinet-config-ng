@@ -17,7 +17,6 @@
         .import     _wait_scan1
         .import     ascii_to_code
         .import     block_line
-        .import     block_line
         .import     debug
         .import     display_items
         .import     get_pu_loc
@@ -37,6 +36,10 @@
 ; void show_select(uint8_t width, void *items, char *msg)
 ; 
 ; A generic selection popup window that can display different types of widgets
+
+; tmp1,tmp2,tmp3
+; ptr1,ptr2,ptr4
+
 .proc _show_select
         axinto  ss_message              ; the header message to display in popup
         popax   ss_help_cb              ; the cb function to setup help messages for this particular popup

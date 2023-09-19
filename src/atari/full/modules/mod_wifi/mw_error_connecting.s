@@ -1,29 +1,16 @@
         .export     mw_error_connecting
 
-        .import     _show_select
-        .import     info_popup_help
-        .import     pu_err_title
-        .import     pushax
+        .import     _show_error
+        .import     pusha
 
         .include    "fc_macros.inc"
-        .include    "fn_io.inc"
-        .include    "fc_mods.inc"
-        .include    "popup.inc"
 
 .proc mw_error_connecting
-        pushax  #mw_connect_error_info
-        pushax  #info_popup_help
-        setax   #pu_err_title
-        jmp     _show_select
+        pusha   #21
+        pusha   #2
+        setax   #mw_connect_error_msg
+        jmp     _show_error
 .endproc
-
-.rodata
-mw_connect_error_info:
-                .byte 21, 5, 0, $ff, $ff, $ff
-                .byte PopupItemType::space
-                .byte PopupItemType::text, 2, <mw_connect_error_msg, >mw_connect_error_msg
-                .byte PopupItemType::space
-                .byte PopupItemType::finish
 
 .segment "SCR_DATA"
 mw_connect_error_msg:

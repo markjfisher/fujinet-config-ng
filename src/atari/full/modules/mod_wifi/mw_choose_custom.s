@@ -23,6 +23,7 @@
         .include    "fn_io.inc"
         .include    "fc_mods.inc"
 
+;ptr1,ptr4
 .proc mw_choose_custom
         jsr     _clr_help
         put_help   #0, #mw_help_custom

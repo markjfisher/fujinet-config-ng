@@ -35,6 +35,8 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
+; tmp1
+; ptr1,ptr2,ptr3
 .proc select_device_slot
         jsr     _scr_clr_highlight
 

@@ -21,6 +21,8 @@
         .include    "fn_data.inc"
         .include    "fn_io.inc"
 
+; tmp1
+; ptr1,ptr3,ptr4
 .proc mw_setup_wifi
         jsr     _fn_io_scan_for_networks
         sta     mw_net_count

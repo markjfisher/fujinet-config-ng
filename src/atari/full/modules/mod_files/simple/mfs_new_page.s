@@ -33,6 +33,7 @@
         .include    "fc_macros.inc"
 
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
+; ptr1
 .proc mfs_new_page
         lda     #$04                    ; print a separator on line 4
         jsr     _clr_src_with_separator
@@ -84,7 +85,7 @@
         put_s   #5, #1, #fn_dir_filter
 
 :
-        lda     #32             ; max length, including the 0 terminator
+        setax   #32             ; max length, including the 0 terminator
         jsr     pusha           ; save as parameter for ellipsize
         jsr     _malloc
         axinto  ptr1            ; save for free

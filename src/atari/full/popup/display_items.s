@@ -20,6 +20,7 @@
         .include    "popup.inc"
 
 ; Displays all the PopupItem objects
+; ptr1,ptr4
 .proc display_items
         mwa     ss_items, ptr1          ; set ptr1 to first popup item to display. it will walk down the list
         mva     #$00, di_current_item   ; this tracks which item is currently being displayed so we can compare to selected

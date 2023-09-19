@@ -8,6 +8,9 @@
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 
+
+; tmp1,tmp2,tmp3,tmp4
+; ptr2,ptr4
 .proc mod_devices_show_list_num
         ; print a string like "2 1R ", to represent host_slot, index, R or W
         sta     tmp1            ; keep the index (0 based)

@@ -18,7 +18,7 @@
 
         ; get filename to 255 chars
         setax   #$ff
-        jsr     pusha                   ; push size for read dir call
+        jsr     pusha                   ; push size for read dir call, doesn't change x
         jsr     _malloc
         axinto  ptr1                    ; memloc = ptr1
 

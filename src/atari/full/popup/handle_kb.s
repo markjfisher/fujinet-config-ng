@@ -23,6 +23,8 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
+; tmp5,tmp6,tmp7,tmp8
+; ptr1,ptr3,ptr4
 .proc handle_kb
 
         ; get current popup item into our buffer so we can read values
@@ -390,7 +392,7 @@ kb_ud_yes:
 .endproc
 
 ; walk down the PopupItems to the xth, and find its type, return it in A
-; trashes tmp1, Y, A, ptr1
+; trashes tmp8, Y, A, ptr1
 .proc type_at_x
         jsr     item_x_to_ptr1
         ldy     #POPUP_TYPE_IDX
@@ -430,7 +432,7 @@ kb_ud_yes:
         txa
         pha
 
-        stx     tmp1    ; becomes loop index
+        stx     tmp8    ; becomes loop index
 
         ; move down list until we're at the right one
         ; get size from pui_sizes, x
@@ -443,7 +445,7 @@ w_loop:
 
         ; add size to ptr1
         adw1    ptr1, a
-        dec     tmp1
+        dec     tmp8
         bne     w_loop
 
         ; restore x

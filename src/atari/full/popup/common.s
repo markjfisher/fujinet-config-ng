@@ -27,6 +27,9 @@
 ; Helper procedures
 ; -----------------------------------------------------------
 
+; tmp1,tmp2,tmp3
+; ptr1,ptr2,ptr4
+
 ; starts the new line off, setting y, and printing first char.
 ; assumes ptr4 points to current screen location
 .proc left_border
@@ -119,6 +122,7 @@ out:
 .endproc
 
 ; get location of widget's text field on screen
+; ptr4
 .proc get_edit_loc
         jsr     get_pu_loc
 

@@ -1,31 +1,18 @@
         .export     mfs_error_too_long
 
-        .import     _show_select
-        .import     info_popup_help
-        .import     pu_err_title
-        .import     pushax
+        .import     _show_error
+        .import     mod_current
+        .import     pusha
 
         .include    "fc_macros.inc"
-        .include    "fn_io.inc"
-        .include    "fc_mods.inc"
-        .include    "popup.inc"
 
 .proc mfs_error_too_long
-        pushax  #p2l_err_info
-        pushax  #info_popup_help
-        setax   #pu_err_title
-        jmp     _show_select
+        pusha   #16
+        pusha   #1
+        setax   #p2l_err_msg
+        jmp     _show_error
 .endproc
 
-.rodata
-p2l_err_info:
-                .byte 16, 4, 0, $ff, $ff, $ff
-                .byte PopupItemType::space
-                .byte PopupItemType::text, 1, <p2l_err_msg, >p2l_err_msg
-                .byte PopupItemType::space
-                .byte PopupItemType::finish
-
 .segment "SCR_DATA"
-                NORMAL_CHARMAP
 p2l_err_msg:
-                .byte " Path too long!", 0
+        .byte " Path too long!", 0

@@ -25,6 +25,8 @@
         .include    "fn_io.inc"
 
 ; Handle Selection of the currently highlighted line
+; tmp1,tmp2,tmp3
+; ptr1,ptr2
 .proc mfs_kbh_select_current
         ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
         ldx     mf_selected

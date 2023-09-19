@@ -2,8 +2,6 @@
 
         .import     _fn_io_error
         .import     _fn_io_get_adapter_config_extended
-        .import     _free
-        .import     _malloc
         .import     mw_adapter_config
         .import     mw_error_fetch_ac
         .import     mw_is_ac_data_fetched
