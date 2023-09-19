@@ -20,6 +20,7 @@
         .import     mf_ask_new_disk_sectors_cst
         .import     mf_ask_new_disk_std_info
         .import     mf_ask_new_disk_std_sizes
+        .import     mf_error_too_long
         .import     mh_host_selected
         .import     pusha
         .import     pushax
@@ -44,36 +45,15 @@ mf_ask_new_disk:
         setax   #mf_ask_new_disk_pu_msg
         jsr     _show_select
 
-        jsr     debug
         ; deal with return from select (type PopupItemReturn)
         cmp     #PopupItemReturn::escape
         beq     end_ask
 
-        ; prepend the full path to name. errors would not have allowed us to get here, so we are not too long (yet!)
-        jsr     copy_path_to_buffer
-        setax   #fn_io_buffer
-        jsr     _fc_strlen
-        sta     tmp1
+        ; get the device slot to use
 
-        ; check if the filename plus path are over limit
-        setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
-        axinto  ptr1
-        
-        ; TODO: This is a copy of the code in combine_path_with_selection
-        jsr     _fc_strlen
-        sta     tmp2            ; capture the length for the append later
-        clc
-        adc     tmp1
-        bcs     too_big         ; over $100, must be too long, anything else is ok
 
-        ; append the filename to fn_io_buffer
-        mwa     #fn_io_buffer, ptr2
-        adw1    ptr2, tmp1
-        inc     tmp2            ; allow for null in strlcpy
-        pushax  ptr2            ; dst
-        pushax  ptr1            ; src
-        lda     tmp2
-        jsr     _fc_strlcpy     ; append
+        jsr     join_path_and_filename
+
 
         ; fn_io_buffer now holds whole dirpath and filename of new disk
 
@@ -103,10 +83,6 @@ end_ask:
         setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
         jsr     _free
         jmp     return0
-
-too_big:
-        ; TODO: ERROR - file + path is too long
-        jmp     return1
 
 mfs_ask_cst_disk:
         jsr     nd_common
@@ -188,3 +164,34 @@ cst_help:
 ;        put_help #0, #mfss_h1
         rts
 
+join_path_and_filename:
+        ; prepend the full path to name. couldn't get here with long path, but need to check adding on the file name doesn't go over limit
+        jsr     copy_path_to_buffer
+        setax   #fn_io_buffer
+        jsr     _fc_strlen
+        sta     tmp1
+
+        ; check if the filename plus path are over limit
+        setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
+        axinto  ptr1
+        
+        ; TODO: This is a copy of the code in combine_path_with_selection
+        jsr     _fc_strlen
+        sta     tmp2            ; capture the length for the append later
+        clc
+        adc     tmp1
+        bcs     too_long         ; over $100, must be too long, anything else is ok
+
+        ; append the filename to fn_io_buffer
+        mwa     #fn_io_buffer, ptr2
+        adw1    ptr2, tmp1
+        inc     tmp2            ; allow for null in strlcpy
+        pushax  ptr2            ; dst
+        pushax  ptr1            ; src
+        lda     tmp2
+        jmp     _fc_strlcpy     ; append
+        ; implicit rts
+
+too_long:
+        jsr     mf_error_too_long
+        jmp     return1

@@ -5,17 +5,20 @@
         .import     _fc_strncpy
         .import     _free
         .import     _scr_clr_highlight
-        .import     debug
         .import     fn_dir_path
         .import     fn_io_buffer
         .import     mf_dir_or_file
         .import     mf_dir_pos
+        .import     mf_error_too_long
         .import     mf_selected
-        .import     mfs_error_too_long
+        .import     pusha
         .import     pushax
         .import     read_full_dir_name
         .import     return0
         .import     return1
+        .import     save_device_choice
+        .import     sds_pu_devs
+        .import     sds_pu_mode
         .import     select_device_slot
 
         .include    "fc_zp.inc"
@@ -23,6 +26,7 @@
         .include    "fc_mods.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
+        .include    "popup.inc"
 
 ; Handle Selection of the currently highlighted line
 ; tmp1,tmp2,tmp3
@@ -60,12 +64,29 @@ is_file:
         ; get user's choice of which to device to put the host
         jsr     select_device_slot
 
-        ldx     #KBH::APP_1
+        ; CHECK IF ESC pressed (return value from _show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
+        cmp     #PopupItemReturn::escape
+        beq     :+
+
+        ; the selected option was sds_pu_devs+val
+        ; the selected mode was sds_pu_mode+val
+
+        ldy     #$00
+        mwa     {sds_pu_mode + POPUP_VAL_IDX}, ptr1
+        lda     (ptr1), y
+        jsr     pusha
+
+        mwa     {sds_pu_devs + POPUP_VAL_IDX}, ptr1
+        lda     (ptr1), y
+
+        jsr     save_device_choice
+
+:       ldx     #KBH::APP_1
         rts
 
 too_long_error:
         jsr     _scr_clr_highlight
-        jsr     mfs_error_too_long
+        jsr     mf_error_too_long
         ldx     #KBH::APP_1
         rts
 .endproc

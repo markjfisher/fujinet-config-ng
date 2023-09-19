@@ -1,4 +1,4 @@
-        .export     mfs_error_too_long
+        .export     mf_error_too_long
 
         .import     _show_error
         .import     mod_current
@@ -6,7 +6,7 @@
 
         .include    "fc_macros.inc"
 
-.proc mfs_error_too_long
+.proc mf_error_too_long
         pusha   #16
         pusha   #1
         setax   #p2l_err_msg

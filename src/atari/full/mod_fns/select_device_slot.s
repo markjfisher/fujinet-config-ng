@@ -1,29 +1,20 @@
         .export     select_device_slot
 
         .export     mx_ask_help
+        .export     sds_pu_devs
         .export     sds_pu_info
+        .export     sds_pu_mode
 
         .import     _clr_help
-        .import     _scr_clr_highlight
-        .import     _fn_io_close_directory
-        .import     _fn_io_get_device_slots
-        .import     _fn_io_put_device_slots
-        .import     _fn_io_read_directory
-        .import     _fn_io_set_device_filename
-        .import     _put_help
-        .import     _fc_strlcpy
-        .import     _fc_strlen
         .import     _fc_strncpy
+        .import     _fn_io_get_device_slots
         .import     _free
         .import     _malloc
+        .import     _put_help
+        .import     _scr_clr_highlight
         .import     _show_select
-        .import     md_is_devices_data_fetched
-        .import     fn_dir_path
-        .import     fn_io_buffer
         .import     fn_io_deviceslots
-        .import     mh_host_selected
-        .import     info_popup_help
-        .import     pu_err_title
+        .import     md_is_devices_data_fetched
         .import     pusha
         .import     pushax
         .import     s_empty
@@ -66,61 +57,9 @@
         setax   sds_pu_devs + PopupItemTextList::text
         jsr     _free
 
-        ; CHECK IF ESC pressed (return value from _show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
+        ; return the value from the popup so caller can react to Enter/ESC
         lda     tmp1
-        cmp     #PopupItemReturn::escape
-        bne     save_device_choice
-
-        ; ESC was pressed, don't do anything, the caller will simply reload main screen
         rts
-
-save_device_choice:
-        ; the selected option was sds_pu_devs+val
-        ; the selected mode was sds_pu_mode+val
-        ldy     #$00
-        mwa     {sds_pu_devs + POPUP_VAL_IDX}, ptr3
-        mva     {(ptr3), y}, sds_dev     ; device slot is 0 based, no increment needed
-
-        mwa     {sds_pu_mode + POPUP_VAL_IDX}, ptr3
-        mva     {(ptr3), y}, sds_mode
-        inc     sds_mode                ; mode is 1/2, we have 0/1, add 1 to align
-
-        ; set the device filename, this now works without need to save all slots
-        pusha   sds_mode                ; read/write mode
-        pusha   mh_host_selected        ; host_slot
-        pusha   sds_dev                 ; device slot
-        setax   #fn_io_buffer
-        jsr     _fn_io_set_device_filename
-
-        ; write it to the deviceslots memory
-        mwa     #fn_io_deviceslots, ptr1
-        ldx     sds_dev
-        beq     no_dev_add
-:       adw     ptr1, #.sizeof(DeviceSlot)
-        dex
-        bne     :-
-
-no_dev_add:
-        ; write the host slot
-        lda     mh_host_selected
-        ldy     #DeviceSlot::hostSlot
-        sta     (ptr1), y
-
-        ; write the mode
-        lda     sds_mode
-        ldy     #DeviceSlot::mode
-        sta     (ptr1), y
-
-        ; Save everything
-        setax   #fn_io_deviceslots
-        jsr     _fn_io_put_device_slots
-
-        ; read the device slots back so screen repopulates
-        setax   #fn_io_deviceslots
-        jsr     _fn_io_get_device_slots
-
-        jmp     _fn_io_close_directory
-        ; implicit rts
 
 copy_dev_strings:
         ; copy 8x width bytes from every DeviceSlot+2 into memory we grabbed
@@ -171,8 +110,6 @@ devices_help:
 .endproc
 
 .bss
-sds_mode:               .res 1
-sds_dev:                .res 1
 sds_pu_device_val:      .res 1
 sds_pu_mode_val:        .res 1
 
