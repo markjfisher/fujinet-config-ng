@@ -11,9 +11,11 @@
         .export     mf_ask_new_disk_std_sizes
 
         .export     mf_ask_new_disk_cst_info
+        .export     mf_nd_std_h1
 
 
         .include    "fn_data.inc"
+        .include    "fc_macros.inc"
         .include    "popup.inc"
 
 .bss
@@ -113,3 +115,24 @@ mf_ask_new_disk_cust_sector_size_txt:
                 .byte "128"
                 .byte "256"
                 .byte "512"
+
+mf_nd_std_h1:
+                NORMAL_CHARMAP
+                .byte $81, $1c, $1d     ; arrows
+                .byte $84               ; tween
+                NORMAL_CHARMAP
+                .byte "E", $82
+                INVERT_ATASCII
+                .byte "Edit"
+                NORMAL_CHARMAP
+                .byte $81, "TAB", $82
+                INVERT_ATASCII
+                .byte "Next"
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "OK"
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit", 0

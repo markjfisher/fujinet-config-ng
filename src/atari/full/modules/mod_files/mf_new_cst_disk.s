@@ -9,6 +9,7 @@
         .import     _free
         .import     _fn_io_error
         .import     _malloc
+        .import     _put_help
         .import     _scr_clr_highlight
         .import     _show_select
         .import     copy_path_to_buffer
@@ -24,6 +25,7 @@
         .import     mf_ask_new_disk_std_sizes
         .import     mf_error_too_long
         .import     mf_nd_err_saving
+        .import     mf_nd_std_h1
         .import     mh_host_selected
         .import     pusha
         .import     pushax
@@ -47,7 +49,7 @@ mf_new_disk:
 
         ; show the select
         pushax  #mf_ask_new_disk_std_info
-        pushax  #std_help
+        pushax  #nd_help
         setax   #mf_ask_new_disk_pu_msg
         jsr     _show_select
         cmp     #PopupItemReturn::escape
@@ -91,7 +93,7 @@ mf_cst_disk:
 
         ; show the select
         pushax  #mf_ask_new_disk_cst_info
-        pushax  #cst_help
+        pushax  #nd_help
         setax   #mf_ask_new_disk_pu_msg
         jsr     _show_select
 
@@ -116,7 +118,6 @@ mf_cst_disk:
         ; convert the sectors number into word value, atoi!!
         ; we have a very limited string, 1-65535, do minimal calc from string to word
         setax   mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
-        jsr     debug
         jsr     _fc_atoi
         jsr     pushax
 
@@ -146,7 +147,6 @@ push_size:
         beq     end_ask2
 
         jsr     mf_nd_err_saving
-
 
 end_ask2:
         setax   mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
@@ -203,15 +203,11 @@ alloc_sector_cnt:
 
         rts
 
-std_help:
+nd_help:
         jsr     _clr_help
-;        put_help #0, #mfss_h1
+        put_help #0, #mf_nd_std_h1
         rts
 
-cst_help:
-        jsr     _clr_help
-;        put_help #0, #mfss_h1
-        rts
 
 join_path_and_filename:
         ; prepend the full path to name. couldn't get here with long path, but need to check adding on the file name doesn't go over limit

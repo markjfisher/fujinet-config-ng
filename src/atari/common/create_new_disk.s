@@ -38,6 +38,7 @@
         jsr     _malloc         ; this craps all over ptr 1/2
         axinto  ptr4
 
+        jsr     debug
         ; convert selected_size into DiskSize index
         lda     tmp3
         cmp     #DiskSize::sizeCustom           ; is the given DiskSize value valid? should be less than sizeCustom for normal
@@ -50,8 +51,7 @@
 ; -------------------------------------------------------------
 ; get sector size/num from tables
 
-:       asl     a       ; double a so it becomes table index
-        tax
+:       tax             ; A is disk-size, already doubled to table offset
 
         ; X now holds index of numSectors/sectorSize values to read from tables below
 
