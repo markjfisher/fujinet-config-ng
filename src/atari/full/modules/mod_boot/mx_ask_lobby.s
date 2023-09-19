@@ -7,6 +7,7 @@
         .import     mx_ask_help
         .import     mx_ask_lobby_info
         .import     mx_ask_pu_msg
+        .import     pu_null_cb
         .import     pusha
         .import     pushax
 
@@ -14,6 +15,7 @@
 
 .proc mx_ask_lobby
         jsr     _scr_clr_highlight
+        pushax  #pu_null_cb
         pushax  #mx_ask_lobby_info
         pushax  #ask_help
         setax   #mx_ask_pu_msg

@@ -1,5 +1,7 @@
         .export     handle_kb
         .export     type_at_x
+        .export     pu_kb_cb
+        .export     pu_null_cb
 
         .import     _edit_line
         .import     _kb_get_c_ucase
@@ -26,7 +28,6 @@
 ; tmp5,tmp6,tmp7,tmp8
 ; ptr1,ptr3,ptr4
 .proc handle_kb
-
         ; get current popup item into our buffer so we can read values
         ldx     ss_widget_idx
         jsr     item_x_to_ptr1
@@ -37,6 +38,17 @@ start_kb_get:
         cmp     #$00
         beq     start_kb_get
 
+        ; call the kb callback
+        ldx     #PopupItemReturn::not_handled    ; default so the main popup kbh can do its thing
+        jsr     do_kb_cb
+
+        cpx     #PopupItemReturn::not_handled
+        beq     start_pu_kbh
+
+        ; just return the value that the kbh gave us, it will deal with redisplay or exit
+        rts
+
+start_pu_kbh:
 ; --------------------------------------------------------------------
 ; main popup select  kb switch
 ; --------------------------------------------------------------------
@@ -66,7 +78,7 @@ start_kb_get:
 ; --------------------------------------------------------------------
 ; TAB - switch widget
 ; --------------------------------------------------------------------
-        cmp     #FNK_TAB
+:       cmp     #FNK_TAB
         bne     not_tab
 
         ; do we have any selectables? e.g. info popups have non, so don't want to get stuck in loop here
@@ -240,6 +252,15 @@ not_edit:
 
 .endproc
 
+.proc pu_null_cb
+        rts
+.endproc
+
+.proc do_kb_cb
+        jmp (pu_kb_cb)
+        ; return from caller will take us back
+.endproc
+
 ; x = other index to change
 ; ptr3 = next/prev function to jsr into
 .proc handle_by_other
@@ -264,8 +285,8 @@ do_jmp:
 .endproc
 
 .proc redisplay
-        ldx     #$00
-        lda     #PopupItemReturn::redisplay
+        lda     #$00
+        ldx     #PopupItemReturn::redisplay
         rts
 .endproc
 
@@ -469,3 +490,7 @@ out:
         ldx     ss_widget_idx
         jmp     type_at_x
 .endproc
+
+.bss
+; pop up keyboard callback vector. Allows callers to setup a callback where they can intercept the kb routine to allow changes
+pu_kb_cb:       .res 2

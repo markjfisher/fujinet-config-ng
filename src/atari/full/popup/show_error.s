@@ -3,6 +3,7 @@
         .import     _show_select
         .import     info_popup_help
         .import     popa
+        .import     pu_null_cb
         .import     pu_err_title
         .import     pushax
 
@@ -24,6 +25,7 @@
         jsr     popa
         sta     se_template + 0
 
+        pushax  #pu_null_cb
         pushax  #se_template
         pushax  #info_popup_help
         setax   #pu_err_title

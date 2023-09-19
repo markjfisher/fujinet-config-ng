@@ -27,6 +27,7 @@
         .import     mf_nd_err_saving
         .import     mf_nd_std_h1
         .import     mh_host_selected
+        .import     pu_null_cb
         .import     pusha
         .import     pushax
         .import     return0
@@ -48,6 +49,7 @@ mf_new_disk:
         jsr     nd_common
 
         ; show the select
+        pushax  #pu_null_cb
         pushax  #mf_ask_new_disk_std_info
         pushax  #nd_help
         setax   #mf_ask_new_disk_pu_msg
@@ -92,6 +94,7 @@ mf_cst_disk:
         jsr     alloc_sector_cnt
 
         ; show the select
+        pushax  #pu_null_cb
         pushax  #mf_ask_new_disk_cst_info
         pushax  #nd_help
         setax   #mf_ask_new_disk_pu_msg

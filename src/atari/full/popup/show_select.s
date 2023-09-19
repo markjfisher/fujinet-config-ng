@@ -22,7 +22,7 @@
         .import     get_pu_loc
         .import     handle_kb
         .import     popax
-        .import     popax
+        .import     pu_kb_cb
         .import     pushax
         .import     set_next_selectable_widget
 
@@ -33,7 +33,7 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
-; void show_select(uint8_t width, void *items, char *msg)
+; void show_select(void *pu_kb_cb, void *items, void *help_cb, char *msg)
 ; 
 ; A generic selection popup window that can display different types of widgets
 
@@ -44,6 +44,7 @@
         axinto  ss_message              ; the header message to display in popup
         popax   ss_help_cb              ; the cb function to setup help messages for this particular popup
         popax   ss_items                ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
+        popax   pu_kb_cb                ; call back routine for the pop up keyboard routine
 
         jsr     _wait_scan1             ; only paint when we're at the top of screen so get no flashing
         jsr     initialise_select       ; show popup header, setup some variables, ptr4 is start of screen
@@ -56,10 +57,10 @@ display_main_loop:
         ; This is a mini version of gb keyboard handler that understands item types
         jsr     handle_kb
 
-        ; based on return value in A, we will either reloop to display options page again (e.g. up/down navigation)
+        ; based on return value in X, we will either reloop to display options page again (e.g. up/down navigation)
         ; or exit with values chosen (Return or ESC pressed)
 
-        cmp     #PopupItemReturn::redisplay
+        cpx     #PopupItemReturn::redisplay
         bne     exit_select
 
         ; reset the screen pointer to display from the top again

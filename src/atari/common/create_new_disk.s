@@ -38,7 +38,6 @@
         jsr     _malloc         ; this craps all over ptr 1/2
         axinto  ptr4
 
-        jsr     debug
         ; convert selected_size into DiskSize index
         lda     tmp3
         cmp     #DiskSize::sizeCustom           ; is the given DiskSize value valid? should be less than sizeCustom for normal

@@ -15,6 +15,7 @@
         .import     _show_select
         .import     fn_io_deviceslots
         .import     md_is_devices_data_fetched
+        .import     pu_null_cb
         .import     pusha
         .import     pushax
         .import     s_empty
@@ -54,7 +55,11 @@
         axinto  sds_pu_no_opt_devs + PopupItemTextList::text
         jsr     copy_dev_strings
 
-        ; show the selector, decide which version to show
+        ; show the selector
+        ; no cb handler needed for popup
+        pushax  #pu_null_cb
+
+        ; decide which version to show
         lda     tmp2
         beq     no_options
 
