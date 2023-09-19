@@ -222,25 +222,15 @@ not_enter:
 :       cmp     #PopupHandleKBEvent::other
         beq     edit_other
 
-        ; set ptr4 to the location of the edit field
-        jsr     get_edit_loc            ; sets ptr4 to location on screen of string to edit
+        jmp     do_edit
+        ; implicit rts
 
-        ; display it in normal text
-        jsr     show_edit_value         ; sets ptr1 to start of the string editing
-        
-        ; start editing
-        pushax  ptr1
-        pushax  ptr4
-        lda     ss_pu_entry + POPUP_LEN_IDX
-        jsr     _edit_line
-        ; enter or cancel doesn't matter, as this is just editing a string box, not finishing the popup
-
-        jmp     redisplay
 edit_other:
         ; another widget can do editing
-        ; TODO
-
-        jmp     redisplay
+        ldx     ss_str_idx
+        mwa     #do_edit, ptr3
+        jmp     handle_by_other
+        ; implicit rts
 
 not_edit:
 ; --------------------------------------------------------------------
@@ -253,14 +243,16 @@ not_edit:
 ; x = other index to change
 ; ptr3 = next/prev function to jsr into
 .proc handle_by_other
-        mva     ss_widget_idx, tmp7
+        lda     ss_widget_idx
+        pha
         stx     ss_widget_idx
         jsr     item_x_to_ptr1
         jsr     copy_entry
         jsr     do_jmp
 
         ; reset back to the current index
-        mva     tmp7, ss_widget_idx
+        pla
+        sta     ss_widget_idx
         tax
         jsr     item_x_to_ptr1
         jsr     copy_entry
@@ -320,6 +312,23 @@ do_jmp:
 .proc do_next
         jsr     do_next_val
         jmp     copy_ret
+.endproc
+
+.proc do_edit
+        ; set ptr4 to the location of the edit field
+        jsr     get_edit_loc            ; sets ptr4 to location on screen of string to edit
+
+        ; display it in normal text
+        jsr     show_edit_value         ; sets ptr1 to start of the string editing
+        
+        ; start editing
+        pushax  ptr1
+        pushax  ptr4
+        lda     ss_pu_entry + POPUP_LEN_IDX
+        jsr     _edit_line
+        ; enter or cancel doesn't matter, as this is just editing a string box, not finishing the popup
+
+        jmp     redisplay
 .endproc
 
 .proc copy_ret
