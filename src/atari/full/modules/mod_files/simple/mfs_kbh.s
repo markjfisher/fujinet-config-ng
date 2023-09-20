@@ -229,15 +229,13 @@ not_filter:
 
 not_new_disk:
 ; --------------------------------------------------------------------------
-; C - Custom Disk
-        cmp     #FNK_CUSTOM
-        bne     not_cst_disk
+; C - COPY
+        cmp     #FNK_COPY
+        bne     not_copy
 
-        jsr     mf_cst_disk
-        ldx     #KBH::APP_1
-        rts
+        ; TODO:
 
-not_cst_disk:
+not_copy:
 ; -------------------------------------------------
 ; NOT HANDLED
         ldx     #KBH::NOT_HANDLED    ; flag main kb handler it should handle this code, still in A

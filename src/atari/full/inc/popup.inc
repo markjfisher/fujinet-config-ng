@@ -87,6 +87,7 @@ POPUP_VAL_IDX   := 3            ; word pointer to memory value
         complete                ; enter was hit and options selection complete, exit with changes
         redisplay               ; nothing chosen yet, just navigating around and need to redisplay the options screen.
         not_handled             ; popup kb callback didn't do anything
+        app_1                   ; app specific code
 .endenum
 
 ; This is to allow a keyboard press to be processed by other widgets

@@ -204,8 +204,8 @@ not_down:
         bne     not_esc
 
         ; exit with escape code, caller will act on it.
-        ldx     #$00
-        lda     #PopupItemReturn::escape
+        lda     #$00
+        ldx     #PopupItemReturn::escape
         rts
 not_esc:
 ; --------------------------------------------------------------------
@@ -215,8 +215,8 @@ not_esc:
         bne     not_enter
 
         ; simple, just exit with complete code, the caller will read out any data as needed
-        ldx     #$00
-        lda     #PopupItemReturn::complete
+        lda     #$00
+        ldx     #PopupItemReturn::complete
         rts
 
 not_enter:

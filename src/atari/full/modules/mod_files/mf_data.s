@@ -48,13 +48,14 @@ mf_ask_new_disk_name_std:
                 .byte PopupItemType::space
 
                 ; "Disk Size:"
-                .byte PopupItemType::text, 1, <mfs_size_msg, >mfs_size_msg
+                .byte PopupItemType::text, 1, <mf_size_msg, >mf_size_msg
 
 mf_ask_new_disk_std_sizes:
                 ; num, len (chars), val, texts (non-zero terminated)
                 .byte PopupItemType::textList, 6, 5, <mf_ask_new_disk_std_sizes_val, >mf_ask_new_disk_std_sizes_val, <mf_ask_new_disk_std_sizes_str, >mf_ask_new_disk_std_sizes_str, 12
 
                 .byte PopupItemType::space
+                .byte PopupItemType::text, 1, <mf_press_c_msg, >mf_press_c_msg
                 .byte PopupItemType::finish
 
 mfs_size_std    = * - mf_ask_new_disk_std_info
@@ -75,6 +76,7 @@ mf_ask_new_disk_sectors_cst:
                 ; num, len, val, #title_text, #string_loc
                 .byte PopupItemType::string, 1, 6, $ff, $ff, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
 
+                .byte PopupItemType::space
                 ; "Sector Size:"
                 .byte PopupItemType::text, 1, <mfs_sector_size_msg, >mfs_sector_size_msg
 
@@ -82,6 +84,9 @@ mf_ask_new_disk_sectors_cst:
 mf_ask_new_disk_cust_sector_size:
                 .byte PopupItemType::textList, 3, 3, <mf_ask_new_disk_cust_sector_size_val, >mf_ask_new_disk_cust_sector_size_val, <mf_ask_new_disk_cust_sector_size_txt, >mf_ask_new_disk_cust_sector_size_txt, 15
 
+                .byte PopupItemType::space
+                .byte PopupItemType::space
+                .byte PopupItemType::text, 1, <mf_press_n_msg, >mf_press_n_msg
                 .byte PopupItemType::finish
 
 mfs_size_cst    = * - mf_ask_new_disk_cst_info
@@ -105,7 +110,7 @@ mf_ask_new_disk_std_sizes_str:
                 .byte " 720k"
                 .byte "1440k"
 
-mfs_size_msg:
+mf_size_msg:
                 .byte "Disk Size:", 0
 
 mfs_sector_size_msg:
@@ -115,6 +120,22 @@ mf_ask_new_disk_cust_sector_size_txt:
                 .byte "128"
                 .byte "256"
                 .byte "512"
+
+mf_press_c_msg:
+                NORMAL_CHARMAP
+                .byte "    ", $01
+                INVERT_ATASCII
+                .byte "Press C for Custom Size"
+                NORMAL_CHARMAP
+                .byte $02, 0
+
+mf_press_n_msg:
+                NORMAL_CHARMAP
+                .byte "    ", $01
+                INVERT_ATASCII
+                .byte "Press N for Normal Size"
+                NORMAL_CHARMAP
+                .byte $02, 0
 
 mf_nd_std_h1:
                 NORMAL_CHARMAP

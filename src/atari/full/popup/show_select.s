@@ -59,7 +59,6 @@ display_main_loop:
 
         ; based on return value in X, we will either reloop to display options page again (e.g. up/down navigation)
         ; or exit with values chosen (Return or ESC pressed)
-
         cpx     #PopupItemReturn::redisplay
         bne     exit_select
 

@@ -155,7 +155,7 @@ not_down:
         bne     not_lobby
 
         jsr     mx_ask_lobby
-        cmp     #PopupItemReturn::escape
+        cpx     #PopupItemReturn::escape
         beq     lobby_exit
 
         ; option value is in ptr at mx_ask_lobby_option + POPUP_VAL_IDX, 0 = Y, 1 = N

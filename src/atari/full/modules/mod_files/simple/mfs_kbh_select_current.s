@@ -66,7 +66,7 @@ is_file:
         jsr     select_device_slot
 
         ; CHECK IF ESC pressed (return value from _show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
-        cmp     #PopupItemReturn::escape
+        cpx     #PopupItemReturn::escape
         beq     :+
 
         ; use the mode/device_slot from select to save our choice

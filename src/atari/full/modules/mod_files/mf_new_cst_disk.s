@@ -49,13 +49,18 @@ mf_new_disk:
         jsr     nd_common
 
         ; show the select
-        pushax  #pu_null_cb
+        pushax  #nd_std_kbh
         pushax  #mf_ask_new_disk_std_info
         pushax  #nd_help
         setax   #mf_ask_new_disk_pu_msg
         jsr     _show_select
-        cmp     #PopupItemReturn::escape
+        ; return in X will be one of escape, complete, app_1
+        jsr     debug
+        cpx     #PopupItemReturn::escape
         beq     end_ask
+
+        cpx     #PopupItemReturn::app_1
+        beq     show_custom
 
         jsr     handle_device_slot
         bne     end_ask
@@ -84,6 +89,29 @@ mf_new_disk:
 
         jsr     mf_nd_err_saving
 
+show_custom:
+        ; swap to the custom disk dialogue
+        ; still need to free the previous memory
+        jsr     end_ask
+        jmp     mf_cst_disk
+
+nd_std_kbh:
+        ; 'a' contains the ascii keypress.
+        cmp     #FNK_CUSTOM
+        bne     not_custom
+
+        ldx     #PopupItemReturn::app_1
+not_custom:
+        rts
+
+nd_cst_kbh:
+        cmp     #FNK_NEWDISK
+        bne     not_new
+
+        ldx     #PopupItemReturn::app_1
+not_new:
+        rts
+
 end_ask:
         setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
         jsr     _free
@@ -94,15 +122,19 @@ mf_cst_disk:
         jsr     alloc_sector_cnt
 
         ; show the select
-        pushax  #pu_null_cb
+        pushax  #nd_cst_kbh
         pushax  #mf_ask_new_disk_cst_info
         pushax  #nd_help
         setax   #mf_ask_new_disk_pu_msg
         jsr     _show_select
 
         ; deal with return from select (type PopupItemReturn)
-        cmp     #PopupItemReturn::escape
+        ; return will be one of escape, complete, app_1
+        cpx     #PopupItemReturn::escape
         beq     end_ask2
+
+        cpx     #PopupItemReturn::app_1
+        beq     show_std
 
         jsr     handle_device_slot              ; sets tmp3 to device_slot
         bne     end_ask2
@@ -155,6 +187,12 @@ end_ask2:
         setax   mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
         jsr     _free
         jmp     end_ask
+
+show_std:
+        ; swap to the custom disk dialogue
+        ; still need to free the previous memory
+        jsr     end_ask2
+        jmp     mf_new_disk
 
 nd_common:
         jsr     _scr_clr_highlight
@@ -250,7 +288,7 @@ handle_device_slot:
         ; get the device slot to use
         lda     #$00                    ; don't show options
         jsr     select_device_slot
-        cmp     #PopupItemReturn::escape
+        cpx     #PopupItemReturn::escape
         beq     :+
 
         ldy     #$00

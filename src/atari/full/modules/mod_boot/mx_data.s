@@ -25,6 +25,17 @@ boot_anim_1_3:  .byte $1A, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12
 ; Booting!
 boot_anim_2_1:  .byte $7C, $99, $A0, $A0, $C2, $EF, $EF, $F4, $E9, $EE, $E7, $A1, $A0, $A0, $19, $7C, 0
 
+                NORMAL_CHARMAP
+mx_ask_msg:
+                .byte "    Boot Lobby?", 0
+
+mx_ask_txt:
+                .byte 0         ; no "name" string to show, just want Y/N
+                .byte " Y "
+                .byte " N "
+
+mx_ask_pu_msg:  .byte "Lobby", 0
+
 .rodata
 mx_ask_lobby_info:
                 ; width, y-offset, has_selectable, up/down option (none), l/r option index, edit index (none)
@@ -36,18 +47,7 @@ mx_ask_lobby_option:
                 .byte PopupItemType::option, 2, 3, <mx_ask_lobby_val, >mx_ask_lobby_val, <mx_ask_txt, >mx_ask_txt, <mx_ask_opt, >mx_ask_opt
                 .byte PopupItemType::finish
 
-.segment "SCR_DATA"
-                NORMAL_CHARMAP
-mx_ask_msg:
-                .byte "    Boot Lobby?", 0
-
-mx_ask_txt:
-                .byte 0         ; no "name" string to show, just want Y/N
-                .byte " Y "
-                .byte " N "
-
 ; sum of these, plus the strings above must add up to the _info "width" above
 ; 0 + 3 + 3 (name + Y + N) + 3 + 6 + 3 = 18
 mx_ask_opt:     .byte 3, 6, 3
 
-mx_ask_pu_msg:  .byte "Lobby", 0
