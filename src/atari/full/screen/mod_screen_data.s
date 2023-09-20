@@ -182,15 +182,19 @@ mf_h1:
                 NORMAL_CHARMAP
                 .byte $81, $1c, $1d, $82        ; endL up down endR
                 INVERT_ATASCII
-                .byte "Move "
+                .byte "Move"
                 NORMAL_CHARMAP
                 .byte $81, "<", $82
                 INVERT_ATASCII
-                .byte "Up "
+                .byte "Up"
+                NORMAL_CHARMAP
+                .byte $81, "N", $82
+                INVERT_ATASCII
+                .byte "New"
                 NORMAL_CHARMAP
                 .byte $81, "Ret", $82
                 INVERT_ATASCII
-                .byte "Select "
+                .byte "Select"
                 NORMAL_CHARMAP
                 .byte $81, "ESC", $82
                 INVERT_ATASCII

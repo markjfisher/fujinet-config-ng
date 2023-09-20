@@ -15,6 +15,7 @@
         .import     copy_path_to_buffer
         .import     debug
         .import     fn_io_buffer
+        .import     load_widget_x
         .import     mf_ask_new_disk_cst_info
         .import     mf_ask_new_disk_cust_sector_size_val
         .import     mf_ask_new_disk_name_cst
@@ -35,6 +36,7 @@
         .import     save_device_choice
         .import     sds_pu_no_opt_devs
         .import     select_device_slot
+        .import     ss_widget_idx
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -55,7 +57,6 @@ mf_new_disk:
         setax   #mf_ask_new_disk_pu_msg
         jsr     _show_select
         ; return in X will be one of escape, complete, app_1
-        jsr     debug
         cpx     #PopupItemReturn::escape
         beq     end_ask
 
@@ -95,27 +96,102 @@ show_custom:
         jsr     end_ask
         jmp     mf_cst_disk
 
-nd_std_kbh:
-        ; 'a' contains the ascii keypress.
-        cmp     #FNK_CUSTOM
-        bne     not_custom
-
-        ldx     #PopupItemReturn::app_1
-not_custom:
-        rts
-
-nd_cst_kbh:
-        cmp     #FNK_NEWDISK
-        bne     not_new
-
-        ldx     #PopupItemReturn::app_1
-not_new:
-        rts
-
 end_ask:
         setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
         jsr     _free
         jmp     return0
+
+; ------------------------------------------------------------
+; Normal Disk Keyboard Handler
+; 
+; If they press "C", jump to CUSTOM dialog
+; If they press "Enter" (Return), check the String fields, if empty, pretend we pressed E to edit instead and mark as unhandled for primary kbh to edit it
+nd_std_kbh:
+        ; 'a' contains the ascii keypress.
+        cmp     #FNK_CUSTOM
+        bne     @not_custom
+
+        ldx     #PopupItemReturn::app_1
+        rts
+@not_custom:
+        cmp     #FNK_ENTER
+        bne     @not_enter
+
+        ; is the Name field empty?
+        mwa     {mf_ask_new_disk_name_std + POPUP_VAL_IDX}, ptr1
+        ldy     #$00
+        lda     (ptr1), y
+        beq     @name_empty
+        
+        ; name is not empty, reset our keypress in A and return. X unchanged from default of not-handled
+        lda     #FNK_ENTER
+        rts
+
+@name_empty:
+        ; change focus to the NAME field, and simulate "E" for edit, set X to not-handled
+        mva     #$00, ss_widget_idx
+        jsr     load_widget_x
+        lda     #FNK_EDIT
+        ldx     #PopupItemReturn::not_handled
+        rts
+
+@not_enter:
+        ; defaults to unhandled, a still contains the ascii keypress, so just return
+        rts
+
+; ------------------------------------------------------------
+; CUSTOM Disk Keyboard Handler
+;
+; Similar to above, handles pressing Enter as though you're EDITing an empty string.
+; This case checks both name and sectors before passing through enter as valid string, as you need both set
+
+nd_cst_kbh:
+        cmp     #FNK_NEWDISK
+        bne     @not_new
+
+        ldx     #PopupItemReturn::app_1
+        rts
+@not_new:
+        cmp     #FNK_ENTER
+        bne     @not_enter
+
+        ; is the Name field empty?
+        mwa     {mf_ask_new_disk_name_cst + POPUP_VAL_IDX}, ptr1
+        ldy     #$00
+        lda     (ptr1), y
+        beq     @name_empty
+
+        ; check the disk sectors string
+        mwa     {mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX}, ptr1
+        lda     (ptr1), y
+        beq     @sectors_empty
+
+        lda     #FNK_ENTER
+        rts
+
+@name_empty:
+        ; change focus to the NAME field, and simulate "E" for edit, set X to not-handled
+        mva     #$00, ss_widget_idx
+        jsr     load_widget_x
+        ldx     #PopupItemReturn::not_handled
+        lda     #FNK_EDIT
+        rts
+
+@sectors_empty:
+        ; change focus to the SECTORS field, and simulate "E" for edit, set X to not-handled
+        mva     #$02, ss_widget_idx
+        jsr     load_widget_x
+        ldx     #PopupItemReturn::not_handled
+        lda     #FNK_EDIT
+        rts
+
+@not_enter:
+        ; defaults to unhandled, a still contains the ascii keypress, so just return
+        rts
+
+
+
+
 
 mf_cst_disk:
         jsr     nd_common

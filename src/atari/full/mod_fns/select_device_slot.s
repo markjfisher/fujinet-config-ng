@@ -1,8 +1,8 @@
         .export     select_device_slot
 
         .export     mx_ask_help
-        .export     sds_pu_devs
-        .export     sds_pu_mode
+        .export     sds_pu_device_val
+        .export     sds_pu_mode_val
         .export     sds_pu_no_opt_devs
 
         .import     _clr_help
@@ -140,7 +140,7 @@ sds_pu_mode_val:        .res 1
 
 .rodata
 ; the width of textList should be 3+x_off less than the overall width. 2 for list number and space, 1 for end selection char
-sds_pu_info:    .byte 26, 0, 1, 0, 2, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
+sds_pu_info:    .byte 26, 2, 1, 0, 2, $ff           ; width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
                 .byte PopupItemType::space
 sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mode_val, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
@@ -148,7 +148,7 @@ sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mod
 
 ; NO OPTIONS VERSION
 sds_pu_no_opt_info:
-                .byte 26, 0, 1, 0, $ff, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
+                .byte 26, 7, 1, 0, $ff, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_no_opt_devs:
                 .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
                 .byte PopupItemType::finish

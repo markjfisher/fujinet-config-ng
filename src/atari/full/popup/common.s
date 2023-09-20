@@ -2,17 +2,21 @@
         .export     copy_entry
         .export     get_pu_loc
         .export     get_edit_loc
+        .export     item_x_to_ptr1
         .export     left_border
+        .export     load_widget_x
         .export     pui_is_selectable
         .export     pui_sizes
         .export     right_border
         .export     show_edit_value
+        .export     type_at_x
 
         .import     _fc_strlen
         .import     debug
         .import     _pause
         .import     get_scrloc
         .import     put_s_p1p4
+        .import     ss_items
         .import     ss_pu_entry
         .import     ss_widget_idx
         .import     ss_width
@@ -29,6 +33,13 @@
 
 ; tmp1,tmp2,tmp3
 ; ptr1,ptr2,ptr4
+
+; loads the Xth widget into memory
+.proc load_widget_x
+        ldx     ss_widget_idx
+        jsr     item_x_to_ptr1
+        jmp     copy_entry
+.endproc
 
 ; starts the new line off, setting y, and printing first char.
 ; assumes ptr4 points to current screen location
@@ -166,6 +177,48 @@ no_add_x:
 
         ; print it
         jmp     put_s_p1p4
+.endproc
+
+.proc item_x_to_ptr1
+        ; ptr1 will point to start of required PopupItem object
+        mwa     ss_items, ptr1
+        cpx     #$00
+        beq     out
+
+        ; save x
+        txa
+        pha
+
+        stx     tmp8    ; becomes loop index
+
+        ; move down list until we're at the right one
+        ; get size from pui_sizes, x
+
+        ldy     #POPUP_TYPE_IDX
+w_loop:
+        lda     (ptr1), y
+        tax                             ; the type, used as index to...
+        lda     pui_sizes, x            ; this widget's type size
+
+        ; add size to ptr1
+        adw1    ptr1, a
+        dec     tmp8
+        bne     w_loop
+
+        ; restore x
+        pla
+        tax
+out:
+        rts
+.endproc
+
+; walk down the PopupItems to the xth, and find its type, return it in A
+; trashes tmp8, Y, A, ptr1
+.proc type_at_x
+        jsr     item_x_to_ptr1
+        ldy     #POPUP_TYPE_IDX
+        lda     (ptr1), y               ; the type of x'th Item. sets N/Z etc for return too
+        rts
 .endproc
 
 .rodata

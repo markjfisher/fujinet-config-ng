@@ -17,8 +17,8 @@
         .import     return0
         .import     return1
         .import     save_device_choice
-        .import     sds_pu_devs
-        .import     sds_pu_mode
+        .import     sds_pu_device_val
+        .import     sds_pu_mode_val
         .import     select_device_slot
 
         .include    "fc_zp.inc"
@@ -70,14 +70,8 @@ is_file:
         beq     :+
 
         ; use the mode/device_slot from select to save our choice
-        ldy     #$00
-        mwa     {sds_pu_mode + POPUP_VAL_IDX}, ptr1
-        lda     (ptr1), y
-        jsr     pusha
-
-        mwa     {sds_pu_devs + POPUP_VAL_IDX}, ptr1
-        lda     (ptr1), y
-
+        pusha   sds_pu_mode_val
+        lda     sds_pu_device_val
         jsr     save_device_choice
 
 :       ldx     #KBH::APP_1

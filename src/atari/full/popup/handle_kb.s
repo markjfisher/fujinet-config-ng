@@ -1,5 +1,4 @@
         .export     handle_kb
-        .export     type_at_x
         .export     pu_kb_cb
         .export     pu_null_cb
 
@@ -7,7 +6,10 @@
         .import     _kb_get_c_ucase
         .import     _create_new_disk
         .import     copy_entry
+        .import     debug
         .import     get_edit_loc
+        .import     item_x_to_ptr1
+        .import     load_widget_x
         .import     pui_sizes
         .import     pushax
         .import     set_next_selectable_widget
@@ -19,6 +21,7 @@
         .import     ss_str_idx
         .import     ss_ud_idx
         .import     ss_widget_idx
+        .import     type_at_x
 
         .include    "fc_zp.inc"
         .include    "fc_macros.inc"
@@ -29,9 +32,7 @@
 ; ptr1,ptr3,ptr4
 .proc handle_kb
         ; get current popup item into our buffer so we can read values
-        ldx     ss_widget_idx
-        jsr     item_x_to_ptr1
-        jsr     copy_entry
+        jsr     load_widget_x
 
 start_kb_get:
         jsr     _kb_get_c_ucase
@@ -267,16 +268,13 @@ not_edit:
         lda     ss_widget_idx
         pha
         stx     ss_widget_idx
-        jsr     item_x_to_ptr1
-        jsr     copy_entry
+        jsr     load_widget_x
         jsr     do_jmp
 
         ; reset back to the current index
         pla
         sta     ss_widget_idx
-        tax
-        jsr     item_x_to_ptr1
-        jsr     copy_entry
+        jsr     load_widget_x
         jmp     redisplay
 
 do_jmp:
@@ -421,15 +419,6 @@ kb_ud_yes:
 
 .endproc
 
-; walk down the PopupItems to the xth, and find its type, return it in A
-; trashes tmp8, Y, A, ptr1
-.proc type_at_x
-        jsr     item_x_to_ptr1
-        ldy     #POPUP_TYPE_IDX
-        lda     (ptr1), y               ; the type of x'th Item. sets N/Z etc for return too
-        rts
-.endproc
-
 .proc copy_new_val
         pha     ; push new value so we can retrieve it after getting to correct item
 
@@ -449,39 +438,6 @@ kb_ud_yes:
         pla
         ; save the value into its memory location
         sta     (tmp5), y
-        rts
-.endproc
-
-.proc item_x_to_ptr1
-        ; ptr1 will point to start of required PopupItem object
-        mwa     ss_items, ptr1
-        cpx     #$00
-        beq     out
-
-        ; save x
-        txa
-        pha
-
-        stx     tmp8    ; becomes loop index
-
-        ; move down list until we're at the right one
-        ; get size from pui_sizes, x
-
-        ldy     #POPUP_TYPE_IDX
-w_loop:
-        lda     (ptr1), y
-        tax                             ; the type, used as index to...
-        lda     pui_sizes, x            ; this widget's type size
-
-        ; add size to ptr1
-        adw1    ptr1, a
-        dec     tmp8
-        bne     w_loop
-
-        ; restore x
-        pla
-        tax
-out:
         rts
 .endproc
 

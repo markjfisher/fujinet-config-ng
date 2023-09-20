@@ -55,7 +55,9 @@ mf_ask_new_disk_std_sizes:
                 .byte PopupItemType::textList, 6, 5, <mf_ask_new_disk_std_sizes_val, >mf_ask_new_disk_std_sizes_val, <mf_ask_new_disk_std_sizes_str, >mf_ask_new_disk_std_sizes_str, 12
 
                 .byte PopupItemType::space
+                .byte PopupItemType::space
                 .byte PopupItemType::text, 1, <mf_press_c_msg, >mf_press_c_msg
+                .byte PopupItemType::space
                 .byte PopupItemType::finish
 
 mfs_size_std    = * - mf_ask_new_disk_std_info
@@ -63,7 +65,7 @@ mfs_size_std    = * - mf_ask_new_disk_std_info
 ; CUSTOM SIZE - Complicated by having 2 editable strings, but probably not used enough to annoy people they have to tab to 2nd editable field
 mf_ask_new_disk_cst_info:
                 ; width, y-offset, has_selectable, up/down option (sector size), l/r option index (none), edit index (name field)
-                .byte 34, 4, 1, 4, $ff, 0
+                .byte 34, 4, 1, 5, $ff, 0
 
 mf_ask_new_disk_name_cst:
                 ; num, len, val, #title_text, #string_loc
@@ -86,7 +88,9 @@ mf_ask_new_disk_cust_sector_size:
 
                 .byte PopupItemType::space
                 .byte PopupItemType::space
+                .byte PopupItemType::space
                 .byte PopupItemType::text, 1, <mf_press_n_msg, >mf_press_n_msg
+                .byte PopupItemType::space
                 .byte PopupItemType::finish
 
 mfs_size_cst    = * - mf_ask_new_disk_cst_info
