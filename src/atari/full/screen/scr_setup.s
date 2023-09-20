@@ -115,9 +115,9 @@ m_l1:   .repeat SCR_HEIGHT
 
         SCREENCODE_INVERT_CHARMAP
 mhlp1:  SPACES_LINE
-; mhlp2:  SPACES_LINE
         NORMAL_CHARMAP
 
+; following 200 bytes are curvature lines on the screen.
 gbk:
     .repeat 40
         .byte $ff
