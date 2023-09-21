@@ -1,4 +1,5 @@
         .export     _mx_do_boot
+        .export     show_box
 
         .import     _fn_io_set_boot_config
         .import     _fn_io_set_boot_mode

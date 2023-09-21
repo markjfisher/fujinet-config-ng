@@ -3,6 +3,7 @@
         .import     _clr_scr_all
         .import     booting_mode
         .import     md_is_devices_data_fetched
+        .import     mf_copying
         .import     mh_is_hosts_data_fetched
         .import     mod_current
         .import     mw_is_ac_data_fetched
@@ -26,6 +27,7 @@
         sta     mw_is_ac_data_fetched
         sta     mw_selected
         sta     booting_mode
+        sta     mf_copying
 
         jsr     _clr_scr_all
         jmp     start

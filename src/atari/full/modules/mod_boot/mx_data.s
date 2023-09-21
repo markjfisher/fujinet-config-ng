@@ -3,6 +3,7 @@
         .export     boot_anim_1_2
         .export     boot_anim_1_3
         .export     boot_anim_2_1
+        .export     mf_copy_info
         .export     mx_ask_lobby_info
         .export     mx_ask_lobby_option
         .export     mx_ask_pu_msg
@@ -24,6 +25,8 @@ boot_anim_1_3:  .byte $1A, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12
 
 ; Booting!
 boot_anim_2_1:  .byte $7C, $99, $A0, $A0, $C2, $EF, $EF, $F4, $E9, $EE, $E7, $A1, $A0, $A0, $19, $7C, 0
+; Copying!
+mf_copy_info:   .byte $7C, $99, $A0, $A0, $C3, $EF, $F0, $F9, $E9, $EE, $E7, $A1, $A0, $A0, $19, $7C, 0
 
                 NORMAL_CHARMAP
 mx_ask_msg:

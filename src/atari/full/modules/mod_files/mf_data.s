@@ -1,3 +1,4 @@
+        .export     mf_copying
         .export     mf_dir_or_file
         .export     mf_dir_pos
         .export     mf_selected
@@ -18,6 +19,9 @@
         .include    "fc_macros.inc"
         .include    "popup.inc"
 
+.data
+mf_copying:     .byte 0
+
 .bss
 
 ; the current directory position value while browsing of first entry on screen
@@ -28,6 +32,7 @@ mf_selected:    .res 1
 
 mf_dir_or_file: .res DIR_PG_CNT
 
+mf_copy_from:   .res 2
 
 .rodata
 

@@ -10,6 +10,11 @@
         .import     mf_selected
         .import     mf_new_disk
         .import     mf_cst_disk
+        .import     mf_copy_end
+        .import     mf_copy_err
+        .import     mf_copy_start
+        .import     mf_copying
+        .import     mf_dir_or_file
         .import     mfs_entries_cnt
         .import     mfs_is_eod
         .import     mfs_kbh_select_current
@@ -197,7 +202,7 @@ not_parent:
         cmp     #FNK_FILTER
         bne     not_filter
 
-:       ldx     #5
+        ldx     #5
         ldy     #1
         jsr     get_scrloc           ; sets ptr4 to given screen location
 
@@ -233,7 +238,35 @@ not_new_disk:
         cmp     #FNK_COPY
         bne     not_copy
 
-        ; TODO:
+        ; if mf_copying is false, then need to take current selection as source, but only if it's a file
+        ; if it's true, start the copy into the current path 
+
+        lda     mf_copying
+        bne     @perform_copy
+
+        ; not in copying mode, so this initiates the copy. check it's a file, not a dir
+        ldx     mf_selected
+        lda     mf_dir_or_file, x              ; 0 is a file, 1 is a dir
+        bne     @copy_err_is_dir
+
+        ; the selection is a file, initiate the copy
+        jsr     mf_copy_start
+
+        ; and just reloop waiting for the user to pick a destination
+        ldx     #KBH::APP_1
+        rts
+
+@perform_copy:
+        ; 2nd half of the copy
+        jsr     mf_copy_end
+
+        ldx     #KBH::APP_1
+        rts
+
+@copy_err_is_dir:
+        jsr     mf_copy_err
+        ldx     #KBH::APP_1
+        rts
 
 not_copy:
 ; -------------------------------------------------

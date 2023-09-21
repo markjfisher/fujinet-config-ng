@@ -70,12 +70,21 @@ finish_list:
 .endproc
 
 .proc clear_status_2
+        ; ONLY CLEAR 8 FROM EACH END
         mwa     #sline2, ptr1
-        ldy     #SCR_WIDTH-1
+        ldy     #8
         lda     #FNC_FULL
 :       sta     (ptr1), y
         dey
         bpl     :-
+
+        adw1    ptr1, #SCR_WIDTH-9
+        ldy     #8
+        lda     #FNC_FULL
+:       sta     (ptr1), y
+        dey
+        bpl     :-
+
         rts
 .endproc
 

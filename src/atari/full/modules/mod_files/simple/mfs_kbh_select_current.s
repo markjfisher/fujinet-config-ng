@@ -1,3 +1,4 @@
+        .export     combine_path_with_selection
         .export     mfs_kbh_select_current
 
         .import     _fc_strlcpy
@@ -78,7 +79,6 @@ is_file:
         rts
 
 too_long_error:
-        jsr     _scr_clr_highlight
         jsr     mf_error_too_long
         ldx     #KBH::APP_1
         rts
@@ -101,7 +101,7 @@ too_long_error:
         jsr     _fc_strlen
         sta     tmp2                    ; length of new directory/file chosen
 
-        pushax  #fn_dir_path
+        setax   #fn_dir_path
         jsr     _fc_strlen             ; returns length of src (i.e. path)
         sta     tmp1
 

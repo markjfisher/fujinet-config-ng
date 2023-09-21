@@ -17,6 +17,8 @@
         .import     fn_dir_path
         .import     fn_io_buffer
         .import     get_to_current_hostslot
+        .import     mf_copying
+        .import     mf_copying_msg
         .import     mf_dir_pos
         .import     mf_filter
         .import     mf_h1
@@ -42,7 +44,11 @@
         put_status #0, #mf_s1
         put_help   #0, #mf_h1
 
-        mva     #$00, mfs_is_eod
+        lda     mf_copying
+        beq     :+
+        put_status #1, #mf_copying_msg          ; need to UNDO this text when we are no longer copying
+
+:       mva     #$00, mfs_is_eod
         jsr     _scr_clr_highlight
         jsr     print_dir_info
         jsr     copy_path_filter_to_buffer

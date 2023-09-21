@@ -2,7 +2,7 @@
         .export md_s1, md_s2, md_h1
         .export mw_s1, mw_s2, mw_h1, mw_h2, mw_help_setup, mw_help_password, mw_custom_msg, mw_help_custom
         .export mx_s1, mx_s2, mx_h1, mx_m1, mx_m2
-        .export mf_s1, mf_h1, mf_prev, mf_next
+        .export mf_s1, mf_h1, mf_prev, mf_next, mf_copying_msg
         .export mf_host, mf_filter, mf_path
 
         .export     mw_bssid
@@ -177,6 +177,10 @@ mx_m2:          .byte "Version: 0.9.1", 0
 mf_s1:
                 INVERT_ATASCII
                 .byte "DISK IMAGES", 0
+
+mf_copying_msg:
+                INVERT_ATASCII
+                .byte "COPYING! PICK DIR", 0
 
 mf_h1:
                 NORMAL_CHARMAP
