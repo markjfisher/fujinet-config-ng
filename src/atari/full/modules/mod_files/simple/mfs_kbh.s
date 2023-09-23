@@ -1,5 +1,6 @@
         .export mfs_kbh
 
+        .import     _clr_status
         .import     _edit_line
         .import     _fc_strlen
         .import     debug
@@ -269,6 +270,18 @@ not_new_disk:
         rts
 
 not_copy:
+
+; --------------------------------------------------------------------------
+; X - Stop copy mode
+        cmp     #FNK_EXITCOPY
+        bne     not_exit_copy
+
+        mva     #$00, mf_copying
+        jsr     _clr_status
+        ldx     #KBH::APP_1
+        rts
+
+not_exit_copy:
 ; -------------------------------------------------
 ; NOT HANDLED
         ldx     #KBH::NOT_HANDLED    ; flag main kb handler it should handle this code, still in A

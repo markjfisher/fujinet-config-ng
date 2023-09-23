@@ -42,6 +42,7 @@
         .include    "fc_macros.inc"
         .include    "fc_mods.inc"
         .include    "fn_data.inc"
+        .include    "fn_disk.inc"
         .include    "fn_io.inc"
         .include    "popup.inc"
 
@@ -188,8 +189,6 @@ nd_cst_kbh:
 @not_enter:
         ; defaults to unhandled, a still contains the ascii keypress, so just return
         rts
-
-
 
 
 

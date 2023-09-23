@@ -1,5 +1,6 @@
         .export     mf_copy_err
 
+        .import     _scr_clr_highlight
         .import     _show_error
         .import     mod_current
         .import     pusha
@@ -8,15 +9,11 @@
         .include    "fc_mods.inc"
 
 .proc mf_copy_err
+        jsr     _scr_clr_highlight
         pusha   #24
         pusha   #1
         setax   #opendir_err_msg
-        jsr     _show_error
-
-        ; set next module as hosts
-        mva     #Mod::hosts, mod_current
-        rts
-
+        jmp     _show_error
 .endproc
 
 .segment "SCR_DATA"

@@ -53,23 +53,44 @@
     sectorSize  .res 2
     hostSlot    .res 1
     deviceSlot  .res 1
-    filename    .res $100    ; same size as fn_dir_path
+    filename    .res $100
 .endstruct
-
-; these are word offsets, save ourselves a LSR and pre-double them
-.enum DiskSize
-    size90      = 0
-    size130     = 2
-    size180     = 4
-    size360     = 6
-    size720     = 8
-    size1440    = 10
-    sizeCustom  = 12
-.endenum
 
 .enum WifiStatus
     no_ssid_available   = 1
     connected           = 3
     connect_failed      = 4
     connection_lost     = 5
+.endenum
+
+.struct AppKeyOpen
+    creator     .res 2
+    app         .res 1
+    key         .res 1
+    mode        .res 1
+    reserved    .res 1
+.endstruct
+
+.struct AppKeyRead
+    length      .res 2
+    values      .res 64
+.endstruct
+
+.struct AppKeyWrite
+    value       .res 64
+.endstruct
+
+.struct AppKeyDataBlock
+    data        .res 66     ; this is the size of the largest of Open/Read/Write
+.endstruct
+
+.struct FNStatus
+    value       .res 4
+.endstruct
+
+.enum HashType
+    MD5
+    SHA1
+    SHA256
+    SHA512
 .endenum

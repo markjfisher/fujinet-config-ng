@@ -17,6 +17,7 @@
         .include    "fc_macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
+        .include    "fn_disk.inc"
 
 ; THIS CODE IS NOT TESTED FULLY IN THIS FORM - IT WAS IN FN_IO LIB, NOW LIVES AS CLIENT FUNCTION
 

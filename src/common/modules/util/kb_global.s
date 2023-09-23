@@ -2,10 +2,12 @@
         .export     kb_current_line
         .export     kb_max_entries
 
+        .import     _clr_status
         .import     _kb_get_c_ucase
         .import     _kb_is_option
         .import     _scr_highlight_line
         .import     booting_mode
+        .import     mf_copying
         .import     mod_current
         .import     mx_ask_lobby
         .import     mx_ask_lobby_info
@@ -173,11 +175,12 @@ lobby_exit:
 
 not_lobby:
 ; -------------------------------------------------
-; X - debug stuff
-        cmp     #'X'
+; X - Exit Copying Mode
+        cmp     #FNK_EXITCOPY
         bne     not_x
 
-        jsr     _mx_error_booting
+        mva     #$00, mf_copying
+        jsr     _clr_status
         ldx     #KBH::EXIT
         rts
 
