@@ -17,11 +17,11 @@
         .import     put_s_p1p4
         .import     return1
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 ;ptr1,ptr4
 .proc mw_choose_custom

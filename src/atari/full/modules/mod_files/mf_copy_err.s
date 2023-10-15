@@ -5,8 +5,8 @@
         .import     mod_current
         .import     pusha
 
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
 
 .proc mf_copy_err
         jsr     _scr_clr_highlight

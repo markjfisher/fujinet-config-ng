@@ -16,7 +16,7 @@
 
 
         .include    "fn_data.inc"
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
         .include    "popup.inc"
 
 .data

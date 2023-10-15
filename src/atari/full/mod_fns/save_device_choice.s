@@ -10,8 +10,8 @@
         .import     popa
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 

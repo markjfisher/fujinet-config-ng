@@ -6,8 +6,8 @@
         .import     md_h1, md_s1, md_s2
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
 
 .proc _md_init_screen

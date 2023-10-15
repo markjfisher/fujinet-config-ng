@@ -6,8 +6,8 @@
         .import     return0
 
         .include    "atari.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_zp.inc"
+        .include    "macros.inc"
+        .include    "zp.inc"
 
 .proc _bar_setup
         lda     #$44

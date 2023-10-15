@@ -5,9 +5,9 @@
         .import     pusha
         .import     pushax
 
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
-        .include    "fc_zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
+        .include    "zp.inc"
 
 .proc _mi_handle_input
         ; handle keyboard

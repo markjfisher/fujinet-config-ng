@@ -19,9 +19,9 @@
         .import     pusha
         .import     sline2
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
         .include    "fn_data.inc"
 
 ; ptr1,ptr2,ptr4

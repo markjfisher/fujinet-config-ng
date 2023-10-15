@@ -14,13 +14,15 @@
         .import     mx_ask_lobby_option
         .import     popa
         .import     popax
-
-        .import     debug
         .import     _mx_error_booting
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .import     debug
+        .import     _pause
+        .import     _clr_scr_all
+
+        .include    "zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 
@@ -185,6 +187,16 @@ not_lobby:
         rts
 
 not_x:
+
+        cmp     #'Z'
+        bne     not_z
+
+        jsr     _clr_scr_all
+        lda     #$02
+        jsr     _pause
+        jsr     debug
+
+not_z:
 
 cont_kb:
         ; and reloop if we didn't leave this routine through a kb option

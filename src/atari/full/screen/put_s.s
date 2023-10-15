@@ -4,8 +4,8 @@
         .import     get_scrloc
         .import     popa
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
 
 ; void put_s(uint8_t X, uint8_t Y, char *s)

@@ -6,7 +6,7 @@ Feature: Stdlib library tests
     Given atari application test setup
       And I add common/stdlib src file "fc_strncpy.s"
       And I add file for compiling "features/common/stdlib/test_fc_strncpy.s"
-      And I create and load application
+      And I create and load atari application
 
      And I fill memory from t_src to t_src+127 with $ff
      And I write string "<ascii_string>" as ascii to memory address t_src

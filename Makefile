@@ -6,7 +6,6 @@
 # - altirra instead of atari800 for emulation, needs some work on the lbl file name.
 # - cfg/*.cfg file instead of finding one in the src dir
 # - final files go into build/ directory instead of polluting root folder (e.g. lbl, com file etc)
-# - contains the fn_io.lib build here too, should be moved out
 
 ###############################################################################
 ### In order to override defaults - values can be assigned to the variables ###
@@ -239,7 +238,6 @@ define NEWLINE
 endef
 # Note: Do not remove any of the two empty lines above !
 
-#rwildcard=$(wildcard $(1)$(2))$(foreach d,$(wildcard $1*),$(info $$d: $(d), $$2: $(2)) $(call rwildcard,$d/,$2))
 rwildcard=$(wildcard $(1)$(2))$(foreach d,$(wildcard $1*), $(call rwildcard,$d/,$2))
 
 TARGETLIST := $(subst $(COMMA),$(SPACE),$(TARGETS))

@@ -22,9 +22,9 @@
         .import     sds_pu_mode_val
         .import     select_device_slot
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
         .include    "popup.inc"

@@ -1,8 +1,8 @@
         .export     setup_fonts, fn_font_data
 
-        .include    "fc_zp.inc"
+        .include    "zp.inc"
         .include    "atari.inc"
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 NUM_CHANGES     := 21           ; can do 28 before we have to loop differently
 

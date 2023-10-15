@@ -11,8 +11,8 @@
         .import     mw_setting_up
         .import     pusha
 
-        .include    "fc_macros.inc"
-        .include    "fc_zp.inc"
+        .include    "macros.inc"
+        .include    "zp.inc"
 
 .proc _mw_init_screen
         jsr     _clr_help

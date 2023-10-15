@@ -5,8 +5,8 @@
         .import     _mx_init_screen
         .import     mod_current
 
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
 
 .proc _mod_boot
         jsr     _mx_init_screen

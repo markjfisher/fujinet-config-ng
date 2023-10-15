@@ -13,10 +13,10 @@
         .import     mw_version
         .import     pusha
 
-        .include    "fc_zp.inc"
+        .include    "zp.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 ; void mw_display_wifi()
 ;

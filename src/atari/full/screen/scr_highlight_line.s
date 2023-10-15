@@ -6,8 +6,8 @@
         .import     mod_current
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 ; void _scr_highlight_line()
 .proc _scr_highlight_line

@@ -3,7 +3,7 @@
         .import     _mod_init, _mod_hosts, _mod_devices, _mod_wifi, _mod_info, _mod_boot
         .import     _mod_files, mod_sel_host_slot, mod_select_device_slot
 
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 ; executes code for the current module
 .proc run_module

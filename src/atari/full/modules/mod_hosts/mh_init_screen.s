@@ -6,8 +6,8 @@
         .import     mh_h1, mh_s1, mh_s2
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
 
 .proc _mh_init_screen

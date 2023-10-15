@@ -1,8 +1,8 @@
         .export     _pause
 
         .include    "atari.inc"
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 ; void _pause(uint8_t jiffies)
 ;

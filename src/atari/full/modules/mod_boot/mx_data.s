@@ -8,8 +8,8 @@
         .export     mx_ask_lobby_option
         .export     mx_ask_pu_msg
 
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
         .include    "popup.inc"
 
 .bss

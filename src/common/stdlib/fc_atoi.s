@@ -2,8 +2,8 @@
 
         .import     mulax10
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 ; uint16_t fc_atoi(char *s)
 ;

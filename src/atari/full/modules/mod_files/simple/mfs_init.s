@@ -16,8 +16,8 @@
         .import     mh_host_selected
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 .proc mfs_init
         jsr     _fn_io_close_directory

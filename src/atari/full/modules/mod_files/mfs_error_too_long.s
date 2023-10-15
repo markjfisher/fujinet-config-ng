@@ -5,7 +5,7 @@
         .import     mod_current
         .import     pusha
 
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 .proc mf_error_too_long
         jsr     _scr_clr_highlight

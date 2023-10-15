@@ -10,9 +10,9 @@
         .import     mfs_new_page
         .import     mfs_show_page
 
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 ; same as original implementation, reads dirs 1 by 1
 .proc mfs_main

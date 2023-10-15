@@ -16,7 +16,7 @@
         .export     mw_nets_msg
         .export     mw_nets_msg2
 
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 ; Data for screen display, help texts etc
 

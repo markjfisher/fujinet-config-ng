@@ -1,6 +1,6 @@
         .export     _fc_strlen
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 ; uint8_t fc_strlen(char *p)
 ;

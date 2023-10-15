@@ -7,8 +7,8 @@
         .import     fn_io_buffer
         .import     pushax
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 ; tmp4,tmp9
 ; ptr3,ptr4

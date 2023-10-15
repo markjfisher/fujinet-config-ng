@@ -9,11 +9,11 @@
         .import     pusha
         .import     pushax
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 .proc _mh_handle_input
         mva     mh_host_selected, kb_current_line

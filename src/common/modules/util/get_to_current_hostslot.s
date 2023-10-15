@@ -3,8 +3,8 @@
         .import     fn_io_hostslots
         .import     mh_host_selected
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
 
 .proc get_to_current_hostslot

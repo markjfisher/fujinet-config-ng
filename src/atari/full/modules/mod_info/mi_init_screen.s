@@ -14,8 +14,8 @@
         .import     mx_s2
         .import     pusha
 
-        .include    "fc_macros.inc"
-        .include    "fc_zp.inc"
+        .include    "macros.inc"
+        .include    "zp.inc"
 
 .proc _mi_init_screen
         jsr     _scr_clr_highlight

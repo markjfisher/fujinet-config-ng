@@ -12,8 +12,8 @@
         .import     debug
         .import     _pause
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
 
 ; bool edit_line(char* str, void *scr_loc, uint8_t max_len)

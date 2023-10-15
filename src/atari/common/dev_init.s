@@ -3,9 +3,9 @@
         .import   fn_font_data
 
         .include  "atari.inc"
-        .include  "fc_zp.inc"
-        .include  "fc_macros.inc"
-        .include  "fc_mods.inc"
+        .include  "zp.inc"
+        .include  "macros.inc"
+        .include  "modules.inc"
 
 ; void _dev_init()
 ;

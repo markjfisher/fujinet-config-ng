@@ -5,7 +5,7 @@ Feature: sbc tests
   Scenario Outline: sbc via temporary storage in ZP gives correct result for r = b-a
     Given atari simple test setup
       And I add file for compiling "features/general/sbc_tests.s"
-      And I create and load simple application
+      And I create and load simple atari application
 
      And I write memory at t_b with <b>
      And I set register A to <a>
@@ -22,7 +22,7 @@ Feature: sbc tests
   Scenario Outline: sbc via temporary storage in MEM gives correct result for r = b-a
     Given atari simple test setup
       And I add file for compiling "features/general/sbc_tests.s"
-      And I create and load simple application
+      And I create and load simple atari application
 
      And I write memory at t_b with <b>
      And I set register A to <a>
@@ -39,7 +39,7 @@ Feature: sbc tests
   Scenario Outline: sbc via eor/adc gives correct result for r = b-a
     Given atari simple test setup
       And I add file for compiling "features/general/sbc_tests.s"
-      And I create and load simple application
+      And I create and load simple atari application
 
      And I write memory at t_b with <b>
      And I set register A to <a>

@@ -1,3 +1,3 @@
 
-rootProject.name = "bdd-testing"
+rootProject.name = "config-ng-testing"
 

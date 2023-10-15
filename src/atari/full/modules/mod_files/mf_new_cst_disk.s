@@ -38,9 +38,9 @@
         .import     select_device_slot
         .import     ss_widget_idx
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
         .include    "fn_data.inc"
         .include    "fn_disk.inc"
         .include    "fn_io.inc"

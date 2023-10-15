@@ -9,7 +9,7 @@ Feature: IO library test - fn_io_create_new
       And I add atari src file "fn_io_create_new.s"
       And I add file for compiling "features/atari/test-apps/test_fn_io_create_new.s"
       And I add file for compiling "features/atari/stubs/bus-simple.s"
-      And I create and load application
+      And I create and load atari application
       And I write memory at $80 with $ff
       And I write memory at t_host_slot with <host_slot>
       And I write memory at t_device_slot with <device_slot>

@@ -1,7 +1,7 @@
         .export     detect_banks, _bank_table, _bank_count
-        .include    "fc_zp.inc"
+        .include    "zp.inc"
         .include    "atari.inc"
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 .segment "INIT"
 

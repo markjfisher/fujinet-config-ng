@@ -26,10 +26,10 @@
         .import     pushax
         .import     set_next_selectable_widget
 
-        .include    "fc_zp.inc"
+        .include    "zp.inc"
         .include    "atari.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 

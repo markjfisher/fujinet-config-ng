@@ -1,7 +1,7 @@
         .export     _fc_strlcpy
         .import     popax, popa
-        .include    "fc_macros.inc"
-        .include    "fc_zp.inc"
+        .include    "macros.inc"
+        .include    "zp.inc"
 
 ; uint8_t fc_strlcpy(char *dst, char *src, uint8_t size)
 ; This is a cutdown version of strlcpy for use on strings up to 256 characters.

@@ -9,8 +9,8 @@
         .import     mh_host_selected
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 .proc get_to_dir_pos
         ; open dir for current path, grab the full name of this selected path, and append it to current path string.

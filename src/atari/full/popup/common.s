@@ -22,8 +22,8 @@
         .import     ss_width
         .import     ss_y_offset
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 

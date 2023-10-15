@@ -4,8 +4,8 @@
     .import     initlib
     .import     zerobss
 
-    .include    "fc_zp.inc"
-    .include    "fc_macros.inc"
+    .include    "zp.inc"
+    .include    "macros.inc"
 
 .proc start
     ; mini crt0, setup real stack and software stack

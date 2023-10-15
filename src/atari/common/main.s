@@ -3,7 +3,7 @@
         .import         mod_current
         .import         run_module
 
-        .include        "fc_mods.inc"
+        .include        "modules.inc"
 
 .proc _main
 :       jsr     run_module

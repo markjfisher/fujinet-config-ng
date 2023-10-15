@@ -9,10 +9,10 @@
         .import     return0
         .import     return1
 
-        .include    "fc_zp.inc"
+        .include    "zp.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 ; int mw_get_wifi_data()
 ;

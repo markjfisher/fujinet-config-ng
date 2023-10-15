@@ -31,8 +31,8 @@
         .import     pushax
         .import     return1
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 ; ptr1

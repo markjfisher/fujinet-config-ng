@@ -1,7 +1,7 @@
         .export         _main, t_src, t_dst, t_max
 
         .import         _ellipsize, pusha, pushax
-        .include        "fc_macros.inc"
+        .include        "macros.inc"
 
 .proc _main
         pusha   t_max

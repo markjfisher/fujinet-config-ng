@@ -10,9 +10,9 @@
         .import     mw_selected
         .import     start
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
         .include    "atari.inc"
 
 ; needs to be in writable RAM to capture the DOSINI original vector

@@ -10,9 +10,9 @@
         .import     get_to_current_hostslot
         .import     put_s_p1p4
 
-        .include    "fc_zp.inc"
+        .include    "zp.inc"
         .include    "atari.inc"
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
 

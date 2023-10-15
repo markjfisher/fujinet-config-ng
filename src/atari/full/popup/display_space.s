@@ -3,8 +3,8 @@
         .import     block_line
         .import     return0
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
 
 ; just put a blank line. keyboard movement will skip over it

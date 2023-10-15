@@ -14,10 +14,10 @@
 
         .import     debug
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 ; void _mod_init()
 ;

@@ -19,9 +19,9 @@
         .import     show_box
         .import     debug
 
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
-        .include    "fc_zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
+        .include    "zp.inc"
 
 .proc mf_copy_end
         ; whatever directory we're in is the target.

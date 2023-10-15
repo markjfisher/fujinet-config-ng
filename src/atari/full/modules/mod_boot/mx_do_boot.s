@@ -16,9 +16,9 @@
         .import     return1
 
         .include    "atari.inc"
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
-        .include    "fc_zp.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
+        .include    "zp.inc"
         .include    "fn_io.inc"
 
 .proc _mx_do_boot

@@ -23,8 +23,8 @@
         .import     ss_widget_idx
         .import     type_at_x
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 

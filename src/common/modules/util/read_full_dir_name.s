@@ -5,8 +5,8 @@
         .import     _malloc
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 
 ; char *read_full_dir_name()

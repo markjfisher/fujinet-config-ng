@@ -7,9 +7,9 @@
         .import     pu_err_title
         .import     pushax
 
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
         .include    "popup.inc"
 
 ; void show_error(uint8_t width, uint8_t num_lines, char *msgs)

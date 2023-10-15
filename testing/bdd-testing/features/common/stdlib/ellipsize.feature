@@ -8,7 +8,7 @@ Feature: Ellipsize tests
       And I add common/stdlib src file "fc_strncpy.s"
       And I add common/stdlib src file "fn_strlen.s"
       And I add file for compiling "features/common/stdlib/test_ellipsize.s"
-      And I create and load application
+      And I create and load atari application
 
      And I fill memory from t_src to t_src+127 with $ff
      And I write string "<input>" as ascii to memory address t_src

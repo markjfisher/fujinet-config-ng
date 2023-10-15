@@ -2,8 +2,8 @@
 
         .import     sl_list_num
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
 
 .proc mod_hosts_show_list_num

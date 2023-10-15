@@ -12,11 +12,11 @@
         .import     pusha
         .import     pushax
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 .proc _md_handle_input
         mva     md_device_selected, kb_current_line

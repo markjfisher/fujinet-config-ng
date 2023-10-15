@@ -16,6 +16,7 @@ Given atari application test setup
     # These must come after the "start compiling"
     And I add compiler option "--asm-include-dir ../../src/common/inc"
     And I add compiler option "--asm-include-dir ../../src/atari/common/inc"
+    And I add compiler option "--asm-include-dir ../../src/atari/full/inc"
     And I add compiler option "--asm-include-dir ../../src/libs/inc"
 
 # Simple test that does no init, sets up minimal xex for loading and testing
@@ -26,6 +27,7 @@ Given atari simple test setup
     # These must come after the "start compiling"
     And I add compiler option "--asm-include-dir ../../src/common/inc"
     And I add compiler option "--asm-include-dir ../../src/atari/common/inc"
+    And I add compiler option "--asm-include-dir ../../src/atari/full/inc"
     And I add compiler option "--asm-include-dir ../../src/libs/inc"
 
 Given I add * src file "*"

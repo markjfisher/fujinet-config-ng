@@ -2,11 +2,11 @@
         .import     s_empty, get_scrloc, ascii_to_code
         .import     popa, pushax, popax
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_io.inc"
         .include    "fn_data.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 ; void show_list(void *index_print_cb, uint8_t max_count, uint8_t dataSize, char *str)
 ;
@@ -22,7 +22,7 @@
 
         ldy     #SL_Y
         ldx     #$00
-        jsr     get_scrloc   ; ptr4 has screen location of (0, SL_Y)
+        jsr     get_scrloc      ; ptr4 has screen location of (0, SL_Y)
 
         lda     sl_index        ; set A to current index for the callback
 all_list:

@@ -11,7 +11,7 @@ Feature: Module mod_init test
     #   And I add common/modules src file "mod_boot.s"
     #   And I add common/modules src file "mod_init.s"
     #   And I add file for compiling "features/common/modules/test_mod_init.s"
-    #   And I create and load application
+    #   And I create and load atari application
     #   And I write memory at t_wifi_enabled with <wifi_enabled>
     #   And I write memory at t_wifi_status with <wifi_status>
     #   And I write memory at t_ssid_fetched with <ssid_fetched>

@@ -4,8 +4,8 @@
         .import     mod_current
         .import     pusha
 
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
 
 .proc mfs_error_opening_page
         pusha   #26

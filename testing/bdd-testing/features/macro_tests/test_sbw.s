@@ -1,5 +1,5 @@
 ; test sbw macro
-    .include    "fc_macros.inc"
+    .include    "macros.inc"
 
     .export test_sbw_word_immw
     .export test_sbw_word_word

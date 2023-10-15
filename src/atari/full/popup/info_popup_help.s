@@ -4,8 +4,8 @@
         .import     _put_help
         .import     pusha
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 .proc info_popup_help
         put_help #0, #pu_err_h1

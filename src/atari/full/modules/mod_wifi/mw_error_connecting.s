@@ -3,7 +3,7 @@
         .import     _show_error
         .import     pusha
 
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 .proc mw_error_connecting
         pusha   #21

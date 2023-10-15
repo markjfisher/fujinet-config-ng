@@ -14,8 +14,8 @@
         .import    ss_other_ud_idx
         .import    copy_entry
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 

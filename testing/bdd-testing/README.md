@@ -30,6 +30,7 @@ cd bdd
 git clone https://github.com/martinpiper/ACEServer.git
 git clone https://github.com/martinpiper/BDD6502.git
 git clone https://github.com/martinpiper/CukesPlus.git
+git clone https://github.com/markjfisher/fujinet-bdd.git
 
 cd ACEServer
 mvn install
@@ -39,6 +40,9 @@ mvn install
 
 cd ../BDD6502
 mvn install -DskipTests
+
+cd ../fujinet-bdd.git
+./gradlew publishToMavenLocal
 ```
 
 You will now have the required libraries installed locally to be able to run this project.
@@ -49,12 +53,6 @@ Open a terminal, and cd into the bdd-testing directory, and run following:
 
 ```shell
 ./gradlew runFeatures
-```
-
-You can also enable 6502 tracing in the output (i.e. full dump of everything the 6502 is doing) by running:
-
-```shell
-./gradlew runFeaturesWithTrace
 ```
 
 Windows users should be able to run `.\gradlew.bat` instead of `./gradlew` in the above.
@@ -101,53 +99,5 @@ that will test the code.
 
 ### Macros
 
-TODO: update docs
-
 You can additionally create "macros" which are combinations of other steps, and place these in the [macros](macros) folder.
-For example:
-
-```feature
-  Scenario: Simple machine state test
-    Given basic setup test "simple"
-```
-
-This `Given` line invokes the macro in `MADS.macro`:
-```feature
-Given basic setup test "*"
-  Given I have a simple overclocked 6502 system
-  And I create directory "build/tests"
-```
-
-Similarly, the following feature line:
-
-```
-    And perform mads compile of test.a
-```
-
-invokes the following macro in `MADS.macro`:
-```
-Given perform mads compile of test.a
-  When I run the command line: mads -s -o:build/tests/test.xex -t:build/tests/test.lbl build/tests/test.a
-  When I load xex "build/tests/test.xex"
-  When I convert mads-labels file "build/tests/test.lbl" to acme labels file "build/tests/test.al"
-  When I load labels "build/tests/test.al"
-```
-
-which allows for creating common patterns and making the original feature easier to read and understand.
-
-## Example feature
-
-There is a test feature here: [features/MachineState.feature](features/MachineState.feature) which you can use to
-understand the basics of features.
-
-Typically there's some setup of creating a 6502 instance, compiling some code, then allowing the 6502 emulator to
-run it, and test the state.
-
-A lot more examples can be found at https://github.com/martinpiper/BDD6502/tree/master/features
-
-Note the original project is geared towards ACME assembler and C64 dev, so some things will not immediately work here.
-
-## Future plans
-
-- Integration with Altirra if possible for step debugging on fully emulated Atari, not just 6502, with screen handling.
-- Loading Atari ROM files into emulator?
+These massively simplify common setup in features.

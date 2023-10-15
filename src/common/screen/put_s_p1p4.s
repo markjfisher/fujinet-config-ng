@@ -3,7 +3,7 @@
 
         .import     ascii_to_code
 
-        .include    "fc_zp.inc"
+        .include    "zp.inc"
 
 ; Internal simple print to screen function using ptr1/4
 ;

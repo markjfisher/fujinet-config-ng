@@ -11,7 +11,7 @@
         .import     pusha
         .import     pushax
 
-        .include    "fc_macros.inc"
+        .include    "macros.inc"
 
 .proc mx_ask_lobby
         jsr     _scr_clr_highlight

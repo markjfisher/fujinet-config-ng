@@ -15,8 +15,8 @@
         .import     mw_setup_wifi
         .import     pusha
 
-        .include    "fc_macros.inc"
-        .include    "fc_mods.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
 
 .proc mw_do_setup
         jsr     _clr_help

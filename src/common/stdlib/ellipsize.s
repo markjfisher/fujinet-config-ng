@@ -4,8 +4,8 @@
         .import     _fc_strlcpy
         .import     popa, popax, pushax
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
 
 ; void ellipsize(uint8_t max, char *dst, char *src)
 ;

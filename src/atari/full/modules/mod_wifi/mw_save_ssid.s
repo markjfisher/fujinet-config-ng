@@ -14,11 +14,11 @@
         .import     return0
         .import     return1
 
-        .include    "fc_zp.inc"
-        .include    "fc_macros.inc"
+        .include    "zp.inc"
+        .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "fn_io.inc"
-        .include    "fc_mods.inc"
+        .include    "modules.inc"
 
 .proc mw_save_ssid
         setax   #fn_io_netconfig
