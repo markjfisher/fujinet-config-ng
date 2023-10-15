@@ -155,9 +155,9 @@ void fn_io_unmount_disk_image(uint8_t ds);
 void fn_io_unmount_host_slot(uint8_t hs);
 
 // app key
-void fn_io_appkey_open(AppKeyOpen *buffer);
-void fn_io_appkey_read(AppKeyRead *buffer);
-void fn_io_appkey_write(uint16_t count, AppKeyWrite *buffer);
+uint8_t fn_io_appkey_open(AppKeyOpen *buffer);
+uint8_t fn_io_appkey_read(AppKeyRead *buffer);
+uint8_t fn_io_appkey_write(uint16_t count, AppKeyWrite *buffer);
 
 // Base64
 uint8_t fn_io_base64_decode_compute();

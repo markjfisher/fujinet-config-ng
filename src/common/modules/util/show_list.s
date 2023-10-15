@@ -17,7 +17,6 @@
         popa    sl_max_cnt      ; maximum number to display in list
         popax   sl_callback     ; routine to call that takes list number in A and prints up to 5 chars for index value (allowing customisation). It expects ptr4 to point to start of printing area
 
-
         mva     #$00, sl_index
 
         ldy     #SL_Y
