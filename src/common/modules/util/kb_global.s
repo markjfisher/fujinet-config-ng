@@ -188,15 +188,15 @@ not_lobby:
 
 not_x:
 
-        cmp     #'Z'
-        bne     not_z
+;         cmp     #'Z'
+;         bne     not_z
 
-        jsr     _clr_scr_all
-        lda     #$02
-        jsr     _pause
-        jsr     debug
+;         jsr     _clr_scr_all
+;         lda     #$02
+;         jsr     _pause
+;         jsr     debug
 
-not_z:
+; not_z:
 
 cont_kb:
         ; and reloop if we didn't leave this routine through a kb option
