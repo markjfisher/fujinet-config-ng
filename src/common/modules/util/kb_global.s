@@ -188,6 +188,15 @@ not_lobby:
 
 not_x:
 
+; -------------------------------------------------
+; Q - Quit application
+        cmp     #FNK_QUIT
+        bne     not_q
+
+        mva     #Mod::exit, mod_current
+        rts
+
+not_q:
 ;         cmp     #'Z'
 ;         bne     not_z
 

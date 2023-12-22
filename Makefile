@@ -191,10 +191,14 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
   $(LBL_SYM) \
+  $(XS)/debugcmd: ".tracecio on" \
   $(XS)/debugcmd: "bp debug" \
 
+
+  # $(XS)/debugcmd: "bp start" \
+  # $(XS)/debugcmd: "bp _main" \
+  # $(XS)/debugcmd: "bp \$$0943" \
   # $(XS)/debugcmd: "bp pre_init" \
-  # $(XS)/debugcmd: "bp start"
 
 atari_EMUCMD := $(ALTIRRA)
 
@@ -317,6 +321,8 @@ ASFLAGS += --asm-include-dir src/$(CC65TARGET)/$(SUBTARGET)/inc
 CFLAGS += --include-dir src/$(CC65TARGET)/$(SUBTARGET)/inc
 endif
 
+LDFLAGS += -Wl -D__RESERVED_MEMORY__=0x1
+
 .SUFFIXES:
 .PHONY: all test clean
 
@@ -394,10 +400,13 @@ test: $(PROGRAM)
 	$(EMUCMD) $(BUILD_DIR)\\$< \
 	$(POSTEMUCMD)
 
+
 test-atr: $(PROGRAM) dist
 	$(PREEMUCMD) \
-	$(EMUCMD) autorun.atr \
+  $(EMUCMD) //disk "C:\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr" //disk autorun.atr \
 	$(POSTEMUCMD)
+
+#	$(EMUCMD) autorun.atr \
 
 clean:
 	$(call RMFILES,$(OBJECTS))

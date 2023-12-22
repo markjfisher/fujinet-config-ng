@@ -82,6 +82,7 @@ FNK_FILTER  = $46           ; "F" Filter
 FNK_LOBBY   = $4C           ; "L" Lobby
 FNK_NEWDISK = $4E           ; "N" New Disk (Files)
 FNK_EXITCOPY= $58           ; "X" eXit Copy mode
+FNK_QUIT    = $51           ; "Q" Quit application
 
 ; CHARACTER SCREEN CODES FOR HIGHLIGHTING/POPUP BOX etc
 FNC_TLW     = $4A           ; Top Left WIDE
