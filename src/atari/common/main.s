@@ -32,6 +32,11 @@
         mva     #$22, DMACTL
         mva     #$00, NOCLIK
 
+        ; Alternative library way of doing this, but adds about 1k to app:
+        ; lda #$00
+        ; jsr __graphics
+        ; jsr _close
+
         ; RESET THE SCREEN by closing and opening E: on IOCB#0
         ldx     #$00
         mva     #$0C,       {ICCOM, x}

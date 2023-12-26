@@ -2,6 +2,7 @@
         .export     kb_current_line
         .export     kb_max_entries
 
+        .import     _clr_scr_all
         .import     _clr_status
         .import     _kb_get_c_ucase
         .import     _kb_is_option
@@ -10,21 +11,16 @@
         .import     mf_copying
         .import     mod_current
         .import     mx_ask_lobby
-        .import     mx_ask_lobby_info
-        .import     mx_ask_lobby_option
         .import     popa
         .import     popax
-        .import     _mx_error_booting
 
         .import     debug
         .import     _pause
-        .import     _clr_scr_all
 
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "modules.inc"
         .include    "fn_data.inc"
-        .include    "popup.inc"
 
 ; void kb_global(uint8_t kb_max_entries, uint8_t kb_prev_mod, uint8_t kb_next_mod, void *kb_current_line, void * kb_mod_proc)
 ;
@@ -159,13 +155,7 @@ not_down:
         bne     not_lobby
 
         jsr     mx_ask_lobby
-        cpx     #PopupItemReturn::escape
-        beq     lobby_exit
-
-        ; option value is in ptr at mx_ask_lobby_option + POPUP_VAL_IDX, 0 = Y, 1 = N
-        ldy     #$00
-        mwa     {mx_ask_lobby_option + POPUP_VAL_IDX}, tmp5
-        lda     (tmp5), y
+        ; return in A is 0 for YES, 1 for NO/escape
         bne     lobby_exit
 
         ; exit the kb handler, but with the next mode set as Exit, and the mode as booting lobby

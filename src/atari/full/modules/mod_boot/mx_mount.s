@@ -21,7 +21,7 @@
         setax   #fn_io_hostslots
         jsr     _fn_io_get_host_slots
 
-        lda     #10
+        lda     #$08
         jsr     _pause      ; small pause to allow screen to continue showing "Mounting all" briefly
 
         ; MOUNT!
