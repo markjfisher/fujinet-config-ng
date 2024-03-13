@@ -187,10 +187,17 @@ endif
 
 LBL_SYM := $(XS)/debugcmd: ".loadsym build\config.$(TARGETS).lbl"
 
+ifeq ($(ALTIRRA_PORTABLE_ALT),)
+  # you can override this in your environment with:
+  #   export ALTIRRA_ARGS="//portable //portablealt:your-own.ini //debug ... etc"
+  # when using MSYS, you must use double slashes, as the first is stripped off and not passed to the application
+  ALTIRRA_ARGS := $(XS)/portable $(XS)/portablealt:altirra-debug.ini $(XS)/debug $(LBL_SYM)
+else
+  ALTIRRA_ARGS := $(XS)/portable $(ALTIRRA_PORTABLE_ALT) $(XS)/debug $(LBL_SYM)
+endif
+
 ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
-  $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
-  $(XS)/debug \
-  $(LBL_SYM) \
+  $(ALTIRRA_ARGS) \
   $(XS)/debugcmd: ".tracecio on" \
   $(XS)/debugcmd: "bp debug" \
 

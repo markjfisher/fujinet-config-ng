@@ -14,7 +14,7 @@ a.out
 autorun.atr
 
 # a personal altirra setup
-altirra-debug.ini
+altirra-*.ini
 
 .vscode/settings.json
 .vscode/c_cpp_properties.json
