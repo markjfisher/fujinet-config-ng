@@ -16,9 +16,9 @@
         .export     get_scrloc
         .export     fn_dir_filter
         .export     fn_dir_path
-        .export     fn_io_buffer
-        .export     fn_io_hostslots
-        .export     fn_io_netconfig
+        .export     fuji_buffer
+        .export     fuji_hostslots
+        .export     fuji_netconfig
 
 
 .code
@@ -40,9 +40,9 @@ get_scrloc: .res 1
 
 fn_dir_filter: .res 1
 fn_dir_path: .res 1
-fn_io_buffer: .res 1
-fn_io_hostslots: .res 1
-fn_io_netconfig: .res 1
+fuji_buffer: .res 1
+fuji_hostslots: .res 1
+fuji_netconfig: .res 1
 
 
 .segment "INIT"

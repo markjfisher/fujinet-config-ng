@@ -1,6 +1,6 @@
         .export     mfs_init
 
-        .import     _fn_io_close_directory
+        .import     _fuji_close_directory
         .import     _mfs_get_y_offset
         .import     fn_dir_path
         .import     mf_dir_pos
@@ -10,9 +10,9 @@
         .import     return0
         .import     return1
 
-        .import     _fn_io_error
-        .import     _fn_io_mount_host_slot
-        .import     fn_io_hostslots
+        .import     _fuji_error
+        .import     _fuji_mount_host_slot
+        .import     fuji_hostslots
         .import     mh_host_selected
         .import     pusha
 
@@ -20,7 +20,7 @@
         .include    "macros.inc"
 
 .proc mfs_init
-        jsr     _fn_io_close_directory
+        jsr     _fuji_close_directory
 
         mwa     #$00, mf_dir_pos
         sta          mf_selected
@@ -38,14 +38,8 @@
         ; -----------------------------------------------------
         ; mount the host.
         lda     mh_host_selected
-        jsr     _fn_io_mount_host_slot
-        jsr     _fn_io_error
-        beq     :+
-
-        ; return an error
-        jmp     return1
-
-        ; all good
-:       jmp     return0
+        jsr     _fuji_mount_host_slot
+        ;; TODO: in 2.2.2 of fujinet-lib, value already returned, so can use it, BUT needs inverting in the callers of this function
+        jmp     _fuji_error
 
 .endproc

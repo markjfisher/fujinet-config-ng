@@ -4,7 +4,7 @@
         .import     _fc_strlcpy
         .import     fn_dir_filter
         .import     fn_dir_path
-        .import     fn_io_buffer
+        .import     fuji_buffer
         .import     pushax
 
         .include    "zp.inc"
@@ -15,7 +15,7 @@
 
 ; just the path to the buffer
 .proc copy_path_to_buffer
-        mwa     #fn_io_buffer, tmp9
+        mwa     #fuji_buffer, tmp9
 
         ; clear a page of memory
         ldy     #$00
@@ -24,7 +24,7 @@
         iny
         bne     :-
 
-        pushax  #fn_io_buffer
+        pushax  #fuji_buffer
         pushax  #fn_dir_path
         lda     #$e0
         jsr     _fc_strlcpy
@@ -44,7 +44,7 @@
         ; we have to put the filter 1 byte after the null of the path, not append it
         ; as there has to be a 0 null between path and filter.
 :       inc     tmp4
-        mwa     #fn_io_buffer, ptr3
+        mwa     #fuji_buffer, ptr3
         adw1    ptr3, tmp4
 
         ; now copy filter to ptr3 until we've copied the zero null terminator

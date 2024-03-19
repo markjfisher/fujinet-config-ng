@@ -1,8 +1,9 @@
         .export     _mh_get_hosts_data
 
-        .import     _fn_io_get_host_slots
-        .import     fn_io_hostslots
+        .import     _fuji_get_host_slots
+        .import     fuji_hostslots
         .import     mh_is_hosts_data_fetched
+        .import     pushax
 
         .include    "macros.inc"
 
@@ -10,8 +11,9 @@
         lda     mh_is_hosts_data_fetched
         bne     :+
 
-        setax   #fn_io_hostslots
-        jsr     _fn_io_get_host_slots
+        pushax  #fuji_hostslots
+        ; setax    #$08 ; not required on atari
+        jsr     _fuji_get_host_slots
         mva     #$01, mh_is_hosts_data_fetched
 
 :       rts

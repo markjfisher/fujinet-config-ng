@@ -15,7 +15,7 @@
 
         .include    "zp.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "macros.inc"
 
 ; void mw_display_wifi()

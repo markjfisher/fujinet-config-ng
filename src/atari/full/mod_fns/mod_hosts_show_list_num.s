@@ -4,7 +4,7 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .proc mod_hosts_show_list_num
         ; A is index, ptr4 is screen location

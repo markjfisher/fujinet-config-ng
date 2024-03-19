@@ -27,7 +27,7 @@
         .include    "macros.inc"
         .include    "modules.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 ; 'A' contains the keyboard ascii code
 ; ptr4

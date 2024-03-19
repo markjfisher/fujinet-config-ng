@@ -1,11 +1,11 @@
         .export     _md_handle_input
 
-        .import     _fn_io_get_device_slots
-        .import     _fn_io_set_device_filename
+        .import     _fuji_get_device_slots
+        .import     _fuji_set_device_filename
         .import     _kb_global
         .import     _scr_highlight_line
-        .import     fn_io_buffer
-        .import     fn_io_deviceslots
+        .import     fuji_buffer
+        .import     fuji_deviceslots
         .import     kb_current_line
         .import     md_device_selected
         .import     mh_host_selected
@@ -15,7 +15,7 @@
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "modules.inc"
 
 .proc _md_handle_input
@@ -41,16 +41,17 @@
         ; eject highlighted entry, which involves setting device slot to empty string and put/get device slots
         ; new version is just save device file name with no value
         lda     #$00
-        sta     fn_io_buffer
+        sta     fuji_buffer
         pusha   #$00
         pusha   mh_host_selected
         pusha   md_device_selected
-        setax   #fn_io_buffer
-        jsr     _fn_io_set_device_filename
+        setax   #fuji_buffer
+        jsr     _fuji_set_device_filename
 
         ; read the device slots back so screen repopulates
-        setax   #fn_io_deviceslots
-        jsr     _fn_io_get_device_slots
+        pushax  #fuji_deviceslots
+        ; setax    #$08 ; not required on atari
+        jsr     _fuji_get_device_slots
 
         ldx     #KBH::EXIT
         rts

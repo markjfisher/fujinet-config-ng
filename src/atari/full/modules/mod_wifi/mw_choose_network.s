@@ -3,10 +3,10 @@
         .import     _clr_help
         .import     _edit_line
         .import     _fc_strncpy
-        .import     _fn_io_get_scan_result
+        .import     _fuji_get_scan_result
         .import     _put_help
-        .import     fn_io_netconfig
-        .import     fn_io_ssidinfo
+        .import     fuji_netconfig
+        .import     fuji_ssidinfo
         .import     get_scrloc
         .import     mw_help_password
         .import     mw_save_ssid
@@ -19,7 +19,7 @@
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "modules.inc"
 
 ; ptr1,ptr4
@@ -31,11 +31,11 @@
         ; Copy the SSID to netconfig, then ask for a password
         ; we need to regrab the data for the selected entry to get its name again. It's on screen, but the config needs reloading
         pusha   mw_selected
-        setax   #fn_io_ssidinfo
-        jsr     _fn_io_get_scan_result
+        setax   #fuji_ssidinfo
+        jsr     _fuji_get_scan_result
 
-        pushax  {#(fn_io_netconfig + NetConfig::ssid)}
-        pushax  {#(fn_io_ssidinfo + SSIDInfo::ssid)}
+        pushax  {#(fuji_netconfig + NetConfig::ssid)}
+        pushax  {#(fuji_ssidinfo + SSIDInfo::ssid)}
         lda     #32
         jsr     _fc_strncpy
 
@@ -44,7 +44,7 @@
         jsr     get_scrloc
 
         ; display current password
-        mwa     {#(fn_io_netconfig + NetConfig::password)}, ptr1
+        mwa     {#(fuji_netconfig + NetConfig::password)}, ptr1
         jsr     put_s_p1p4
 
         ; get the password - 64 means the borders will break, minor issue

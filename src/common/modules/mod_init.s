@@ -2,11 +2,11 @@
         .export     fc_connected
 
         .import     _dev_init
-        .import     _fn_io_get_ssid
-        .import     _fn_io_get_wifi_enabled
-        .import     _fn_io_get_wifi_status
+        .import     _fuji_get_ssid
+        .import     _fuji_get_wifi_enabled
+        .import     _fuji_get_wifi_status
         .import     booting_mode
-        .import     fn_io_netconfig
+        .import     fuji_netconfig
         .import     kb_current_line
         .import     md_device_selected
         .import     mh_host_selected
@@ -16,7 +16,7 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "modules.inc"
 
 ; void _mod_init()
@@ -34,16 +34,18 @@
         sta     fc_connected
 
         ; Start getting information from FN to decide what module to load next
-        jsr     _fn_io_get_wifi_enabled
+        jsr     _fuji_get_wifi_enabled
         beq     not_enabled
 
-        jsr     _fn_io_get_wifi_status
+        setax   #tmp1                   ; use tmp1 for results of call
+        jsr     _fuji_get_wifi_status
+        lda     tmp1
         cmp     #WifiStatus::connected
         beq     connected
 
         ; only runs if we aren't connected, which is rare
-        setax   #fn_io_netconfig
-        jsr     _fn_io_get_ssid
+        setax   #fuji_netconfig
+        jsr     _fuji_get_ssid
         setax   ptr1                    ; NetConfig in ptr1
         ldy     #NetConfig::ssid
         lda     (ptr1), y               ; get first char from ssid of NetConfig

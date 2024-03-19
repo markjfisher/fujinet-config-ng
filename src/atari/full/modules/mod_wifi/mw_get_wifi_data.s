@@ -1,7 +1,7 @@
         .export     _mw_get_wifi_data
 
-        .import     _fn_io_error
-        .import     _fn_io_get_adapter_config_extended
+        .import     _fuji_error
+        .import     _fuji_get_adapter_config_extended
         .import     _mw_init_screen
         .import     mw_adapter_config
         .import     mw_error_fetch_ac
@@ -11,7 +11,7 @@
 
         .include    "zp.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "macros.inc"
 
 ; int mw_get_wifi_data()
@@ -27,8 +27,8 @@
 
 fetch_ac:
         setax   #mw_adapter_config
-        jsr     _fn_io_get_adapter_config_extended
-        jsr     _fn_io_error
+        jsr     _fuji_get_adapter_config_extended
+        jsr     _fuji_error
         bne     fetch_ac_error
         mva     #$01, mw_is_ac_data_fetched
         jmp     return0

@@ -1,8 +1,8 @@
         .export     _mx_do_boot
         .export     show_box
 
-        .import     _fn_io_set_boot_config
-        .import     _fn_io_set_boot_mode
+        .import     _fuji_set_boot_config
+        .import     _fuji_set_boot_mode
         .import     _pause
         .import     _put_s
         .import     boot_anim_1_1
@@ -19,7 +19,7 @@
         .include    "macros.inc"
         .include    "modules.inc"
         .include    "zp.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .proc _mx_do_boot
         ; pick from the booting mode
@@ -49,7 +49,7 @@ normal_boot:
         pause   #$20
 
         lda     #$00            ; don't read config
-        jsr     _fn_io_set_boot_config
+        jsr     _fuji_set_boot_config
         jmp     COLDSV
 
 lobby_boot:
@@ -59,7 +59,7 @@ lobby_boot:
         pause   #$20
 
         lda     #$02            ; lobby mode
-        jsr     _fn_io_set_boot_mode
+        jsr     _fuji_set_boot_mode
         jmp     COLDSV
 
 error:

@@ -7,13 +7,13 @@
 
         .import     _clr_help
         .import     _fc_strncpy
-        .import     _fn_io_get_device_slots
+        .import     _fuji_get_device_slots
         .import     _free
         .import     _malloc
         .import     _put_help
         .import     _scr_clr_highlight
         .import     _show_select
-        .import     fn_io_deviceslots
+        .import     fuji_deviceslots
         .import     md_is_devices_data_fetched
         .import     pu_null_cb
         .import     pusha
@@ -23,7 +23,7 @@
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "modules.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
 
@@ -42,7 +42,7 @@
         ; we will put all the relevant selection details into memory starting at sds_pu_devs, and it
         ; is the job of the _show_select to display this, calling back to kb handler here
 
-        ; get memory for 8 * devices list width strings - can't use fn_io_buffer as that contains the file path we will use
+        ; get memory for 8 * devices list width strings - can't use fuji_buffer as that contains the file path we will use
         lda     sds_pu_devs + POPUP_LEN_IDX
         asl     a
         asl     a
@@ -92,13 +92,14 @@ copy_dev_strings:
         bne     :+
 
         ; no! fetch them so we can see the entries
-        setax   #fn_io_deviceslots
-        jsr     _fn_io_get_device_slots
+        pushax  #fuji_deviceslots
+        ; setax    #$08 ; not required on atari
+        jsr     _fuji_get_device_slots
         mva     #$01, md_is_devices_data_fetched
 
 :       mva     #$08, tmp1              ; number of strings in popup
         mwa     {sds_pu_devs + PopupItemTextList::text}, ptr1   ; dst, location of string buffer
-        mwa     {#(fn_io_deviceslots + DeviceSlot::file)}, ptr2 ; src
+        mwa     {#(fuji_deviceslots + DeviceSlot::file)}, ptr2 ; src
 
 l1:     pushax  ptr1    ; dst
 

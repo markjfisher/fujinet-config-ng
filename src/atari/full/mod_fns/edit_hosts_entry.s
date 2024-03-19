@@ -3,17 +3,18 @@
         .import     pushax, pusha
         .import     _edit_line
         .import     s_empty
-        .import     fn_io_hostslots
+        .import     fuji_hostslots
         .import     mh_host_selected
-        .import     _fn_io_put_host_slots
+        .import     _fuji_put_host_slots
         .import     get_scrloc
         .import     get_to_current_hostslot
         .import     put_s_p1p4
+        .import     pushax
 
         .include    "zp.inc"
         .include    "atari.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
 
 ; void edit_hosts_entry()
@@ -52,8 +53,9 @@
         pla                             ; restore return value from edit
         ; if A is 0, don't save
         beq     no_save
-        setax   #fn_io_hostslots
-        jmp     _fn_io_put_host_slots
+        pushax  #fuji_hostslots
+        ; setax    #$08 ; not required on atari
+        jmp     _fuji_put_host_slots
 
 no_save:
         rts

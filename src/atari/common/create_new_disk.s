@@ -3,7 +3,7 @@
         .export     t_disk_sector_sizes
 
         .import     _free
-        .import     _fn_io_create_new
+        .import     _fuji_create_new
         .import     _malloc
         .import     _strncpy
         .import     debug
@@ -15,7 +15,7 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
         .include    "fn_disk.inc"
 
@@ -129,7 +129,7 @@ do_custom:
         ; restore ptr4 to start of buffer
         sbw     ptr4, #NewDisk::filename
         pushax  ptr4
-        jsr     _fn_io_create_new
+        jsr     _fuji_create_new
         ; TODO: react to result. Did it error?
 
         setax   ptr4

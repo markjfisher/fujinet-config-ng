@@ -3,9 +3,9 @@
         .import     _clr_help
         .import     _clr_src_with_separator
         .import     _ellipsize
-        .import     _fn_io_error
-        .import     _fn_io_open_directory
-        .import     _fn_io_set_directory_position
+        .import     _fuji_error
+        .import     _fuji_open_directory
+        .import     _fuji_set_directory_position
         .import     _free
         .import     _malloc
         .import     _put_help
@@ -15,7 +15,7 @@
         .import     copy_path_filter_to_buffer
         .import     fn_dir_filter
         .import     fn_dir_path
-        .import     fn_io_buffer
+        .import     fuji_buffer
         .import     get_to_current_hostslot
         .import     mf_copying
         .import     mf_copying_msg
@@ -56,17 +56,17 @@
         ; -----------------------------------------------------
         ; open directory
         pusha   mh_host_selected
-        setax   #fn_io_buffer
-        jsr     _fn_io_open_directory
+        setax   #fuji_buffer
+        jsr     _fuji_open_directory
 
-        jsr     _fn_io_error
+        jsr     _fuji_error
         bne     :+
 
         ; all good, set the dir pos, and return dir pos status
         setax   mf_dir_pos
-        jsr     _fn_io_set_directory_position
+        jsr     _fuji_set_directory_position
         ; did it fail?
-        jmp     _fn_io_error
+        jmp     _fuji_error
 
         ; bad times
 :       jmp     return1

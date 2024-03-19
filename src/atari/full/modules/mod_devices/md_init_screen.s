@@ -8,7 +8,7 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .proc _md_init_screen
         jsr        _clr_scr_all

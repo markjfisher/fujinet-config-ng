@@ -2,11 +2,7 @@
 
         .import     _clr_help
         .import     _clr_status
-        .import     _put_help
-        .import     _put_status
         .import     get_scrloc
-        .import     mf_s1, mf_h1, mf_h2
-        .import     pusha
 
         .include    "macros.inc"
 

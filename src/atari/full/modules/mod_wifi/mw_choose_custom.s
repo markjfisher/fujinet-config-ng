@@ -3,10 +3,10 @@
         .import     _clr_help
         .import     _edit_line
         .import     _fc_strncpy
-        .import     _fn_io_get_scan_result
+        .import     _fuji_get_scan_result
         .import     _put_help
-        .import     fn_io_netconfig
-        .import     fn_io_ssidinfo
+        .import     fuji_netconfig
+        .import     fuji_ssidinfo
         .import     get_scrloc
         .import     mw_help_custom
         .import     mw_help_password
@@ -20,7 +20,7 @@
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "modules.inc"
 
 ;ptr1,ptr4
@@ -43,9 +43,9 @@
         cpy     #38
         bne     :-
 
-        ; string location is fn_io_netconfig::ssid
+        ; string location is fuji_netconfig::ssid
         ; first print it to screen if it's got a value, to allow user to continue editing previous value
-        mwa     {#(fn_io_netconfig + NetConfig::ssid)}, ptr1
+        mwa     {#(fuji_netconfig + NetConfig::ssid)}, ptr1
         jsr     put_s_p1p4
 
         ; -----------------------------------------------------------------
@@ -63,7 +63,7 @@
         put_help   #0, #mw_help_password
 
         adw1    ptr4, #SCR_BYTES_W
-        mwa     {#(fn_io_netconfig + NetConfig::password)}, ptr1
+        mwa     {#(fuji_netconfig + NetConfig::password)}, ptr1
         jsr     put_s_p1p4
 
         ; -----------------------------------------------------------------

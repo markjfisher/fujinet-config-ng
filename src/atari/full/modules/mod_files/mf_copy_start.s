@@ -3,7 +3,7 @@
         .import     _fc_strncpy
         .import     _malloc
         .import     combine_path_with_selection
-        .import     fn_io_buffer
+        .import     fuji_buffer
         .import     mf_copying
         .import     mf_error_too_long
         .import     mh_host_selected
@@ -34,7 +34,7 @@
         jsr     pushax              ; save the memory location of the string we're copying int stack, this will eventually be read and freed by the copy_end
 
         jsr     pushax              ; dst: store location again on stack for the strncpy
-        pushax  #fn_io_buffer       ; src: path/file
+        pushax  #fuji_buffer       ; src: path/file
         lda     #$00                ; this is a 256 byte copy (0-ff) filling up to the end with 0's
         jsr     _fc_strncpy         ; copy into memory allocated
 

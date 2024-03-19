@@ -4,7 +4,7 @@
         .export     mw_selected
         .export     mw_setting_up
 
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .bss
 ; wifi AdapterConfig info. this can't be malloc'd else we'd need to fetch it every time we wizz by the wifi screen

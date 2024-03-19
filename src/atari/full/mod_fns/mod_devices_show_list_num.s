@@ -1,11 +1,11 @@
         .export     mod_devices_show_list_num
 
         .import     sl_list_num
-        .import     fn_io_deviceslots
+        .import     fuji_deviceslots
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
 
 
@@ -16,7 +16,7 @@
         sta     tmp1            ; keep the index (0 based)
         tax
 
-        mwa     #fn_io_deviceslots, ptr2
+        mwa     #fuji_deviceslots, ptr2
         ; move to x'th DeviceSlot
         cpx     #$00
         beq     ds_0

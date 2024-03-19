@@ -8,7 +8,7 @@
         .import     pushax
 
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "modules.inc"
         .include    "popup.inc"
 

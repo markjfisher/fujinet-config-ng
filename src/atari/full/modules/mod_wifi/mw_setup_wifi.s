@@ -1,9 +1,9 @@
         .export     mw_setup_wifi
 
-        .import     _fn_io_get_scan_result
-        .import     _fn_io_scan_for_networks
+        .import     _fuji_get_scan_result
+        .import     _fuji_scan_for_networks
         .import     _put_s
-        .import     fn_io_ssidinfo
+        .import     fuji_ssidinfo
         .import     get_scrloc
         .import     mw_custom_msg
         .import     mw_error_no_networks
@@ -19,13 +19,13 @@
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 ; tmp1
 ; ptr1,ptr3,ptr4
 .proc mw_setup_wifi
-        jsr     _fn_io_scan_for_networks
-        sta     mw_net_count
+        setax   #mw_net_count
+        jsr     _fuji_scan_for_networks
 
         ; were there any networks? must be > 0 - caught me out!
         lda     mw_net_count
@@ -52,10 +52,10 @@ ok:
         mva     #$00, tmp1              ; loop counter for networks
 
 :       pusha   tmp1
-        setax   #fn_io_ssidinfo
-        jsr     _fn_io_get_scan_result
+        setax   #fuji_ssidinfo
+        jsr     _fuji_get_scan_result
 
-        mwa     {#(fn_io_ssidinfo + SSIDInfo::ssid)}, ptr1
+        mwa     {#(fuji_ssidinfo + SSIDInfo::ssid)}, ptr1
         jsr     put_s_p1p4
 
         ; print all 3 bars, rub them out if power is low
@@ -73,7 +73,7 @@ ok:
         ; -40 = 3 bars
         ; -60 = 2 bars
         ; lower = 1 bar
-        ldx     fn_io_ssidinfo + SSIDInfo::rssi
+        ldx     fuji_ssidinfo + SSIDInfo::rssi
         bpl     bar3    ; any positive value is off the scale
 
         cpx     #$d9    ; -39

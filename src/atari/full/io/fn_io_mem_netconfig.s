@@ -1,6 +1,6 @@
-        .export     fn_io_netconfig
+        .export     fuji_netconfig
 
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .segment "BUFFER"
-fn_io_netconfig:      .res .sizeof(NetConfig)
+fuji_netconfig:      .res .sizeof(NetConfig)

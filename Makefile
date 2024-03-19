@@ -7,83 +7,25 @@
 # - cfg/*.cfg file instead of finding one in the src dir
 # - final files go into build/ directory instead of polluting root folder (e.g. lbl, com file etc)
 
-###############################################################################
-### In order to override defaults - values can be assigned to the variables ###
-###############################################################################
-
-# Space or comma separated list of cc65 supported target platforms to build for.
-# Default: c64 (lowercase!)
 TARGETS := atari.full
 
-# Name of the final, single-file executable.
-# Default: name of the current dir with target name appended
+FUJINET_LIB_VERSION = 3.0.1
+FUJINET_LIB = fujinet-lib
+FUJINET_LIB_VERSION_DIR = $(FUJINET_LIB)/$(FUJINET_LIB_VERSION)-$(CC65TARGET)
+
 PROGRAM := config
-
-# Path(s) to additional libraries required for linking the program
-# Use only if you don't want to place copies of the libraries in SRCDIR
-# Default: none
 LIBS    :=
-
-# Custom linker configuration file
-# Use only if you don't want to place it in SRCDIR
-# Default: none
 CONFIG  :=
-
-# Additional C compiler flags and options.
-# Default: none
 CFLAGS  =
-
-# Additional assembler flags and options.
-# Default: none
 ASFLAGS =
-
-# Additional linker flags and options.
-# Default: none
 LDFLAGS =
-
-# Path to the directory containing C and ASM sources.
-# Default: src
-SRCDIR :=
-
-# Path to the directory where object files are to be stored (inside respective target subdirectories).
-# Default: obj
-OBJDIR :=
-
-# Command used to run the emulator.
-# Default: depending on target platform. For default (c64) target: x64 -kernal kernal -VICIIdsize -autoload
+SRCDIR := src
+OBJDIR := obj
 EMUCMD :=
-
-# Build dir for putting final built program rather than cluttering root
 BUILD_DIR = build
-
-# Optional commands used before starting the emulation process, and after finishing it.
-# Default: none
-#PREEMUCMD := osascript -e "tell application \"System Events\" to set isRunning to (name of processes) contains \"X11.bin\"" -e "if isRunning is true then tell application \"X11\" to activate"
-#PREEMUCMD := osascript -e "tell application \"X11\" to activate"
-#POSTEMUCMD := osascript -e "tell application \"System Events\" to tell process \"X11\" to set visible to false"
-#POSTEMUCMD := osascript -e "tell application \"Terminal\" to activate"
 PREEMUCMD :=
 POSTEMUCMD :=
-
-# On Windows machines VICE emulators may not be available in the PATH by default.
-# In such case, please set the variable below to point to directory containing
-# VICE emulators. 
-#VICE_HOME := "C:\Program Files\WinVICE-2.2-x86\"
-VICE_HOME :=
-
-# Options state file name. You should not need to change this, but for those
-# rare cases when you feel you really need to name it differently - here you are
 STATEFILE := Makefile.options
-
-###################################################################################
-####  DO NOT EDIT BELOW THIS LINE, UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!  ####
-###################################################################################
-
-###################################################################################
-### Mapping abstract options to the actual compiler, assembler and linker flags ###
-### Predefined compiler, assembler and linker flags, used with abstract options ###
-### valid for 2.14.x. Consult the documentation of your cc65 version before use ###
-###################################################################################
 
 # Compiler flags used to tell the compiler to optimise for SPEED
 define _optspeed_
@@ -120,33 +62,10 @@ define _debugfile_
   REMOVES += $(BUILD_DIR)/$(PROGRAM).dbg
 endef
 
-###############################################################################
-###  Defaults to be used if nothing defined in the editable sections above  ###
-###############################################################################
-
-# Presume the C64 target like the cl65 compile & link utility does.
-# Set TARGETS to override.
-ifeq ($(TARGETS),)
-  TARGETS := c64
-endif
-
-# Presume we're in a project directory so name the program like the current
-# directory. Set PROGRAM to override.
 ifeq ($(PROGRAM),)
   PROGRAM := $(notdir $(CURDIR))
 endif
 
-# Presume the C and asm source files to be located in the subdirectory 'src'.
-# Set SRCDIR to override.
-ifeq ($(SRCDIR),)
-  SRCDIR := src
-endif
-
-# Presume the object and dependency files to be located in the subdirectory
-# 'obj' (which will be created). Set OBJDIR to override.
-ifeq ($(OBJDIR),)
-  OBJDIR := obj
-endif
 TARGETOBJDIR := $(OBJDIR)/$(TARGETS)
 
 # On Windows it is mandatory to have CC65_HOME set. So do not unnecessarily
@@ -156,19 +75,6 @@ ifdef CC65_HOME
 else
   CC := cl65
 endif
-
-# Default emulator commands and options for particular targets.
-# Set EMUCMD to override.
-c64_EMUCMD := $(VICE_HOME)x64 -kernal kernal -VICIIdsize -autoload
-c128_EMUCMD := $(VICE_HOME)x128 -kernal kernal -VICIIdsize -autoload
-vic20_EMUCMD := $(VICE_HOME)xvic -kernal kernal -VICdsize -autoload
-pet_EMUCMD := $(VICE_HOME)xpet -Crtcdsize -autoload
-plus4_EMUCMD := $(VICE_HOME)xplus4 -TEDdsize -autoload
-# So far there is no x16 emulator in VICE (why??) so we have to use xplus4 with -memsize option
-c16_EMUCMD := $(VICE_HOME)xplus4 -ramsize 16 -TEDdsize -autoload
-cbm510_EMUCMD := $(VICE_HOME)xcbm2 -model 510 -VICIIdsize -autoload
-cbm610_EMUCMD := $(VICE_HOME)xcbm2 -model 610 -Crtcdsize -autoload
-#atari_EMUCMD := atari800 -windowed -xl -pal -nopatchall -run
 
 ifeq '$(findstring ;,$(PATH))' ';'
     detected_OS := Windows
@@ -213,25 +119,6 @@ ifeq ($(EMUCMD),)
   EMUCMD = $($(CC65TARGET)_EMUCMD)
 endif
 
-###############################################################################
-### The magic begins                                                        ###
-###############################################################################
-
-# The "Native Win32" GNU Make contains quite some workarounds to get along with
-# cmd.exe as shell. However it does not provide means to determine that it does
-# actually activate those workarounds. Especially does $(SHELL) NOT contain the
-# value 'cmd.exe'. So the usual way to determine if cmd.exe is being used is to
-# execute the command 'echo' without any parameters. Only cmd.exe will return a
-# non-empy string - saying 'ECHO is on/off'.
-#
-# Many "Native Win32" prorams accept '/' as directory delimiter just fine. How-
-# ever the internal commands of cmd.exe generally require '\' to be used.
-#
-# cmd.exe has an internal command 'mkdir' that doesn't understand nor require a
-# '-p' to create parent directories as needed.
-#
-# cmd.exe has an internal command 'del' that reports a syntax error if executed
-# without any file so make sure to call it only if there's an actual argument.
 ifeq ($(shell echo),)
   MKDIR = mkdir -p $1
   RMDIR = rmdir $1
@@ -259,18 +146,16 @@ ifeq ($(words $(TARGETLIST)),1)
 CC65TARGET := $(firstword $(subst .,$(SPACE),$(TARGETLIST)))
 SUBTARGET := $(word 2,$(subst .,$(SPACE),$(TARGETLIST)))
 
+FUJINET_LIB_DOWNLOAD_URL = https://github.com/FujiNetWIFI/fujinet-lib/releases/download/v$(FUJINET_LIB_VERSION)/fujinet-lib-$(CC65TARGET)-$(FUJINET_LIB_VERSION).zip
+FUJINET_LIB_DOWNLOAD_FILE = $(FUJINET_LIB)/fujinet-lib-$(CC65TARGET)-$(FUJINET_LIB_VERSION).zip
+
 # Set PROGRAM to something like 'myprog.c64'.
 override PROGRAM := $(PROGRAM).$(TARGETLIST)
-
-# Set SOURCES to something like 'src/foo.c src/bar.s'.
-# Use of assembler files with names ending differently than .s is deprecated!
 
 # Root dir files
 SOURCES := $(wildcard $(SRCDIR)/*.c)
 SOURCES += $(wildcard $(SRCDIR)/*.s)
 
-# Add to SOURCES something like 'src/c64/me.c src/c64/too.s'.
-# Use of assembler files with names ending differently than .s is deprecated!
 # Recursive files
 SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.s)
 SOURCES += $(call rwildcard,$(SRCDIR)/common/,*.c)
@@ -287,7 +172,6 @@ endif
 SOURCES := $(strip $(SOURCES))
 SOURCES_TG := $(strip $(SOURCES_TG))
 
-# Set OBJECTS to something like 'obj/c64/foo.o obj/c64/bar.o'.
 # convert from src/your/long/path/foo.[c|s] to obj/your/long/path/foo.o
 OBJ1 := $(SOURCES:.c=.o)
 OBJECTS := $(OBJ1:.s=.o)
@@ -299,19 +183,14 @@ OBJECTS_TG := $(OBJECTS_TG:$(SRCDIR)/%=$(OBJDIR)/%)
 
 OBJECTS += $(OBJECTS_TG)
 
-# Set DEPENDS to something like 'obj/c64/foo.d obj/c64/bar.d'.
 DEPENDS := $(OBJECTS:.o=.d)
 DEPENDS += $(OBJECTS_TG:.o=.d)
 
 # Add to LIBS something like 'src/foo.lib src/c64/bar.lib'.
 LIBS += $(wildcard $(SRCDIR)/*.lib)
 LIBS += $(wildcard $(SRCDIR)/$(CC65TARGET)/*.lib)
+LIBS += $(FUJINET_LIB_VERSION_DIR)/fujinet-$(CC65TARGET)-$(FUJINET_LIB_VERSION).lib
 
-# Add to CONFIG something like 'src/c64/bar.cfg src/foo.cfg'.
-#CONFIG += $(wildcard $(SRCDIR)/$(TARGETLIST)/*.cfg)
-#CONFIG += $(wildcard $(SRCDIR)/*.cfg)
-
-# Simplify to just cfg/atari.full.cfg, or any specified on command line
 CONFIG += cfg/$(TARGETLIST).cfg
 
 # Select CONFIG file to use. Target specific configs have higher priority.
@@ -320,8 +199,8 @@ ifneq ($(word 2,$(CONFIG)),)
   $(info Using config file $(CONFIG) for linking)
 endif
 
-ASFLAGS += --asm-include-dir src/common/inc --asm-include-dir src/libs/inc --asm-include-dir src/$(CC65TARGET)/common/inc
-CFLAGS += --include-dir src/common/inc --include-dir src/$(CC65TARGET)/common/inc
+ASFLAGS += --asm-include-dir src/common/inc --asm-include-dir src/libs/inc --asm-include-dir src/$(CC65TARGET)/common/inc --asm-include-dir $(FUJINET_LIB_VERSION_DIR)
+CFLAGS += --include-dir src/common/inc --include-dir src/$(CC65TARGET)/common/inc --include-dir $(FUJINET_LIB_VERSION_DIR)
 
 ifneq "$(SUBTARGET)" ""
 ASFLAGS += --asm-include-dir src/$(CC65TARGET)/$(SUBTARGET)/inc
@@ -331,9 +210,9 @@ endif
 LDFLAGS += -Wl -D__RESERVED_MEMORY__=0x1
 
 .SUFFIXES:
-.PHONY: all test clean
+.PHONY: all test clean get_fujinet_lib
 
-all: $(PROGRAM)
+all: get_fujinet_lib $(PROGRAM)
 
 -include $(DEPENDS)
 -include $(STATEFILE)
@@ -364,6 +243,25 @@ endif
 
 # Transform the abstract OPTIONS to the actual cc65 options.
 $(foreach o,$(subst $(COMMA),$(SPACE),$(OPTIONS)),$(eval $(_$o_)))
+
+get_fujinet_lib:
+	@if [ ! -f "$(FUJINET_LIB_DOWNLOAD_FILE)" ]; then \
+		if [ -d "$(FUJINET_LIB_VERSION_DIR)" ]; then \
+		  echo "A directory already exists with version $(FUJINET_LIB_VERSION) - please remove it first"; \
+			exit 1; \
+		fi; \
+		HTTPSTATUS=$$(curl -Is $(FUJINET_LIB_DOWNLOAD_URL) | head -n 1 | awk '{print $$2}'); \
+		if [ "$${HTTPSTATUS}" == "404" ]; then \
+			echo "ERROR: Unable to find file $(FUJINET_LIB_DOWNLOAD_URL)"; \
+			exit 1; \
+		fi; \
+		echo "Downloading fujinet-lib for $(TARGETLIST) version $(FUJINET_LIB_VERSION) from $(FUJINET_LIB_DOWNLOAD_URL)"; \
+		mkdir -p $(FUJINET_LIB); \
+		curl -L $(FUJINET_LIB_DOWNLOAD_URL) -o $(FUJINET_LIB_DOWNLOAD_FILE); \
+		echo "Unzipping to $(FUJINET_LIB)"; \
+		unzip -o $(FUJINET_LIB_DOWNLOAD_FILE) -d $(FUJINET_LIB_VERSION_DIR); \
+		echo "Unzip complete."; \
+	fi
 
 # The remaining targets.
 $(OBJDIR):

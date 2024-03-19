@@ -1,14 +1,14 @@
         .export     get_to_current_hostslot
 
-        .import     fn_io_hostslots
+        .import     fuji_hostslots
         .import     mh_host_selected
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .proc get_to_current_hostslot
-        mwa     #fn_io_hostslots, ptr1
+        mwa     #fuji_hostslots, ptr1
         ldx     mh_host_selected
         beq     over_inc
 :       adw     ptr1, #.sizeof(HostSlot)

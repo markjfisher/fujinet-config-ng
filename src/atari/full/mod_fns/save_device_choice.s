@@ -1,23 +1,24 @@
         .export     save_device_choice
 
-        .import     _fn_io_close_directory
-        .import     _fn_io_get_device_slots
-        .import     _fn_io_put_device_slots
-        .import     _fn_io_set_device_filename
-        .import     fn_io_buffer
-        .import     fn_io_deviceslots
+        .import     _fuji_close_directory
+        .import     _fuji_get_device_slots
+        .import     _fuji_put_device_slots
+        .import     _fuji_set_device_filename
+        .import     fuji_buffer
+        .import     fuji_deviceslots
         .import     mh_host_selected
         .import     popa
         .import     pusha
+        .import     pushax
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
 
 ; void save_device_choice(uint8_t mode, uint8_t device_slot)
 ;
-; the filename must be set into fn_io_buffer before coming into here
+; the filename must be set into fuji_buffer before coming into here
 .proc save_device_choice
         sta     tmp1                    ; device slot, 0 based
         jsr     popa                    ; mode, currently 0 based, but need it 1 based
@@ -29,11 +30,11 @@
         jsr     pusha                   ; save mode read/write mode
         pusha   mh_host_selected        ; host_slot
         pusha   tmp1                    ; device slot
-        setax   #fn_io_buffer
-        jsr     _fn_io_set_device_filename
+        setax   #fuji_buffer
+        jsr     _fuji_set_device_filename
 
         ; write it to the deviceslots memory
-        mwa     #fn_io_deviceslots, ptr1
+        mwa     #fuji_deviceslots, ptr1
         ldx     tmp1
         beq     no_dev_add
 :       adw     ptr1, #.sizeof(DeviceSlot)
@@ -52,14 +53,16 @@ no_dev_add:
         sta     (ptr1), y
 
         ; Save everything
-        setax   #fn_io_deviceslots
-        jsr     _fn_io_put_device_slots
+        pushax  #fuji_deviceslots
+        ; setax    #$08 ; not required on atari
+        jsr     _fuji_put_device_slots
 
         ; read the device slots back so screen repopulates
-        setax   #fn_io_deviceslots
-        jsr     _fn_io_get_device_slots
+        pushax  #fuji_deviceslots
+        ; setax    #$08 ; not required on atari
+        jsr     _fuji_get_device_slots
 
-        jmp     _fn_io_close_directory
+        jmp     _fuji_close_directory
         ; implicit rts
 
 .endproc

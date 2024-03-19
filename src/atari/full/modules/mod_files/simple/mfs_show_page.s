@@ -1,12 +1,12 @@
         .export     mfs_show_page
 
-        .import     _fn_io_close_directory
-        .import     _fn_io_read_directory
-        .import     _fn_io_set_directory_position
+        .import     _fuji_close_directory
+        .import     _fuji_read_directory
+        .import     _fuji_set_directory_position
         .import     _fc_strlen
         .import     _put_s
         .import     ascii_to_code
-        .import     fn_io_buffer
+        .import     fuji_buffer
         .import     get_scrloc
         .import     mf_dir_or_file
         .import     mf_dir_pos
@@ -65,7 +65,7 @@ finish_list:
         bne     :+
         jsr     show_next
 
-:       jmp     _fn_io_close_directory
+:       jmp     _fuji_close_directory
 
 .endproc
 
@@ -117,12 +117,13 @@ finish_list:
 .proc read_dir_is_eod
         pusha   #DIR_MAX_LEN    ; the max length of each line for directory/file names
         pusha   #$00            ; special aux2 param
-        setax   #fn_io_buffer
-        jsr     _fn_io_read_directory   ; this reads current and moves FN internal directory pointer on 1 position
+        setax   #fuji_buffer
+        jsr     _fuji_read_directory   ; this reads current and moves FN internal directory pointer on 1 position
 
-        ; A/X contain pointer to the data just read
+        ; fuji_buffer contains the results
         ; an end of dir is 0x7f, 0x7f
-        axinto  ptr1
+        mwa     #fuji_buffer, ptr1
+        ; axinto  ptr1
         ldy     #$01
         lda     (ptr1), y
         cmp     #$7f            ; magic marker
@@ -134,7 +135,7 @@ finish_list:
         mwa     mf_dir_pos, ptr1
         adw1    ptr1, #DIR_PG_CNT
         setax   ptr1
-        jsr     _fn_io_set_directory_position
+        jsr     _fuji_set_directory_position
 
         ; read first dir, and check if it's 7f
         jsr     read_dir_is_eod

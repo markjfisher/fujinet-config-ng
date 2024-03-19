@@ -1,6 +1,6 @@
-        .export     fn_io_hostslots
+        .export     fuji_hostslots
 
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .segment "BUFFER"
-fn_io_hostslots:      .res 8 * .sizeof(HostSlot)
+fuji_hostslots:      .res 8 * .sizeof(HostSlot)

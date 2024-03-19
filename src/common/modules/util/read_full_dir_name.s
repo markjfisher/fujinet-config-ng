@@ -1,7 +1,7 @@
         .export     read_full_dir_name
 
         .import     get_to_dir_pos
-        .import     _fn_io_read_directory
+        .import     _fuji_read_directory
         .import     _malloc
         .import     pusha
 
@@ -25,6 +25,8 @@
         ; do a 255 byte read of current dir entry (file)
         pusha   #$00                    ; aux
         setax   ptr1
-        jmp     _fn_io_read_directory
-        ; implicit rts, AX holds result of memory with path name in that must be free'd.
+        jsr     _fuji_read_directory
+        setax   ptr1
+        rts
+        ; AX holds result of memory with path name in that must be free'd.
 .endproc

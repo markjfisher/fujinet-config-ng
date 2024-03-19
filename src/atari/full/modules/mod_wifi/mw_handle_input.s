@@ -18,7 +18,7 @@
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "modules.inc"
 
 .proc _mw_handle_input

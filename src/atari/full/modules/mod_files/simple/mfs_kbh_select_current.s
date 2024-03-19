@@ -7,7 +7,7 @@
         .import     _free
         .import     _scr_clr_highlight
         .import     fn_dir_path
-        .import     fn_io_buffer
+        .import     fuji_buffer
         .import     mf_dir_or_file
         .import     mf_dir_pos
         .import     mf_error_too_long
@@ -26,7 +26,7 @@
         .include    "macros.inc"
         .include    "modules.inc"
         .include    "fn_data.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "popup.inc"
 
 ; Handle Selection of the currently highlighted line
@@ -46,9 +46,9 @@ is_dir:
         jsr     combine_path_with_selection
         bne     too_long_error
 
-        ; copy fn_io_buffer to fn_dir_path
+        ; copy fuji_buffer to fn_dir_path
         pushax  #fn_dir_path
-        pushax  #fn_io_buffer
+        pushax  #fuji_buffer
         lda     #$e0
         jsr     _fc_strncpy
 
@@ -117,7 +117,7 @@ too_long_error:
         ; all good, append values
         ; --------------------------------------------
 
-:       mwa     #fn_io_buffer, ptr2
+:       mwa     #fuji_buffer, ptr2
         adw1    ptr2, tmp1
         inc     tmp2                    ; allow for nul char in strlcpy. this should be done AFTER the size check!
         pushax  ptr2                    ; dst, where we will apend the entry to.

@@ -1,6 +1,6 @@
-        .export     fn_io_ssidinfo
+        .export     fuji_ssidinfo
 
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
 
 .segment "BUFFER"
-fn_io_ssidinfo:      .res .sizeof(SSIDInfo)
+fuji_ssidinfo:      .res .sizeof(SSIDInfo)

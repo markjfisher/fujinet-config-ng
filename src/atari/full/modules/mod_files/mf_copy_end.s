@@ -3,7 +3,7 @@
         .import     _clr_status
         .import     _fc_strlcpy
         .import     _fc_strlen
-        .import     _fn_io_copy_file
+        .import     _fuji_copy_file
         .import     _free
         .import     _put_s
         .import     _scr_clr_highlight
@@ -75,7 +75,7 @@
         pusha   tmp3            ; the src host (destination)
         pusha   mh_host_selected   ; current host (target)
         setax   ptr1            ; spec
-        jsr     _fn_io_copy_file
+        jsr     _fuji_copy_file
 
         ; now free up the location we allocated
         setax   ptr1

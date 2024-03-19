@@ -7,14 +7,14 @@
         .import     _fc_strlcpy
         .import     _fc_strlen
         .import     _free
-        .import     _fn_io_error
+        .import     _fuji_error
         .import     _malloc
         .import     _put_help
         .import     _scr_clr_highlight
         .import     _show_select
         .import     copy_path_to_buffer
         .import     debug
-        .import     fn_io_buffer
+        .import     fuji_buffer
         .import     load_widget_x
         .import     mf_ask_new_disk_cst_info
         .import     mf_ask_new_disk_cust_sector_size_val
@@ -43,7 +43,7 @@
         .include    "modules.inc"
         .include    "fn_data.inc"
         .include    "fn_disk.inc"
-        .include    "fn_io.inc"
+        .include    "fujinet-fuji.inc"
         .include    "popup.inc"
 
 ; tmp1,tmp2,tmp8,tmp9,tmp10
@@ -84,9 +84,9 @@ mf_new_disk:
 
         pushax  #$00            ; not custom (sectors number)
         jsr     pushax          ; not custom (sectors size)
-        setax   #fn_io_buffer   ; path to disk to create
+        setax   #fuji_buffer   ; path to disk to create
         jsr     _create_new_disk
-        jsr     _fn_io_error
+        jsr     _fuji_error
         beq     end_ask
 
         jsr     mf_nd_err_saving
@@ -251,9 +251,9 @@ mf_cst_disk:
 push_size:
         jsr     pushax
 
-        setax   #fn_io_buffer   ; path to disk to create
+        setax   #fuji_buffer   ; path to disk to create
         jsr     _create_new_disk
-        jsr     _fn_io_error
+        jsr     _fuji_error
         beq     end_ask2
 
         jsr     mf_nd_err_saving
@@ -328,7 +328,7 @@ nd_help:
 join_path_and_filename:
         ; prepend the full path to name. couldn't get here with long path, but need to check adding on the file name doesn't go over limit
         jsr     copy_path_to_buffer
-        setax   #fn_io_buffer
+        setax   #fuji_buffer
         jsr     _fc_strlen
         sta     tmp1
 
@@ -343,8 +343,8 @@ join_path_and_filename:
         adc     tmp1
         bcs     too_long         ; over $100, must be too long, anything else is ok
 
-        ; append the filename to fn_io_buffer
-        mwa     #fn_io_buffer, ptr2
+        ; append the filename to fuji_buffer
+        mwa     #fuji_buffer, ptr2
         adw1    ptr2, tmp1
         inc     tmp2            ; allow for null in strlcpy
         pushax  ptr2            ; dst
@@ -374,7 +374,7 @@ handle_device_slot:
         jsr     join_path_and_filename
         bne     :+
 
-        ; fn_io_buffer now holds whole dirpath and filename of new disk
+        ; fuji_buffer now holds whole dirpath and filename of new disk
         ; tmp3 holds the device slot to populate
 
         ; save the device slot choice

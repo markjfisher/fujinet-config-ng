@@ -1,9 +1,9 @@
         .export     get_to_dir_pos
 
-        .import     _fn_io_open_directory
-        .import     _fn_io_set_directory_position
+        .import     _fuji_open_directory
+        .import     _fuji_set_directory_position
         .import     copy_path_filter_to_buffer
-        .import     fn_io_buffer
+        .import     fuji_buffer
         .import     mf_dir_pos
         .import     mf_selected
         .import     mh_host_selected
@@ -17,8 +17,8 @@
         ; always need the filter that was used, as we are doing selections, which differ if a filter is set
         jsr     copy_path_filter_to_buffer
         pusha   mh_host_selected
-        setax   #fn_io_buffer
-        jsr     _fn_io_open_directory
+        setax   #fuji_buffer
+        jsr     _fuji_open_directory
 
         ; set the directory position to top + highlighted
         mwa     mf_dir_pos, tmp9
@@ -26,6 +26,6 @@
 
         ; setax   tmp9  ; a is already tmp9
         ldx     tmp9+1
-        jmp     _fn_io_set_directory_position
+        jmp     _fuji_set_directory_position
         ; implicit rts
 .endproc

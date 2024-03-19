@@ -13,6 +13,9 @@ a.out
 *.d88
 autorun.atr
 
+fujinet-lib/*.zip
+fujinet-lib/[0-9]*
+
 # a personal altirra setup
 altirra-*.ini
 
