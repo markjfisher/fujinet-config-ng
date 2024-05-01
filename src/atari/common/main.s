@@ -25,7 +25,7 @@
         ; RETURN TO CALLER
 
         ; reset DOSINI for reset handling
-        mwa     _reset_handler+1, DOSINI
+        mwa     _reset_handler+1+3, DOSINI
 
         mva     #$00, GRACTL
         mva     #$00, PMBASE

@@ -1,6 +1,9 @@
         .export     _reset_handler
+        .export     reset_debug
 
         .import     _clr_scr_all
+        .import     _scr_setup
+        .import     _mod_init
         .import     booting_mode
         .import     md_is_devices_data_fetched
         .import     mf_copying
@@ -17,7 +20,18 @@
 
 ; needs to be in writable RAM to capture the DOSINI original vector
 .segment "RESET"
+
+.proc reset_debug
+        rts
+.endproc
+
+.proc _pre_reset
+        mva     #$00, COLDST
+        jmp     reset_debug
+.endproc
+
 .proc _reset_handler
+        jsr     _pre_reset
         jsr     $ffff       ; overwritten by original DOSINI address
 
         ; reset all modules state, and clear old screen data
@@ -30,5 +44,6 @@
         sta     mf_copying
 
         jsr     _clr_scr_all
+
         jmp     start
 .endproc

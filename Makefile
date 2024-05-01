@@ -97,17 +97,28 @@ ifeq ($(ALTIRRA_PORTABLE_ALT),)
   # you can override this in your environment with:
   #   export ALTIRRA_ARGS="//portable //portablealt:your-own.ini //debug ... etc"
   # when using MSYS, you must use double slashes, as the first is stripped off and not passed to the application
-  ALTIRRA_ARGS := $(XS)/portable $(XS)/portablealt:altirra-debug.ini $(XS)/debug $(LBL_SYM)
+  ALTIRRA_ARGS := $(XS)/portable $(XS)/portablealt:altirra-debug.ini
 else
-  ALTIRRA_ARGS := $(XS)/portable $(ALTIRRA_PORTABLE_ALT) $(XS)/debug $(LBL_SYM)
+  ALTIRRA_ARGS := $(XS)/portable $(ALTIRRA_PORTABLE_ALT)
 endif
 
 ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(ALTIRRA_ARGS) \
   $(XS)/debugcmd: ".tracecio on" \
-  $(XS)/debugcmd: "bp debug" \
 
+  # $(XS)/debug $(LBL_SYM)
 
+  # $(XS)/debugcmd: "bp debug" \
+  # $(XS)/debugcmd: "bp init_debug" \
+  # $(XS)/debugcmd: "bp reset_debug" \
+  # $(XS)/debugcmd: "ba w 0x0400" \
+  # $(XS)/debugcmd: "ba w 0x0401" \
+  # $(XS)/debugcmd: "ba w 0x0402" \
+  # $(XS)/debugcmd: "ba w 0x0403" \
+  # $(XS)/debugcmd: "ba w 0x0404" \
+  # $(XS)/debugcmd: "ba w 0x0405" \
+  # $(XS)/debugcmd: "ba r dosini" \
+  # $(XS)/debugcmd: "ba w dosini" \
   # $(XS)/debugcmd: "bp start" \
   # $(XS)/debugcmd: "bp _main" \
   # $(XS)/debugcmd: "bp \$$0943" \
@@ -263,6 +274,21 @@ get_fujinet_lib:
 		echo "Unzip complete."; \
 	fi
 
+dist-z: $(PROGRAM)
+	@if [ -d "../fujinet-config-loader" ] ; then \
+    echo "Found fujinet-config-loader, creating compressed autorun.atr"; \
+    $(MAKE) -C ../fujinet-config-loader clean dist CONFIG_TARGET=$$(realpath build/$(PROGRAM)) ; \
+    if [ $$? -ne 0 ] ; then \
+      echo "ERROR running compressor"; \
+      exit 1; \
+    fi; \
+    cp ../fujinet-config-loader/autorun-zx0.atr ./autorun.atr; \
+    echo "Compressed file saved as autorun.atr"; \
+  else \
+    echo "ERROR: Could not find fujinet-config-loader in sibling directory to current."; \
+    exit 1; \
+  fi
+
 # The remaining targets.
 $(OBJDIR):
 	$(call MKDIR,$@)
@@ -305,10 +331,24 @@ test: $(PROGRAM)
 	$(EMUCMD) $(BUILD_DIR)\\$< \
 	$(POSTEMUCMD)
 
+test-atrz-sd: $(PROGRAM) dist-z
+	$(PREEMUCMD) \
+  $(EMUCMD) //disk "C:\8bit\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr" //disk autorun.atr \
+	$(POSTEMUCMD)
+
+test-atrz: $(PROGRAM) dist-z
+	$(PREEMUCMD) \
+  $(EMUCMD) //disk autorun.atr \
+	$(POSTEMUCMD)
+
+test-atr-sd: $(PROGRAM) dist
+	$(PREEMUCMD) \
+  $(EMUCMD) //disk "C:\8bit\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr" //disk autorun.atr \
+	$(POSTEMUCMD)
 
 test-atr: $(PROGRAM) dist
 	$(PREEMUCMD) \
-  $(EMUCMD) //disk "C:\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr" //disk autorun.atr \
+  $(EMUCMD) //disk autorun.atr \
 	$(POSTEMUCMD)
 
 #	$(EMUCMD) autorun.atr \

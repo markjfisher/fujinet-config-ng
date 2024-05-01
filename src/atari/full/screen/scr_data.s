@@ -25,7 +25,7 @@ DL_MODEE      = $0E
 DL_MODEF      = $0F
 
 
-.segment "DLIST"
+.segment "DLSCR"
 
 main_dlist:
     ; blank lines in head
@@ -68,29 +68,6 @@ main_dlist:
     .byte DL_JVB
     .addr main_dlist
 
-.segment "SCREEN"
-
-.macro SPACES_LINE
-        .repeat SCR_BYTES_W
-            .byte " "
-        .endrepeat
-.endmacro
-
-        SCREENCODE_INVERT_CHARMAP
-sline1: SPACES_LINE
-sline2: SPACES_LINE
-        NORMAL_CHARMAP
-
-        SCREENCODE_CHARMAP
-m_l1:   .repeat SCR_HEIGHT
-            SPACES_LINE
-        .endrepeat
-
-
-        SCREENCODE_INVERT_CHARMAP
-mhlp1:  SPACES_LINE
-        NORMAL_CHARMAP
-
 ; following 200 bytes are curvature lines on the screen.
 gbk:
     .repeat 40
@@ -124,3 +101,11 @@ gouttop2:
         .byte $ff
     .endrepeat
     .byte $ff, $fc
+
+;; Addresses of Screen Memory - no need to assign it data
+;; as it will be cleared at start, and doesn't need to be in the segment
+scr_start_addr = *
+sline1 = scr_start_addr
+sline2 = sline1 + SCR_BYTES_W
+m_l1   = sline2 + SCR_BYTES_W
+mhlp1  = m_l1 + (SCR_BYTES_W * SCR_HEIGHT)

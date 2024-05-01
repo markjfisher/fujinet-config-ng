@@ -8,7 +8,6 @@
 .proc _wait_scan1
 :       lda VCOUNT
         bne :-
-        rts
 
 :       lda VCOUNT
         beq :-

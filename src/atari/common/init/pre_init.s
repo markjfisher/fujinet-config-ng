@@ -1,5 +1,10 @@
         .export     pre_init
-        .import     _reset_handler, detect_banks, setup_fonts
+        .export     init_debug
+
+        .import     _reset_handler
+        .import     detect_banks
+        .import     setup_fonts
+
         .include    "atari.inc"
         .include    "macros.inc"
 
@@ -9,6 +14,11 @@
 ; the memory location will be written over by later blocks, which is fine, it's only needed for one time initial setup
 
 .segment "INIT"
+
+.proc init_debug
+        rts
+.endproc
+
 .proc pre_init
         ; detect banked values for NMIEN for up to MAX_BANKS (defined in detect_banks.s)
         jsr     detect_banks
@@ -17,7 +27,8 @@
         jsr     setup_fonts
 
         ; setup reset handler
-        mwa     DOSINI, _reset_handler+1
+        jsr     init_debug
+        mwa     DOSINI, _reset_handler+1+3
         mwa     #_reset_handler, DOSINI
         ; this was required before fixing picoboot.bin in CONFIG, by adding equivalent change.
         ; mva     #$01, BOOTQ                     ; stops RESET going to Self Test every other push of button.

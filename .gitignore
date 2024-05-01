@@ -12,6 +12,7 @@ a.out
 *.cas
 *.d88
 autorun.atr
+autorun-*.atr
 
 fujinet-lib/*.zip
 fujinet-lib/[0-9]*
@@ -23,3 +24,5 @@ altirra-*.ini
 .vscode/c_cpp_properties.json
 
 Makefile.options
+
+breakpoints.txt

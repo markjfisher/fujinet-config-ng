@@ -14,7 +14,8 @@
         jsr     _bar_setcolor
 
         mva     #>__PMG_START__, PMBASE
-        mva     #$03, GRACTL    ; turn on players and missiles
+        ;; causes flicker here
+        ; mva     #$03, GRACTL    ; turn on players and missiles
 
         mva     #$ff, SIZEP0
         sta           SIZEP1
@@ -29,6 +30,9 @@
         dey
         bpl     :-
 
+        ;; causes flicker here
+        ; jsr     _wait_scan1
+        ; mva     #$03, GRACTL    ; turn on players and missiles
         rts
 .endproc
 
@@ -82,6 +86,9 @@
         inx
         dey
         bne     :-
+        ; delay turning on PM graphics all the way to when it's being used.
+        ; doesn't seem to hurt leaving it keep being set here.
+        mva     #$03, GRACTL    ; turn on players and missiles
 
         jmp     return0
 .endproc

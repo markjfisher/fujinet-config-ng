@@ -12,12 +12,6 @@ ext_b           := $4000
 
 ; void detect_banks()
 .proc detect_banks
-        mva     #$00, SDMCTL
-
-        ; wait for screen to refresh x 2 so it's fully black and get no corruption. It will come back on later
-        jsr     pause_vcount1
-        jsr     pause_vcount1
-
         lda     PORTB
         pha
         lda     #$ff
@@ -109,14 +103,6 @@ setpb:  txa     ; change bit order: %0000dcba -> %cba000d0
         ora     #$01 ; set OS ROM control bit to default value [1]
         ; and    #$fe ; alternate version if OS ROM should be DISABLED
         sta     PORTB
-        rts
-
-pause_vcount1:
-:       lda     VCOUNT
-        bne     :-
-
-:       lda     VCOUNT
-        beq     :-
         rts
 
 

@@ -12,8 +12,11 @@
 ; void scr_setup()
 .proc _scr_setup
 
-        ; Screen is already off in the pre_init stage.
+        jsr     _wait_scan1
+        mva     #$00, SDMCTL
         mva     #$00, NMIEN
+        jsr     _wait_scan1
+
         jsr     _bar_setup
         jsr     _bar_clear
 
