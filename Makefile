@@ -27,6 +27,9 @@ PREEMUCMD :=
 POSTEMUCMD :=
 STATEFILE := Makefile.options
 
+DOS_ATR := C:\8bit\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr
+FN_CONFIG_LOADER := ../fujinet-config-loader
+
 # Compiler flags used to tell the compiler to optimise for SPEED
 define _optspeed_
   CFLAGS += -Oris
@@ -275,17 +278,17 @@ get_fujinet_lib:
 	fi
 
 dist-z: $(PROGRAM)
-	@if [ -d "../fujinet-config-loader" ] ; then \
+	@if [ -d "$(FN_CONFIG_LOADER)" ] ; then \
     echo "Found fujinet-config-loader, creating compressed autorun.atr"; \
-    $(MAKE) -C ../fujinet-config-loader clean dist CONFIG_TARGET=$$(realpath build/$(PROGRAM)) ; \
+    $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath build/$(PROGRAM)) ; \
     if [ $$? -ne 0 ] ; then \
       echo "ERROR running compressor"; \
       exit 1; \
     fi; \
-    cp ../fujinet-config-loader/autorun-zx0.atr ./autorun.atr; \
+    cp "$(FN_CONFIG_LOADER)/autorun-zx0.atr" ./autorun.atr; \
     echo "Compressed file saved as autorun.atr"; \
   else \
-    echo "ERROR: Could not find fujinet-config-loader in sibling directory to current."; \
+    echo "ERROR: Could not find fujinet-config-loader at path $(FN_CONFIG_LOADER)."; \
     exit 1; \
   fi
 
@@ -333,7 +336,7 @@ test: $(PROGRAM)
 
 test-atrz-sd: $(PROGRAM) dist-z
 	$(PREEMUCMD) \
-  $(EMUCMD) //disk "C:\8bit\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr" //disk autorun.atr \
+  $(EMUCMD) //disk "$(DOS_ATR)" //disk autorun.atr \
 	$(POSTEMUCMD)
 
 test-atrz: $(PROGRAM) dist-z
@@ -343,7 +346,7 @@ test-atrz: $(PROGRAM) dist-z
 
 test-atr-sd: $(PROGRAM) dist
 	$(PREEMUCMD) \
-  $(EMUCMD) //disk "C:\8bit\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr" //disk autorun.atr \
+  $(EMUCMD) //disk "$(DOS_ATR)" //disk autorun.atr \
 	$(POSTEMUCMD)
 
 test-atr: $(PROGRAM) dist
