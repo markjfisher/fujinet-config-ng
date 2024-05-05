@@ -23,19 +23,65 @@ host values.
 
 ## Building
 
-Use make. Specify the targets as required (default = atari.full)
+Use `make`
+
+## Running
+
+As a fujinet application, you need to have your emulator available (altirra for atari) and appropriate fujinet-pc
+connectivity available (e.g. bridge for atari, and altirra configured to use it).
+
+Then you can issue:
 
 ```shell
-$ make TARGETS=atari.full,apple2 clean all
+make test
 ```
 
-See Variants information below for how to build different subtargets for a platform, if required.
+which will run the application in the appropriate emulator. For altirra, you must set `ALTIRRA_HOME` to path of the folder it lives in.
+
+## Create ATR
+
+You can create an ATR with the config application in it.
+
+Additionally, you can use the fujinet-config-loader to display an opening image and compress config to enable faster loading on non-hsio systems.
+
+Examples are given below. In all cases the generated file is "autorun.atr" in the root dir.
+
+For generating config-loader enabled atr images, you must define the path to `fujinet-config-loader` via the `FN_CONFIG_LOADER` build value.
+If you have the project as a sibling project to this repository, (i.e. at ../fujinet-config-loader) then it will automatically be found.
+
+```shell
+# create simple atr with config and tools
+make dist
+
+# use config-loader with default image
+make dist-z
+
+# use custom banner (you must create your own banners)
+make dist-z BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768
+
+```
 
 ## Core application
 
-`config.s` is the first code run, and sets up a basic environment, establishing as software stack, finally calling _main.
+The application startup sequence is:
 
-This defines the `start` function for the linker to find and run.
+1. `pre_init` is loaded as segments are loaded for the application
+
+    This does some one time code (e.g. bank detection, font loading, reset handler).
+    The memory for this code is overwritten later as it is no longer needed after running once.
+
+2. `_start` runs from crt0.s in cc65
+
+3. `_main` runs from `_start`
+
+Main starts the first `module`, which is Mod::Init (`_mod_init`), the locations of code
+corresponding to the modules is in `run_module.s`.
+
+The init module sets up the application state, and loads the wifi settings if possible.
+If it is able to, it passes control to the `hosts` module, otherwise it passes control to
+the `wifi` module so that a wifi can be picked by the user.
+
+After this, user navigation dictates which module to load.
 
 ## Testing
 

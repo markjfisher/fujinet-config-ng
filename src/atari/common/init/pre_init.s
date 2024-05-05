@@ -46,16 +46,6 @@
         lda     #$01        ; keep it off after reset
         sta     BASICF
 
-        ldx     #$02        ; CLOSE "E"
-        jsr     editor
-        ldx     #$00        ; OPEN "E"
-editor:
-        ; dispatch based JMP!
-        lda     EDITRV+1, x
-        pha
-        lda     EDITRV, x
-        pha
-        ; now ready to JMP on a RTS
 ramok:
         rts
 

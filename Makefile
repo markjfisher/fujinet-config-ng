@@ -30,6 +30,9 @@ STATEFILE := Makefile.options
 DOS_ATR := C:\8bit\atari\tnfsd\atari\dos\SpartaDOS3.2d.atr
 FN_CONFIG_LOADER := ../fujinet-config-loader
 
+BANNER_INFO := 
+# BANNER_INFO := BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768
+
 # Compiler flags used to tell the compiler to optimise for SPEED
 define _optspeed_
   CFLAGS += -Oris
@@ -280,7 +283,7 @@ get_fujinet_lib:
 dist-z: $(PROGRAM)
 	@if [ -d "$(FN_CONFIG_LOADER)" ] ; then \
     echo "Found fujinet-config-loader, creating compressed autorun.atr"; \
-    $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath build/$(PROGRAM)) ; \
+    $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath build/$(PROGRAM)) $(BANNER_INFO); \
     if [ $$? -ne 0 ] ; then \
       echo "ERROR running compressor"; \
       exit 1; \

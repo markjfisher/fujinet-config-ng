@@ -7,7 +7,7 @@
         .include  "macros.inc"
         .include  "modules.inc"
 
-; void _dev_init()
+; void dev_init()
 ;
 ; Device Specific initialisation routine.
 ; Setup display, any reset handling, etc.
