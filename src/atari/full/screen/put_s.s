@@ -8,16 +8,15 @@
         .include    "macros.inc"
         .include    "fn_data.inc"
 
-; void put_s(uint8_t X, uint8_t Y, char *s)
+; expects:
+;   tmp9 = pointer to string
+;   tmp8 = x
+;   tmp7 = y
 ;
 ; print string at the screen location x, y accounting for boundaries
 ; x and y are in small inner grid (about 38x22), so can assume under these values (i.e. bmi ok)
+
 .proc _put_s
-        axinto  tmp9            ; char *s
-
-        popa    tmp7            ; y
-        popa    tmp8            ; x
-
         ; load and check x,y boundary
         ; couldn't do this with inscsp1 and skipping load of x, because popa trashes y reg. ends up being more memory anyway
         ldx     tmp8

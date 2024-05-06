@@ -2,11 +2,18 @@
 
         .import     _fuji_get_device_slots
         .import     _fuji_set_device_filename
-        .import     _kb_global
+        .import     kb_global
         .import     _scr_highlight_line
         .import     fuji_buffer
         .import     fuji_deviceslots
+        
         .import     kb_current_line
+        .import     kb_max_entries
+        .import     kb_prev_mod
+        .import     kb_next_mod
+        .import     kb_mod_current_line_p
+        .import     kb_mod_proc
+
         .import     md_device_selected
         .import     mh_host_selected
         .import     pusha
@@ -21,12 +28,13 @@
 .proc _md_handle_input
         mva     md_device_selected, kb_current_line
 
-        pusha   #7              ; only 8 entries on screen
-        pusha   #Mod::hosts     ; previous
-        pusha   #Mod::wifi      ; next
-        pushax  #md_device_selected   ; our current device
-        setax   #md_kb_handler
-        jmp     _kb_global          ; rts from this will drop out of module
+        mva     #$07, kb_max_entries
+        mva     #Mod::hosts, kb_prev_mod
+        mva     #Mod::wifi, kb_next_mod
+        mwa     #md_device_selected, kb_mod_current_line_p
+        mwa     #md_kb_handler, kb_mod_proc
+
+        jmp     kb_global          ; rts from this will drop out of module
 
 .endproc
 

@@ -1,6 +1,11 @@
-        .export     _kb_global
+        .export     kb_global
+
         .export     kb_current_line
         .export     kb_max_entries
+        .export     kb_prev_mod
+        .export     kb_next_mod
+        .export     kb_mod_current_line_p
+        .export     kb_mod_proc
 
         .import     _clr_scr_all
         .import     _clr_status
@@ -22,8 +27,6 @@
         .include    "modules.inc"
         .include    "fn_data.inc"
 
-; void kb_global(uint8_t kb_max_entries, uint8_t kb_prev_mod, uint8_t kb_next_mod, void *kb_current_line, void * kb_mod_proc)
-;
 ;  kb_max_entries:  Total entries on page - 1, for up/down movement
 ;         prevmod:  which mod to go to if press left key
 ;         nextmod:  which mod to go to if press right key
@@ -32,15 +35,8 @@
 ;
 ; A global keyboard handler for navigation on modules. Passes off to mod specific kb handler first to allow it to be processed locally.
 ; then deals with common cases (L/R, U/D, Option, ... more TODO)
-.proc _kb_global
-        ; save the specific module's kb handler
-        axinto  kb_mod_proc
-        ; and pop other params
-        popax   kb_mod_current_line_p
-        popa    kb_next_mod
-        popa    kb_prev_mod
-        popa    kb_max_entries
 
+.proc kb_global
         jmp     save_state
         ; implicit rts
 
@@ -82,7 +78,7 @@ not_option:
 
 global_kb:
 ; -------------------------------------------------
-; right - set next module, and exit _kb_global
+; right - set next module, and exit kb_global
         cmp     #FNK_RIGHT
         beq     do_right
         cmp     #FNK_RIGHT2
@@ -95,7 +91,7 @@ do_right:
 
 :
 ; -------------------------------------------------
-; left - set prev module, and exit _kb_global
+; left - set prev module, and exit kb_global
         cmp     #FNK_LEFT
         beq     do_left
         cmp     #FNK_LEFT2

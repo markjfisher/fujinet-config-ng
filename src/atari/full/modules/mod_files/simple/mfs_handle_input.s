@@ -1,6 +1,14 @@
         .export     mfs_handle_input
 
-        .import     _kb_global
+        .import     kb_global
+
+        .import     kb_current_line
+        .import     kb_max_entries
+        .import     kb_prev_mod
+        .import     kb_next_mod
+        .import     kb_mod_current_line_p
+        .import     kb_mod_proc
+
         .import     mf_selected
         .import     mfs_kbh
         .import     mfs_kbh_running
@@ -19,14 +27,16 @@
         ldx     #KBH::RELOOP
         rts
 
-        ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into _kb_global 
+        ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into kb_global 
 :       mva     #$01, mfs_kbh_running
-        pusha   #DIR_PG_CNT-1   ; we can highlight max of DIR_PG_CNT (i.e. 0 to DIR_PG_CNT - 1)
-        pusha   #Mod::files     ; L/R arrow keys will be overridden by local kb handler
-        pusha   #Mod::files     ; L/R arrow keys this will be overridden by local kb handler
-        pushax  #mf_selected    ; memory address of our current chosen file/dir
-        setax   #mfs_kbh        ; this mod's kb handler, the global kb handler will jump into this routine which will handle the interactions
-        jmp     _kb_global      ; rts from this will drop out of module
+
+        mva     #DIR_PG_CNT-1, kb_max_entries
+        mva     #Mod::files, kb_prev_mod
+        mva     #Mod::files, kb_next_mod
+        mwa     #mf_selected, kb_mod_current_line_p
+        mwa     #mfs_kbh, kb_mod_proc
+
+        jmp     kb_global      ; rts from this will drop out of module
 
         ; exits with X set to kbh return value
 .endproc

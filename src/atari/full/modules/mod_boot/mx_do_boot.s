@@ -39,14 +39,14 @@ normal_boot:
         jsr     show_box
         put_s   #10, #6, #boot_anim_1_2
 
-        jsr     mx_mount
+        jsr     mx_mount        ; this can take a second anyway, so screen can move quickly
         ; check if we got an error
         bne     error
+        pause   #$01
 
-        pause   #$10
         ; "booting!"
         put_s   #10, #6, #boot_anim_2_1
-        pause   #$20
+        pause   #$02
 
         lda     #$00            ; don't read config
         jsr     _fuji_set_boot_config

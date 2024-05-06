@@ -1,4 +1,10 @@
         .export     show_list
+
+        .export     sl_callback
+        .export     sl_max_cnt
+        .export     sl_size
+        .export     sl_str_loc
+
         .import     s_empty, get_scrloc, ascii_to_code
         .import     popa, pushax, popax
 
@@ -8,15 +14,12 @@
         .include    "fn_data.inc"
         .include    "modules.inc"
 
-; void show_list(void *index_print_cb, uint8_t max_count, uint8_t dataSize, char *str)
+; OLD void show_list(void *index_print_cb, uint8_t max_count, uint8_t dataSize, char *str)
 ;
-; show 8 strings on screen in list fashion, used on hosts and devices.
+; show list of strings on screen, used on hosts and devices.
 .proc show_list
-        axinto  ptr1            ; str, the string to display's location
-        popa    sl_size         ; how much to move down each data block
-        popa    sl_max_cnt      ; maximum number to display in list
-        popax   sl_callback     ; routine to call that takes list number in A and prints up to 5 chars for index value (allowing customisation). It expects ptr4 to point to start of printing area
 
+        mwa     sl_str_loc, ptr1
         mva     #$00, sl_index
 
         ldy     #SL_Y
@@ -70,3 +73,4 @@ sl_index:    .res 1
 sl_size:     .res 1
 sl_callback: .res 2
 sl_max_cnt:  .res 1
+sl_str_loc:  .res 2

@@ -378,14 +378,26 @@ l1:
 .endmacro
 
 .macro put_s argX, argY, argS, yOffset
-        pusha   argX
+        lda     argX
+        sta     tmp8
         lda     argY
-        .ifnblank yOffset
-          clc
-          adc   yOffset
-        .endif
-        jsr     pusha
-        setax   argS
+    .ifnblank yOffset
+        clc
+        adc   yOffset
+    .endif
+        sta     tmp7
+
+    .if (.match (.left (1, {argS}), #))
+        lda     #<(.right (.tcount ({argS})-1, {argS}))
+        sta     tmp9
+        lda     #>(.right (.tcount ({argS})-1, {argS}))
+        sta     1+(tmp9)
+    .else
+        lda     argS
+        sta     tmp9
+        lda     1+(argS)
+        sta     tmp9+1
+    .endif
         jsr     _put_s
 .endmacro
 

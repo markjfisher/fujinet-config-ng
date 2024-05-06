@@ -15,6 +15,7 @@
         .import     mw_setup_wifi
         .import     pusha
 
+        .include    "zp.inc"
         .include    "macros.inc"
         .include    "modules.inc"
 

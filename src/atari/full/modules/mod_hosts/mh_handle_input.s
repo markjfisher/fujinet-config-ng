@@ -1,9 +1,16 @@
         .export     _mh_handle_input
 
         .import     _edit_hosts_entry
-        .import     _kb_global
-        .import     _scr_highlight_line
+        .import     kb_global
+
         .import     kb_current_line
+        .import     kb_max_entries
+        .import     kb_prev_mod
+        .import     kb_next_mod
+        .import     kb_mod_current_line_p
+        .import     kb_mod_proc
+
+        .import     _scr_highlight_line
         .import     mh_host_selected
         .import     mod_current
         .import     pusha
@@ -18,12 +25,13 @@
 .proc _mh_handle_input
         mva     mh_host_selected, kb_current_line
 
-        pusha   #7              ; only 8 entries on screen
-        pusha   #Mod::info      ; prev
-        pusha   #Mod::devices   ; next
-        pushax  #mh_host_selected  ; memory address of our current host so it can be updated
-        setax   #mh_kb_handler  ; hosts kb handler
-        jmp     _kb_global      ; rts from this will drop out of module
+        mva     #$07, kb_max_entries
+        mva     #Mod::info, kb_prev_mod
+        mva     #Mod::devices, kb_next_mod
+        mwa     #mh_host_selected, kb_mod_current_line_p
+        mwa     #mh_kb_handler, kb_mod_proc
+
+        jmp     kb_global      ; rts from this will drop out of module
 
 .endproc
 

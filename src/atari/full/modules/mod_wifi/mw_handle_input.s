@@ -1,11 +1,17 @@
         .export     _mw_handle_input
 
-        .import     _kb_global
+        .import     kb_global
+
+        .import     kb_current_line
+        .import     kb_max_entries
+        .import     kb_prev_mod
+        .import     kb_next_mod
+        .import     kb_mod_current_line_p
+        .import     kb_mod_proc
+
         .import     _mw_display_wifi
         .import     _mw_init_screen
         .import     _scr_clr_highlight
-        .import     kb_current_line
-        .import     kb_max_entries
         .import     mw_choose_custom
         .import     mw_choose_network
         .import     mw_do_setup
@@ -25,12 +31,13 @@
         mva     #$00, mw_setting_up
         jsr     _scr_clr_highlight
 
-        pusha   #0
-        pusha   #Mod::devices   ; prev
-        pusha   #Mod::info      ; next
-        pushax  #mw_selected    ; memory address of our current host so it can be updated
-        setax   #mw_kb_handler  ; hosts kb handler
-        jmp     _kb_global      ; rts from this will drop out of module
+        mva     #$00, kb_max_entries
+        mva     #Mod::devices, kb_prev_mod
+        mva     #Mod::info, kb_next_mod
+        mwa     #mw_selected, kb_mod_current_line_p
+        mwa     #mw_kb_handler, kb_mod_proc
+
+        jmp     kb_global      ; rts from this will drop out of module
 
 .endproc
 
