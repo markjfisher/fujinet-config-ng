@@ -19,10 +19,8 @@
 .proc _put_s
         ; load and check x,y boundary
         ; couldn't do this with inscsp1 and skipping load of x, because popa trashes y reg. ends up being more memory anyway
-        ldx     tmp8
         cpx     #SCR_WID_NB
         bcs     exit
-        ldy     tmp7
         cpy     #SCR_HEIGHT
         bcs     exit
 
@@ -39,9 +37,8 @@ next_char:
         jsr     ascii_to_code
         sta     (ptr4), y       ; print char
 
-        inc     tmp8            ; x+1, small numbers so no need to check C
-        lda     tmp8
-        cmp     #SCR_WID_NB
+        inx
+        cpx     #SCR_WID_NB
         bcs     exit            ; out of bounds in X
         iny                     ; move across a character, used for string and screen loc
         bcc     next_char

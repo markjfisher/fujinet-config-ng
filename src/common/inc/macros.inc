@@ -378,14 +378,14 @@ l1:
 .endmacro
 
 .macro put_s argX, argY, argS, yOffset
-        lda     argX
-        sta     tmp8
-        lda     argY
+        ldx     argX
+        ldy     argY
     .ifnblank yOffset
+        tya
         clc
         adc   yOffset
+        tay
     .endif
-        sta     tmp7
 
     .if (.match (.left (1, {argS}), #))
         lda     #<(.right (.tcount ({argS})-1, {argS}))
