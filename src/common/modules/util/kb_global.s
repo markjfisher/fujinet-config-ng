@@ -139,7 +139,7 @@ do_down:
 
 save_state:
         ldy     #$00
-        mwa     kb_mod_current_line_p, ptr1       ; need to see if anything ever changes ptr1, to make this more efficient
+        mwa     kb_mod_current_line_p, ptr1
         mva     kb_current_line, {(ptr1), y}
 
         ; only highlight line if there are any to highlight

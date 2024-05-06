@@ -44,6 +44,9 @@ FN_CONFIG_LOADER := ../fujinet-config-loader
 
 ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
+  $(XS)/debug \
+  $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
+  $(XS)/debugcmd: "bp ak_read_settings" \
 
 # Additional args that can be copied into the above lines
 #   $(XS)/debug \
