@@ -14,15 +14,13 @@ a.out
 autorun.atr
 autorun-*.atr
 
-fujinet-lib/*.zip
-fujinet-lib/[0-9]*
-
 # a personal altirra setup
 altirra-*.ini
 
-.vscode/settings.json
-.vscode/c_cpp_properties.json
+.vscode/
 
 Makefile.options
 
 breakpoints.txt
+
+_libs/
