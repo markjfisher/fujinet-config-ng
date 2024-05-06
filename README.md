@@ -51,13 +51,13 @@ If you have the project as a sibling project to this repository, (i.e. at ../fuj
 
 ```shell
 # create simple atr with config and tools
-make dist
+make disk
 
 # use config-loader with default image
-make dist-z
+make diskz
 
 # use custom banner (you must create your own banners)
-make dist-z BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768
+make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768 
 
 ```
 

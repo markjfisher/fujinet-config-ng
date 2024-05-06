@@ -24,7 +24,7 @@ FN_CONFIG_LOADER := ../fujinet-config-loader
 .dist-z:
 	@if [[ -n "$(FN_CONFIG_LOADER)" && -d "$(FN_CONFIG_LOADER)" ]] ; then \
     echo "Found fujinet-config-loader, creating compressed autorun.atr"; \
-    $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath build/$(PROGRAM)) $(BANNER_INFO); \
+    $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX)) $(BANNER_INFO); \
     if [ $$? -ne 0 ] ; then \
       echo "ERROR running compressor"; \
       exit 1; \
