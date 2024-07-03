@@ -48,6 +48,7 @@
 
         ; eject highlighted entry, which involves setting device slot to empty string and put/get device slots
         ; new version is just save device file name with no value
+        ; This doesn't unset the host correctly in FN! It will still mount it if the host_slot is not 0xff
         lda     #$00
         sta     fuji_buffer
         pusha   #$00

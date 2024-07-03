@@ -1,8 +1,11 @@
         .export     handle_kb
         .export     pu_kb_cb
         .export     pu_null_cb
+        .export     do_edit
 
         .import     _edit_line
+        .import     _edit_string
+        .import     _fc_strlen
         .import     _kb_get_c_ucase
         .import     _create_new_disk
         .import     copy_entry
@@ -10,7 +13,9 @@
         .import     get_edit_loc
         .import     item_x_to_ptr1
         .import     load_widget_x
+        .import     m_l1
         .import     pui_sizes
+        .import     pusha
         .import     pushax
         .import     set_next_selectable_widget
         .import     show_edit_value
@@ -21,6 +26,8 @@
         .import     ss_str_idx
         .import     ss_ud_idx
         .import     ss_widget_idx
+        .import     ss_y_offset
+        .import     ss_width
         .import     type_at_x
 
         .include    "zp.inc"
@@ -335,17 +342,68 @@ do_jmp:
 
 .proc do_edit
         ; set ptr4 to the location of the edit field
-        jsr     get_edit_loc            ; sets ptr4 to location on screen of string to edit
+        ; jsr     get_edit_loc            ; sets ptr4 to location on screen of string to edit
 
         ; display it in normal text
-        jsr     show_edit_value         ; sets ptr1 to start of the string editing
+        ; jsr     show_edit_value         ; sets ptr1 to start of the string editing
         
         ; start editing
-        pushax  ptr1
-        pushax  ptr4
-        lda     ss_pu_entry + POPUP_LEN_IDX
-        jsr     _edit_line
+        ; pushax  ptr1
+        ; pushax  ptr4
+        ; lda     ss_pu_entry + POPUP_LEN_IDX
+        ; jsr     _edit_line
         ; enter or cancel doesn't matter, as this is just editing a string box, not finishing the popup
+
+        ; set SAVMSC to our screen location
+        mwa     #m_l1, SAVMSC
+
+        ; string to edit
+        lda     ss_pu_entry + POPUP_VAL_IDX
+        ldx     ss_pu_entry + POPUP_VAL_IDX+1
+        jsr     pushax
+
+        ; max length
+        lda     ss_pu_entry + POPUP_LEN_IDX
+        ldx     #$00
+        jsr     pushax
+
+        ; x
+        lda     #SCR_WIDTH-3
+        sec
+        sbc     ss_width
+        lsr     a       ; divide by 2
+        sta     ptr1
+
+        setax   ss_pu_entry + PopupItemString::text
+        jsr     _fc_strlen
+        clc
+        adc     #$03            ; plus 2 for border and left highlight arrow
+        adc     ptr1            ; add the offset for the popup width
+        jsr     pusha
+
+        ; y
+        lda     ss_y_offset     ; add extra for header
+        clc
+        adc     #$03
+        adc     ss_widget_idx
+        jsr     pusha
+
+        ; viewport width
+        lda     ss_pu_entry + POPUP_VPW_IDX
+        jsr     pusha
+
+        ; if this is a "password" type, pass '1' (true)
+        lda     ss_pu_entry     ; first byte is the type
+        cmp     #PopupItemType::password
+        bne     is_string
+        lda     #$01            ; is_password
+        bne     :+
+is_string:
+        lda     #$00
+
+        ; everything complete, call edit_string
+:       jsr     _edit_string
+        ; the return is not important, still editing a popup.
 
         jmp     redisplay
 .endproc

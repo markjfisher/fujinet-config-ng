@@ -93,9 +93,18 @@ not_text:
 
         adw1    ptr1, #.sizeof(PopupItemString)
         jsr     display_string
-        ; beq   next_item
+        beq     next_item
 
 not_string:
+        cmp     #PopupItemType::password
+        bne     not_password
+
+        adw1    ptr1, #.sizeof(PopupItemPassword)
+        jsr     display_string
+        ; beq     next_item
+
+not_password:
+
 ; TODO: IMPLEMENT OTHER PopupItemType VALUES 
 
 next_item:

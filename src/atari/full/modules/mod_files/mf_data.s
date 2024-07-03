@@ -48,7 +48,7 @@ mf_ask_new_disk_std_info:
 
 mf_ask_new_disk_name_std:
                 ; num, len, #string buffer (val), #title location
-                .byte PopupItemType::string, 1, 27, $ff, $ff, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
+                .byte PopupItemType::string, 1, 64, $ff, $ff, 20, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
 
                 .byte PopupItemType::space
 
@@ -73,15 +73,15 @@ mf_ask_new_disk_cst_info:
                 .byte 34, 4, 1, 5, $ff, 0
 
 mf_ask_new_disk_name_cst:
-                ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::string, 1, 27, $ff, $ff, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
+                ; num, len, val, #title_text, #string_loc, vpWidth
+                .byte PopupItemType::string, 1, 64, $ff, $ff, 20, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
 
                 .byte PopupItemType::space
 
 mf_ask_new_disk_sectors_cst:
                 ; largest value is "65535" so 5 chars+nul = 6
                 ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::string, 1, 6, $ff, $ff, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
+                .byte PopupItemType::string, 1, 6, $ff, $ff, 6, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
 
                 .byte PopupItemType::space
                 ; "Sector Size:"

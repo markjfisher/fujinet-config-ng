@@ -20,6 +20,7 @@
         ; implicit rts
 
 no_key:
+        tax             ; this is now called from C so ensure X is set appropriately
         rts
 .endproc
 

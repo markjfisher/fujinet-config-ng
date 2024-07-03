@@ -7,6 +7,7 @@
 ; text    .word           ; ptr to strings to use, type specific arrangement.
 ; spc     .word           ; ptr to table of num+1 spacing values for placing widget on screen
 ; x_off   .byte           ; left padding to apply
+; vpWIdth .byte           ; the viewport width that the text can be edited within
 
 ; for allocating space to work with popups, need largest struct size
 POPUP_MAX_SZ    := 9
@@ -15,9 +16,11 @@ POPUP_MAX_SZ    := 9
 POPUP_TYPE_IDX  := 0
 
 ; for any selectable item (see pui_is_selectable), the NUM/LEN/VAL values must be at these indexes
+; IMPORTANT - IF YOU EDIT ANY OF THE BELOW TYPES YOU MUST MATCH THE SIZES IN `pui_sizes` IN COMMON.S
 POPUP_NUM_IDX   := 1
 POPUP_LEN_IDX   := 2
 POPUP_VAL_IDX   := 3            ; word pointer to memory value
+POPUP_VPW_IDX   := 5            ; byte pointer to the ViewPort width for this field if it's limited
 
 .struct PopupItemInfo
         width   .byte           ; the width of the input area excluding the borders which add 1 each side for the border
@@ -55,8 +58,19 @@ POPUP_VAL_IDX   := 3            ; word pointer to memory value
 .struct PopupItemString
         type    .byte
         num     .byte
-        len     .byte
+        len     .byte           ; this is the maximum length of the string
         val     .word
+        vpWidth .byte           ; this is the viewport width that the string is edit in, can be smaller than 'len' to allow for long strings still editable in small window.
+        text    .word
+.endstruct
+
+; same as a string, but it's type tells us to use '*' instead of chars
+.struct PopupItemPassword
+        type    .byte
+        num     .byte
+        len     .byte           ; this is the maximum length of the string
+        val     .word
+        vpWidth .byte           ; this is the viewport width that the string is edit in, can be smaller than 'len' to allow for long strings still editable in small window.
         text    .word
 .endstruct
 
@@ -76,6 +90,7 @@ POPUP_VAL_IDX   := 3            ; word pointer to memory value
         option                  ; like radio buttons, only 1 can be selected
         text                    ; a non selectable string to be displayed on line. num determines number of strings to display
         string                  ; editable string
+        password                ; editable string with masked output
 
         ; select                  ; drop down select
         ; checkbox                ; individual on/off

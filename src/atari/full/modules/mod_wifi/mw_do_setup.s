@@ -27,7 +27,7 @@
 
         mva     #$01, mw_setting_up     ; mark that we are now setting up wifi - various keys will now react differently
 
-        put_s   #10, #12, #mw_nets_msg  ; print "fetching" message that ill be erased when we start printing results
+        put_s   #10, #12, #mw_nets_msg  ; print "fetching" message that will be erased when we start printing results
         jsr     mw_setup_wifi
 
         ; was there an error? (return = 1)

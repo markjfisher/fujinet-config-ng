@@ -51,9 +51,11 @@ FN_CONFIG_LOADER := ../fujinet-config-loader
 
 ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
+  $(XS)/debug \
+  $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
+  $(XS)/debugcmd: "bp do_edit" \
 
-  # $(XS)/debug \
-  # $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
+  # $(XS)/debugcmd: "bp display_string" \
   # $(XS)/debugcmd: "bp mw_do_setup" \
   # $(XS)/debugcmd: "bp mw_kb_handler" \
   # $(XS)/debugcmd: "bp _mw_handle_input" \

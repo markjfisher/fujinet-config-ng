@@ -231,7 +231,7 @@ out:
 ; option
 ; text
 ; string
+; password
 
-
-pui_sizes:          .byte 1, 1, 8, 9, 4, 7
-pui_is_selectable:  .byte 0, 0, 1, 1, 0, 1
+pui_sizes:          .byte 1, 1, 8, 9, 4, 8, 8
+pui_is_selectable:  .byte 0, 0, 1, 1, 0, 1, 1

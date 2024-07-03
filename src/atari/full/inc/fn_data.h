@@ -24,19 +24,19 @@ extern uint8_t bank_count;
 
 #define MAX_NETS        10
 
-#define FNK_ESC         ATESC
-#define FNK_ENTER       ATEOL
-#define FNK_TAB         ATTAB
-#define FNK_BS          ATRUB
-#define FNK_DEL         ATDEL
-#define FNK_INS         ATINS
-#define FNK_LEFT        ATLRW
+#define FNK_ESC         CH_ESC
+#define FNK_ENTER       CH_ENTER
+#define FNK_TAB         CH_TAB
+#define FNK_BS          CH_DEL
+#define FNK_DEL         CH_DELCHR
+#define FNK_INS         0xFF
+#define FNK_LEFT        CH_CURS_LEFT
 #define FNK_LEFT2       0x2B
-#define FNK_RIGHT       ATRRW
+#define FNK_RIGHT       CH_CURS_RIGHT
 #define FNK_RIGHT2      0x2A
-#define FNK_UP          ATURW
+#define FNK_UP          CH_CURS_UP
 #define FNK_UP2         0x2D
-#define FNK_DOWN        ATDRW
+#define FNK_DOWN        CH_CURS_DOWN
 #define FNK_DOWN2       0x3D
 #define FNK_ASCIIL      0x20
 #define FNK_ASCIIH      0x7D

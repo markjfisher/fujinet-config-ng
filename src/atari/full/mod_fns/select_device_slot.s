@@ -139,7 +139,7 @@ sds_pu_mode_val:        .res 1
 
 ; SHOULD NOT be RODATA, the buffer isn't a fixed location, needs to be malloc'd
 
-.rodata
+.data
 ; the width of textList should be 3+x_off less than the overall width. 2 for list number and space, 1 for end selection char
 sds_pu_info:    .byte 26, 2, 1, 0, 2, $ff           ; width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
