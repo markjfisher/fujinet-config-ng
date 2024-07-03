@@ -5,6 +5,7 @@
 
         .import     _edit_line
         .import     _edit_string
+        .import     _es_params
         .import     _fc_strlen
         .import     _kb_get_c_ucase
         .import     _create_new_disk
@@ -34,6 +35,7 @@
         .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
+        .include    "edit_string.inc"
 
 ; tmp5,tmp6,tmp7,tmp8
 ; ptr1,ptr3,ptr4
@@ -346,13 +348,15 @@ do_jmp:
 
         ; string to edit
         lda     ss_pu_entry + POPUP_VAL_IDX
-        ldx     ss_pu_entry + POPUP_VAL_IDX+1
-        jsr     pushax
+        sta     _es_params + EditString::initial_str
+        lda     ss_pu_entry + POPUP_VAL_IDX+1
+        sta     _es_params + EditString::initial_str + 1
 
         ; max length
         lda     ss_pu_entry + POPUP_LEN_IDX
-        ldx     #$00
-        jsr     pushax
+        sta     _es_params + EditString::max_length
+        lda     #$00
+        sta     _es_params + EditString::max_length + 1
 
         ; x
         lda     #SCR_WIDTH-3
@@ -366,18 +370,18 @@ do_jmp:
         clc
         adc     #$03            ; plus 2 for border and left highlight arrow
         adc     ptr1            ; add the offset for the popup width
-        jsr     pusha
+        sta      _es_params + EditString::x_loc
 
         ; y
         lda     ss_y_offset     ; add extra for header
         clc
         adc     #$03
         adc     ss_widget_idx
-        jsr     pusha
+        sta      _es_params + EditString::y_loc
 
         ; viewport width
         lda     ss_pu_entry + POPUP_VPW_IDX
-        jsr     pusha
+        sta      _es_params + EditString::viewport_width
 
         ; if this is a "password" type, pass '1' (true)
         lda     ss_pu_entry     ; first byte is the type
@@ -388,8 +392,10 @@ do_jmp:
 is_string:
         lda     #$00
 
+:       sta      _es_params + EditString::is_password
+
         ; everything complete, call edit_string
-:       jsr     _edit_string
+        jsr     _edit_string
         ; the return is not important, still editing a popup.
 
         jmp     redisplay
