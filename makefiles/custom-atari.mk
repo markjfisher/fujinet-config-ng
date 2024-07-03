@@ -24,7 +24,7 @@ FN_CONFIG_LOADER := ../fujinet-config-loader
 	    cp ../fujinet-config-tools/atari/dist/*.com $(DIST_DIR)/atr || true; \
 	fi
 	$(call RMFILES,$(DIST_DIR)/*.atr)
-	dir2atr -S $(DIST_DIR)/$(PROGRAM).atr $(DIST_DIR)/atr
+	dir2atr -m -S -B picoboot.bin $(DIST_DIR)/$(PROGRAM).atr $(DIST_DIR)/atr
 	rm -rf $(DIST_DIR)/atr
 	@echo "Uncompressed file saved as $(DIST_DIR)/$(PROGRAM).atr"
 
