@@ -1,6 +1,35 @@
 # fujinet-config-ng
 
-FujiNet config in asm.
+FujiNet config for Atari in asm.
+
+## Building
+
+You need cc65 installed to compile the config-ng, and dir2atr to create ATR images for atari.
+
+If you wish to compress the config-ng binary, you will need the project fujinet-config-loader in a sibling directory to this project.
+
+If you have the `fujinet-config-tools` project in a sibling directory, and with all applications built in it (see its readme) then
+any built com files will be add to the ATR when doing a `disk` or `diskz` task.
+
+Typical invocations to build various tasks are:
+
+```shell
+# clean up any old build artifacts
+$ rm -rf dist obj build
+
+# just the application in dist/config.atari.full.com
+$ make clean all
+
+# a non-compressed atr image (see Create ATR below)
+$ make clean disk
+
+# a compressed binary atr image (requires fujinet-config-loader as mentioned above)
+$ make clean diskz
+
+# Run application using Altirra, see "Running" below
+$ export ALTIRRA_HOME=/path/to/your/Altirra.exe
+$ make test
+```
 
 ## General information
 
@@ -20,10 +49,6 @@ called first, then the common code checks if key not been processed yet.
 
 Info about `fn_edit` which is device agnostic edit code for changing values in application, e.g. editing
 host values.
-
-## Building
-
-Use `make`
 
 ## Running
 
@@ -51,10 +76,10 @@ If you have the project as a sibling project to this repository, (i.e. at ../fuj
 
 ```shell
 # create simple atr with config and tools
-make disk
+make clean all disk
 
 # use config-loader with default image
-make diskz
+make clean all diskz
 
 # use custom banner (you must create your own banners)
 make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768 

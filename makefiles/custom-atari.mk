@@ -11,30 +11,37 @@ LDFLAGS += -C cfg/$(CURRENT_TARGET_LONG).cfg
 
 SUFFIX = .com
 DISK_TASKS += .atr
-DISKZ_TASKS += .dist-z
+DISKZ_TASKS += .disk-z
 
 FN_CONFIG_LOADER := ../fujinet-config-loader
 
 .atr:
 	$(call MKDIR,$(DIST_DIR)/atr)
 	cp $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX) $(DIST_DIR)/atr/$(PROGRAM)$(SUFFIX)
+	@if [ -d "../fujinet-config-tools" ]; then \
+	    echo "Found fujinet-config-tools, copying com files to atr"; \
+	    cp ../fujinet-config-tools/atari/dist/*.COM $(DIST_DIR)/atr || true; \
+	    cp ../fujinet-config-tools/atari/dist/*.com $(DIST_DIR)/atr || true; \
+	fi
 	$(call RMFILES,$(DIST_DIR)/*.atr)
 	dir2atr -S $(DIST_DIR)/$(PROGRAM).atr $(DIST_DIR)/atr
+	rm -rf $(DIST_DIR)/atr
+	@echo "Uncompressed file saved as $(DIST_DIR)/$(PROGRAM).atr"
 
-.dist-z:
+.disk-z:
 	@if [[ -n "$(FN_CONFIG_LOADER)" && -d "$(FN_CONFIG_LOADER)" ]] ; then \
-    echo "Found fujinet-config-loader, creating compressed autorun.atr"; \
-    $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX)) $(BANNER_INFO); \
-    if [ $$? -ne 0 ] ; then \
-      echo "ERROR running compressor"; \
-      exit 1; \
-    fi; \
-    cp "$(FN_CONFIG_LOADER)/autorun-zx0.atr" ./autorun.atr; \
-    echo "Compressed file saved as autorun.atr"; \
-  else \
-    echo "ERROR: Could not find fujinet-config-loader at path $(FN_CONFIG_LOADER)."; \
-    exit 1; \
-  fi
+	  echo "Found fujinet-config-loader, creating compressed autorun.atr"; \
+	  $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX)) $(BANNER_INFO); \
+	  if [ $$? -ne 0 ] ; then \
+	    echo "ERROR running compressor"; \
+	    exit 1; \
+	  fi; \
+	  cp "$(FN_CONFIG_LOADER)/autorun-zx0.atr" $(DIST_DIR)/$(PROGRAM)-z.atr; \
+	  echo "Compressed file saved as $(DIST_DIR)/$(PROGRAM)-z.atr"; \
+	else \
+	  echo "ERROR: Could not find fujinet-config-loader at path $(FN_CONFIG_LOADER)."; \
+	  exit 1; \
+	fi
 
 ################################################################
 # TESTING / EMULATOR
