@@ -11,6 +11,17 @@
 
 extern char kb_get_c(void);
 
+// TODO: make the parameters a fixed location in memory that the ASM routines set directly, so there's no parameter passing.
+
+// typedef struct {
+//     char    *initial_str;
+//     int     max_length;
+//     uint8_t x;
+//     uint8_t y;
+//     uint8_t viewport_width;
+//     bool    is_password;
+// } EditString;
+
 bool edit_string(char* initial_str, int max_length, uint8_t x, uint8_t y, uint8_t viewport_width, bool is_password) {
     // cursor_pos is 0 index based position in the string, same as characters would be.
     int cursor_pos, current_length;

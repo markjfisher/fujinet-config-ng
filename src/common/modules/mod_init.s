@@ -1,11 +1,11 @@
         .export     _mod_init
         .export     fc_connected
 
+        .import     _ak_read_config
         .import     _dev_init
         .import     _fuji_get_ssid
         .import     _fuji_get_wifi_enabled
         .import     _fuji_get_wifi_status
-        .import     ak_read_settings
         .import     booting_mode
         .import     fuji_netconfig
         .import     kb_current_line
@@ -28,7 +28,7 @@
         jsr     _dev_init               ; call device specific initialization
 
         ; read stored app state from appkeys
-        jsr     ak_read_settings
+        jsr     _ak_read_config
 
         ; initialise some module values
         mva     #$00, mh_host_selected

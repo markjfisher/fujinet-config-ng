@@ -341,19 +341,6 @@ do_jmp:
 .endproc
 
 .proc do_edit
-        ; set ptr4 to the location of the edit field
-        ; jsr     get_edit_loc            ; sets ptr4 to location on screen of string to edit
-
-        ; display it in normal text
-        ; jsr     show_edit_value         ; sets ptr1 to start of the string editing
-        
-        ; start editing
-        ; pushax  ptr1
-        ; pushax  ptr4
-        ; lda     ss_pu_entry + POPUP_LEN_IDX
-        ; jsr     _edit_line
-        ; enter or cancel doesn't matter, as this is just editing a string box, not finishing the popup
-
         ; set SAVMSC to our screen location
         mwa     #m_l1, SAVMSC
 

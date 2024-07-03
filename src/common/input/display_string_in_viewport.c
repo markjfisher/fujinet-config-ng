@@ -6,6 +6,8 @@
 
 #include "display_string_in_viewport.h"
 
+// TODO: make the parameters a fixed location in memory that the ASM routines set directly, so there's no parameter passing.
+
 void display_string_in_viewport(uint8_t x, uint8_t y, char* str, int current_length, int viewport_width, int cursor_pos, bool is_password) {
     int i, char_index, start_pos, half_viewport;
     start_pos = 0;

@@ -1,4 +1,4 @@
-FUJINET_LIB_VERSION := 4.0.0
+FUJINET_LIB_VERSION := 4.3.1
 
 FUJINET_LIB = _libs
 # is target correct, or platform? eg. atarixl vs atari, pet vs c64 vs commodore
