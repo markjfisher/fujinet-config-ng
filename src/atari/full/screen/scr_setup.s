@@ -3,6 +3,7 @@
         .import     _bar_clear
         .import     _bar_setup
         .import     _wait_scan1
+        .import     m_l1
         .import     main_dlist
 
         .include    "atari.inc"
@@ -34,6 +35,9 @@
         ; turn screen and interrupts back on with DMA enabled for PMG
         mva     #$40, NMIEN
         mva     #$2e, SDMCTL
+
+        ; setup for the screen location to be usable by cc65's output routines
+        mwa     #m_l1, SAVMSC
 
         rts
 .endproc

@@ -3,7 +3,6 @@
         .export     pu_null_cb
         .export     do_edit
 
-        .import     _edit_line
         .import     _edit_string
         .import     _es_params
         .import     _fc_strlen
@@ -343,9 +342,6 @@ do_jmp:
 .endproc
 
 .proc do_edit
-        ; set SAVMSC to our screen location
-        mwa     #m_l1, SAVMSC
-
         ; string to edit
         lda     ss_pu_entry + POPUP_VAL_IDX
         sta     _es_params + EditString::initial_str
@@ -370,18 +366,18 @@ do_jmp:
         clc
         adc     #$03            ; plus 2 for border and left highlight arrow
         adc     ptr1            ; add the offset for the popup width
-        sta      _es_params + EditString::x_loc
+        sta     _es_params + EditString::x_loc
 
         ; y
         lda     ss_y_offset     ; add extra for header
         clc
         adc     #$03
         adc     ss_widget_idx
-        sta      _es_params + EditString::y_loc
+        sta     _es_params + EditString::y_loc
 
         ; viewport width
         lda     ss_pu_entry + POPUP_VPW_IDX
-        sta      _es_params + EditString::viewport_width
+        sta     _es_params + EditString::viewport_width
 
         ; if this is a "password" type, pass '1' (true)
         lda     ss_pu_entry     ; first byte is the type
@@ -391,7 +387,7 @@ do_jmp:
         bne     :+
 is_string:
         lda     #$00
-:       sta      _es_params + EditString::is_password
+:       sta     _es_params + EditString::is_password
 
         ; if this is a number type, pass 1 (true)
         lda     ss_pu_entry

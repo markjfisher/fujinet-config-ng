@@ -11,15 +11,30 @@
 
 extern char kb_get_c(void);
 
-// NEW FUN! Use data structures rather than passing parameters. Less Software stack for only a handful of bytes
 EditString es_params;
+
+void show_string(int len) {
+    int i;
+
+    gotoxy(es_params.x_loc, es_params.y_loc);
+    for (i = 0; i < es_params.viewport_width; i++) {
+        if (i < len) {
+            cputc(es_params.initial_str[i]);
+        } else {
+            cputc(' ');
+        }
+    }
+
+}
 
 bool edit_string() {
     // cursor_pos is 0 index based position in the string, same as characters would be.
     char ch;
-    es_params.buffer = (char*) malloc(es_params.max_length + 1);
-    memcpy(es_params.buffer, es_params.initial_str, strlen(es_params.initial_str) + 1);
-    es_params.current_length = strlen(es_params.buffer);
+    int original_length = strlen(es_params.initial_str);
+
+    es_params.buffer = (char *) malloc(es_params.max_length + 1);
+    memcpy(es_params.buffer, es_params.initial_str, original_length + 1);
+    es_params.current_length = original_length;
     es_params.cursor_pos = es_params.current_length;
     if (es_params.cursor_pos == es_params.max_length) es_params.cursor_pos--;
 
@@ -31,10 +46,15 @@ bool edit_string() {
 
         if (ch == FNK_ENTER) {
             strcpy(es_params.initial_str, es_params.buffer);
+            es_params.initial_str[es_params.current_length] = 0;
             free(es_params.buffer);
+            // clean up any cursor nonsense
+            show_string(es_params.current_length);
             return true;
         } else if (ch == FNK_ESC) {
             free(es_params.buffer);
+            // reshow the original string
+            show_string(original_length);
             return false;
         } else if (ch >= FNK_ASCIIL && ch <= FNK_ASCIIH) {
             // ignore if it's numeric only and not between 0 and 9, SIMPLE ONLY, no fullstops
