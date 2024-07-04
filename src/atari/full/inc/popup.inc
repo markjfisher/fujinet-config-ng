@@ -74,6 +74,16 @@ POPUP_VPW_IDX   := 5            ; byte pointer to the ViewPort width for this fi
         text    .word
 .endstruct
 
+; same as a string, but it's type tells us to only allow numbers
+.struct PopupItemNumber
+        type    .byte
+        num     .byte
+        len     .byte           ; this is the maximum length of the string
+        val     .word
+        vpWidth .byte           ; this is the viewport width that the string is edit in, can be smaller than 'len' to allow for long strings still editable in small window.
+        text    .word
+.endstruct
+
 .struct PopupItemSpace
         type    .byte
 .endstruct
@@ -91,6 +101,7 @@ POPUP_VPW_IDX   := 5            ; byte pointer to the ViewPort width for this fi
         text                    ; a non selectable string to be displayed on line. num determines number of strings to display
         string                  ; editable string
         password                ; editable string with masked output
+        number                  ; editable stirng but numeric only (0-9, no fullstop)
 
         ; select                  ; drop down select
         ; checkbox                ; individual on/off

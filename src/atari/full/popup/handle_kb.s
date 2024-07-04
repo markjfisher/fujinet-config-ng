@@ -391,8 +391,18 @@ do_jmp:
         bne     :+
 is_string:
         lda     #$00
-
 :       sta      _es_params + EditString::is_password
+
+        ; if this is a number type, pass 1 (true)
+        lda     ss_pu_entry
+        cmp     #PopupItemType::number
+        bne     not_number
+        lda     #$01            ; is_number
+        bne     :+
+not_number:
+        lda     #$00
+
+:       sta     _es_params + EditString::is_number
 
         ; everything complete, call edit_string
         jsr     _edit_string

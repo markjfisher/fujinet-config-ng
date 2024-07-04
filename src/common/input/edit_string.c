@@ -37,6 +37,11 @@ bool edit_string() {
             free(es_params.buffer);
             return false;
         } else if (ch >= FNK_ASCIIL && ch <= FNK_ASCIIH) {
+            // ignore if it's numeric only and not between 0 and 9, SIMPLE ONLY, no fullstops
+            if (ch < '0' || ch > '9') {
+                continue;
+            }
+
             if (es_params.current_length < es_params.max_length) {
                 es_params.buffer[es_params.cursor_pos] = ch;
                 if (es_params.cursor_pos == es_params.current_length) {

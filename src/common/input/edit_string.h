@@ -13,6 +13,7 @@ typedef struct {
     uint8_t y_loc;
     uint8_t viewport_width;
     bool    is_password;
+    bool    is_number;
 
 	// values for display_string part
 	char    *buffer;

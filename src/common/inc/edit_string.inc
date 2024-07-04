@@ -5,6 +5,7 @@
     y_loc            .res 1
     viewport_width   .res 1
     is_password      .res 1
+    is_number        .res 1
 
 	buffer 			 .res 2
 	current_length   .res 2

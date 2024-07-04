@@ -46,6 +46,8 @@ not_last_line:
 
 ; all widget displays return 0 in A/X, so we can beq
 
+; TODO: use dispatch based on PopupItemType rather than switch style using cmp
+
 ; --------------------------------------------------
 ; TEXT LIST
         cmp     #PopupItemType::textList
@@ -83,7 +85,19 @@ not_space:
 
         adw1    ptr1, #.sizeof(PopupItemText)
         jsr     display_text
-        beq     next_item
+        ; fall into next_item
+
+; ==================================================
+; put in the middle so it can be reached by more options
+; ==================================================
+
+next_item:
+        inc     di_current_item                 ; increment the current item being displayed
+        ; ptr1 moves to next widget in each type above
+        ; move ptr4 along to next start of line
+        adw1    ptr4, #SCR_BYTES_W
+        jmp     l_all_items
+
 
 not_text:
 ; --------------------------------------------------
@@ -95,24 +109,32 @@ not_text:
         jsr     display_string
         beq     next_item
 
+; --------------------------------------------------
+; EDITABLE PASSWORD (password)
 not_string:
         cmp     #PopupItemType::password
         bne     not_password
 
         adw1    ptr1, #.sizeof(PopupItemPassword)
         jsr     display_string
-        ; beq     next_item
+        beq     next_item
 
+; --------------------------------------------------
+; EDITABLE NUMBER (number)
 not_password:
+        cmp     #PopupItemType::number
+        bne     next_item               ; CHANGE THIS IF MORE OPTIONS ADDED
 
-; TODO: IMPLEMENT OTHER PopupItemType VALUES 
+        adw1    ptr1, #.sizeof(PopupItemNumber)
+        jsr     display_string
+        beq    next_item
 
-next_item:
-        inc     di_current_item                 ; increment the current item being displayed
-        ; ptr1 moves to next widget in each type above
-        ; move ptr4 along to next start of line
-        adw1    ptr4, #SCR_BYTES_W
-        jmp     l_all_items
+not_number:
+
+
+
+; HERE: IMPLEMENT OTHER PopupItemType VALUES 
+
 
 .endproc
 

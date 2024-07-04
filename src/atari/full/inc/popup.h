@@ -10,21 +10,28 @@ struct PopupItem {
     unsigned short spc;
 };
 
+// see popup.inc for descriptions.
 enum PopupItemType {
+    finish,
+    space,
     textList,
     option,
+    text,
     string,
+    password,
+    number
+
     // select
     // checkbox
     // button
-    space,
-    finish
 };
 
 enum PopupItemReturn {
     escape,
     complete,
-    redisplay
+    redisplay,
+    not_handled,
+    app_1
 };
 
 enum PopupHandleKBEvent {

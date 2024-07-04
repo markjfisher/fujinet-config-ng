@@ -23,13 +23,6 @@ void display_string_in_viewport() {
         }
     }
 
-    // gotoxy(2, 3);
-    // cprintf("sp: %d  ", start_pos);
-    // gotoxy(10, 3);
-    // cprintf("cp: %d  ", es_params.cursor_pos);
-    // gotoxy(18, 3);
-    // cprintf("es_params.current_length: %d  ", es_params.current_length);
-
     gotoxy(es_params.x_loc, es_params.y_loc);
     for (i = 0; i < es_params.viewport_width; i++) {
         char_index = i + start_pos;
