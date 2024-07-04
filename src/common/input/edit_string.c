@@ -38,7 +38,7 @@ bool edit_string() {
             return false;
         } else if (ch >= FNK_ASCIIL && ch <= FNK_ASCIIH) {
             // ignore if it's numeric only and not between 0 and 9, SIMPLE ONLY, no fullstops
-            if (ch < '0' || ch > '9') {
+            if (es_params.is_number && (ch < '0' || ch > '9')) {
                 continue;
             }
 

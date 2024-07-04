@@ -127,7 +127,7 @@ not_password:
 
         adw1    ptr1, #.sizeof(PopupItemNumber)
         jsr     display_string
-        beq    next_item
+        beq     next_item
 
 not_number:
 

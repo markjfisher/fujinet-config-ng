@@ -420,6 +420,10 @@ not_number:
         jsr     get_current_item_type
         cmp     #PopupItemType::string
         beq     kb_edit_yes
+        cmp     #PopupItemType::password
+        beq     kb_edit_yes
+        cmp     #PopupItemType::number
+        beq     kb_edit_yes
         
         lda     ss_str_idx
         bmi     :+                              ; $ff means there is no EDIT option on page
