@@ -1,6 +1,6 @@
         .export     _edit_line
 
-        .import     s_empty
+        .import     _s_empty
         .import     popax, pushax, popa
         .import     _fc_strncpy
         .import     _fc_strlen

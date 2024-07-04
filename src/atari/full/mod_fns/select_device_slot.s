@@ -18,7 +18,7 @@
         .import     pu_null_cb
         .import     pusha
         .import     pushax
-        .import     s_empty
+        .import     _s_empty
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -85,7 +85,7 @@ no_options:
 
 copy_dev_strings:
         ; copy 8x width bytes from every DeviceSlot+2 into memory we grabbed
-        ; if the entry is null, use s_empty instead
+        ; if the entry is null, use _s_empty instead
 
         ; have we loaded device slots yet?
         lda     md_is_devices_data_fetched
@@ -112,7 +112,7 @@ l1:     pushax  ptr1    ; dst
         clc
         bcc     :+
 
-empty:  pushax  #s_empty
+empty:  pushax  #_s_empty
 
 :       lda     sds_pu_devs + POPUP_LEN_IDX
         jsr     _fc_strncpy

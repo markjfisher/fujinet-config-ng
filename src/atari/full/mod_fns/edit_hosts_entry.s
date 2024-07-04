@@ -3,6 +3,8 @@
         .import     _edit_string
         .import     _es_params
         .import     _fuji_put_host_slots
+        .import     _s_empty
+        .import     _show_empty
         .import     fuji_hostslots
         .import     get_scrloc
         .import     get_to_current_hostslot
@@ -10,7 +12,6 @@
         .import     pushax
         .import     pushax, pusha
         .import     put_s_p1p4
-        .import     s_empty
 
         .include    "atari.inc"
         .include    "edit_string.inc"
@@ -25,15 +26,6 @@
 
 ; ptr1,ptr4
 .proc _edit_hosts_entry
-        jsr     setup_ptr4
-        ; ; get pointer to the string for this host slot into ptr1
-        ; jsr     get_to_current_hostslot
-
-        ; pushax  ptr1                    ; hostname string location
-        ; pushax  ptr4                    ; scr location
-        ; lda     #.sizeof(HostSlot)
-        ; jsr     _edit_line
-
         jsr     get_to_current_hostslot
         lda     ptr1
         sta     _es_params + EditString::initial_str
@@ -66,10 +58,7 @@
         lda     (ptr1), y
         bne     not_empty                ; it was not empty, so skip printing <Empty>
 
-        ; we can't rely on any of this for the empty any more, use gotoxy() and cputc... for now reset ptr4
-        jsr     setup_ptr4
-        mwa     #s_empty, ptr1
-        jsr     put_s_p1p4
+        jsr     _show_empty
 
 :not_empty:
         pla                             ; restore return value from edit
@@ -81,14 +70,5 @@
 
 no_save:
         rts
-
-setup_ptr4:
-        ; get screen location for current edit position
-        ldx     #SL_EDIT_X
-        lda     mh_host_selected
-        clc
-        adc     #SL_Y
-        tay
-        jmp     get_scrloc  ; ptr4 set to screen location - still need this for other screen printing!
 
 .endproc

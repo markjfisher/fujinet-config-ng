@@ -1,5 +1,5 @@
-        .export     s_empty
+        .export     _s_empty
 
 .segment "SCR_DATA"
-s_empty:
+_s_empty:
     .byte "<Empty>", 0

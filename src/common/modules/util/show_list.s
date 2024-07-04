@@ -5,7 +5,7 @@
         .export     sl_size
         .export     sl_str_loc
 
-        .import     s_empty, get_scrloc, ascii_to_code
+        .import     _s_empty, get_scrloc, ascii_to_code
         .import     popa, pushax, popax
 
         .include    "zp.inc"
@@ -37,7 +37,7 @@ all_list:
         ldy     #0
         lda     (ptr3), y
         bne     :+
-        mwa     #s_empty, ptr3
+        mwa     #_s_empty, ptr3
 :
         ; print characters from s in ptr3, 1 by 1 until hit a 0, or hit x=36 in boundary
 next_char:
