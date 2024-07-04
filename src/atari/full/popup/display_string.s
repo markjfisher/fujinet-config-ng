@@ -42,7 +42,7 @@
         mwa     ptr1, tmp9
 
         ; initialise flag to say if we're current widget
-        mva     #$00, tmp1
+        ; mva     #$00, tmp1
 
         ; get the TEXT to display into ptr2
         mwa     {ss_pu_entry + PopupItemString::text}, ptr1
@@ -69,7 +69,7 @@
         bne     :+
 
         ; this is current widget, mark flag so we know to close the arrow later
-        inc     tmp1
+        ; inc     tmp1
         mva     #FNC_L_HL, {(ptr4), y}  ; print the left side indicator arrow
         bne     :++
 
@@ -110,15 +110,16 @@
         bne     :-
 
 ; -----------------------------------------------------
-; ARROW2
+; ARROW2 - getting screen corruption with the various right side arrows, commenting out for now
         ; do we need the closing arrow to indicate we are current widget?
-:       lda     tmp1
-        beq     :+
+:       ; lda     tmp1
+        ; beq     :+
 
         ; yes
         ; iny     ; for the cursor
-        mva     #FNC_R_HL, {(ptr4), y}
-        iny
+        ; jsr     debug
+        ; mva     #FNC_R_HL, {(ptr4), y}
+        ; iny
 
 ; -----------------------------------------------------
 ; RIGHT BORDER

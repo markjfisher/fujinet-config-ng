@@ -9,6 +9,8 @@
         .import     ss_widget_idx
         .import     ss_width
 
+        .import     debug
+
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
@@ -31,7 +33,7 @@
 
 all_text:
         mva     #$00, tmp3              ; the inverse value to apply to text, this gets ora'd onto char
-        sta     tmp6                    ; flag to show we're priting the Arrow for current widget
+        ; sta     tmp6                    ; flag to show we're priting the Arrow for current widget
         jsr     left_border
 
         ; print any left padding spaces (x_off)
@@ -62,7 +64,7 @@ all_text:
         cmp     di_current_item
         bne     :+
 
-        inc     tmp6                    ; this is the current, so mark we have to print the closing arrow
+        ; inc     tmp6                    ; this is the current, so mark we have to print the closing arrow
         mva     #FNC_L_HL, {(ptr4), y}  ; print the left side indicator arrow
         bne     :++
 
@@ -80,12 +82,13 @@ no_trans:
         dex
         bne     :-
 
-        lda     tmp6                    ; do we need a closing arrow?
-        beq     :+
+        ; lda     tmp6                    ; do we need a closing arrow?
+        ; beq     :+
 
-        ; yes, print it
-        mva     #FNC_R_HL, {(ptr4), y}
-        iny
+        ; ; yes, print it
+        ; jsr     debug
+        ; mva     #FNC_R_HL, {(ptr4), y}
+        ; iny
 
 :       jsr     right_border
 

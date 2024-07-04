@@ -100,17 +100,17 @@ widget_loop:
 
         
         ; other side of the text print other arrow if we the current widget that's highlighted
-        lda     tmp5                    ; restore the VAL of option
-        cmp     tmp1
-        bne     :+                      ; no we should not print arrow
+        ; lda     tmp5                    ; restore the VAL of option
+        ; cmp     tmp1
+        ; bne     :+                      ; no we should not print arrow
 
-        lda     ss_widget_idx
-        cmp     di_current_item
-        bne     :+                      ; no we should not print arrow
+        ; lda     ss_widget_idx
+        ; cmp     di_current_item
+        ; bne     :+                      ; no we should not print arrow
 
-        ldy     tmp2
-        mva     #FNC_R_HL, {(ptr4), y}
-        iny
+        ; ldy     tmp2
+        ; mva     #FNC_R_HL, {(ptr4), y}
+        ; iny
 
         ; move ptr2 on by len to next string
 :       adw1    ptr2, {ss_pu_entry + POPUP_LEN_IDX}
