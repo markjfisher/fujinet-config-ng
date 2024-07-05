@@ -119,7 +119,7 @@ FNC_R_END   = $42           ; Right extra character to widen the string slightly
 FNC_M_END   = $44           ; Middle extra character to widen the string slightly, used for Help text - reduces overall space on Help text
 
 FNC_L_HL    = $50           ; Pointer to selection L
-FNC_R_HL    = $54           ; Pointer to selection R
+FNC_LEND_ST = $54           ; Pointer to selection R
 
 FNC_WIFI1   = $56           ; wifi 1 bar
 FNC_WIFI2   = $4D           ; wifi 2 bar

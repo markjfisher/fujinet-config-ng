@@ -70,7 +70,7 @@ font_update:
     .byte $4c, $ff, $ff, $7f, $1f, $00, $00, $00, $00   ; Popup BLW  (ascii 12  = $0C)
     .byte $4f, $ff, $ff, $fe, $f8, $00, $00, $00, $00   ; Popup BRW  (ascii 15  = $0F)
     .byte $50, $3f, $7b, $f9, $c0, $c0, $f9, $7b, $3f   ; Left HL    (ascii 16  = $10)
-    .byte $54, $fc, $de, $9f, $03, $03, $9f, $de, $fc   ; Right HL   (ascii 20  = $14)
+    .byte $54, $83, $c7, $e7, $e7, $e7, $e7, $c7, $83   ; End HL+right start   (ascii 20  = $14)
     .byte $57, $f8, $f8, $fc, $ff, $ff, $fc, $f8, $f8   ; L sep line (ascii 23  = $17)
     .byte $58, $1f, $1f, $3f, $ff, $ff, $3f, $1f, $1f   ; R sep line (ascii 24  = $18)
     .byte $7b, $00, $0e, $18, $18, $70, $18, $18, $0e   ; {          (ascii 123 = $7B)

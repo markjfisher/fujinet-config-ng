@@ -355,7 +355,7 @@ do_jmp:
         sta     _es_params + EditString::max_length + 1
 
         ; x
-        lda     #SCR_WIDTH-3
+        lda     #SCR_WIDTH-2
         sec
         sbc     ss_width
         lsr     a       ; divide by 2

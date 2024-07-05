@@ -61,7 +61,7 @@ widget_loop:
         ; are we printing the currently selected option?
         lda     tmp5
         cmp     tmp1
-        bne     :+                      ; no
+        bne     over1                      ; no
 
         ldy     tmp2                    ; restore y as it was required to get the VAL location
         ; set inverse on, we are the current 
@@ -70,7 +70,7 @@ widget_loop:
         ; but are we the current widget?
         lda     ss_widget_idx
         cmp     di_current_item
-        bne     :+
+        bne     highlight_but_not_widget
 
         ; yes, we are both the current selected widget, and the one being displayed
         ; drop back 1 position and print our arrow
@@ -78,7 +78,18 @@ widget_loop:
         mva     #FNC_L_HL, {(ptr4), y}
         iny
         inc     dopt_reduce_next_space
+        bne     over1
 
+highlight_but_not_widget:
+        ; no, we are the just the one being displayed
+        ; drop back 1 position and print our opening ender
+        dey
+        mva     #FNC_L_END, {(ptr4), y}
+        iny
+        inc     dopt_reduce_next_space
+
+
+over1:
         ; y is doing double work here, it's the offset of 2 pointers; the current character to display, and the screen offset
         ; print the widget, ptr2 tracks the current widget location
 :       ldy     #$00
@@ -99,18 +110,18 @@ widget_loop:
         bne     :-                      ; loop over len chars
 
         
-        ; other side of the text print other arrow if we the current widget that's highlighted
-        ; lda     tmp5                    ; restore the VAL of option
-        ; cmp     tmp1
-        ; bne     :+                      ; no we should not print arrow
+        ; other side of the text print closing char if we the current widget that's highlighted
+        lda     tmp5                    ; restore the VAL of option
+        cmp     tmp1
+        bne     :+                      ; no we should not print arrow
 
-        ; lda     ss_widget_idx
-        ; cmp     di_current_item
-        ; bne     :+                      ; no we should not print arrow
+        lda     ss_widget_idx
+        cmp     di_current_item
+        bne     :+                      ; no we should not print arrow
 
-        ; ldy     tmp2
-        ; mva     #FNC_R_HL, {(ptr4), y}
-        ; iny
+        ldy     tmp2
+        mva     #FNC_R_END, {(ptr4), y}
+        iny
 
         ; move ptr2 on by len to next string
 :       adw1    ptr2, {ss_pu_entry + POPUP_LEN_IDX}

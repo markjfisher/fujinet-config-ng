@@ -71,7 +71,7 @@ extern uint8_t bank_count;
 #define FNC_R_END       0x42
 #define FNC_M_END       0x44
 #define FNC_L_HL        0x50
-#define FNC_R_HL        0x54
+#define FNC_LEND_ST     0x54
 
 #define FNC_STAR        0x0A
 

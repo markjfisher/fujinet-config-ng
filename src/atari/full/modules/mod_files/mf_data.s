@@ -81,7 +81,7 @@ mf_ask_new_disk_name_cst:
 mf_ask_new_disk_sectors_cst:
                 ; largest value is "65535" so 5 chars+nul = 6
                 ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::number, 1, 5, $ff, $ff, 6, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
+                .byte PopupItemType::number, 1, 5, $ff, $ff, 5, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
 
                 .byte PopupItemType::space
                 ; "Sector Size:"

@@ -65,15 +65,21 @@
         ; is this the current widget?
         lda     ss_widget_idx
         cmp     di_current_item
-        bne     :+
+        bne     not_current_widget
 
         ; this is current widget, mark flag so we know to close the arrow later
-        ; inc     tmp1
         mva     #FNC_L_HL, {(ptr4), y}  ; print the left side indicator arrow
-        bne     :++
+        iny
+        mva     #FNC_LEND_ST, {(ptr4), y}  ; print the closing ender
+        bne     over1
 
-:       mva     #FNC_BLANK, {(ptr4), y} ; wasn't current line, just print a space
-:       iny
+not_current_widget:
+        mva     #FNC_BLANK, {(ptr4), y} ; wasn't current line, just print 1 space and the opener
+        iny
+        mva     #FNC_L_END, {(ptr4), y}
+
+over1:
+        iny
 
         ; subtract Y from tmp5/6 (pointer to VALUE) so we can use offset correctly
         tya
@@ -133,16 +139,9 @@ do_padding:
         bne     :-
 
 ; -----------------------------------------------------
-; ARROW2 - getting screen corruption with the various right side arrows, commenting out for now
-        ; do we need the closing arrow to indicate we are current widget?
-:       ; lda     tmp1
-        ; beq     :+
-
-        ; yes
-        ; iny     ; for the cursor
-        ; jsr     debug
-        ; mva     #FNC_R_HL, {(ptr4), y}
-        ; iny
+; RIGHT CLOSER
+:       mva     #FNC_R_END, {(ptr4), y}
+        iny
 
 ; -----------------------------------------------------
 ; RIGHT BORDER
