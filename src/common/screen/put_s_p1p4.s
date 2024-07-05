@@ -1,6 +1,5 @@
         .export     put_s_p1p4
         .export     put_s_p1p4_at_y
-        .export     put_s_p1p4_at_y_max_x
 
         .import     ascii_to_code
 
@@ -16,20 +15,6 @@ put_s_p1p4:
 put_s_p1p4_at_y:
 :       lda     (ptr1), y
         beq     :+
-
-        jsr     ascii_to_code
-        sta     (ptr4), y
-        iny
-        bne     :-
-:
-        rts
-
-; similar to the above, but print a maximum of X chars (up to 127), unless reach end of string
-put_s_p1p4_at_y_max_x:
-:       lda     (ptr1), y
-        beq     :+
-        dex
-        bmi     :+
 
         jsr     ascii_to_code
         sta     (ptr4), y

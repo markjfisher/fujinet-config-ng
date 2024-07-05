@@ -98,6 +98,7 @@ mf_ask_new_disk_cust_sector_size:
                 .byte PopupItemType::space
                 .byte PopupItemType::finish
 
+; not used anywhere, but good to know how to use * to get a size
 mfs_size_cst    = * - mf_ask_new_disk_cst_info
 
 .segment "SCR_DATA"

@@ -10,6 +10,7 @@
         .export     right_border
         .export     show_edit_value
         .export     type_at_x
+        .export     zero_mem_tmp9_tmp8
 
         .import     _fc_strlen
         .import     debug
@@ -218,6 +219,17 @@ out:
         jsr     item_x_to_ptr1
         ldy     #POPUP_TYPE_IDX
         lda     (ptr1), y               ; the type of x'th Item. sets N/Z etc for return too
+        rts
+.endproc
+
+; clears memory at tmp9 pointer for tmp8 bytes, used by various popup routines
+.proc zero_mem_tmp9_tmp8
+        lda     #$00
+        tay
+:       sta     (tmp9), y
+        iny
+        cpy     tmp8
+        bne     :-
         rts
 .endproc
 

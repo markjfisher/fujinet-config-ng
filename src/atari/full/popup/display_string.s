@@ -4,7 +4,6 @@
         .import     di_current_item
         .import     left_border
         .import     put_s_p1p4_at_y
-        .import     put_s_p1p4_at_y_max_x
         .import     return0
         .import     right_border
         .import     ss_pu_entry
@@ -84,10 +83,21 @@
 ; EDITABLE STRING
         ; print the string, with inverted text, when we hit nul char, print spaces to end of view port width
         ; Limit the width to the vpWidth value for the popup.
+
+        ; modify which routine is called to alter each letter for display based on popup type.
+        lda     ss_pu_entry             ; first byte is type
+        cmp     #PopupItemType::password
+        beq     print_stars
+        ; this is normal text, call ascii_to_code
+        mwa     #ascii_to_code, {smc_alter_char + 1}        
+
+do_print:
         ldx     #$00                    ; track the string size as we print it
 :       lda     (tmp5), y               ; get a char from string
-        beq     :+                      ; nul found
-        jsr     ascii_to_code
+        beq     do_padding              ; nul found
+
+smc_alter_char:
+        jsr     $0000                   ; this is modified to the appropriate location: WARNING - MAKES IT NON ROMMABLE
         ora     #$80                    ; invert it
         sta     (ptr4), y               ; show it on screen
         inx
@@ -95,10 +105,23 @@
         ; have we hit the viewport width?
         cpx     ss_pu_entry + PopupItemString::vpWidth
         bcc     :-
+        bcs     do_padding
+
+load_star:
+        ; we just override with a * char whatever is in A
+        lda     #FNC_STAR
+        rts
+
+print_stars:
+        ; make the translation routine be load_star instead
+        mwa     #load_star, {smc_alter_char + 1}
+        jmp     do_print
+
 
 ; -----------------------------------------------------
 ; STRING PADDING
-:       lda     ss_pu_entry + PopupItemString::vpWidth
+do_padding:
+        lda     ss_pu_entry + PopupItemString::vpWidth
         sta     tmp2
         lda     #FNC_FULL
         ; print inverted spaces until x is string width

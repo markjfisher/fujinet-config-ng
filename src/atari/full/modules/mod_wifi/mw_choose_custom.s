@@ -1,17 +1,24 @@
-        .export mw_choose_custom
+        .export     mw_choose_custom
 
         .import     _clr_help
         .import     _edit_line
         .import     _fc_strncpy
         .import     _fuji_get_scan_result
         .import     _put_help
+        .import     _scr_clr_highlight
+        .import     _show_select
         .import     fuji_netconfig
         .import     fuji_ssidinfo
         .import     get_scrloc
+        .import     mw_ask_custom_wifi_pass_info
+        .import     mw_ask_custom_wifi_pu_msg
+        .import     mw_ask_custom_wifi_ssid_info
+        .import     mw_ask_cutom_wifi_info
         .import     mw_help_custom
         .import     mw_help_password
         .import     mw_save_ssid
         .import     mw_selected
+        .import     pu_null_cb
         .import     pusha
         .import     pushax
         .import     put_s_p1p4
@@ -22,6 +29,7 @@
         .include    "fn_data.inc"
         .include    "fujinet-fuji.inc"
         .include    "modules.inc"
+        .include    "popup.inc"
 
 ;ptr1,ptr4
 .proc mw_choose_custom
@@ -76,10 +84,35 @@
 
         ; we set both, so save them back to FN
 
+        ; ------------------------------------------------------------
+        ; NEW popup for ssid / password custom setting
 
+
+        ; remove highlight
+        jsr     _scr_clr_highlight
+
+        ; our current fuji_netconfig struct can be used to hold the data being edited, no malloc needed
+        mwa     {#(fuji_netconfig + NetConfig::ssid)}, { mw_ask_custom_wifi_ssid_info + POPUP_VAL_IDX }
+        mwa     {#(fuji_netconfig + NetConfig::password)}, { mw_ask_custom_wifi_pass_info + POPUP_VAL_IDX }
+
+        pushax  #pu_null_cb
+        pushax  #mw_ask_cutom_wifi_info
+        pushax  #mw_help
+        setax   #mw_ask_custom_wifi_pu_msg
+        jsr     _show_select
+
+        cmp     #PopupItemReturn::escape
+        beq     esc_bssid
+
+        ; details accepted, try them
         jmp     mw_save_ssid
 
 esc_bssid:
         jmp     return1
+
+mw_help:
+        jsr     _clr_help
+        put_help   #0, #mw_help_password
+        rts
 
 .endproc

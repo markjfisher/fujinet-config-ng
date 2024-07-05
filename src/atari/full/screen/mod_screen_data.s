@@ -126,8 +126,14 @@ mw_help_setup:
                 .byte "Exit", 0
 
 mw_help_password:
+                NORMAL_CHARMAP
+                .byte $81, "E", $82
                 INVERT_ATASCII
-                .byte "Enter SSID Password  "
+                .byte "Edit"
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "Accept"
                 NORMAL_CHARMAP
                 .byte $81, "ESC", $82
                 INVERT_ATASCII

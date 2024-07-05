@@ -37,6 +37,7 @@
         .import     sds_pu_no_opt_devs
         .import     select_device_slot
         .import     ss_widget_idx
+        .import     zero_mem_tmp9_tmp8
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -291,14 +292,8 @@ nd_common:
         stx     mf_ask_new_disk_name_cst + POPUP_VAL_IDX+1
 
         ; zero the memory
-        lda     #$00
-        ldy     #$00
-:       sta     (tmp9), y
-        iny
-        cpy     tmp8
-        bne     :-
-
-        rts
+        jmp     zero_mem_tmp9_tmp8
+        ; implicit rts
 
 alloc_sector_cnt:
         lda     mf_ask_new_disk_sectors_cst + POPUP_LEN_IDX
@@ -310,14 +305,9 @@ alloc_sector_cnt:
         stx     mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX+1
 
         ; zero the memory
-        lda     #$00
-        ldy     #$00
-:       sta     (tmp9), y
-        iny
-        cpy     tmp8
-        bne     :-
+        jmp     zero_mem_tmp9_tmp8
+        ; implicit rts
 
-        rts
 
 nd_help:
         jsr     _clr_help

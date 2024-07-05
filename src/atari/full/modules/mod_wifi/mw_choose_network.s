@@ -34,25 +34,25 @@
         setax   #fuji_ssidinfo
         jsr     _fuji_get_scan_result
 
-        pushax  {#(fuji_netconfig + NetConfig::ssid)}
-        pushax  {#(fuji_ssidinfo + SSIDInfo::ssid)}
-        lda     #32
-        jsr     _fc_strncpy
+        ; pushax  {#(fuji_netconfig + NetConfig::ssid)}
+        ; pushax  {#(fuji_ssidinfo + SSIDInfo::ssid)}
+        ; lda     #32
+        ; jsr     _fc_strncpy
 
-        ldx     #$00
-        ldy     #20             ; password line
-        jsr     get_scrloc
+        ; ldx     #$00
+        ; ldy     #20             ; password line
+        ; jsr     get_scrloc
 
-        ; display current password
-        mwa     {#(fuji_netconfig + NetConfig::password)}, ptr1
-        jsr     put_s_p1p4
+        ; ; display current password
+        ; mwa     {#(fuji_netconfig + NetConfig::password)}, ptr1
+        ; jsr     put_s_p1p4
 
-        ; get the password - 64 means the borders will break, minor issue
-        pushax  ptr1
-        pushax  ptr4
-        lda     #64
-        jsr     _edit_line
-        beq     esc_bssid
+        ; ; get the password - 64 means the borders will break, minor issue
+        ; pushax  ptr1
+        ; pushax  ptr4
+        ; lda     #64
+        ; jsr     _edit_line
+        ; beq     esc_bssid
 
         jmp     mw_save_ssid
 

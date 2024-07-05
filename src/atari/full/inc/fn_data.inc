@@ -124,3 +124,5 @@ FNC_R_HL    = $54           ; Pointer to selection R
 FNC_WIFI1   = $56           ; wifi 1 bar
 FNC_WIFI2   = $4D           ; wifi 2 bar
 FNC_WIFI3   = $4E           ; wifi 3 bar
+
+FNC_STAR    = $0A           ; '*' char for passwords
