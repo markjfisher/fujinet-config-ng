@@ -1,7 +1,8 @@
         .export mfs_kbh
 
         .import     _clr_status
-        .import     _edit_line
+        .import     _edit_string
+        .import     _es_params
         .import     _fc_strlen
         .import     debug
         .import     fn_dir_filter
@@ -23,11 +24,12 @@
         .import     pusha
         .import     pushax
 
-        .include    "zp.inc"
-        .include    "macros.inc"
-        .include    "modules.inc"
+        .include    "edit_string.inc"
         .include    "fn_data.inc"
         .include    "fujinet-fuji.inc"
+        .include    "macros.inc"
+        .include    "modules.inc"
+        .include    "zp.inc"
 
 ; 'A' contains the keyboard ascii code
 ; ptr4
@@ -203,15 +205,17 @@ not_parent:
         cmp     #FNK_FILTER
         bne     not_filter
 
-        ldx     #5
-        ldy     #1
-        jsr     get_scrloc           ; sets ptr4 to given screen location
+        mwa     #fn_dir_filter, {_es_params + EditString::initial_str}
+        mva     #$06, {_es_params + EditString::x_loc}
+        mva     #$01, {_es_params + EditString::y_loc}
+        mva     #$1f, {_es_params + EditString::max_length}   ; 31 bytes for length and viewport to fit nicely on screen
+        sta     _es_params + EditString::viewport_width
 
-        ; allow an edit at the filter location
-        pushax  #fn_dir_filter          ; filter string
-        pushax  ptr4                    ; scr location
-        lda     #31                     ; filter is max 32 but decrease 1 for the 'extra' 0 separating the path and filter. and this is also happily the screen width max with the "Fltr:" string and borders
-        jsr     _edit_line
+        mva     #$00, {_es_params + EditString::is_password}
+        sta     _es_params + EditString::is_number
+        sta     _es_params + EditString::max_length + 1
+
+        jsr     _edit_string
         beq     no_edit
 
         ; if there was an edit, reset selected and put back to start of dir, as the list will have changed

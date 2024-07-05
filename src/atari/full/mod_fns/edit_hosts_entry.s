@@ -3,15 +3,11 @@
         .import     _edit_string
         .import     _es_params
         .import     _fuji_put_host_slots
-        .import     _s_empty
         .import     _show_empty
         .import     fuji_hostslots
-        .import     get_scrloc
         .import     get_to_current_hostslot
         .import     mh_host_selected
         .import     pushax
-        .import     pushax, pusha
-        .import     put_s_p1p4
 
         .include    "atari.inc"
         .include    "edit_string.inc"
@@ -27,10 +23,7 @@
 ; ptr1,ptr4
 .proc _edit_hosts_entry
         jsr     get_to_current_hostslot
-        lda     ptr1
-        sta     _es_params + EditString::initial_str
-        lda     ptr1+1
-        sta     _es_params + EditString::initial_str + 1
+        mwa     ptr1, {_es_params + EditString::initial_str}
         
         lda     #.sizeof(HostSlot)
         sta     _es_params + EditString::max_length
