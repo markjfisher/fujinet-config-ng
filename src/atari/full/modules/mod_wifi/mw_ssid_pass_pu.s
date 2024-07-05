@@ -12,6 +12,8 @@
         .import     pushax
         .import     return1
 
+        .import     debug
+
         .include    "fn_data.inc"
         .include    "fujinet-fuji.inc"
         .include    "macros.inc"
@@ -29,7 +31,7 @@
         setax   #mw_ask_custom_wifi_pu_msg
         jsr     _show_select
 
-        cmp     #PopupItemReturn::escape
+        cpx     #PopupItemReturn::escape
         beq     esc_bssid
 
         ; details accepted, try them
