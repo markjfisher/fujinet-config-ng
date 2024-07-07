@@ -4,7 +4,6 @@
         .import     _fuji_set_device_filename
         .import     kb_global
         .import     _scr_highlight_line
-        .import     fuji_buffer
         .import     fuji_deviceslots
         
         .import     kb_current_line
@@ -46,15 +45,11 @@
         cmp     #'E'
         bne     not_eject
 
-        ; eject highlighted entry, which involves setting device slot to empty string and put/get device slots
-        ; new version is just save device file name with no value
-        ; This doesn't unset the host correctly in FN! It will still mount it if the host_slot is not 0xff
-        lda     #$00
-        sta     fuji_buffer
+        ; eject highlighted entry by saving device file name with no value
         pusha   #$00
         pusha   mh_host_selected
         pusha   md_device_selected
-        setax   #fuji_buffer
+        setax   #empty_string
         jsr     _fuji_set_device_filename
 
         ; read the device slots back so screen repopulates
@@ -64,6 +59,9 @@
 
         ldx     #KBH::EXIT
         rts
+
+empty_string:
+        .byte   $00
 
 not_eject:
 

@@ -37,6 +37,7 @@
 .endproc
 
 .proc _bar_clear
+        ; 0 to 384 left alone for application data etc.
         mwa     #__PMG_START__+384, tmp5
         mwa     #__PMG_START__+512, tmp7
         mwa     #__PMG_START__+768, tmp9

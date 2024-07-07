@@ -25,7 +25,7 @@ DL_MODEE      = $0E
 DL_MODEF      = $0F
 
 
-.segment "DLSCR"
+.segment "DLIST"
 
 main_dlist:
     ; blank lines in head
@@ -68,6 +68,7 @@ main_dlist:
     .byte DL_JVB
     .addr main_dlist
 
+; this also mustn't cross a boundary? get corruption if any of the rounding data goes over a 4k (e.g. put into rodata and it might fail)
 ; following 200 bytes are curvature lines on the screen.
 gbk:
     .repeat 40
@@ -102,8 +103,10 @@ gouttop2:
     .endrepeat
     .byte $ff, $fc
 
+
 ;; Addresses of Screen Memory - no need to assign it data
 ;; as it will be cleared at start, and doesn't need to be in the segment
+.segment "SCREEN"
 scr_start_addr = *
 sline1 = scr_start_addr
 sline2 = sline1 + SCR_BYTES_W

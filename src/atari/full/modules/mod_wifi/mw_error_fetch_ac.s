@@ -17,6 +17,6 @@
         rts
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 mw_ac_err_msg:
                 .byte "  Error loading adapter info!", 0

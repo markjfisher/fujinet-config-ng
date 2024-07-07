@@ -20,7 +20,7 @@
 
 ; Data for screen display, help texts etc
 
-.segment "SCR_DATA"
+.rodata
 
 ; ------------------------------------------------------------------
 ; Mod HOSTS data
@@ -173,7 +173,7 @@ mx_h1:
 
                 NORMAL_CHARMAP
 mx_m1:          .byte "Config-NG by Fenrock", 0
-mx_m2:          .byte "Version: 0.9.4", 0
+mx_m2:          .byte "Version: 0.9.5", 0
 
 
 ; ------------------------------------------------------------------

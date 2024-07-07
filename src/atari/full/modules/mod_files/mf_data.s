@@ -101,7 +101,7 @@ mf_ask_new_disk_cust_sector_size:
 ; not used anywhere, but good to know how to use * to get a size
 mfs_size_cst    = * - mf_ask_new_disk_cst_info
 
-.segment "SCR_DATA"
+.rodata
 
 mf_ask_new_disk_pu_msg:
                 .byte "Create New Disk", 0

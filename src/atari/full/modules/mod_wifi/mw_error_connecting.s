@@ -12,7 +12,7 @@
         jmp     _show_error
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 mw_connect_error_msg:
                 .byte " Could not connect", 0
                 .byte "    to network!", 0

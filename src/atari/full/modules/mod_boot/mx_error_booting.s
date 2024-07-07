@@ -12,7 +12,7 @@
         jmp     _show_error
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 mx_boot_error_msg:
         .byte "Failed to boot with", 0
         .byte "  chosen options.", 0

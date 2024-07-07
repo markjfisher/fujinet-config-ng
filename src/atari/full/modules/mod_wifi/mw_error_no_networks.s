@@ -12,6 +12,6 @@
         jmp     _show_error
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 mw_no_networks_error_msg:
         .byte " No networks", 0

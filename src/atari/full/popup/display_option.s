@@ -92,7 +92,7 @@ highlight_but_not_widget:
 over1:
         ; y is doing double work here, it's the offset of 2 pointers; the current character to display, and the screen offset
         ; print the widget, ptr2 tracks the current widget location
-:       ldy     #$00
+        ldy     #$00
         ldx     ss_pu_entry + POPUP_LEN_IDX   ; number of chars to display for each widget
 :       lda     (ptr2), y               ; get ascii char
         jsr     ascii_to_code           ; convert to screen code
@@ -110,14 +110,10 @@ over1:
         bne     :-                      ; loop over len chars
 
         
-        ; other side of the text print closing char if we the current widget that's highlighted
+        ; other side of the text print closing char if we the current highlight
         lda     tmp5                    ; restore the VAL of option
         cmp     tmp1
-        bne     :+                      ; no we should not print arrow
-
-        lda     ss_widget_idx
-        cmp     di_current_item
-        bne     :+                      ; no we should not print arrow
+        bne     :+                      ; no we should not print close
 
         ldy     tmp2
         mva     #FNC_R_END, {(ptr4), y}

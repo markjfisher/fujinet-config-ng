@@ -147,5 +147,5 @@ exit:
 
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 err_msg:        .byte "ERROR!", 0

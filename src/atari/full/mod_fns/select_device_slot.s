@@ -141,7 +141,7 @@ sds_pu_mode_val:        .res 1
 
 .data
 ; the width of textList should be 3+x_off less than the overall width. 2 for list number and space, 1 for end selection char
-sds_pu_info:    .byte 26, 2, 1, 0, 2, $ff           ; width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
+sds_pu_info:    .byte 28, 2, 1, 0, 2, $ff           ; width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
                 .byte PopupItemType::space
 sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mode_val, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
@@ -149,21 +149,21 @@ sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mod
 
 ; NO OPTIONS VERSION
 sds_pu_no_opt_info:
-                .byte 26, 7, 1, 0, $ff, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
+                .byte 28, 7, 1, 0, $ff, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_no_opt_devs:
                 .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
                 .byte PopupItemType::finish
 
 
-.segment "SCR_DATA"
+.rodata
 
 ; option entry, first string 0 terminated "name", next strings are <len> chars exactly for entries
-sds_mode_name:  .byte "Mode:   ", 0
+sds_mode_name:  .byte " Mode:  ", 0
 sds_mode_r:     .byte " R/O "
 sds_mode_rw:    .byte " R/W "
 
 ; spacing for widgets. removes 200 bytes of code to calculate!
-sds_opt1_spc:   .byte 3, 2, 3
+sds_opt1_spc:   .byte 4, 2, 4
 
 ; ------------------------------------------------------------------
 ; Select Device Slot data

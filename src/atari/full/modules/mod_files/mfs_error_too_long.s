@@ -15,6 +15,6 @@
         jmp     _show_error
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 p2l_err_msg:
         .byte " Path too long!", 0

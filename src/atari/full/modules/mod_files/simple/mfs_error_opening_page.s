@@ -19,6 +19,6 @@
 
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 opendir_err_msg:
         .byte " Error Opening Directory!", 0

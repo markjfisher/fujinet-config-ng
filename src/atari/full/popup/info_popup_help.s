@@ -12,7 +12,7 @@
         rts
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 
 pu_err_h1:
                 NORMAL_CHARMAP

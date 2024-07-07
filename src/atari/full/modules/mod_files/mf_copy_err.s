@@ -16,6 +16,6 @@
         jmp     _show_error
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 opendir_err_msg:
         .byte " Cannot copy directory", 0

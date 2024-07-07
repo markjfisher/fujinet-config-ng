@@ -12,6 +12,6 @@
         jmp     _show_error
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 mfs_init_err_msg:
         .byte "  Error initialising!", 0

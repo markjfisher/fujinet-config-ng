@@ -14,6 +14,6 @@
         jmp     _show_error
 .endproc
 
-.segment "SCR_DATA"
+.rodata
 nd_save_err_msg:
         .byte " Failed to save disk", 0

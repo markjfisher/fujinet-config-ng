@@ -16,7 +16,7 @@
 booting_mode:           .res 1
 mx_ask_lobby_val:       .res 1
 
-.segment "SCR_DATA"
+.rodata
 
 ; Mounting All - in box
 boot_anim_1_1:  .byte $11, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $12, $05, 0
