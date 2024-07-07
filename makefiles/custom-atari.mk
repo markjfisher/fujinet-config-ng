@@ -53,6 +53,8 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
+  $(XS)/debugcmd: "bp pre_init" \
+  $(XS)/debugcmd: "bp init_debug" \
 
   # $(XS)/debugcmd: "bp do_edit" \
   # $(XS)/debugcmd: "bp display_string" \
@@ -60,11 +62,11 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   # $(XS)/debugcmd: "bp mw_kb_handler" \
   # $(XS)/debugcmd: "bp _mw_handle_input" \
   # $(XS)/debugcmd: "ba w mw_setting_up" \
+  # $(XS)/debugcmd: "bp _debug" \
 
 # Additional args that can be copied into the above lines
 #   $(XS)/debug \
 #   $(XS)/debugcmd: ".loadsym build\$(PROGRAM).$(CURRENT_TARGET).lbl" \
-#   $(XS)/debugcmd: "bp _debug" \
 
 ATARI800 ?= $(ATARI800_HOME)/atari800 \
   -xl -nobasic -ntsc -xl-rev custom -config atari800-debug.cfg -run
