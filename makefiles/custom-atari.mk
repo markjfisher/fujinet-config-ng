@@ -54,7 +54,6 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
   $(XS)/debugcmd: "bp pre_init" \
-  $(XS)/debugcmd: "bp init_debug" \
 
   # $(XS)/debugcmd: "bp do_edit" \
   # $(XS)/debugcmd: "bp display_string" \

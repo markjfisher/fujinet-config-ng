@@ -1,5 +1,4 @@
         .export     pre_init
-        .export     init_debug
 
         .import     _reset_handler
         .import     detect_banks
@@ -15,10 +14,6 @@
 
 .segment "INIT"
 
-.proc init_debug
-        rts
-.endproc
-
 .proc pre_init
         ; detect banked values for NMIEN for up to MAX_BANKS (defined in detect_banks.s)
         jsr     detect_banks
@@ -27,7 +22,6 @@
         jsr     setup_fonts
 
         ; setup reset handler
-        jsr     init_debug
         mwa     DOSINI, _reset_handler+1+3
         mwa     #_reset_handler, DOSINI
         ; this was required before fixing picoboot.bin in CONFIG, by adding equivalent change.
