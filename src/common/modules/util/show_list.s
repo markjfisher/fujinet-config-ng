@@ -14,8 +14,6 @@
         .include    "fn_data.inc"
         .include    "modules.inc"
 
-; OLD void show_list(void *index_print_cb, uint8_t max_count, uint8_t dataSize, char *str)
-;
 ; show list of strings on screen, used on hosts and devices.
 .proc show_list
 

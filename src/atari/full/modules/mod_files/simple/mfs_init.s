@@ -23,8 +23,8 @@
         jsr     _fuji_close_directory
 
         mwa     #$00, mf_dir_pos
-        sta          mf_selected
-        sta          mfs_kbh_running
+        sta           mf_selected
+        sta           mfs_kbh_running
 
         ; set initial dir path to '/'. make most of A=0 to set the 2nd byte first
         ldx     #$01
@@ -38,8 +38,6 @@
         ; -----------------------------------------------------
         ; mount the host.
         lda     mh_host_selected
-        jsr     _fuji_mount_host_slot
-        ;; TODO: in 2.2.2 of fujinet-lib, value already returned, so can use it, BUT needs inverting in the callers of this function
-        jmp     _fuji_error
+        jmp     _fuji_mount_host_slot
 
 .endproc

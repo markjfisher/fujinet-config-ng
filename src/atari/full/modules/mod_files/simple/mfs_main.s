@@ -9,6 +9,7 @@
         .import     mfs_kbh_running
         .import     mfs_new_page
         .import     mfs_show_page
+        .import     mod_current
 
         .include    "macros.inc"
         .include    "fn_data.inc"
@@ -17,8 +18,13 @@
 ; same as original implementation, reads dirs 1 by 1
 .proc mfs_main
         jsr     mfs_init
-        beq     file_loop                       ; 0 indicates no error
-        jmp     mfs_error_initialising
+        bne     init_ok                       ; success status returned by mfs_init
+
+        jsr     mfs_error_initialising
+        mva     #Mod::hosts, mod_current
+        rts
+
+init_ok:
 
 ; we'll keep looping around here until something is chosen, or we exit
 file_loop:
