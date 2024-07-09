@@ -30,12 +30,12 @@
         mva     #$0d, COLOR1    ; glyph pixel luma
         mva     #$00, COLOR2    ; b/g
         sta           COLOR4    ; border
+        mva     #$08, GPRIOR    ; this sets the priorities correctly for players/missiles when not using pure black background.
         jsr     _wait_scan1     ; at top of screen, everything is now setup
 
         ; turn screen and interrupts back on with DMA enabled for PMG
         mva     #$40, NMIEN
         mva     #$2e, SDMCTL
-        mva     #$08, GPRIOR
 
         ; setup for the screen location to be usable by cc65's output routines
         mwa     #m_l1, SAVMSC
