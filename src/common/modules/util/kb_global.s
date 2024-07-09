@@ -198,6 +198,7 @@ cont_kb:
         jmp     start_kb_get
 
 do_kb_module:
+        ; TODO: guard this against indirect JMP bug, if the address crosses 0xFF boundary, jump won't work
         jmp     (kb_mod_proc)
         ; rts is implicit in the jmp
 
