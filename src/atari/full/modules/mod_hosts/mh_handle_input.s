@@ -83,7 +83,7 @@ one_or_over:
         sbc     #'1' ; convert to 0 based index
         sta     mh_host_selected
         sta     kb_current_line         ; tell global kb handler the latest value too
-        jsr     _scr_highlight_line
+        ; jsr     _scr_highlight_line
         ldx     #KBH::RELOOP
         rts
 

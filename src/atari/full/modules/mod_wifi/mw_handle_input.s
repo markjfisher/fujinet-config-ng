@@ -28,6 +28,7 @@
         .include    "modules.inc"
 
 .proc _mw_handle_input
+        mva     mw_selected, kb_current_line
         mva     #$00, mw_setting_up
         jsr     _scr_clr_highlight
 

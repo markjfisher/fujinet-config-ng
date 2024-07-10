@@ -2,12 +2,15 @@
         .export     reset_debug
 
         .import     _clr_scr_all
-        .import     _scr_setup
-        .import     _mod_init
         .import     booting_mode
+        .import     fc_connected
+        .import     kb_current_line
+        .import     md_device_selected
         .import     md_is_devices_data_fetched
         .import     mf_copying
+        .import     mh_host_selected
         .import     mh_is_hosts_data_fetched
+        .import     mi_selected
         .import     mod_current
         .import     mw_is_ac_data_fetched
         .import     mw_selected
@@ -40,8 +43,13 @@
         sta     md_is_devices_data_fetched
         sta     mw_is_ac_data_fetched
         sta     mw_selected
+        sta     mh_host_selected
+        sta     mi_selected
         sta     booting_mode
         sta     mf_copying
+        sta     md_device_selected
+        sta     kb_current_line
+        sta     fc_connected
 
         jsr     _clr_scr_all
 

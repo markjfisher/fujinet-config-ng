@@ -266,7 +266,8 @@ not_edit:
 .endproc
 
 .proc do_kb_cb
-        jmp (pu_kb_cb)
+        ;; TODO: make this straight jmp so we don't get the indirect jmp bug!!
+        jmp     (pu_kb_cb)
         ; return from caller will take us back
 .endproc
 

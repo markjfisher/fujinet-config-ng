@@ -1,6 +1,7 @@
         .export     _md_init_screen
 
         .import     _clr_scr_all
+        .import     _pmg_skip_x
         .import     _put_help
         .import     _put_status
         .import     md_h1, md_s1, md_s2
@@ -15,5 +16,7 @@
         put_status #0, #md_s1
         put_status #1, #md_s2
         put_help   #0, #md_h1
+        lda        #$06
+        sta        _pmg_skip_x
         rts
 .endproc

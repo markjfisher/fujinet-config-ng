@@ -2,7 +2,6 @@
 
         .import     kb_global
 
-        .import     kb_current_line
         .import     kb_max_entries
         .import     kb_prev_mod
         .import     kb_next_mod

@@ -5,6 +5,7 @@
         .import     _clr_src_with_separator
         .import     _clr_status
         .import     _fc_div10
+        .import     _pmg_skip_x
         .import     _put_help
         .import     _put_s
         .import     _put_status
@@ -33,11 +34,14 @@ _mi_init_screen:
         put_status #1, #mx_s2
         put_help   #0, #mx_h1
 
-        put_s   #2, #1,  #mx_k_app_name
-        put_s   #19, #1, #mx_v_app_name
-        put_s   #2, #2,  #mx_k_version
-        put_s   #19, #2, #mx_v_version
-        put_s   #2, #3,  #mx_k_bank_cnt
+        put_s   #2,  #1, #mx_k_app_name
+        put_s   #17, #1, #mx_v_app_name
+        put_s   #2,  #2, #mx_k_version
+        put_s   #17, #2, #mx_v_version
+        put_s   #2,  #3, #mx_k_bank_cnt
+
+        lda     #$12
+        sta     _pmg_skip_x
 
         ; convert bank count to screen value
         lda     _bank_count
@@ -63,7 +67,7 @@ under_10:
 
 do_print:
         ; now print it, should be ascii string
-        put_s   #19, #3, #temp_num
+        put_s   #17, #3, #temp_num
         rts
 
 temp_num:

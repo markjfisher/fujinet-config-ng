@@ -1,10 +1,10 @@
         .export     _scr_highlight_line
+        .export     mod_highlight_offsets
 
         .import     _bar_show
         .import     _set_highlight_colour
         .import     kb_current_line
         .import     mod_current
-        .import     pusha
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -13,12 +13,10 @@
 .proc _scr_highlight_line
         jsr     _set_highlight_colour
 
-        pusha   kb_current_line
-
         ; read the highlight offset for current module
         ldx     mod_current
         lda     mod_highlight_offsets, x
-
+        ldy     kb_current_line
         jmp     _bar_show
 .endproc
 
@@ -49,7 +47,7 @@ mod_highlight_offsets:
         .byte   $1a             ; hosts
         .byte   $1a             ; devices
         .byte   $36             ; wifi (only when choosing network)
-        .byte   $12             ; info (no highlight)
+        .byte   $2e             ; info
         .byte   $22             ; files
         .byte   $12             ; init (no highlight)
         .byte   $12             ; boot (no highlight)

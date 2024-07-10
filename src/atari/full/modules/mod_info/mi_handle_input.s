@@ -18,7 +18,7 @@
         .include    "zp.inc"
 
 .proc _mi_handle_input
-        ; handle keyboard
+        mva     mi_selected, kb_current_line
 
         ; count of preferences that can be altered
         mva     #$05, kb_max_entries

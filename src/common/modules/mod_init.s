@@ -11,7 +11,9 @@
         .import     kb_current_line
         .import     md_device_selected
         .import     mh_host_selected
+        .import     mi_selected
         .import     mod_current
+        .import     mw_selected
 
         .import     debug
 
@@ -33,6 +35,8 @@
         ; initialise some module values
         mva     #$00, mh_host_selected
         sta     md_device_selected
+        sta     mi_selected
+        sta     mw_selected
         sta     kb_current_line
         sta     booting_mode
         sta     fc_connected

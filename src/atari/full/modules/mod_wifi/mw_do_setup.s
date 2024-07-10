@@ -6,11 +6,13 @@
         .import     _put_s
         .import     _put_status
         .import     _scr_highlight_line
+        .import     kb_current_line
         .import     kb_max_entries
         .import     mw_help_setup
         .import     mw_net_count
         .import     mw_nets_msg
         .import     mw_s1
+        .import     mw_selected
         .import     mw_setting_up
         .import     mw_setup_wifi
         .import     pusha
@@ -35,8 +37,9 @@
         ldx     #KBH::EXIT
         rts
 
-        ; highlight the first entry
+        ; highlight the current entry
 :       mva     mw_net_count, kb_max_entries
+        mva     mw_selected, kb_current_line
         jsr     _scr_highlight_line
 
         ; we're still on this mod, just reloop, the kbh adapts to if we're in setup mode or not
