@@ -401,6 +401,14 @@ l1:
         jsr     _put_s
 .endmacro
 
+; this expects you to have previously done a put_s, and print from same string location to new coordinate.
+.macro put_s_fast argX, argY
+        ldx     argX
+        ldy     argY
+
+        jsr     _put_s_fast
+.endmacro
+
 .macro put_help argNum, msg
         pusha   argNum
         setax   msg
@@ -411,12 +419,6 @@ l1:
         pusha   argNum
         setax   msg
         jsr     _put_status
-.endmacro
-
-.macro get_scrloc aX, aY
-        ldx     aX
-        ldy     aY
-        jsr     get_scrloc
 .endmacro
 
 .macro pause j

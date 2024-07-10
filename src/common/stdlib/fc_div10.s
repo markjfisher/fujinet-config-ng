@@ -3,11 +3,13 @@
         .include    "zp.inc"
         .include    "macros.inc"
 
+; extremely simple DIV 10 routine.
+;
 ; INPUT
 ; A - number to divide by 10
 ; X - additional value to add to each part (e.g. convert to ascii add #'0')
 ; OUTPUT:
-; quotient in TMP1, remainder in A
+; quotient in A, remainder in X
 
 .proc _fc_div10
         sta     tmp1
@@ -28,13 +30,11 @@ l2:
         ; add any offset to remainder
         clc
         adc     tmp2
-        pha             ; push it until we do the quotient
+        tax             ; store the remainder in X
 
         lda     tmp1
         clc
         adc     tmp2
-        sta     tmp1
-        pla
 
         rts
 .endproc

@@ -7,6 +7,7 @@
         .export mx_k_bank_cnt
         .export mf_s1, mf_h1, mf_prev, mf_next, mf_copying_msg
         .export mf_host, mf_filter, mf_path
+        .export mx_k_colour, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy
 
         .export     mw_bssid
         .export     mw_dns
@@ -176,12 +177,18 @@ mx_h1:
 
                 NORMAL_CHARMAP
 mx_k_app_name:  .byte "Config-NG", 0
-mx_v_app_name:  .byte "(c) 2024 MJF", 0
+mx_v_app_name:  .byte "(c) 2024 Fenrock", 0
 
 mx_k_version:   .byte "Version", 0
 mx_v_version:   .byte "1.0.0", 0
 
 mx_k_bank_cnt:  .byte "Bank Count", 0
+
+mx_k_colour:    .byte "Screen Colour", 0
+mx_k_shade:     .byte "Shade/darkness", 0
+mx_k_bar_conn:  .byte "Bar (Conn.)", 0
+mx_k_bar_dconn: .byte "Bar (Discon.)", 0
+mx_k_bar_copy:  .byte "Bar (Copying)", 0
 
 
 ; ------------------------------------------------------------------
