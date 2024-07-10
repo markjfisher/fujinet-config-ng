@@ -1,5 +1,5 @@
         .export     _clr_scr_all
-        .export     _clr_src_with_separator
+        .export     _clr_scr_with_separator
         .export     _clr_help
         .export     _clr_status
 
@@ -88,7 +88,7 @@ next:
 ; void clr_src_with_separator(uint8_t separator_line)
 ;
 ; clear screen and place a separator on page at line separator_line (1 based index)
-.proc _clr_src_with_separator
+.proc _clr_scr_with_separator
         pha                             ; save the separator_line
         jsr     clr_scr_inner           ; clear the inner part of screen
         pla                             ; restore parameter

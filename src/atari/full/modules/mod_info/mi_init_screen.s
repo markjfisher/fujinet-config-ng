@@ -2,7 +2,7 @@
 
         .import     _bank_count
         .import     _clr_help
-        .import     _clr_src_with_separator
+        .import     _clr_scr_with_separator
         .import     _clr_status
         .import     _fc_div10
         .import     _pmg_skip_x
@@ -28,7 +28,7 @@ _mi_init_screen:
         jsr     _clr_help
         jsr     _clr_status
         lda     #6                     ; print a separator at this line
-        jsr     _clr_src_with_separator
+        jsr     _clr_scr_with_separator
 
         put_status #0, #mx_s1
         put_status #1, #mx_s2

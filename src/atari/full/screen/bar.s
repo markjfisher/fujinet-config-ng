@@ -121,35 +121,51 @@
 
         jmp     return0
 
+; about 24 more bytes than previous implementation but faster for larger X values
+; as it doesn't have to keep LSR through all values
 calc_shape_data:
-        ldx     _pmg_skip_x
-        ; X is the number of bits from left of shape_data to set to 0 for the PMG shape so that it becomes blank on the screen for 0 .. x-1 chars
+        ldx     #$00
+        stx     tmp1                    ; initialise div8 result.
 
-        ; initialise shape data to all $ff in case another caller had longer space
+        ; write defaults into last 3 bytes, the first byte is always calculated as _pmg_skip_x is never 0
         lda     #$ff
-        ldy     #$04
-:       sta     shape_data-1, y
+        ldy     #$03
+:       sta     shape_data, y
         dey
         bne     :-
 
-        cpx     #$00
-        beq     done
+        lda     _pmg_skip_x
+        ; it's never 0
+        ; cmp     #0
+        ; beq     done2
+        cmp     #8                      ; don't do div8 if it's under 8
+        bcc     under_8
+        tay
 
-        ; y = 0, a = $ff, x = count of chars / bits to skip in $ff's from left
-:       lsr     a               ; drop a bit off from the left
-        beq     all_0           ; must have looped 8 times
-cont_looping:
+        ; work out X div 8
+        lsr     a                       ; / 2
+        lsr     a                       ; / 4
+        lsr     a                       ; / 8
+        tax                             ; number of whole bytes to set to 0
+        sta     tmp1                    ; save the div value as the index into our array for non-whole part, this is correct value without needing to 0 index it
+        lda     #$00
+:       sta     shape_data-1, x
         dex
-        bne     :-              ; loop until we have done all bits
-        sta     shape_data, y       ; set the whole byte
+        bne     :-
 
-done:   rts
+        tya                             ; restore X value
 
-all_0:
-        sta     shape_data, y       ; set the whole byte to 0
-        iny                     ; move to next byte in table
-        lda     #$ff            ; start again with all bits set
-        bne     cont_looping
+under_8:
+        and     #$07                    ; remainder of X div 8
+        beq     done
+        tay
+        dey                             ; make it 0 indexed
+        lda     bit_masks, y            ; pre-calculated LSR values for the remainder part
+        ldx     tmp1                    ; restore the index into array output (the div8 result)
+        sta     shape_data, x
+
+done:  rts
+
 
 .endproc
 
@@ -162,3 +178,5 @@ shape_data:
 
 .rodata
 bar_positions:  .byte $30, $50, $70, $90, $b0, $b8, $c0, $c8
+right_side_gap: .byte $ff, $bf, $3f, $2f, $0f, $0b, $03, $02
+bit_masks:      .byte %01111111, %00111111, %00011111, %00001111, %00000111, %00000011, %00000001

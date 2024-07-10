@@ -30,7 +30,6 @@
 .proc _mw_handle_input
         mva     mw_selected, kb_current_line
         mva     #$00, mw_setting_up
-        jsr     _scr_clr_highlight
 
         mva     #$00, kb_max_entries
         mva     #Mod::devices, kb_prev_mod

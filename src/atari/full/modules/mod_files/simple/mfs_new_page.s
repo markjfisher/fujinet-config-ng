@@ -1,7 +1,7 @@
         .export     mfs_new_page
 
         .import     _clr_help
-        .import     _clr_src_with_separator
+        .import     _clr_scr_with_separator
         .import     _ellipsize
         .import     _fuji_error
         .import     _fuji_open_directory
@@ -38,7 +38,7 @@
 ; ptr1
 .proc mfs_new_page
         lda     #$04                    ; print a separator on line 4
-        jsr     _clr_src_with_separator
+        jsr     _clr_scr_with_separator
 
         jsr     _clr_help
         put_status #0, #mf_s1

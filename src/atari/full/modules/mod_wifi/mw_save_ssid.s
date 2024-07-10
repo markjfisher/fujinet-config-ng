@@ -4,7 +4,6 @@
         .import     _fuji_set_ssid
         .import     _mw_init_screen
         .import     _put_s
-        .import     _scr_clr_highlight
         .import     fc_connected
         .import     fuji_netconfig
         .import     mw_error_connecting
@@ -28,7 +27,6 @@
         mva     #$00, mw_is_ac_data_fetched
         jsr     _mw_init_screen
 
-        jsr     _scr_clr_highlight      ; turn off the PMG highlight
         put_s   #10, #12, #mw_nets_msg  ; print "fetching" message that will be erased when we start printing results
 
         ; check connection status, use tmp1/2 as the location for the results

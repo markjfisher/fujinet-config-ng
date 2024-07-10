@@ -57,11 +57,6 @@ void ak_read_config(void) {
 	case 1:
 		// values can be copied directly from buffer to the config object
 		memcpy(&cng_prefs, buffer, sizeof(CNG_PREFS_DATA));
-		// cng_prefs.ak_colour      = buffer[1];
-		// cng_prefs.ak_shade       = buffer[2];
-		// cng_prefs.ak_bar_conn    = buffer[3];
-		// cng_prefs.ak_bar_disconn = buffer[4];
-		// cng_prefs.ak_bar_copy    = buffer[5];
 		break;
 	default:
 		write_defaults();
