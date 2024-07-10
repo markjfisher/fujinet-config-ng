@@ -3,4 +3,4 @@
         .include    "fujinet-fuji.inc"
 
 .segment "BUFFER"
-fuji_netconfig:      .res .sizeof(NetConfig)
+fuji_netconfig:      .tag NetConfig

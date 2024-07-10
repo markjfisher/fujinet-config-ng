@@ -3,4 +3,4 @@
         .include    "fujinet-fuji.inc"
 
 .segment "BUFFER"
-fuji_ssidinfo:      .res .sizeof(SSIDInfo)
+fuji_ssidinfo:      .tag SSIDInfo

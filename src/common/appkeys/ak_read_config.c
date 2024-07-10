@@ -1,23 +1,38 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "fujinet-fuji.h"
+#include "cng_prefs.h"
 
 #define FNC_CREATOR_ID 0xfe0c
 #define FNC_APP_ID     0x01
 #define FNC_KEY_ID     0x01
 
-extern uint8_t ak_version;
-extern uint8_t ak_colour_idx;
-
-uint8_t buffer[2];
+uint8_t buffer[sizeof(CNG_PREFS_DATA)];
 
 void write_defaults() {
-	ak_version = 0;
-	ak_colour_idx = 0;
-	buffer[0] = 0;
-	buffer[1] = 0;
-	fuji_write_appkey(FNC_KEY_ID, 2, buffer);
+	memset(&cng_prefs, 0, sizeof(CNG_PREFS_DATA));
+
+	// set the latest version here
+	cng_prefs.version = 1;
+	fuji_write_appkey(FNC_KEY_ID, sizeof(cng_prefs), &cng_prefs);
+}
+
+void upgrade(uint8_t from) {
+	switch(from) {
+	case 0:
+		// v0 only had 1 value stored, that was unused anyway, so just write defaults out
+		write_defaults();
+		break;
+
+	// case 1:
+	//  these will have to copy old data correctly from old key structure to the new one...
+
+	default:
+		break;
+	}
 }
 
 void ak_read_config(void) {
@@ -33,11 +48,20 @@ void ak_read_config(void) {
 	}
 
 	// the first byte is the version of the config being loaded, so we can future proof our appkeys
-	ak_version = buffer[0];
+	cng_prefs.version = buffer[0];
 
-	switch(ak_version) {
+	switch(cng_prefs.version) {
 	case 0:
-		ak_colour_idx = buffer[1];
+		upgrade(0);
+		break;
+	case 1:
+		// values can be copied directly from buffer to the config object
+		memcpy(&cng_prefs, buffer, sizeof(CNG_PREFS_DATA));
+		// cng_prefs.ak_colour      = buffer[1];
+		// cng_prefs.ak_shade       = buffer[2];
+		// cng_prefs.ak_bar_conn    = buffer[3];
+		// cng_prefs.ak_bar_disconn = buffer[4];
+		// cng_prefs.ak_bar_copy    = buffer[5];
 		break;
 	default:
 		write_defaults();
