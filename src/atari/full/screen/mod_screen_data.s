@@ -159,7 +159,7 @@ mw_custom_msg:
 ; ------------------------------------------------------------------
 mx_s1:
                 INVERT_ATASCII
-                .byte "INFO", 0
+                .byte "Preferences", 0
 
 mx_s2:
                 NORMAL_CHARMAP
@@ -170,10 +170,21 @@ mx_s2:
                 .byte $81, $1f, $82, 0
 
 mx_h1:          
+                ; NORMAL_CHARMAP
+                ; .byte $81, "OPTION", $82
+                ; INVERT_ATASCII
+                ; .byte "Mount Disks and Boot!", 0
                 NORMAL_CHARMAP
-                .byte $81, "OPTION", $82
+                .byte $81, $1c, $1d, $82        ; endL up down endR
                 INVERT_ATASCII
-                .byte "Mount Disks and Boot!", 0
+                .byte "Move "
+                NORMAL_CHARMAP
+                .byte $81, "E", $82
+                INVERT_ATASCII
+                .byte "Edit ", 0
+                NORMAL_CHARMAP
+
+
 
                 NORMAL_CHARMAP
 mx_k_app_name:  .byte "Config-NG", 0

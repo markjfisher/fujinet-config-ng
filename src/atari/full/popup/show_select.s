@@ -74,7 +74,13 @@ exit_select:
 .endproc
 
 .proc show_help
-        jmp     (ss_help_cb)
+        lda     ss_help_cb
+        sta     sh_sac+1
+        lda     ss_help_cb+1
+        sta     sh_sac+2
+
+sh_sac:
+        jmp     $0000
 .endproc
 
 ; draw top part of select with title/help/status, and initialise some values

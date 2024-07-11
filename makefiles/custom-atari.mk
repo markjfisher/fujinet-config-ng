@@ -2,8 +2,8 @@
 
 # reserved memory for graphics
 # LDFLAGS += -Wl -D,__RESERVED_MEMORY__=0x2000
+# LDFLAGS += -Wl -D__RESERVED_MEMORY__=0x1
 
-LDFLAGS += -Wl -D__RESERVED_MEMORY__=0x1
 LDFLAGS += -C cfg/$(CURRENT_TARGET_LONG).cfg
 
 ################################################################

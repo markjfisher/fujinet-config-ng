@@ -2,6 +2,8 @@
 
         .import     kb_global
 
+        .import     _mi_edit_preferences
+
         .import     kb_current_line
         .import     kb_max_entries
         .import     kb_prev_mod
@@ -10,9 +12,8 @@
         .import     kb_mod_proc
 
         .import     mi_selected
-        .import     pusha
-        .import     pushax
 
+        .include    "fn_data.inc"
         .include    "macros.inc"
         .include    "modules.inc"
         .include    "zp.inc"
@@ -31,5 +32,24 @@
 .endproc
 
 .proc mi_kbh
+
+; press E to edit, then
+;  - colour/darkness fields can have up/down arrow used to increase / decrease the value, values immediately reflect
+;  - other fields are direct edit
+;  - press enter/esc to accept reject, then values persisted or restored
+
+; ----------------------------------------------------------------------
+; E - EDIT
+; ----------------------------------------------------------------------
+        cmp     #FNK_EDIT
+        bne     not_edit
+        jsr     _mi_edit_preferences
+
+        ldx     #KBH::RELOOP
+        rts
+
+not_edit:
+do_exit:
+        ldx     #KBH::NOT_HANDLED
         rts
 .endproc
