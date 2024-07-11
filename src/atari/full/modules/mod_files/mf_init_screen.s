@@ -2,14 +2,16 @@
 
         .import     _clr_help
         .import     _clr_status
-        .import     _pmg_skip_x
+        .import     _pmg_space_left
+        .import     _pmg_space_right
         .import     get_scrloc
 
         .include    "macros.inc"
 
 .proc _mf_init_screen
         ldx     #$01
-        stx     _pmg_skip_x
+        stx     _pmg_space_left
+        stx     _pmg_space_right
 
         dex
         ldy     #$00

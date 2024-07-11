@@ -184,8 +184,8 @@ mx_v_version:   .byte "1.0.0", 0
 
 mx_k_bank_cnt:  .byte "Bank Count", 0
 
-mx_k_colour:    .byte "Screen Colour", 0
-mx_k_shade:     .byte "Shade/darkness", 0
+mx_k_colour:    .byte "Colour (0-F)", 0
+mx_k_shade:     .byte "Shade (0-F)", 0
 mx_k_bar_conn:  .byte "Bar (Conn.)", 0
 mx_k_bar_dconn: .byte "Bar (Discon.)", 0
 mx_k_bar_copy:  .byte "Bar (Copying)", 0

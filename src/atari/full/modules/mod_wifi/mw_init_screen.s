@@ -3,7 +3,8 @@
         .import     _clr_help
         .import     _clr_scr_with_separator
         .import     _clr_status
-        .import     _pmg_skip_x
+        .import     _pmg_space_left
+        .import     _pmg_space_right
         .import     _put_help
         .import     _put_status
         .import     _scr_clr_highlight
@@ -27,6 +28,7 @@
         put_status #1, #mw_s2
         put_help   #0, #mw_h1
         lda        #$01
-        sta        _pmg_skip_x
+        sta        _pmg_space_left
+        sta        _pmg_space_right
         rts
 .endproc

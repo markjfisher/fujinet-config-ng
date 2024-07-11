@@ -17,6 +17,12 @@ void write_defaults() {
 
 	// set the latest version here
 	cng_prefs.version = 1;
+	cng_prefs.colour = 0;
+	cng_prefs.shade = 0;
+	cng_prefs.bar_conn = 0xb4;
+	cng_prefs.bar_disconn = 0x33;
+	cng_prefs.bar_copy = 0x66;
+
 	fuji_write_appkey(FNC_KEY_ID, sizeof(cng_prefs), &cng_prefs);
 }
 

@@ -6,24 +6,28 @@
         .import     _clr_status
         .import     _cng_prefs
         .import     _fc_div10
-        .import     _pmg_skip_x
+        .import     _pmg_space_left
+        .import     _pmg_space_right
         .import     _put_help
         .import     _put_s
-        .import     _put_s_fast
+        .import     _put_s_nl
         .import     _put_status
         .import     _scr_clr_highlight
-        .import     hex
         .import     hexb
         .import     mx_h1
         .import     mx_k_app_name
-        .import     mx_v_app_name
-        .import     mx_k_version
-        .import     mx_v_version
         .import     mx_k_bank_cnt
+        .import     mx_k_bar_conn
+        .import     mx_k_bar_copy
+        .import     mx_k_bar_dconn
+        .import     mx_k_colour
+        .import     mx_k_shade
+        .import     mx_k_version
         .import     mx_s1
         .import     mx_s2
+        .import     mx_v_app_name
+        .import     mx_v_version
         .import     pusha
-        .import     mx_k_colour, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy
 
         .include    "cng_prefs.inc"
         .include    "fn_data.inc"
@@ -37,26 +41,27 @@ _mi_init_screen:
         lda     #6                     ; print a separator at this line
         jsr     _clr_scr_with_separator
 
+        ; setup the PMG bar width by setting the space on both sides. Maybe should be a width setting instead of space_right...
+        mva     #19, _pmg_space_left
+        mva     #17, _pmg_space_right
+
         put_status #0, #mx_s1
         put_status #1, #mx_s2
         put_help   #0, #mx_h1
 
         put_s   #2,  #1, #mx_k_app_name
-        put_s   #17, #1, #mx_v_app_name
+        put_s   #20, #1, #mx_v_app_name
         put_s   #2,  #2, #mx_k_version
-        put_s   #17, #2, #mx_v_version
+        put_s   #20, #2, #mx_v_version
         put_s   #2,  #3, #mx_k_bank_cnt
-
-        lda     #$12
-        sta     _pmg_skip_x
 
         ; convert bank count to screen value
         lda     _bank_count
         jsr     to_decimal_str
 
 do_print:
-        ; now print it, should be ascii string
-        put_s   #17, #3, #temp_num
+        ; now print bank count, it's now an ascii string
+        put_s   #20, #3, #temp_num
 
 
 ; #######################################################################
@@ -64,54 +69,51 @@ do_print:
 
         put_s   #2, #7,  #mx_k_colour
 
-        ; put_s   #2, #8,  #mx_k_shade
-        mwa     #mx_k_shade, tmp9
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #2, #8
+        put_s   #2, #8,  #mx_k_shade
+        put_s   #2, #9,  #mx_k_bar_conn
+        put_s   #2, #10, #mx_k_bar_dconn
+        put_s   #2, #11, #mx_k_bar_copy
 
-        ; put_s   #2, #9,  #mx_k_bar_conn
-        mwa     #mx_k_bar_conn, tmp9
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #2, #9
-
-        ; put_s   #2, #10, #mx_k_bar_dconn
-        mwa     #mx_k_bar_dconn, tmp9
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #2, #10
-
-        ; put_s   #2, #11, #mx_k_bar_copy
-        mwa     #mx_k_bar_copy, tmp9
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #2, #11
+        ; print 0x in front of all hex values
+        put_s   #18, #7, #pre_hex_str
+        jsr     _put_s_nl
+        jsr     _put_s_nl
+        jsr     _put_s_nl
+        jsr     _put_s_nl
 
         lda     _cng_prefs + CNG_PREFS_DATA::colour
-        jsr     to_decimal_str
-        put_s   #17, #7, #temp_num
+        jsr     pusha
+        setax   #temp_num
+        jsr     hexb
+        ; range is 0-F, so skip first nybble, as it's always 0 and don't want user thinking they can enter larger values
+        put_s   #20, #7, #(temp_num+1)
 
-        ;; everything from here uses the temp_num pointer in tmp9, so only set it once
         lda     _cng_prefs + CNG_PREFS_DATA::shade
-        jsr     to_decimal_str
-        ; put_s   #17, #8, #temp_num
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #17, #8
+        jsr     pusha
+        setax   #temp_num
+        jsr     hexb
+        ; as above, range is 0-F, so can use same temp_num+1 string location
+        jsr     _put_s_nl
 
+        ; these are now full HEX values to print
         lda     _cng_prefs + CNG_PREFS_DATA::bar_conn
-        jsr     to_decimal_str
-        ; put_s   #17, #9, #temp_num
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #17, #9
+        jsr     pusha
+        setax   #temp_num
+        jsr     hexb
+        ; need to set ptr9 to correct location again, so use put_s
+        put_s   #20, #9, #temp_num
 
         lda     _cng_prefs + CNG_PREFS_DATA::bar_disconn
-        jsr     to_decimal_str
-        ; put_s   #17, #10, #temp_num
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #17, #10
+        jsr     pusha
+        setax   #temp_num
+        jsr     hexb
+        jsr     _put_s_nl
 
         lda     _cng_prefs + CNG_PREFS_DATA::bar_copy
-        jsr     to_decimal_str
-        ; put_s   #17, #11, #temp_num
-        adw1    ptr4, #SCR_BYTES_W
-        put_s_fast #17, #11
+        jsr     pusha
+        setax   #temp_num
+        jsr     hexb
+        jsr     _put_s_nl
 
         rts
 
@@ -136,5 +138,5 @@ exit:
 
 .data
 
-temp_num:
-        .byte   0, 0, 0
+temp_num:       .byte 0, 0, 0   ; our value string of 2 bytes
+pre_hex_str:    .byte "0x", 0
