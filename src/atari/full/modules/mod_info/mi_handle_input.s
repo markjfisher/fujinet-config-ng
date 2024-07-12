@@ -33,11 +33,6 @@
 
 .proc mi_kbh
 
-; press E to edit, then
-;  - colour/darkness fields can have up/down arrow used to increase / decrease the value, values immediately reflect
-;  - other fields are direct edit
-;  - press enter/esc to accept reject, then values persisted or restored
-
 ; ----------------------------------------------------------------------
 ; E - EDIT
 ; ----------------------------------------------------------------------

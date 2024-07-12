@@ -12,11 +12,11 @@
         .import         get_scrloc
         .import         hexb
         .import         mi_selected
+        .import         mi_set_pmg_widths
         .import         pusha
         .import         temp_num
 
         .import         debug
-        .import         _wait_scan1
 
         .include        "cng_prefs.inc"
         .include        "fn_data.inc"
@@ -118,12 +118,14 @@ not_up:
 
         ; restore the value on screen, as the edit was cancelled
         jsr     copy_pref_to_temp
+        sta     bar_colour
         mva     #$01, tmp2              ; don't invert
         jsr     display_pref
         jsr     enact_pref_change       ; reset colours to previous values
-        rts
-not_esc:
+        jsr     mi_set_pmg_widths       ; set the widths back to normal
+        jmp     change_bar_colour
 
+not_esc:
 ; --------------------------------------------------------------------
 ; ENTER - accept changes and write to prefs
 ; --------------------------------------------------------------------
@@ -139,11 +141,16 @@ not_esc:
         lda     pref_copy               ; new value
         sta     _cng_prefs, x           ; store it
         jsr     _write_prefs            ; save them
-
-        rts
+        jsr     mi_set_pmg_widths       ; set the widths back to normal
+        
+        lda     _cng_prefs + CNG_PREFS_DATA::bar_conn
+        sta     bar_colour
+        jmp     change_bar_colour
 
 not_enter:
-
+; --------------------------------------------------------------------
+; RELOOP
+; --------------------------------------------------------------------
         ; reloop until we accept or exit
         jmp     start_kb_get
 
@@ -268,6 +275,7 @@ skip_invert:
         ; update the current bar colour, same for all routines
         lda     pref_copy
         sta     bar_colour
+        jsr     widen_bar
         jmp     change_bar_colour
 .endproc
 
@@ -278,13 +286,18 @@ skip_invert:
         inx                             ; skip version byte, then selected line is same as index into config structure
         lda     _cng_prefs, x
         sta     bar_colour
+        jsr     widen_bar
         jmp     change_bar_colour
 .endproc
 
-.proc change_bar_colour
+.proc widen_bar
+        ; max out the bar for easier viewing
         mva     #1, _pmg_space_left
         sta         _pmg_space_right
+        rts
+.endproc
 
+.proc change_bar_colour
         jsr     _scr_highlight_line     ; this does a wait_scan, so bar won't be near drawing yet when we get to the line it's needed, so there should be no flash here
         lda     bar_colour
         jmp     _bar_setcolor

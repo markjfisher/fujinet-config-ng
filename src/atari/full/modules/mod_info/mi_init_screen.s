@@ -1,4 +1,5 @@
-        .export _mi_init_screen
+        .export     _mi_init_screen
+        .export     mi_set_pmg_widths
 
         .import     _bank_count
         .import     _clr_help
@@ -41,9 +42,7 @@ _mi_init_screen:
         lda     #6
         jsr     _clr_scr_with_separator
 
-        ; setup the PMG bar width by setting the space on both sides. Maybe should be a width setting instead of space_right...
-        mva     #19, _pmg_space_left
-        mva     #17, _pmg_space_right
+        jsr     mi_set_pmg_widths
 
         put_status #0, #mx_s1
         put_status #1, #mx_s2
@@ -78,4 +77,10 @@ under_10:
         ; now print bank count, it's now an ascii string
         put_s   #18, #3, #temp_num
 
+        rts
+
+mi_set_pmg_widths:
+        ; setup the PMG bar width by setting the space on both sides. Maybe should be a width setting instead of space_right...
+        mva     #19, _pmg_space_left
+        mva     #17, _pmg_space_right
         rts
