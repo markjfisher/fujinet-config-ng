@@ -1,8 +1,13 @@
         .export         _mi_edit_preferences
 
+        .import         _bar_setcolor
         .import         _cng_prefs
+        .import         _just_rts
         .import         _kb_get_c_ucase
+        .import         _pmg_space_left
+        .import         _pmg_space_right
         .import         _put_s
+        .import         _scr_highlight_line
         .import         _write_prefs
         .import         get_scrloc
         .import         hexb
@@ -24,12 +29,14 @@
         ; keep a copy of the real value so we can revert if user presses ESC
         jsr     copy_pref_to_temp
 
-        ; find number of chars to display for current selection, store in tmp1
+        ; find number of chars to display for current selection, store in char_count
+        ; x is currently mi_selected + 1 (i.e. 1 based index into char count table) so reduce address by 1 to compensate
         lda     mi_prefs_char_count-1, x
-        sta     tmp1            ; keep track of the chars count
+        sta     char_count      ; keep track of the chars count
 
         mva     #$00, tmp2      ; invert the values
         jsr     display_pref
+        jsr     edit_start
 
         ; TODO: change the HELP to "up/down edit, return accept, esc exit"
 
@@ -40,7 +47,7 @@
 ; START PROCESSING KEYBOARD
 ; --------------------------------------------------------------------
 
-; tmp1 is used to hold the chars count for pref being edited
+; char_count is used to hold the chars count for pref being edited
 ; tmp2 is used to flag the print routine to invert the text (0), or not (1+)
 
 start_kb_get:
@@ -58,17 +65,17 @@ start_kb_get:
 
 is_down:
         ; if this is colour/shade, we wrap 0 to F, otherwise wrap to FF
-        ; tmp1 is 0 for first case, 1 otherwise
+        ; char_count is 0 for first case, 1 otherwise
         ldx     pref_copy
         dex                     ; reduce by 1
-        lda     tmp1
+        lda     char_count
         bne     :+              ; don't need to worry about full byte wrap
         cpx     #$ff
         bne     :+
         ldx     #$0f            ; we wrapped to $ff, but should be $0f
 
 :
-        jmp     do_update
+        bne     do_update
 not_down:
 
 ; --------------------------------------------------------------------
@@ -81,17 +88,17 @@ not_down:
 
 is_up:
         ; if this is colour/shade, we wrap 0 to F, otherwise wrap to FF
-        ; tmp1 is 0 for first case, 1 otherwise
+        ; char_count is 0 for first case, 1 otherwise
         ldx     pref_copy
         inx                     ; reduce by 1
-        lda     tmp1
+        lda     char_count
         bne     :+              ; don't need to worry about full byte wrap
         cpx     #$10
         bne     :+
         ldx     #$00            ; we wrapped to $10, but should be $00
 
 :
-        jmp     do_update
+        ; jmp     do_update
 
 
 ; common code to the UP/DOWN options
@@ -174,7 +181,7 @@ copy_pref_to_temp:
 skip_invert:
         ; setup tmp9 to point to the correct part of the string for put_s
         mwa     #temp_num, tmp9
-        lda     tmp1            ; if 0 we skip a byte by moving tmp9 on by 1
+        lda     char_count      ; if 0 we skip a byte by moving tmp9 on by 1
         bne     :+
         adw1    tmp9, #1
 
@@ -188,6 +195,18 @@ skip_invert:
         ldx     #20
         jmp     _put_s
 
+.endproc
+
+.proc edit_start
+        ; for the selected preference, call its edit start function using dispatch table / rts jmp
+        lda     mi_selected
+        asl
+        tax
+        lda     on_edit+1, x
+        pha
+        lda     on_edit, x
+        pha
+        rts
 .endproc
 
 .proc enact_pref_change
@@ -245,33 +264,55 @@ skip_invert:
         rts
 .endproc
 
-.proc update_bar_conn
-        rts
-.endproc
-
-.proc update_bar_disconn
-        rts
-.endproc
-
-.proc update_bar_copy
-        rts
+.proc update_bar
+        ; update the current bar colour, same for all routines
+        lda     pref_copy
+        sta     bar_colour
+        jmp     change_bar_colour
 .endproc
 
 
+.proc on_edit_bar
+        ; change the current bar to full width to make it easier to view for editing
+        ldx     mi_selected
+        inx                             ; skip version byte, then selected line is same as index into config structure
+        lda     _cng_prefs, x
+        sta     bar_colour
+        jmp     change_bar_colour
+.endproc
+
+.proc change_bar_colour
+        mva     #1, _pmg_space_left
+        sta         _pmg_space_right
+
+        jsr     _scr_highlight_line     ; this does a wait_scan, so bar won't be near drawing yet when we get to the line it's needed, so there should be no flash here
+        lda     bar_colour
+        jmp     _bar_setcolor
+.endproc
 
 .rodata
 
 ; the lengths of each option shown - 1
 mi_prefs_char_count:
-                .byte 0, 0, 0, 1, 1, 1
+        .byte 0, 0, 0, 1, 1, 1
 
 update_table:
-                .addr (update_colour - 1)
-                .addr (update_brightness - 1)
-                .addr (update_shade - 1)
-                .addr (update_bar_conn - 1)
-                .addr (update_bar_disconn - 1)
-                .addr (update_bar_copy - 1)
+        .addr (update_colour - 1)
+        .addr (update_brightness - 1)
+        .addr (update_shade - 1)
+        .addr (update_bar - 1)
+        .addr (update_bar - 1)
+        .addr (update_bar - 1)
+
+on_edit:
+        .addr (_just_rts - 1)   ; colour, no nothing
+        .addr (_just_rts - 1)   ; brightness, no nothing
+        .addr (_just_rts - 1)   ; shade, no nothing
+        .addr (on_edit_bar - 1)
+        .addr (on_edit_bar - 1)
+        .addr (on_edit_bar - 1)
 
 .bss
 pref_copy:      .res 1
+char_count:     .res 1
+bar_colour:     .res 1
