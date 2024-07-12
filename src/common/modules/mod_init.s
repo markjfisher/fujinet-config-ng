@@ -1,7 +1,7 @@
         .export     _mod_init
         .export     fc_connected
 
-        .import     _ak_read_config
+        .import     _read_prefs
         .import     _dev_init
         .import     _fuji_get_ssid
         .import     _fuji_get_wifi_enabled
@@ -27,10 +27,12 @@
 ; First Module to load when application starts.
 ; Connects to wifi if possible, and moves to first screen module
 .proc _mod_init
-        jsr     _dev_init               ; call device specific initialization
+        ; read stored app state from appkeys - these are used by code called in dev_init
+        jsr     _read_prefs
 
-        ; read stored app state from appkeys
-        jsr     _ak_read_config
+        ; call device specific initialization
+        jsr     _dev_init
+
 
         ; initialise some module values
         mva     #$00, mh_host_selected

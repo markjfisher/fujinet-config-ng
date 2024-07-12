@@ -7,7 +7,10 @@
     ; the colour index of the screen the user picked (0-F)
     colour       .byte
 
-    ; shade of colour (0-F)
+    ; the brightness of colour (0-F)
+    brightness   .byte
+
+    ; shade of background/border (0-F)
     shade        .byte
 
     ; bar connected colour (0-FF)

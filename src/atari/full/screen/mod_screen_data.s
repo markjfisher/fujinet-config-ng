@@ -7,7 +7,7 @@
         .export mx_k_bank_cnt
         .export mf_s1, mf_h1, mf_prev, mf_next, mf_copying_msg
         .export mf_host, mf_filter, mf_path
-        .export mx_k_colour, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy
+        .export mx_k_colour, mx_k_bright, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy
 
         .export     mw_bssid
         .export     mw_dns
@@ -195,8 +195,9 @@ mx_v_version:   .byte "1.0.0", 0
 
 mx_k_bank_cnt:  .byte "Bank Count", 0
 
-mx_k_colour:    .byte "Colour (0-F)", 0
-mx_k_shade:     .byte "Shade (0-F)", 0
+mx_k_colour:    .byte "Colour", 0
+mx_k_bright:    .byte "Brightness", 0
+mx_k_shade:     .byte "Shade (B/G)", 0
 mx_k_bar_conn:  .byte "Bar (Conn.)", 0
 mx_k_bar_dconn: .byte "Bar (Discon.)", 0
 mx_k_bar_copy:  .byte "Bar (Copying)", 0

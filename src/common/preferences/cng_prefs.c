@@ -18,6 +18,7 @@ void write_defaults() {
 	// set the latest version here
 	cng_prefs.version = 1;
 	cng_prefs.colour = 0;
+	cng_prefs.brightness = 0xd;
 	cng_prefs.shade = 0;
 	cng_prefs.bar_conn = 0xb4;
 	cng_prefs.bar_disconn = 0x33;
@@ -41,7 +42,12 @@ void upgrade(uint8_t from) {
 	}
 }
 
-void ak_read_config(void) {
+void write_prefs() {
+	fuji_set_appkey_details(FNC_CREATOR_ID, FNC_APP_ID, DEFAULT);
+	fuji_write_appkey(FNC_KEY_ID, sizeof(cng_prefs), &cng_prefs);
+}
+
+void read_prefs(void) {
 	bool r;
 	uint16_t read_count = 0;
 

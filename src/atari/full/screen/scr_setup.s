@@ -2,11 +2,15 @@
 
         .import     _bar_clear
         .import     _bar_setup
+        .import     _cng_prefs
         .import     _wait_scan1
         .import     m_l1
         .import     main_dlist
 
+        .import     debug
+
         .include    "atari.inc"
+        .include    "cng_prefs.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
 
@@ -26,10 +30,24 @@
         mva     #$02, CHACTL
         mva     #$3c, PACTL
 
-        ; setup some colors
-        mva     #$0d, COLOR1    ; glyph pixel luma
-        mva     #$00, COLOR2    ; b/g
-        sta           COLOR4    ; border
+        jsr     debug
+        ; set the colors from the preferences data
+        lda     _cng_prefs + CNG_PREFS_DATA::colour
+        asl     a
+        asl     a
+        asl     a
+        asl     a                       ; $X0
+        tax                             ; store it in X
+        ; add the brightness value for the colour
+        ora     _cng_prefs + CNG_PREFS_DATA::brightness
+        sta     COLOR1
+
+        txa                             ; restore $X0
+        ; add the shade
+        ora     _cng_prefs + CNG_PREFS_DATA::shade
+        sta     COLOR2
+        sta     COLOR4
+
         mva     #$08, GPRIOR    ; this sets the priorities correctly for players/missiles when not using pure black background.
         jsr     _wait_scan1     ; at top of screen, everything is now setup
 
