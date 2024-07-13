@@ -54,13 +54,9 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
   $(XS)/debugcmd: "bp debug" \
+  $(XS)/debugcmd: "bp _reset_handler" \
+  $(XS)/debugcmd: "bp pre_init" \
 
-  # $(XS)/debugcmd: "bp _bar_show" \
-  # $(XS)/debugcmd: "bp do_edit" \
-  # $(XS)/debugcmd: "bp display_string" \
-  # $(XS)/debugcmd: "bp mw_do_setup" \
-  # $(XS)/debugcmd: "bp mw_kb_handler" \
-  # $(XS)/debugcmd: "bp _mw_handle_input" \
   # $(XS)/debugcmd: "ba w mw_setting_up" \
 
 ATARI800 ?= $(ATARI800_HOME)/atari800 \

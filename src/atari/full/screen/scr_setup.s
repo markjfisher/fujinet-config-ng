@@ -30,7 +30,6 @@
         mva     #$02, CHACTL
         mva     #$3c, PACTL
 
-        jsr     debug
         ; set the colors from the preferences data
         lda     _cng_prefs + CNG_PREFS_DATA::colour
         asl     a
