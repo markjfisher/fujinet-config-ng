@@ -2,8 +2,9 @@
 
 # reserved memory for graphics
 # LDFLAGS += -Wl -D,__RESERVED_MEMORY__=0x2000
-# LDFLAGS += -Wl -D__RESERVED_MEMORY__=0x1
 
+# WARNING! RESERVED_MEMORY MUST BE AT LEAST 1 OTHERWISE RESET BUTTON ALTERNATES WORKING AND NOT!
+LDFLAGS += -Wl -D__RESERVED_MEMORY__=0x1
 LDFLAGS += -C cfg/$(CURRENT_TARGET_LONG).cfg
 
 ################################################################
