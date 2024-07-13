@@ -266,9 +266,16 @@ not_edit:
 .endproc
 
 .proc do_kb_cb
-        ;; TODO: make this straight jmp so we don't get the indirect jmp bug!!
-        jmp     (pu_kb_cb)
-        ; return from caller will take us back
+        ; tried the ldx/ptr3 version (and with ptr2), but that breaks other part of the code, so keep the SMC version
+        pha                             ; save A, it's needed as parameter to function being called
+        lda     pu_kb_cb
+        sta     smc+1
+        lda     pu_kb_cb+1
+        sta     smc+2
+        pla
+smc:
+        jmp     $0000
+
 .endproc
 
 ; x = other index to change
@@ -287,7 +294,7 @@ not_edit:
         jmp     redisplay
 
 do_jmp:
-        jmp     (ptr3)
+        jmp     (ptr3)                  ; safe from JMP indirect bug, as it's zp
         ; the rts in the call will return us back into handle_by_other
 .endproc
 

@@ -75,12 +75,10 @@ exit_select:
 
 .proc show_help
         lda     ss_help_cb
-        sta     sh_sac+1
+        sta     ptr3
         lda     ss_help_cb+1
-        sta     sh_sac+2
-
-sh_sac:
-        jmp     $0000
+        sta     ptr3+1
+        jmp     (ptr3)                  ; won't suffer the jmp bug, as this is ZP
 .endproc
 
 ; draw top part of select with title/help/status, and initialise some values

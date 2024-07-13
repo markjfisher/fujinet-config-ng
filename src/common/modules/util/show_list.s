@@ -61,8 +61,12 @@ next_char:
         rts
 
 call_cb:
-        jmp     (sl_callback)
-        ; implicit rts in callback
+        ldx     sl_callback
+        stx     ptr3
+        ldx     sl_callback+1
+        stx     ptr3+1
+; smc:
+        jmp     (ptr3)
 
 .endproc
 

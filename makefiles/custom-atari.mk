@@ -54,10 +54,9 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
-  $(XS)/debugcmd: "bp debug" \
-  $(XS)/debugcmd: "bp _reset_handler" \
-  $(XS)/debugcmd: "bp pre_init" \
+  $(XS)/debugcmd: "bp kb_global" \
 
+#   $(XS)/debugcmd: "bp debug" \
   # $(XS)/debugcmd: "ba w mw_setting_up" \
 
 ATARI800 ?= $(ATARI800_HOME)/atari800 \

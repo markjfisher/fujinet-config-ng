@@ -198,9 +198,14 @@ cont_kb:
         jmp     start_kb_get
 
 do_kb_module:
-        ; TODO: guard this against indirect JMP bug, if the address crosses 0xFF boundary, jump won't work
-        jmp     (kb_mod_proc)
-        ; rts is implicit in the jmp
+        pha                             ; save A, it's needed as parameter to function being called
+        lda     kb_mod_proc
+        sta     smc+1
+        lda     kb_mod_proc+1
+        sta     smc+2
+        pla
+smc:
+        jmp     $0000
 
 .endproc
 
