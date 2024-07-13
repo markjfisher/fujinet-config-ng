@@ -1,7 +1,7 @@
         .export mh_s1, mh_s2, mh_h1
         .export md_s1, md_s2, md_h1
         .export mw_s1, mw_s2, mw_h1, mw_h2, mw_help_setup, mw_help_password, mw_custom_msg, mw_help_custom
-        .export mx_s1, mx_s2, mx_h1
+        .export mx_s1, mx_s2, mx_h1, mx_pref_edit_help
         .export mx_k_app_name, mx_v_app_name
         .export mx_k_version, mx_v_version
         .export mx_k_bank_cnt
@@ -37,7 +37,7 @@ mh_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $82
                 INVERT_ATASCII
-                .byte "Info                 Drive Slots"
+                .byte "Prefs                Drive Slots"
                 NORMAL_CHARMAP
                 .byte $81, $1f, $82, 0
 
@@ -91,7 +91,7 @@ mw_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1e, $82
                 INVERT_ATASCII
-                .byte "Drive Slots                 Info"
+                .byte "Drive Slots                Prefs"
                 NORMAL_CHARMAP
                 .byte $81, $1f, $82, 0
 
@@ -155,7 +155,7 @@ mw_custom_msg:
                 .byte "<Custom SSID>", 0
 
 ; ------------------------------------------------------------------
-; Mod DONE data
+; Mod INFO data
 ; ------------------------------------------------------------------
 mx_s1:
                 INVERT_ATASCII
@@ -184,6 +184,19 @@ mx_h1:
                 .byte "Edit ", 0
                 NORMAL_CHARMAP
 
+mx_pref_edit_help:
+                NORMAL_CHARMAP
+                .byte $81, $1c, $1d, $82        ; endL up down endR
+                INVERT_ATASCII
+                .byte "Inc/Dec"
+                NORMAL_CHARMAP
+                .byte $81, "Ret", $82
+                INVERT_ATASCII
+                .byte "Select"
+                NORMAL_CHARMAP
+                .byte $81, "ESC", $82
+                INVERT_ATASCII
+                .byte "Exit", 0
 
 
                 NORMAL_CHARMAP

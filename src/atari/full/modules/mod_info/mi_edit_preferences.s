@@ -1,11 +1,13 @@
         .export         _mi_edit_preferences
 
         .import         _bar_setcolor
+        .import         _clr_help
         .import         _cng_prefs
         .import         _just_rts
         .import         _kb_get_c_ucase
         .import         _pmg_space_left
         .import         _pmg_space_right
+        .import         _put_help
         .import         _put_s
         .import         _scr_highlight_line
         .import         _write_prefs
@@ -13,6 +15,8 @@
         .import         hexb
         .import         mi_selected
         .import         mi_set_pmg_widths
+        .import         mx_h1
+        .import         mx_pref_edit_help
         .import         pusha
         .import         temp_num
 
@@ -38,7 +42,7 @@
         jsr     display_pref
         jsr     edit_start
 
-        ; TODO: change the HELP to "up/down edit, return accept, esc exit"
+        put_help   #0, #mx_pref_edit_help
 
         ; now, start a mini keyboard routine that checks for 4 keys, and manipulates the current value
         ; we can use _cng_prefs + mi_selected as the value we are editing, as the screen has same order as the structure.
@@ -123,6 +127,9 @@ not_up:
         jsr     display_pref
         jsr     enact_pref_change       ; reset colours to previous values
         jsr     mi_set_pmg_widths       ; set the widths back to normal
+        jsr     reset_help
+        lda     _cng_prefs + CNG_PREFS_DATA::bar_conn
+        sta     bar_colour
         jmp     change_bar_colour
 
 not_esc:
@@ -143,6 +150,7 @@ not_esc:
         jsr     _write_prefs            ; save them
         jsr     mi_set_pmg_widths       ; set the widths back to normal
         
+        jsr     reset_help
         lda     _cng_prefs + CNG_PREFS_DATA::bar_conn
         sta     bar_colour
         jmp     change_bar_colour
@@ -161,6 +169,12 @@ copy_pref_to_temp:
         lda     _cng_prefs, x
         sta     pref_copy
         rts
+
+reset_help:
+        jsr     _clr_help
+        pusha   #0
+        setax   #mx_h1
+        jmp     _put_help
 
 .endproc
 
