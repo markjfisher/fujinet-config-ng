@@ -207,7 +207,7 @@ mx_k_app_name:  .byte "Config-NG", 0
 mx_v_app_name:  .byte "(c) 2024 Fenrock", 0
 
 mx_k_version:   .byte "Version", 0
-mx_v_version:   .byte "1.0.0", 0
+mx_v_version:   .byte "1.0.1", 0
 
 mx_k_bank_cnt:  .byte "Bank Count", 0
 
