@@ -6,8 +6,10 @@
         .import     _pmg_space_left
         .import     _pmg_space_right
         .import     _put_help
+        .import     _put_s
         .import     _put_status
         .import     _scr_clr_highlight
+        .import     mg_l1
         .import     mw_h1
         .import     mw_s1
         .import     mw_s2
@@ -27,6 +29,7 @@
         put_status #0, #mw_s1
         put_status #1, #mw_s2
         put_help   #0, #mw_h1
+        put_s      #5, #21, #mg_l1
         lda        #$01
         sta        _pmg_space_left
         sta        _pmg_space_right

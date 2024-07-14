@@ -1,6 +1,6 @@
         .export mh_s1, mh_s2, mh_h1
         .export md_s1, md_s2, md_h1
-        .export mw_s1, mw_s2, mw_h1, mw_h2, mw_help_setup, mw_help_password, mw_custom_msg, mw_help_custom
+        .export mw_s1, mw_s2, mw_h1, mw_h2, mw_help_setup, mw_help_password, mw_custom_msg
         .export mx_s1, mx_s2, mx_h1, mx_pref_edit_help
         .export mx_k_app_name, mx_v_app_name
         .export mx_k_version, mx_v_version
@@ -8,6 +8,7 @@
         .export mf_s1, mf_h1, mf_prev, mf_next, mf_copying_msg
         .export mf_host, mf_filter, mf_path
         .export mx_k_colour, mx_k_bright, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy
+        .export mg_l1
 
         .export     mw_bssid
         .export     mw_dns
@@ -131,6 +132,10 @@ mw_help_setup:
 
 mw_help_password:
                 NORMAL_CHARMAP
+                .byte $81, "TAB", $82
+                INVERT_ATASCII
+                .byte "Next"
+                NORMAL_CHARMAP
                 .byte $81, "E", $82
                 INVERT_ATASCII
                 .byte "Edit"
@@ -142,13 +147,15 @@ mw_help_password:
                 .byte $81, "ESC", $82
                 INVERT_ATASCII
                 .byte "Exit", 0
-mw_help_custom:
-                INVERT_ATASCII
-                .byte "Enter Custom SSID  "
                 NORMAL_CHARMAP
-                .byte $81, "ESC", $82
-                INVERT_ATASCII
-                .byte "Exit", 0
+
+; mw_help_custom:
+;                 INVERT_ATASCII
+;                 .byte "Enter Custom SSID  "
+;                 NORMAL_CHARMAP
+;                 .byte $81, "ESC", $82
+;                 INVERT_ATASCII
+;                 .byte "Exit", 0
 
 mw_custom_msg:
                 NORMAL_CHARMAP
@@ -170,10 +177,6 @@ mx_s2:
                 .byte $81, $1f, $82, 0
 
 mx_h1:          
-                ; NORMAL_CHARMAP
-                ; .byte $81, "OPTION", $82
-                ; INVERT_ATASCII
-                ; .byte "Mount Disks and Boot!", 0
                 NORMAL_CHARMAP
                 .byte $81, $1c, $1d, $82        ; endL up down endR
                 INVERT_ATASCII
@@ -279,3 +282,16 @@ mw_bssid:       .byte "BSSID:", 0
 
 mw_nets_msg:    .byte "Fetching Networks", 0
 mw_nets_msg2:   .byte "                 ", 0
+
+; ------------------------------------------------------------------
+; GLOBAL data
+; ------------------------------------------------------------------
+
+mg_l1:
+                NORMAL_CHARMAP
+                .byte $01
+                INVERT_ATASCII
+                .byte "OPTION"
+                NORMAL_CHARMAP
+                .byte $02
+                .byte "Mount Disks and Boot", 0

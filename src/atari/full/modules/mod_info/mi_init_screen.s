@@ -14,6 +14,7 @@
         .import     _put_s_nl
         .import     _put_status
         .import     _scr_clr_highlight
+        .import     mg_l1
         .import     mx_h1
         .import     mx_k_app_name
         .import     mx_k_bank_cnt
@@ -53,6 +54,8 @@ _mi_init_screen:
         put_s   #2,  #2, #mx_k_version
         put_s   #18, #2, #mx_v_version
         put_s   #2,  #3, #mx_k_bank_cnt
+
+        put_s      #5, #21, #mg_l1
 
         ; convert bank count to screen value
         lda     _bank_count
