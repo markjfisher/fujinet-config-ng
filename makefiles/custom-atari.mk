@@ -13,10 +13,12 @@ LDFLAGS += -C cfg/$(CURRENT_TARGET_LONG).cfg
 SUFFIX = .com
 DISK_TASKS += .atr
 DISKZ_TASKS += .disk-z
-
+ASSET_DIR := assets
 FN_CONFIG_LOADER := ../fujinet-config-loader
+PICOBOOT_DOWNLOAD_URL = https://github.com/FujiNetWIFI/assets/releases/download/picobin/picoboot.bin
 
 .atr:
+	$(call MKDIR,$(ASSET_DIR)/atr)
 	$(call MKDIR,$(DIST_DIR)/atr)
 	cp $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX) $(DIST_DIR)/atr/$(PROGRAM)$(SUFFIX)
 	@if [ -d "../fujinet-config-tools" ]; then \
@@ -25,7 +27,11 @@ FN_CONFIG_LOADER := ../fujinet-config-loader
 	    cp ../fujinet-config-tools/atari/dist/*.com $(DIST_DIR)/atr || true; \
 	fi
 	$(call RMFILES,$(DIST_DIR)/*.atr)
-	dir2atr -m -S -B picoboot.bin $(DIST_DIR)/$(PROGRAM).atr $(DIST_DIR)/atr
+	@if [ ! -f $(ASSETS_DIR)/picoboot.bin ] ; then \
+		echo "Downloading picoboot.bin"; \
+		curl -sL $(PICOBOOT_DOWNLOAD_URL) -o $(ASSETS_DIR)/picoboot.bin; \
+	fi
+	dir2atr -m -S -B $(ASSETS_DIR)/picoboot.bin $(DIST_DIR)/$(PROGRAM).atr $(DIST_DIR)/atr
 	rm -rf $(DIST_DIR)/atr
 	@echo "Uncompressed file saved as $(DIST_DIR)/$(PROGRAM).atr"
 

@@ -19,8 +19,6 @@ altirra-*.ini
 
 .vscode/
 
-Makefile.options
-
 breakpoints.txt
 
 _libs/
