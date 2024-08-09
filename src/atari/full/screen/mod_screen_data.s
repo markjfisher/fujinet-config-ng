@@ -3,7 +3,7 @@
         .export mw_s1, mw_s2, mw_h1, mw_h2, mw_help_setup, mw_help_password, mw_custom_msg
         .export mx_s1, mx_s2, mx_h1, mx_pref_edit_help
         .export mx_k_app_name, mx_v_app_name
-        .export mx_k_version, mx_v_version
+        .export mx_k_version
         .export mx_k_bank_cnt
         .export mf_s1, mf_h1, mf_prev, mf_next, mf_copying_msg
         .export mf_host, mf_filter, mf_path
@@ -207,7 +207,6 @@ mx_k_app_name:  .byte "Config-NG", 0
 mx_v_app_name:  .byte "(c) 2024 Fenrock", 0
 
 mx_k_version:   .byte "Version", 0
-mx_v_version:   .byte "1.0.1", 0
 
 mx_k_bank_cnt:  .byte "Bank Count", 0
 

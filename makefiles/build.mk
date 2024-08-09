@@ -106,6 +106,9 @@ CFLAGS += --include-dir $(SRCDIR)
 -include ./makefiles/common.mk
 -include ./makefiles/custom-$(CURRENT_PLATFORM).mk
 
+# allow for application specific config
+-include ./application.mk
+
 define _listing_
   CFLAGS += --listing $$(@:.o=.lst)
   ASFLAGS += --listing $$(@:.o=.lst)
