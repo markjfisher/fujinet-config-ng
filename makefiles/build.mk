@@ -201,7 +201,7 @@ test-disk: disk
 
 test-diskz: diskz
 	$(PREEMUCMD)
-	$(EMUCMD) $(DISK_FILE)
+	$(EMUCMD) $(DISKZ_FILE)
 	$(POSTEMUCMD)
 
 # Use "./" in front of all dirs being removed as a simple safety guard to ensure deleting from current dir, and not something like root "/".

@@ -17,6 +17,9 @@ ASSETS_DIR := assets
 FN_CONFIG_LOADER := ../fujinet-config-loader
 PICOBOOT_DOWNLOAD_URL = https://github.com/FujiNetWIFI/assets/releases/download/picobin/picoboot.bin
 
+DISK_FILE := $(DIST_DIR)/$(PROGRAM).atr
+DISKZ_FILE := $(DIST_DIR)/$(PROGRAM)-z.atr
+
 .atr:
 	$(call MKDIR,$(ASSETS_DIR)/atr)
 	$(call MKDIR,$(DIST_DIR)/atr)
