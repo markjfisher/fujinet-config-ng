@@ -13,22 +13,22 @@ LDFLAGS += -C cfg/$(CURRENT_TARGET_LONG).cfg
 SUFFIX = .com
 DISK_TASKS += .atr
 DISKZ_TASKS += .disk-z
-ASSET_DIR := assets
+ASSETS_DIR := assets
 FN_CONFIG_LOADER := ../fujinet-config-loader
 PICOBOOT_DOWNLOAD_URL = https://github.com/FujiNetWIFI/assets/releases/download/picobin/picoboot.bin
 
 .atr:
-	$(call MKDIR,$(ASSET_DIR)/atr)
+	$(call MKDIR,$(ASSETS_DIR)/atr)
 	$(call MKDIR,$(DIST_DIR)/atr)
 	cp $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX) $(DIST_DIR)/atr/$(PROGRAM)$(SUFFIX)
-	@if [ -d "../fujinet-config-tools" ]; then \
+	if [ -d "../fujinet-config-tools" ]; then \
 	    echo "Found fujinet-config-tools, copying com files to atr"; \
 	    cp ../fujinet-config-tools/atari/dist/*.COM $(DIST_DIR)/atr || true; \
 	    cp ../fujinet-config-tools/atari/dist/*.com $(DIST_DIR)/atr || true; \
 	fi
 	$(call RMFILES,$(DIST_DIR)/*.atr)
-	@if [ ! -f $(ASSETS_DIR)/picoboot.bin ] ; then \
-		echo "Downloading picoboot.bin"; \
+	if [ ! -f $(ASSETS_DIR)/picoboot.bin ] ; then \
+		echo "Downloading picoboot.bin from $(PICOBOOT_DOWNLOAD_URL)"; \
 		curl -sL $(PICOBOOT_DOWNLOAD_URL) -o $(ASSETS_DIR)/picoboot.bin; \
 	fi
 	dir2atr -m -S -B $(ASSETS_DIR)/picoboot.bin $(DIST_DIR)/$(PROGRAM).atr $(DIST_DIR)/atr
@@ -36,7 +36,7 @@ PICOBOOT_DOWNLOAD_URL = https://github.com/FujiNetWIFI/assets/releases/download/
 	@echo "Uncompressed file saved as $(DIST_DIR)/$(PROGRAM).atr"
 
 .disk-z:
-	@if [[ -n "$(FN_CONFIG_LOADER)" && -d "$(FN_CONFIG_LOADER)" ]] ; then \
+	if [[ -n "$(FN_CONFIG_LOADER)" && -d "$(FN_CONFIG_LOADER)" ]] ; then \
 	  echo "Found fujinet-config-loader, creating compressed autorun.atr"; \
 	  $(MAKE) -C "$(FN_CONFIG_LOADER)" clean dist CONFIG_PROG=$$(realpath $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX)) $(BANNER_INFO); \
 	  if [ $$? -ne 0 ] ; then \

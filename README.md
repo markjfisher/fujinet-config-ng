@@ -82,7 +82,7 @@ make clean all disk
 make clean all diskz
 
 # use custom banner (you must create your own banners)
-make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768 
+make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768
 
 # uploading directly to SD card on FujiNet
 duck --upload dav://anonymous@fujinet.home/dav/autorun-cng-1.0.0.atr dist/autorun-cng-1.0.0.atr -existing overwrite
