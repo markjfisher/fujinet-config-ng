@@ -60,7 +60,7 @@ DISKZ_FILE := $(DIST_DIR)/$(PROGRAM)-z.atr
 # At the current time, ATARI800 does not have any integration with fujinet
 
 ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
-  $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
+  $(XS)/portable $(XS)/portablealt:altirra-basic.ini \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
 

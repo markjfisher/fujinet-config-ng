@@ -204,7 +204,7 @@ mx_pref_edit_help:
 
                 NORMAL_CHARMAP
 mx_k_app_name:  .byte "Config-NG", 0
-mx_v_app_name:  .byte "(c) 2024 Fenrock", 0
+mx_v_app_name:  .byte "(c) 2025 Fenrock", 0
 
 mx_k_version:   .byte "Version", 0
 
