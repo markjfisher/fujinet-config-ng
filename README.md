@@ -155,3 +155,32 @@ In the target specific directory the following is included by any variant of the
 - src/atari/full/
 
 If no variant is specified, the additional variant directory will not be included.
+
+## Extracting fonts
+
+Fire up application in Altirra, enter debug, and use:
+
+```none
+.writemem cng-font.raw $1000 L$400
+```
+
+which creates the file "cng-font.raw" exporting from address $1000 for $400 (1024) bytes.
+
+Now using the atari-utils application (see github.com:markjfisher/atari-utils.git) run:
+
+```shell
+alias tt="java -Dpicocli.usage.width=140 -jar /d/dev/atari/atari-utils/build/libs/atari-utils-1.0.4-all.jar"
+tt chr2png -d cng-font.raw -o cng-font.png
+```
+
+This will generate the cng-font.png file you can edit as a font file.
+
+You can reverse this process, and create assembly version to include in the project with a couple of other utilities in the atari-utils project:
+
+```shell
+# convert png to raw bytes
+tt png2chr -d cng-font.png -o cng-font-new.raw
+
+# convert raw bytes to ASM for cc65
+tt chr2asm -d cng-font-new.raw -o font_data.asm
+```

@@ -2,7 +2,7 @@
 
         .import     _reset_handler
         .import     detect_banks
-        .import     setup_fonts
+        ; .import     setup_fonts
 
         .include    "atari.inc"
         .include    "macros.inc"
@@ -19,7 +19,7 @@
         jsr     detect_banks
 
         ; copy fonts so the change fonts data isn't kept in RAM
-        jsr     setup_fonts
+        ; jsr     setup_fonts
 
         ; setup reset handler
         mwa     DOSINI, _reset_handler+1+3

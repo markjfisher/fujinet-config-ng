@@ -23,3 +23,8 @@ breakpoints.txt
 
 _libs/
 src/version.txt
+
+font_data/cng-font*.*
+!font_data/cng-font.xcf
+
+*.zip
