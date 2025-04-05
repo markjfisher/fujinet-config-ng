@@ -3,6 +3,7 @@
         .import         _bar_setcolor
         .import         _clr_help
         .import         _cng_prefs
+        .import         _joy_process
         .import         _just_rts
         .import         _kb_get_c_ucase
         .import         _pmg_space_left
@@ -55,9 +56,14 @@
 ; tmp2 is used to flag the print routine to invert the text (0), or not (1+)
 
 start_kb_get:
+        jsr     _joy_process
+        cmp     #$00
+        bne     some_input
         jsr     _kb_get_c_ucase
         cmp     #$00
         beq     start_kb_get
+
+some_input:
 
 ; --------------------------------------------------------------------
 ; DOWN - decrease the value of highlighted field

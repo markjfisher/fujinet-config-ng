@@ -20,9 +20,11 @@ static bool is_joy_down = false;
 // Previous state tracking for edge detection
 static bool button_was_pressed = false;
 
-// Combination state tracking
-static bool button_combo_active = false;
-static bool direction_after_button = false;
+// Direction used during button press
+static bool used_left = false;
+static bool used_right = false;
+static bool used_up = false;
+static bool used_down = false;
 
 unsigned char joy_process(void)
 {
@@ -41,59 +43,85 @@ unsigned char joy_process(void)
     // Check button state (STRIG0 is 0 when pressed, 1 when not pressed)
     button_pressed = (trig_state == 0);
     
-    if (button_pressed && !button_was_pressed)
-    {
-        // Button just pressed - start potential combo
-        button_combo_active = true;
-        direction_after_button = false;
-    }
-    else if (!button_pressed && button_was_pressed)
-    {
-        // Button released
-        if (!direction_after_button)
-        {
-            // Simple button click (no direction was used)
-            button_was_pressed = false;
-            button_combo_active = false;
-            return FNK_ENTER;
-        }
-        
-        // Check for combos on button release
-        if (button_combo_active)
-        {
-            button_combo_active = false;
-            if (is_joy_left) return FNK_PARENT;
-            // if (is_joy_right) return FNK_END;
-        }
-    }
-    button_was_pressed = button_pressed;
-    
     // Track directional state changes (bits are 1 when NOT pressed)
     current_left = !(stick_state & JOY_LEFT_BIT);
     current_right = !(stick_state & JOY_RIGHT_BIT);
     current_up = !(stick_state & JOY_UP_BIT);
     current_down = !(stick_state & JOY_DOWN_BIT);
     
-    // Handle direction release events
-    if (!current_left && is_joy_left) 
+    // Button just pressed
+    if (button_pressed && !button_was_pressed)
     {
-        is_joy_left = false;
-        return FNK_LEFT;
+        // Reset direction tracking
+        used_left = current_left;
+        used_right = current_right;
+        used_up = current_up;
+        used_down = current_down;
     }
-    if (!current_right && is_joy_right)
+    // Button is being held
+    else if (button_pressed)
     {
-        is_joy_right = false;
-        return FNK_RIGHT;
+        // Track any directions used while button is held
+        used_left |= current_left;
+        used_right |= current_right;
+        used_up |= current_up;
+        used_down |= current_down;
     }
-    if (!current_up && is_joy_up)
+    // Button just released
+    else if (!button_pressed && button_was_pressed)
     {
-        is_joy_up = false;
-        return FNK_UP;
+        // Check if any directions were used during button press
+        if (used_left) 
+        {
+            used_left = false;
+            button_was_pressed = false;
+            return FNK_PARENT;
+        }
+        if (used_right)
+        {
+            used_right = false;
+            button_was_pressed = false;
+            return FNK_EDIT;
+        }
+        if (used_up)
+        {
+            used_up = false;
+            button_was_pressed = false;
+            return FNK_ESC;
+        }
+        if (!used_left && !used_right && !used_up && !used_down)
+        {
+            // Simple button click with no direction
+            button_was_pressed = false;
+            return FNK_ENTER;
+        }
+        // Reset all direction tracking
+        used_left = used_right = used_up = used_down = false;
     }
-    if (!current_down && is_joy_down)
+    
+    // If button isn't pressed, check for simple direction releases
+    if (!button_pressed)
     {
-        is_joy_down = false;
-        return FNK_DOWN;
+        if (!current_left && is_joy_left)
+        {
+            is_joy_left = false;
+            return FNK_LEFT;
+        }
+        if (!current_right && is_joy_right)
+        {
+            is_joy_right = false;
+            return FNK_RIGHT;
+        }
+        if (!current_up && is_joy_up)
+        {
+            is_joy_up = false;
+            return FNK_UP;
+        }
+        if (!current_down && is_joy_down)
+        {
+            is_joy_down = false;
+            return FNK_DOWN;
+        }
     }
     
     // Update current state
@@ -101,12 +129,7 @@ unsigned char joy_process(void)
     is_joy_right = current_right;
     is_joy_up = current_up;
     is_joy_down = current_down;
-    
-    // Track if any direction was used during button press
-    if (button_combo_active && (current_left || current_right || current_up || current_down))
-    {
-        direction_after_button = true;
-    }
+    button_was_pressed = button_pressed;
 
     return 0;  // No key event
 }
