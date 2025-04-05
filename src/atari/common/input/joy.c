@@ -26,6 +26,19 @@ static bool used_right = false;
 static bool used_up = false;
 static bool used_down = false;
 
+void reset_joy_state(void)
+{
+    is_joy_left = false;
+    is_joy_right = false;
+    is_joy_up = false;
+    is_joy_down = false;
+    button_was_pressed = false;
+    used_left = false;
+    used_right = false;
+    used_up = false;
+    used_down = false;
+}
+
 unsigned char joy_process(void)
 {
     unsigned char stick_state;
