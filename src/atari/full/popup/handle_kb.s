@@ -3,11 +3,12 @@
         .export     pu_null_cb
         .export     do_edit
 
+        .import     _create_new_disk
         .import     _edit_string
         .import     _es_params
         .import     _fc_strlen
+        .import     _joy_process
         .import     _kb_get_c_ucase
-        .import     _create_new_disk
         .import     copy_entry
         .import     debug
         .import     get_edit_loc
@@ -43,10 +44,14 @@
         jsr     load_widget_x
 
 start_kb_get:
+        jsr     _joy_process
+        cmp     #$00
+        bne     some_input
         jsr     _kb_get_c_ucase
         cmp     #$00
         beq     start_kb_get
 
+some_input:
         ; call the kb callback
         ldx     #PopupItemReturn::not_handled    ; default so the main popup kbh can do its thing
         jsr     do_kb_cb
