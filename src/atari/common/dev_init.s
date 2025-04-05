@@ -1,6 +1,10 @@
         .export   _dev_init
+        
+        .import   _joy_load_driver
+        .import   _joy_static_stddrv
         .import   _scr_setup
         .import   fn_font_data
+        .import   pushax
 
         .include  "atari.inc"
         .include  "zp.inc"

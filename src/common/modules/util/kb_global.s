@@ -9,6 +9,7 @@
 
         .import     _clr_scr_all
         .import     _clr_status
+        .import     _joy_process
         .import     _kb_get_c_ucase
         .import     _kb_is_option
         .import     _scr_highlight_line
@@ -53,13 +54,18 @@ start_kb_get:
         rts
 
 not_option:
+        jsr     _joy_process
+        cmp     #$00
+        bne     some_input
         jsr     _kb_get_c_ucase
         cmp     #$00
-        beq     start_kb_get          ; simple loop if no key pressed
+        beq     start_kb_get          ; simple loop if no key pressed or joystick movement
 
 ; ----------------------------------------------------------
 ; KEYBOARD HANDLING SWITCH STATEMENT
 ; ----------------------------------------------------------
+
+some_input:
 
         ldx     #KBH::NOT_HANDLED    ; status of module keyboard handler set in x on return
 
