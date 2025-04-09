@@ -9,4 +9,4 @@ VERSION_STRING := "$(file < $(VERSION_FILE))"
 endif
 
 CFLAGS += -DVERSION_STRING=\"$(VERSION_STRING)\"
-CFLAGS += -Osir
+CFLAGS += -Osir -Cl

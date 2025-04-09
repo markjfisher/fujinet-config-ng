@@ -20,8 +20,10 @@
         lda     CONSOL
         cmp     #$03    ; option on its own
         beq     yes
+
         lda     #$00
-        .byte   $2c     ; BIT, causes next 2 bytes to be ignored
+        rts
+
 yes:    lda     #$01
         rts
 .endproc

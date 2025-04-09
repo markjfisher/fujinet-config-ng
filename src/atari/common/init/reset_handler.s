@@ -1,5 +1,5 @@
         .export     _reset_handler
-        .export     reset_debug
+        ; .export     reset_debug
 
         .import     _clr_scr_all
         .import     booting_mode
@@ -24,13 +24,14 @@
 ; needs to be in writable RAM to capture the DOSINI original vector
 .segment "RESET"
 
-.proc reset_debug
-        rts
-.endproc
+; .proc reset_debug
+;         rts
+; .endproc
 
 .proc _pre_reset
         mva     #$00, COLDST
-        jmp     reset_debug
+        ; jmp     reset_debug
+        rts
 .endproc
 
 .proc _reset_handler
