@@ -3,7 +3,6 @@
         .import         _bar_setcolor
         .import         _clr_help
         .import         _cng_prefs
-        .import         _joy_process
         .import         _just_rts
         .import         _kb_get_c_ucase
         .import         _pmg_space_left
@@ -14,6 +13,7 @@
         .import         _write_prefs
         .import         get_scrloc
         .import         hexb
+        .import         joy_process
         .import         mi_selected
         .import         mi_set_pmg_widths
         .import         mx_h1
@@ -56,7 +56,7 @@
 ; tmp2 is used to flag the print routine to invert the text (0), or not (1+)
 
 start_kb_get:
-        jsr     _joy_process
+        jsr     joy_process
         cmp     #$00
         bne     some_input
         jsr     _kb_get_c_ucase

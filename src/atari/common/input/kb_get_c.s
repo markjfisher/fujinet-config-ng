@@ -2,7 +2,7 @@
         .export     _kb_get_c_ucase
 
         .import     _kbhit
-        .import     _reset_joy_state
+        .import     reset_joy_state
 
         .include    "macros.inc"
         .include    "atari.inc"
@@ -16,7 +16,7 @@
         beq     no_key
 
         ; when a key is pressed, reset the joystick states
-        jsr     _reset_joy_state
+        jsr     reset_joy_state
 
         mva     #$00, RTCLOK
         sta           RTCLOK+1

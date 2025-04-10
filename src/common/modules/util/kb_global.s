@@ -9,11 +9,11 @@
 
         .import     _clr_scr_all
         .import     _clr_status
-        .import     _joy_process
         .import     _kb_get_c_ucase
         .import     _kb_is_option
         .import     _scr_highlight_line
         .import     booting_mode
+        .import     joy_process
         .import     mf_copying
         .import     mod_current
         .import     mx_ask_lobby
@@ -54,7 +54,7 @@ start_kb_get:
         rts
 
 not_option:
-        jsr     _joy_process
+        jsr     joy_process
         cmp     #$00
         bne     some_input
         jsr     _kb_get_c_ucase

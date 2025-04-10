@@ -7,12 +7,12 @@
         .import     _edit_string
         .import     _es_params
         .import     _fc_strlen
-        .import     _joy_process
         .import     _kb_get_c_ucase
         .import     copy_entry
         .import     debug
         .import     get_edit_loc
         .import     item_x_to_ptr1
+        .import     joy_process
         .import     load_widget_x
         .import     m_l1
         .import     pui_sizes
@@ -44,7 +44,7 @@
         jsr     load_widget_x
 
 start_kb_get:
-        jsr     _joy_process
+        jsr     joy_process
         cmp     #$00
         bne     some_input
         jsr     _kb_get_c_ucase
