@@ -21,8 +21,6 @@
         .import     mfs_is_eod
         .import     mfs_kbh_select_current
         .import     mod_current
-        .import     pusha
-        .import     pushax
 
         .include    "edit_string.inc"
         .include    "fn_data.inc"

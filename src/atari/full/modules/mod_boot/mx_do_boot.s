@@ -12,7 +12,6 @@
         .import     booting_mode
         .import     mod_current
         .import     mx_mount
-        .import     pusha
         .import     return1
 
         .include    "atari.inc"

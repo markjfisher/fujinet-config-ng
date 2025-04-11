@@ -4,7 +4,6 @@
         .import   _joy_static_stddrv
         .import   _scr_setup
         .import   fn_font_data
-        .import   pushax
 
         .include  "atari.inc"
         .include  "zp.inc"

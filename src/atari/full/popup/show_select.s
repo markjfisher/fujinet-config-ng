@@ -23,7 +23,6 @@
         .import     handle_kb
         .import     popax
         .import     pu_kb_cb
-        .import     pushax
         .import     set_next_selectable_widget
 
         .include    "zp.inc"

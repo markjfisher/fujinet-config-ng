@@ -11,8 +11,6 @@
         .import     mf_selected
         .import     mfs_kbh
         .import     mfs_kbh_running
-        .import     pusha
-        .import     pushax
 
         .include    "macros.inc"
         .include    "modules.inc"

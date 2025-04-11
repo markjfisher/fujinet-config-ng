@@ -2,7 +2,9 @@
 
         .import     _fc_strlen
         .import     _fc_strlcpy
-        .import     popa, popax, pushax
+        .import     popa
+        .import     popax
+        .import     pushax
 
         .include    "zp.inc"
         .include    "macros.inc"

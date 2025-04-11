@@ -13,7 +13,7 @@
         .import     mf_error_too_long
         .import     mh_host_selected
         .import     popa
-        .import     popax
+        .import     popptr1
         .import     pusha
         .import     pushax
         .import     show_box
@@ -30,7 +30,7 @@
         ; jsr     debug
         ; --------------------------------------------------
         ; PULL copySpec MEMORY LOCATION
-        popax   ptr1            ; pull the memory location of the copy string
+        jsr     popptr1         ; pull the memory location of the copy string.
         jsr     _fc_strlen      ; how long is it?
         sta     tmp1            ; save length
 

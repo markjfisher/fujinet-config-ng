@@ -6,8 +6,6 @@
         .import     _fuji_create_new
         .import     _strncpy
         .import     debug
-        .import     popa
-        .import     popax
         .import     pushax
         .import     return0
         .import     return1
@@ -121,7 +119,6 @@ do_custom:
         ; A is already ptr4
         ldx     ptr4+1
         jsr     pushax                                  ; dst
-        ; pushax  ptr4
         jsr     _fuji_create_new
         ; TODO: react to result. Did it error?
 
@@ -133,6 +130,7 @@ do_custom:
 cnd_args:
         .tag    CreateDiskArgs
 
+; this is too large to have as a constant. 256 bytes for a name, and it will rarely get used.
 cnd_newdisk:
         .tag    NewDisk
 

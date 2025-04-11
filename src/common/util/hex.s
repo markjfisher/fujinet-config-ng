@@ -1,10 +1,5 @@
-        .export     hex
+        .export     hex_out
         .export     hexb
-
-        .import     popa
-        .import     popax
-
-        .include    "macros.inc"
 
 ; It's back! Used to display preference values as hex
 ; Converted to ca65 from https://github.dev/tebe6502/Mad-Assembler/tree/master/examples/hex_reg_var.asm
@@ -33,46 +28,21 @@ hex2int:
 .endproc
 
 ; ------------------------------------------------------
-; hex(uint16_t value, uint16_t output)
-.proc   hex
-        axinto  out+1
-        popax   htmpw
-
-        lda     htmpw
-        jsr     lHex
-        ldy     #$03
-        jsr     put
-
-        lda     htmpw+1
+; output a hex byte.
+;
+; caller is expected to modify hex_out+1/+2 to location to write to
+; input: A = byte to convert to character
+; 
+hexb:
         jsr     lHex
         ldy     #$01
-        jsr     put
 
-        rts
-
-put:
-        jsr     out
+hex_put:
+        jsr     hex_out
         dey
         txa
+        ; fall through for 2nd digit
 
-        ; Self Modifying Code
-out:    sta     $ffff, y
+hex_out:
+        sta     $ffff, y
         rts
-
-.endproc
-
-; ------------------------------------------------------
-; hexb(uint8_t value, uint16_t output)
-.proc   hexb
-        axinto  hex::out+1
-        jsr     popa        ; value to display in a
-
-        jsr     lHex
-        ldy     #$01
-        jsr     hex::put
-
-        rts
-.endproc
-
-.data
-htmpw:  .word 0

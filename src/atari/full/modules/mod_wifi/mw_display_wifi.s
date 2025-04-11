@@ -10,7 +10,6 @@
         .import     mw_mac
         .import     mw_netmask
         .import     mw_ssid
-        .import     pusha
 
         .include    "zp.inc"
         .include    "fn_data.inc"

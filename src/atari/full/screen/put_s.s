@@ -4,7 +4,6 @@
 
         .import     ascii_to_code
         .import     get_scrloc
-        .import     popa
 
         .include    "zp.inc"
         .include    "macros.inc"

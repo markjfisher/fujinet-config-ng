@@ -5,8 +5,9 @@
         .export     sl_size
         .export     sl_str_loc
 
-        .import     _s_empty, get_scrloc, ascii_to_code
-        .import     popa, pushax, popax
+        .import     _s_empty
+        .import     ascii_to_code
+        .import     get_scrloc
 
         .include    "zp.inc"
         .include    "macros.inc"

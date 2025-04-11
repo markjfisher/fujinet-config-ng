@@ -1,5 +1,5 @@
         .export     _fc_strncpy
-        .import     popax, popa
+        .import     popax
 
         .include    "macros.inc"
         .include    "zp.inc"

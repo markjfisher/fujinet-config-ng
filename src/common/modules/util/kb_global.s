@@ -17,8 +17,6 @@
         .import     mf_copying
         .import     mod_current
         .import     mx_ask_lobby
-        .import     popa
-        .import     popax
 
         .import     debug
         .import     _pause

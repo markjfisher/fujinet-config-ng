@@ -15,8 +15,6 @@
         .import     get_to_current_hostslot
         .import     mh_host_selected
         .import     mod_current
-        .import     pusha
-        .import     pushax
 
         .include    "zp.inc"
         .include    "macros.inc"

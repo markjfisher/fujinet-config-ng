@@ -15,8 +15,6 @@
         .import     load_widget_x
         .import     m_l1
         .import     pui_sizes
-        .import     pusha
-        .import     pushax
         .import     set_next_selectable_widget
         .import     show_edit_value
         .import     ss_has_sel

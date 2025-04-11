@@ -18,8 +18,6 @@
         .import     mw_net_count
         .import     mw_selected
         .import     mw_setting_up
-        .import     pusha
-        .import     pushax
 
         .include    "zp.inc"
         .include    "macros.inc"

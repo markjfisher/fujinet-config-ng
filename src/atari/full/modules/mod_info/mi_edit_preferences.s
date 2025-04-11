@@ -13,6 +13,7 @@
         .import         _write_prefs
         .import         get_scrloc
         .import         hexb
+        .import         hex_out
         .import         joy_process
         .import         mi_selected
         .import         mi_set_pmg_widths
@@ -188,10 +189,8 @@ reset_help:
 ; displays the current value of the preference value in pref_copy
 ; INPUTS:  tmp2, if 0 will invert the text (used during editing), otherwise in normal text (e.g. resetting value)
 .proc display_pref
+        mwa     #temp_num, {hex_out+1}
         lda     pref_copy
-        ; convert A to hex in temp_num
-        jsr     pusha
-        setax   #temp_num
         jsr     hexb
 
         ; if tmp2 is 0, invert the text, otherwise don't

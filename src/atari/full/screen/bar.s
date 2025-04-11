@@ -4,7 +4,6 @@
 
         .import     __PMG_START__
         .import     _wait_scan1
-        .import     popa
         .import     return0
 
         .import     debug
