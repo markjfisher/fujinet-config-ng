@@ -21,7 +21,6 @@
         .import     display_items
         .import     get_pu_loc
         .import     handle_kb
-        .import     popax
         .import     set_next_selectable_widget
 
         .include    "zp.inc"

@@ -36,6 +36,7 @@
         .import     return0
         .import     return1
         .import     save_device_choice
+        .import     sdc_args
         .import     sds_pu_no_opt_devs
         .import     select_device_slot
         .import     ss_widget_idx
@@ -48,6 +49,7 @@
         .include    "fn_disk.inc"
         .include    "fujinet-fuji.inc"
         .include    "popup.inc"
+        .include    "args.inc"
 
 ; tmp1,tmp2,tmp8,tmp9,tmp10
 ; ptr1,ptr2
@@ -376,8 +378,8 @@ handle_device_slot:
 
         ; save the device slot choice
 
-        pusha   #1                      ; write mode
-        lda     tmp3                    ; device slot
+        mva     #$01, sdc_args+SaveDeviceChoiceArgs::mode
+        mva     tmp3, sdc_args+SaveDeviceChoiceArgs::device_slot
         jsr     save_device_choice
         ; all ok
         jmp     return0

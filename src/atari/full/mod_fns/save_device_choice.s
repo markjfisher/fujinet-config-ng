@@ -1,4 +1,5 @@
         .export     save_device_choice
+        .export     sdc_args
 
         .import     _fuji_close_directory
         .import     _fuji_get_device_slots
@@ -7,7 +8,6 @@
         .import     fuji_buffer
         .import     fuji_deviceslots
         .import     mh_host_selected
-        .import     popa
         .import     pusha
         .import     pushax
 
@@ -15,27 +15,27 @@
         .include    "macros.inc"
         .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
+        .include    "args.inc"
 
 ; void save_device_choice(uint8_t mode, uint8_t device_slot)
 ;
 ; the filename must be set into fuji_buffer before coming into here
 .proc save_device_choice
-        sta     tmp1                    ; device slot, 0 based
-        jsr     popa                    ; mode, currently 0 based, but need it 1 based
+        lda     sdc_args+SaveDeviceChoiceArgs::mode
         clc
         adc     #$01
-        sta     tmp2                    ; mode 1 based
+        sta     tmp1                    ; mode 1 based
 
         ; set the device filename
         jsr     pusha                   ; save mode read/write mode
         pusha   mh_host_selected        ; host_slot
-        pusha   tmp1                    ; device slot
+        pusha   sdc_args+SaveDeviceChoiceArgs::device_slot
         setax   #fuji_buffer
         jsr     _fuji_set_device_filename
 
         ; write it to the deviceslots memory
         mwa     #fuji_deviceslots, ptr1
-        ldx     tmp1
+        ldx     sdc_args+SaveDeviceChoiceArgs::device_slot
         beq     no_dev_add
 :       adw     ptr1, #.sizeof(DeviceSlot)
         dex
@@ -48,7 +48,7 @@ no_dev_add:
         sta     (ptr1), y
 
         ; write the mode
-        lda     tmp2
+        lda     tmp1
         ldy     #DeviceSlot::mode
         sta     (ptr1), y
 
@@ -66,3 +66,6 @@ no_dev_add:
         ; implicit rts
 
 .endproc
+
+.bss
+sdc_args:       .tag SaveDeviceChoiceArgs

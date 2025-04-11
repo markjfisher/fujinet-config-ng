@@ -21,6 +21,7 @@
         .import     sds_pu_device_val
         .import     sds_pu_mode_val
         .import     select_device_slot
+        .import     sdc_args
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -28,6 +29,7 @@
         .include    "fn_data.inc"
         .include    "fujinet-fuji.inc"
         .include    "popup.inc"
+        .include    "args.inc"
 
 ; Handle Selection of the currently highlighted line
 ; tmp1,tmp2,tmp3
@@ -70,9 +72,9 @@ is_file:
         cpx     #PopupItemReturn::escape
         beq     :+
 
-        ; use the mode/device_slot from select to save our choice
-        pusha   sds_pu_mode_val
-        lda     sds_pu_device_val
+        ; use the mode/device_slot from select to save our choice        
+        mva     sds_pu_mode_val, sdc_args+SaveDeviceChoiceArgs::mode
+        mva     sds_pu_device_val, sdc_args+SaveDeviceChoiceArgs::device_slot
         jsr     save_device_choice
 
 :       ldx     #KBH::APP_1
