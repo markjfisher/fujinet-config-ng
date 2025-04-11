@@ -3,7 +3,6 @@
         .export     pu_null_cb
         .export     do_edit
 
-        .import     _create_new_disk
         .import     _edit_string
         .import     _es_params
         .import     _fc_strlen

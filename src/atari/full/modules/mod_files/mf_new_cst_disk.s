@@ -3,6 +3,7 @@
 
         .import     _clr_help
         .import     _create_new_disk
+        .import     cnd_args
         .import     _fc_atoi
         .import     _fc_strlcpy
         .import     _fc_strlen
@@ -70,22 +71,23 @@ mf_new_disk:
 
         ; -------------------------------------------------------------------------
         ; start of params for save
-        ; set host_slot
-        pusha   mh_host_selected
-
-        ; set device_slot - still in tmp3
-        pusha   tmp3
+        mva     mh_host_selected, cnd_args+CreateDiskArgs::host_slot
+        mva     tmp3, cnd_args+CreateDiskArgs::device_slot
 
         ; copy the disk size value location into ptr1, we need to double it to become a DiskSize value
         mwa     {mf_ask_new_disk_std_sizes + POPUP_VAL_IDX}, ptr1
         ldy     #$00
         lda     (ptr1), y
         asl     a               ; e.g. size130 is index 1 in the list, so double it to get the DiskSize of 2
-        jsr     pusha
+        sta     cnd_args+CreateDiskArgs::size_index
 
-        pushax  #$00            ; not custom (sectors number)
-        jsr     pushax          ; not custom (sectors size)
-        setax   #fuji_buffer   ; path to disk to create
+        lda     #$00
+        sta     cnd_args+CreateDiskArgs::cust_num_sectors
+        sta     cnd_args+CreateDiskArgs::cust_num_sectors+1
+        sta     cnd_args+CreateDiskArgs::cust_size_sectors
+        sta     cnd_args+CreateDiskArgs::cust_size_sectors+1
+        mwa     #fuji_buffer, cnd_args+CreateDiskArgs::disk_path
+
         jsr     _create_new_disk
         jsr     _fuji_error
         beq     end_ask
@@ -218,19 +220,22 @@ mf_cst_disk:
         ; -------------------------------------------------------------------------
         ; start of params for save
         ; set host_slot
-        pusha   mh_host_selected
-
-        ; set device_slot - still in tmp3
-        pusha   tmp3
-
-        ; custom size
-        pusha   #DiskSize::sizeCustom
+        mva     mh_host_selected, cnd_args+CreateDiskArgs::host_slot
+        mva     tmp3, cnd_args+CreateDiskArgs::device_slot
+        mva     #DiskSize::sizeCustom, cnd_args+CreateDiskArgs::size_index
 
         ; convert the sectors number into word value, atoi!!
         ; we have a very limited string, 1-65535, do minimal calc from string to word
         setax   mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
         jsr     _fc_atoi
-        jsr     pushax
+        ; can't have under 4 sectors (firmware bugs out if you do), so if it's below that, set it to 4
+        cpx     #$00
+        bne     over_4
+        cmp     #$04
+        bcs     over_4
+        lda     #$04
+over_4:
+        axinto  cnd_args+CreateDiskArgs::cust_num_sectors
 
         ; sector size is 0=128, 1=256, 2=512
         ldy     mf_ask_new_disk_cust_sector_size_val
@@ -250,9 +255,8 @@ mf_cst_disk:
 :       setax   #$200                   ; 512
 
 push_size:
-        jsr     pushax
-
-        setax   #fuji_buffer   ; path to disk to create
+        axinto  cnd_args+CreateDiskArgs::cust_size_sectors
+        mwa     #fuji_buffer, cnd_args+CreateDiskArgs::disk_path
         jsr     _create_new_disk
         jsr     _fuji_error
         beq     end_ask2

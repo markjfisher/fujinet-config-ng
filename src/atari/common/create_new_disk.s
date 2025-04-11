@@ -1,10 +1,9 @@
         .export     _create_new_disk
         .export     t_disk_num_sectors
         .export     t_disk_sector_sizes
+        .export     cnd_args
 
-        .import     _free
         .import     _fuji_create_new
-        .import     _malloc
         .import     _strncpy
         .import     debug
         .import     popa
@@ -19,28 +18,17 @@
         .include    "fn_data.inc"
         .include    "fn_disk.inc"
 
-; THIS CODE IS NOT TESTED FULLY IN THIS FORM - IT WAS IN FN_IO LIB, NOW LIVES AS CLIENT FUNCTION
-
-; int create_new_disk(uint8_t host_slot, uint8_t device_slot, DiskSize size_index, uint16_t cust_num_sectors, uint16_t cust_size_sectors, char *disk_path)
+; int create_new_disk(uint8_t host_slot, uint8_t device_slot, DiskSize size_index, 
+;                     uint16_t cust_num_sectors, uint16_t cust_size_sectors, char *disk_path)
 ;
 ; creates new disk from params
 ; returns completed indicator, 0 = nothing written, 1 = disk created
-; tmp1,tmp2,tmp3,tmp5/6,tmp7/8
-; ptr3,ptr4 (malloc trashes ptr1/2)
+; ptr1,ptr4; ptr1 is trashed by strncpy
 .proc _create_new_disk
-        axinto  ptr3            ; directory path src - this will need the full dir pre-pended to the disk name
-        popax   tmp5            ; custom size, if size_index is custom
-        popax   tmp7            ; custom sectors number, if size_index is custom
-        popa    tmp3            ; size_index
-        popa    tmp1            ; device_slot (byte)
-        popa    tmp2            ; host_slot (byte)
-
-        setax   #.sizeof(NewDisk)
-        jsr     _malloc         ; this craps all over ptr 1/2
-        axinto  ptr4
+        mwa     #cnd_newdisk, ptr4
 
         ; convert selected_size into DiskSize index
-        lda     tmp3
+        lda     cnd_args+CreateDiskArgs::size_index
         cmp     #DiskSize::sizeCustom           ; is the given DiskSize value valid? should be less than sizeCustom for normal
         bcc     :+
         beq     do_custom                       ; custom size picked, need to handle params
@@ -92,10 +80,10 @@
 do_custom:
         ; custom num sectors
         ldy     #NewDisk::numSectors
-        mway    tmp7, {(ptr4), y}
+        mway    {cnd_args+CreateDiskArgs::cust_num_sectors}, {(ptr4), y}
 
         ldy     #NewDisk::sectorSize
-        mway    tmp5, {(ptr4), y}
+        mway    {cnd_args+CreateDiskArgs::cust_size_sectors}, {(ptr4), y}
 
         iny                     ; set to hostSlot index
         ; fall through to host/device
@@ -105,14 +93,14 @@ do_custom:
 
         ; ----------------------------------------------------------------------
         ; hostSlot
-:       lda     tmp2
+:       lda     cnd_args+CreateDiskArgs::host_slot
         sta     (ptr4), y
 
         iny     ; move to deviceSlot index
 
         ; ----------------------------------------------------------------------
         ; deviceSlot
-        lda     tmp1
+        lda     cnd_args+CreateDiskArgs::device_slot
         sta     (ptr4), y
 
         ; ----------------------------------------------------------------------
@@ -121,23 +109,33 @@ do_custom:
         adw     ptr4, #NewDisk::filename
 
         ; and copy the string there
-        pushax  ptr4            ; dst
-        pushax  ptr3            ; src
-        setax   #$100           ; copy up to 256 bytes
+        ; A is already ptr4
+        ldx     ptr4+1
+        jsr     pushax                                  ; dst
+        pushax  cnd_args+CreateDiskArgs::disk_path      ; src
+        setax   #$100                                   ; copy up to 256 bytes
         jsr     _strncpy        ; should we move entirely to standard version?
 
         ; restore ptr4 to start of buffer
         sbw     ptr4, #NewDisk::filename
-        pushax  ptr4
+        ; A is already ptr4
+        ldx     ptr4+1
+        jsr     pushax                                  ; dst
+        ; pushax  ptr4
         jsr     _fuji_create_new
         ; TODO: react to result. Did it error?
-
-        setax   ptr4
-        jsr     _free
 
         jmp     return1
 
 .endproc
+
+.bss
+cnd_args:
+        .tag    CreateDiskArgs
+
+cnd_newdisk:
+        .tag    NewDisk
+
 
 .rodata
 t_disk_num_sectors:

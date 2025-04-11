@@ -8,3 +8,12 @@
     size1440    = 10
     sizeCustom  = 12
 .endenum
+
+.struct CreateDiskArgs
+    host_slot           .byte
+    device_slot         .byte
+    size_index          .byte ; DiskSize index?
+    cust_num_sectors    .word
+    cust_size_sectors   .word
+    disk_path           .word
+.endstruct
