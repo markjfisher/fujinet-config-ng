@@ -12,7 +12,8 @@
         .import     _malloc
         .import     _put_help
         .import     _scr_clr_highlight
-        .import     _show_select
+        .import     show_select
+        .import     ss_args
         .import     fuji_deviceslots
         .import     md_is_devices_data_fetched
         .import     pu_null_cb
@@ -40,7 +41,7 @@
 
         ; handle the selection of a device slot for the given file from host
         ; we will put all the relevant selection details into memory starting at sds_pu_devs, and it
-        ; is the job of the _show_select to display this, calling back to kb handler here
+        ; is the job of the show_select to display this, calling back to kb handler here
 
         ; get memory for 8 * devices list width strings - can't use fuji_buffer as that contains the file path we will use
         lda     sds_pu_devs + POPUP_LEN_IDX
@@ -57,22 +58,22 @@
 
         ; show the selector
         ; no cb handler needed for popup
-        pushax  #pu_null_cb
+        mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
 
         ; decide which version to show
         lda     tmp2
         beq     no_options
 
-        pushax  #sds_pu_info
+        mwa     #sds_pu_info, ss_args+ShowSelectArgs::items
         clc
         bcc     :+
 
 no_options:
-        pushax  #sds_pu_no_opt_info
+        mwa     #sds_pu_no_opt_info, ss_args+ShowSelectArgs::items
 
-:       pushax  #devices_help
-        setax   #sds_msg
-        jsr     _show_select
+:       mwa     #devices_help, ss_args+ShowSelectArgs::help_cb
+        mwa     #sds_msg, ss_args+ShowSelectArgs::message
+        jsr     show_select
         sta     tmp1
 
         ; free the strings in the device list display. they are for display only

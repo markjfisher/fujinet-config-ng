@@ -1,6 +1,7 @@
 		.export     mw_ssid_pass_pu
 
-        .import     _show_select
+        .import     show_select
+        .import     ss_args
         .import     fuji_netconfig
         .import     mw_ask_custom_wifi_pass_info
         .import     mw_ask_custom_wifi_pu_msg
@@ -25,11 +26,12 @@
         mwa     {#(fuji_netconfig + NetConfig::ssid)}, { mw_ask_custom_wifi_ssid_info + POPUP_VAL_IDX }
         mwa     {#(fuji_netconfig + NetConfig::password)}, { mw_ask_custom_wifi_pass_info + POPUP_VAL_IDX }
 
-        pushax  #pu_null_cb
-        pushax  #mw_ask_cutom_wifi_info
-        pushax  #mw_help
-        setax   #mw_ask_custom_wifi_pu_msg
-        jsr     _show_select
+        mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
+        mwa     #mw_ask_cutom_wifi_info, ss_args+ShowSelectArgs::items
+        mwa     #mw_help, ss_args+ShowSelectArgs::help_cb
+        mwa     #mw_ask_custom_wifi_pu_msg, ss_args+ShowSelectArgs::message
+
+        jsr     show_select
 
         cpx     #PopupItemReturn::escape
         beq     esc_bssid

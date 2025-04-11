@@ -1,14 +1,14 @@
-        .export     _show_select
+        .export     show_select
+        .export     ss_args
+
         .export     ss_pu_entry
         .export     ss_width
-        .export     ss_items
         .export     ss_has_sel
         .export     ss_ud_idx
         .export     ss_lr_idx
         .export     ss_str_idx
         .export     ss_scr_l_strt
         .export     ss_widget_idx
-        .export     ss_help_cb
         .export     ss_y_offset
 
         .import     _clr_help
@@ -22,7 +22,6 @@
         .import     get_pu_loc
         .import     handle_kb
         .import     popax
-        .import     pu_kb_cb
         .import     set_next_selectable_widget
 
         .include    "zp.inc"
@@ -32,19 +31,12 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
-; void show_select(void *pu_kb_cb, void *items, void *help_cb, char *msg)
-; 
 ; A generic selection popup window that can display different types of widgets
 
 ; tmp1,tmp2,tmp3
 ; ptr1,ptr2,ptr4
 
-.proc _show_select
-        axinto  ss_message              ; the header message to display in popup
-        popax   ss_help_cb              ; the cb function to setup help messages for this particular popup
-        popax   ss_items                ; pointer to the PopupItems to display. contiguous piece of memory that needs breaking up into options and displays
-        popax   pu_kb_cb                ; call back routine for the pop up keyboard routine
-
+.proc show_select
         jsr     _wait_scan1             ; only paint when we're at the top of screen so get no flashing
         jsr     initialise_select       ; show popup header, setup some variables, ptr4 is start of screen
 
@@ -73,17 +65,16 @@ exit_select:
 .endproc
 
 .proc show_help
-        lda     ss_help_cb
-        sta     ptr3
-        lda     ss_help_cb+1
-        sta     ptr3+1
-        jmp     (ptr3)                  ; won't suffer the jmp bug, as this is ZP
+        mwa     ss_args+ShowSelectArgs::help_cb, sh_address+1
+
+sh_address:
+        jmp     $ffff
 .endproc
 
 ; draw top part of select with title/help/status, and initialise some values
 .proc initialise_select
         ; store the popup info in locations we can directly read rather than faffing with Y indexing
-        mwa     ss_items, ptr1
+        mwa     ss_args+ShowSelectArgs::items, ptr1
         ldy     #$00
         mva     {(ptr1), y}, ss_width
         iny
@@ -96,8 +87,8 @@ exit_select:
         mva     {(ptr1), y}, ss_lr_idx
         iny
         mva     {(ptr1), y}, ss_str_idx
-        ; move ss_items pointer forward to entries
-        adw1    ss_items, #.sizeof(PopupItemInfo)
+        ; move items pointer forward to entries
+        adw1    ss_args+ShowSelectArgs::items, #.sizeof(PopupItemInfo)
 
         jsr     _clr_help
         jsr     show_help               ; show the custom help messages for this popup
@@ -113,7 +104,7 @@ exit_select:
         ; ----------------------------------------------------------
         ; print the popup header message. centre the text, and invert it. we are given simple ascii string
         adw1    ptr4, #SCR_BYTES_W
-        mwa     ss_message, ptr2
+        mwa     ss_args+ShowSelectArgs::message, ptr2
         setax   ptr2
         jsr     _fc_strlen
         sta     tmp1            ; save message length
@@ -195,15 +186,14 @@ str_nul:
 ; this has to be as big as the largest type of popup, as all types will be copied into it for processing.
 ss_pu_entry:    .res POPUP_MAX_SZ
 
-ss_message:     .res 2
-ss_items:       .res 2
 ss_width:       .res 1
 ss_y_offset:    .res 1
 ss_widget_idx:  .res 1
 ss_scr_l_strt:  .res 2
-ss_help_cb:     .res 2
 
 ss_has_sel:     .res 1
 ss_ud_idx:      .res 1
 ss_lr_idx:      .res 1
 ss_str_idx:     .res 1
+
+ss_args:        .tag ShowSelectArgs

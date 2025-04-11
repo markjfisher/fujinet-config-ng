@@ -3,7 +3,8 @@
         .import     _clr_help
         .import     _put_help
         .import     _scr_clr_highlight
-        .import     _show_select
+        .import     show_select
+        .import     ss_args
         .import     mx_ask_help
         .import     mx_ask_lobby_info
         .import     mx_ask_lobby_option
@@ -20,11 +21,12 @@
 
 .proc mx_ask_lobby
         jsr     _scr_clr_highlight
-        pushax  #pu_null_cb
-        pushax  #mx_ask_lobby_info
-        pushax  #ask_help
-        setax   #mx_ask_pu_msg
-        jsr     _show_select        ; return value is type PopupItemReturn in X
+        mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
+        mwa     #mx_ask_lobby_info, ss_args+ShowSelectArgs::items
+        mwa     #ask_help, ss_args+ShowSelectArgs::help_cb
+        mwa     #mx_ask_pu_msg, ss_args+ShowSelectArgs::message
+
+        jsr     show_select        ; return value is type PopupItemReturn in X
 
         cpx     #PopupItemReturn::escape
         beq     lobby_no

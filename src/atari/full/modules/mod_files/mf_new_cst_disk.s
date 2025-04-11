@@ -2,7 +2,7 @@
         .export     mf_cst_disk
 
         .import     _clr_help
-        .import     _create_new_disk
+        .import     create_new_disk
         .import     cnd_args
         .import     _fc_atoi
         .import     _fc_strlcpy
@@ -12,7 +12,8 @@
         .import     _malloc
         .import     _put_help
         .import     _scr_clr_highlight
-        .import     _show_select
+        .import     show_select
+        .import     ss_args
         .import     copy_path_to_buffer
         .import     debug
         .import     fuji_buffer
@@ -50,15 +51,17 @@
 
 ; tmp1,tmp2,tmp8,tmp9,tmp10
 ; ptr1,ptr2
+
 mf_new_disk:
         jsr     nd_common
 
         ; show the select
-        pushax  #nd_std_kbh
-        pushax  #mf_ask_new_disk_std_info
-        pushax  #nd_help
-        setax   #mf_ask_new_disk_pu_msg
-        jsr     _show_select
+        mwa     #nd_std_kbh, ss_args+ShowSelectArgs::kb_cb
+        mwa     #mf_ask_new_disk_std_info, ss_args+ShowSelectArgs::items
+        mwa     #nd_help, ss_args+ShowSelectArgs::help_cb
+        mwa     #mf_ask_new_disk_pu_msg, ss_args+ShowSelectArgs::message
+        jsr     show_select
+
         ; return in X will be one of escape, complete, app_1
         cpx     #PopupItemReturn::escape
         beq     end_ask
@@ -88,7 +91,7 @@ mf_new_disk:
         sta     cnd_args+CreateDiskArgs::cust_size_sectors+1
         mwa     #fuji_buffer, cnd_args+CreateDiskArgs::disk_path
 
-        jsr     _create_new_disk
+        jsr     create_new_disk
         jsr     _fuji_error
         beq     end_ask
 
@@ -200,11 +203,11 @@ mf_cst_disk:
         jsr     alloc_sector_cnt
 
         ; show the select
-        pushax  #nd_cst_kbh
-        pushax  #mf_ask_new_disk_cst_info
-        pushax  #nd_help
-        setax   #mf_ask_new_disk_pu_msg
-        jsr     _show_select
+        mwa     #nd_cst_kbh, ss_args+ShowSelectArgs::kb_cb
+        mwa     #mf_ask_new_disk_cst_info, ss_args+ShowSelectArgs::items
+        mwa     #nd_help, ss_args+ShowSelectArgs::help_cb
+        mwa     #mf_ask_new_disk_pu_msg, ss_args+ShowSelectArgs::message
+        jsr     show_select
 
         ; deal with return from select (type PopupItemReturn)
         ; return will be one of escape, complete, app_1
@@ -257,7 +260,7 @@ over_4:
 push_size:
         axinto  cnd_args+CreateDiskArgs::cust_size_sectors
         mwa     #fuji_buffer, cnd_args+CreateDiskArgs::disk_path
-        jsr     _create_new_disk
+        jsr     create_new_disk
         jsr     _fuji_error
         beq     end_ask2
 

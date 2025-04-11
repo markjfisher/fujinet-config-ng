@@ -1,4 +1,4 @@
-        .export     _create_new_disk
+        .export     create_new_disk
         .export     t_disk_num_sectors
         .export     t_disk_sector_sizes
         .export     cnd_args
@@ -16,13 +16,10 @@
         .include    "fn_data.inc"
         .include    "fn_disk.inc"
 
-; int create_new_disk(uint8_t host_slot, uint8_t device_slot, DiskSize size_index, 
-;                     uint16_t cust_num_sectors, uint16_t cust_size_sectors, char *disk_path)
-;
-; creates new disk from params
+
 ; returns completed indicator, 0 = nothing written, 1 = disk created
 ; ptr1,ptr4; ptr1 is trashed by strncpy
-.proc _create_new_disk
+.proc create_new_disk
         mwa     #cnd_newdisk, ptr4
 
         ; convert selected_size into DiskSize index

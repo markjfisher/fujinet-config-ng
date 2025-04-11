@@ -1,6 +1,7 @@
         .export     _show_error
 
-        .import     _show_select
+        .import     show_select
+        .import     ss_args
         .import     info_popup_help
         .import     popa
         .import     pu_null_cb
@@ -25,11 +26,12 @@
         jsr     popa
         sta     se_template + 0
 
-        pushax  #pu_null_cb
-        pushax  #se_template
-        pushax  #info_popup_help
-        setax   #pu_err_title
-        jmp     _show_select
+        mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
+        mwa     #se_template, ss_args+ShowSelectArgs::items
+        mwa     #info_popup_help, ss_args+ShowSelectArgs::help_cb
+        mwa     #pu_err_title, ss_args+ShowSelectArgs::message
+
+        jmp     show_select
 .endproc
 
 .data

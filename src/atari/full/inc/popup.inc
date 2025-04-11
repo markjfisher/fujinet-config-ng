@@ -124,3 +124,10 @@ POPUP_VPW_IDX   := 5            ; byte pointer to the ViewPort width for this fi
         self                    ; yes, the current widget handles this kb press
         other                   ; yes, but by another widget, and there's only 1 other widget that could handle it
 .endenum
+
+.struct ShowSelectArgs
+        message         .word   ; header message for popup
+        help_cb         .word   ; cb function to setup help messages
+        items           .word   ; PopupItems pointer. contiguous piece of memory that needs breaking up into options and displays
+        kb_cb           .word   ; cb function for popup kb routine
+.endstruct

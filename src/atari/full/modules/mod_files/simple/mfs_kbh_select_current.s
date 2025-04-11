@@ -66,7 +66,7 @@ is_file:
         lda     #$01                            ; show options
         jsr     select_device_slot
 
-        ; CHECK IF ESC pressed (return value from _show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
+        ; CHECK IF ESC pressed (return value from show_select is type PopupItemReturn, with value #PopupItemReturn::escape for esc)
         cpx     #PopupItemReturn::escape
         beq     :+
 

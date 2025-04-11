@@ -1,8 +1,8 @@
         .export     handle_kb
-        .export     pu_kb_cb
         .export     pu_null_cb
         .export     do_edit
 
+        .import     ss_args
         .import     _edit_string
         .import     _es_params
         .import     _fc_strlen
@@ -18,7 +18,6 @@
         .import     set_next_selectable_widget
         .import     show_edit_value
         .import     ss_has_sel
-        .import     ss_items
         .import     ss_lr_idx
         .import     ss_pu_entry
         .import     ss_str_idx
@@ -270,10 +269,8 @@ not_edit:
 .proc do_kb_cb
         ; tried the ldx/ptr3 version (and with ptr2), but that breaks other part of the code, so keep the SMC version
         pha                             ; save A, it's needed as parameter to function being called
-        lda     pu_kb_cb
-        sta     smc+1
-        lda     pu_kb_cb+1
-        sta     smc+2
+
+        mwa     ss_args+ShowSelectArgs::kb_cb, smc+1
         pla
 smc:
         jmp     $0000
@@ -517,7 +514,3 @@ kb_ud_yes:
         ldx     ss_widget_idx
         jmp     type_at_x
 .endproc
-
-.bss
-; pop up keyboard callback vector. Allows callers to setup a callback where they can intercept the kb routine to allow changes
-pu_kb_cb:       .res 2

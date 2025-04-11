@@ -7,7 +7,7 @@
         .import    display_text
         .import    display_textlist
 
-        .import    ss_items
+        .import    ss_args
         .import    ss_num_lr
         .import    ss_other_lr_idx
         .import    ss_num_ud
@@ -22,8 +22,8 @@
 ; Displays all the PopupItem objects
 ; ptr1,ptr4
 .proc display_items
-        mwa     ss_items, ptr1          ; set ptr1 to first popup item to display. it will walk down the list
-        mva     #$00, di_current_item   ; this tracks which item is currently being displayed so we can compare to selected
+        mwa     ss_args+ShowSelectArgs::items, ptr1     ; set ptr1 to first popup item to display. it will walk down the list
+        mva     #$00, di_current_item                   ; this tracks which item is currently being displayed so we can compare to selected
 
 l_all_items:
         ; read the next Popup type, if it's last element (finish type) return to caller

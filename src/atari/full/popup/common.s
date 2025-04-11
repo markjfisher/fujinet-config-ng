@@ -13,11 +13,10 @@
         .export     zero_mem_tmp9_tmp8
 
         .import     _fc_strlen
+        .import     ss_args
         .import     debug
-        .import     _pause
         .import     get_scrloc
         .import     put_s_p1p4
-        .import     ss_items
         .import     ss_pu_entry
         .import     ss_widget_idx
         .import     ss_width
@@ -182,7 +181,7 @@ no_add_x:
 
 .proc item_x_to_ptr1
         ; ptr1 will point to start of required PopupItem object
-        mwa     ss_items, ptr1
+        mwa     ss_args+ShowSelectArgs::items, ptr1
         cpx     #$00
         beq     out
 
