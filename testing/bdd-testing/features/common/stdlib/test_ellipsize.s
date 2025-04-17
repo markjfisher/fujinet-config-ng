@@ -1,6 +1,6 @@
         .export         _main, t_src, t_dst, t_max
 
-        .import         _ellipsize, pusha, pushax
+        .import         ellipsize, pusha, pushax
         .include        "macros.inc"
 
 .proc _main
@@ -8,7 +8,7 @@
         pushax  #t_dst
         setax   #t_src
 
-        jsr _ellipsize
+        jsr ellipsize
         rts
 .endproc
 

@@ -1,4 +1,4 @@
-        .export     _ellipsize
+        .export     ellipsize
 
         .import     _fc_strlen
         .import     _fc_strlcpy
@@ -8,6 +8,7 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
+        .include    "macros.inc"
 
 ; void ellipsize(uint8_t max, char *dst, char *src)
 ;
@@ -15,7 +16,7 @@
 ; returns a string with "..." in middle of the string reducing strings above max to that length, with start and end chars either side
 ; e.g.
 ; "123456789" -> "12...89" for max of 7+null = 8 chars
-.proc _ellipsize
+.proc ellipsize
         axinto  ptr4    ; src
         popax   ptr3    ; dst
         popa    tmp1    ; max length

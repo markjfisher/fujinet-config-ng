@@ -2,7 +2,7 @@
 
         .import     _clr_help
         .import     _clr_scr_with_separator
-        .import     _ellipsize
+        .import     ellipsize
         .import     _fuji_error
         .import     _fuji_open_directory
         .import     _fuji_set_directory_position
@@ -97,7 +97,8 @@
         axinto  ptr1            ; save for free
         jsr     pushax          ; dst
         setax   #fn_dir_path    ; src
-        jsr     _ellipsize
+
+        jsr     ellipsize
 
         ; print the ellipsized string
         put_s   #5, #2, ptr1
