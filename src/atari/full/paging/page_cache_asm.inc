@@ -1,8 +1,6 @@
 BANK_SIZE              = $4000  ; Size of each bank in bytes (16KB)
-PAGE_CACHE_MAX_ENTRIES = 512    ; a single bank has 16k - 128 bytes, divide by 8 allows 2032 entries, so 512 very short of this for now
-
-; Size of page_cache_entry_t for memmove calculations
-PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
+PAGE_CACHE_MAX_ENTRIES = $FF    ; we are keeping counts simple, and only allow 255 cache index entries
+PAGE_CACHE_ENTRY_SIZE = 8       ; Each index entry is 8 bytes long, used for moving over the index entries
 
 .struct page_cache_entry
     path_hash       .word   ; 2 bytes - hash of the path string
@@ -13,10 +11,15 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
 .endstruct
 
 .struct page_cache
-    entries         .res 512*8  ; Array of page_cache_entry (8 bytes each)
+    entry_count     .byte       ; Number of active entries
+    entries         .res 258*8  ; Array of page_cache_entry (8 bytes each)
     bank_free_space .res 64*2   ; Array of bank free space (64 banks max * 2 bytes each)
 .endstruct
 
+; we can't consolidate the memory for parameters, as sometimes the find needs to remove items
+; to make space, and it then needs to have different values to the find, which then loses the
+; original values. keeping those values and then restoring them after a deletion
+; is more code than just having 2 different parameter blocks. so we keep things simple.
 .struct page_cache_find_params
     path_hash       .word   ; 2 bytes - hash to search for
     group_id        .byte   ; 1 byte - group ID to search for

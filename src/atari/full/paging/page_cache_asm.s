@@ -4,7 +4,6 @@
         .export _page_cache_remove_group
         .export _page_cache_remove_path
 
-        .export cache_size
         .export _cache
         .export _find_params
         .export _insert_params
@@ -30,16 +29,16 @@
         lda #0                  ; found_exact = 0
         sta _find_params+page_cache_find_params::found_exact
 
-        lda cache_size
-        ora cache_size+1
+        ; use x so we can decrement it easily
+        ldx _cache+page_cache::entry_count  ; load cache.entry_count
         bne not_empty
 
         ; Handle empty cache case, e.g. inserting first cache entry
-        sta _find_params+page_cache_find_params::position  ; position = 0
+        stx _find_params+page_cache_find_params::position  ; position = 0
         rts
 
 not_empty:
-        dex                     ; right = cache_size - 1
+        dex                     ; right = entry_count - 1
         stx tmp2               ; store in right
         ldx #0
         stx tmp1               ; left = 0
@@ -189,19 +188,17 @@ adjust_left:
 ; --------------------------------------------------------------------
 
 .proc _page_cache_insert
-        ; TODO: need to balance the page_cache::entries array against actual RAM
-        ; we could easily run out of index space before actual RAM is used up.
-        ; Instead of exiting, we can expunge from the index, as this is a case
-        ; where we ran out of index space rather than bank space, due to lots of
-        ; small pagegroup entries, or that there's just so much RAM available, we
-        ; need more index space.
-
         ; Check if we have space
-        lda cache_size
+try_insert:
+        lda _cache+page_cache::entry_count
         cmp #PAGE_CACHE_MAX_ENTRIES
         bcc have_space
 
-        ; too far for branch.
+        ; No space in index, try to free up space
+        jsr try_free_space
+        bne try_insert      ; If space was freed (A != 0), try again
+        
+        ; No space could be freed
         jmp no_space
 
 have_space:
@@ -224,11 +221,11 @@ have_space:
 
         ; Calculate source and count for memmove if needed
         ldx _find_params+page_cache_find_params::position     ; Get insert position
-        cpx cache_size         ; Compare with cache_size
+        cpx _cache+page_cache::entry_count         ; Compare with entry_count
         bcs skip_move                              ; Skip if inserting at end
 
         ; Calculate number of entries to move
-        lda cache_size
+        lda _cache+page_cache::entry_count
         sec
         sbc _find_params+page_cache_find_params::position     ; A = count - position
 
@@ -302,9 +299,7 @@ copy_loop:
         sta _cache+page_cache::bank_free_space,y
 
         ; Increment entry count
-        inc cache_size
-        bne :+
-        inc cache_size+1
+        inc _cache+page_cache::entry_count
 
         ; Set success = 1
         lda #1
@@ -318,6 +313,57 @@ entry_exists:
 set_success:
         sta _insert_params+page_cache_insert_params::success
         rts
+.endproc
+
+; --------------------------------------------------------------------
+; try_free_space
+; Attempts to free up space by:
+; 1. Trying to expel paths up to 3 times
+; 2. If that doesn't work, removing entries one by one
+; Returns:
+;   A = 1 if space was freed, 0 if not
+; --------------------------------------------------------------------
+.proc try_free_space
+        lda #0
+        sta attempts       ; Reset attempts counter
+
+try_expel:
+        ; Check if we've tried expelling too many times
+        lda attempts
+        cmp #3
+        bcs try_remove_entries  ; If attempts >= 3, try removing entries
+        
+        ; Increment attempts counter
+        inc attempts
+        
+        ; Try to expel a path
+        jsr _page_cache_expel_path
+        
+        ; Check if any entries were removed
+        lda _remove_path_params+page_cache_remove_path_params::removed_count
+        bne success       ; If entries removed, return success
+        
+try_remove_entries:        
+        ; Get first entry's hash and group_id
+        lda _cache+page_cache::entries+page_cache_entry::path_hash
+        sta _remove_group_params+page_cache_remove_group_params::path_hash
+        lda _cache+page_cache::entries+page_cache_entry::path_hash+1
+        sta _remove_group_params+page_cache_remove_group_params::path_hash+1
+        lda _cache+page_cache::entries+page_cache_entry::group_id
+        sta _remove_group_params+page_cache_remove_group_params::group_id
+        
+        ; Remove the entry
+        jsr _page_cache_remove_group
+        
+        ; Entry was removed, return success
+success:
+        lda #1
+        rts
+
+failed:
+        lda #0
+        rts
+
 .endproc
 
 ; --------------------------------------------------------------------
@@ -395,7 +441,7 @@ found:
         
         ldx #0                  ; Entry counter
 scan_loop:
-        cpx cache_size
+        cpx _cache+page_cache::entry_count
         bne continue_scan
         jmp scan_done
 
@@ -569,7 +615,7 @@ move_bank:
 bank_done:
         ; Now continue with removing entry from index
         ; Remove entry from index by moving following entries up
-        lda cache_size
+        lda _cache+page_cache::entry_count
         sec
         sbc _find_params+page_cache_find_params::position     ; A = count - position
         beq last_entry                             ; If removing last entry, no move needed
@@ -601,7 +647,7 @@ bank_done:
 
 last_entry:
         ; Decrement entry count
-        dec cache_size
+        dec _cache+page_cache::entry_count
 
         ; Set success = 1
         lda #1
@@ -617,7 +663,6 @@ set_success:
 
 ; --------------------------------------------------------------------
 ; page_cache_remove_path
-; Now uses parameter block instead of A/X parameters
 ; --------------------------------------------------------------------
 .proc _page_cache_remove_path
         ; Initialize removed count
@@ -634,7 +679,7 @@ set_success:
 scan_loop:
         ; Check if we've reached the end
         lda entry_index
-        cmp cache_size
+        cmp _cache+page_cache::entry_count
         bcs done
         
         ; Compare first hash byte
@@ -681,7 +726,7 @@ found_match:
         bne scan_loop
         
 next_entry:
-        ; Move to next entry - add 8 to ptr2
+        ; Move to next entry - add index size to ptr2
         lda ptr2
         clc
         adc #PAGE_CACHE_ENTRY_SIZE
@@ -722,8 +767,6 @@ failed_size:
         jmp too_large     ; Too far for direct branch
 
 size_ok:
-        lda #$00
-        sta attempts
 
 try_alloc:
         ; Initialize best bank and space
@@ -764,7 +807,7 @@ check_entries:
         
         ldx #0              ; entry counter
 scan_loop:
-        cpx cache_size
+        cpx _cache+page_cache::entry_count
         beq update_best     ; No matches, update best if better space
         
         ; Check if entry is in this bank
@@ -829,80 +872,18 @@ next_bank:
         ; Check if we found a bank with enough space
         lda tmp1
         cmp #$FF
-        beq try_expel      ; If no bank found, try expelling paths
+        beq need_space      ; If no bank found, try freeing space
         
         ; Store best bank in result and return
         sta _find_bank_params+page_cache_find_bank_params::bank_id
         rts
 
-try_expel:
-        ; Check if we've tried expelling too many times
-        lda attempts
-        cmp #3
-        bcs try_remove_entries  ; If attempts >= 3, try removing entries
-        
-        ; Increment attempts counter
-        inc attempts
-        
-        ; Try to expel a path
-        jsr _page_cache_expel_path
-        
-        ; Check if any entries were removed
-        lda _remove_path_params+page_cache_remove_path_params::removed_count
-        beq try_remove_entries  ; If no entries removed, try removing entries
-        
-        ; Entries were removed, try allocation again
-        jmp try_alloc
+need_space:
+        ; Try to free up space
+        jsr try_free_space
+        beq too_large
 
-try_remove_entries:
-        ; Check if there are any entries to remove
-        lda cache_size
-        beq no_space       ; If no entries, we can't free any space
-        
-        ; Get first entry's hash and group_id
-        lda _cache+page_cache::entries+page_cache_entry::path_hash
-        sta _remove_group_params+page_cache_remove_group_params::path_hash
-        lda _cache+page_cache::entries+page_cache_entry::path_hash+1
-        sta _remove_group_params+page_cache_remove_group_params::path_hash+1
-        lda _cache+page_cache::entries+page_cache_entry::group_id
-        sta _remove_group_params+page_cache_remove_group_params::group_id
-        
-        ; Remove the entry
-        jsr _page_cache_remove_group
-        
-        ; Check all banks for enough space
-        lda #0
-        sta tmp2           ; bank_index = 0
-        
-check_banks:
-        ; Calculate offset into bank_free_space
-        lda tmp2
-        asl
-        tay
-        
-        ; Check if this bank has enough space
-        lda _cache+page_cache::bank_free_space+1,y  ; High byte
-        cmp _find_bank_params+page_cache_find_bank_params::size_needed+1
-        bcc next_check_bank
-        bne found_space
-        lda _cache+page_cache::bank_free_space,y    ; Low byte
-        cmp _find_bank_params+page_cache_find_bank_params::size_needed
-        bcs found_space
-        
-next_check_bank:
-        inc tmp2
-        lda tmp2
-        cmp _bank_count
-        bne check_banks
-        
-        ; No bank had enough space, try removing another entry
-        jmp try_remove_entries
-        
-found_space:
-        ; Found a bank with enough space
-        lda tmp2
-        sta _find_bank_params+page_cache_find_bank_params::bank_id
-        rts
+        jmp try_alloc      ; If space was freed, try allocation again
         
 too_large:
 no_space:
@@ -924,7 +905,7 @@ no_space:
         sta _remove_path_params+page_cache_remove_path_params::removed_count
         
         ; Exit early if no entries
-        lda cache_size
+        lda _cache+page_cache::entry_count
         beq done
         
         ; Initialize entry pointer to start of entries
@@ -935,7 +916,7 @@ no_space:
         
         ldx #0              ; Entry counter
 scan_loop:
-        cpx cache_size
+        cpx _cache+page_cache::entry_count
         beq done           ; Reached end of entries
         
         ; Check if this entry has a different path hash
@@ -960,7 +941,7 @@ next_entry:
         bcc :+
         inc ptr1+1
 :       inx
-        bne scan_loop      ; Always taken as cache_size < 256
+        bne scan_loop      ; Always taken as entry_count < 256
         
 done:
         rts
@@ -980,7 +961,6 @@ found_different:
 .endproc
 
 .bss
-cache_size:     .res 2
 entry_loc:      .res 2
 bank_id:        .res 1
 group_size:     .res 2
