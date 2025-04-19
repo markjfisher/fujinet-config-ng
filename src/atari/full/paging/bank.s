@@ -1,4 +1,5 @@
         .export         _change_bank
+        .export         _get_bank_base
         .export         _set_default_bank
 
         .import         _bank_count
@@ -40,3 +41,10 @@ _set_default_bank:
         lda     #$ff
         sta     PORTB
         rts
+
+; TODO: inline this once happy with testing
+_get_bank_base:
+        lda #<$4000
+        ldx #>$4000
+        rts
+

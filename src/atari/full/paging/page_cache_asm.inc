@@ -32,6 +32,7 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
     bank_id         .byte   ; 1 byte - bank where data is stored
     bank_offset     .word   ; 2 bytes - offset within bank
     group_size      .word   ; 2 bytes - size of the page group data
+    data_ptr        .word   ; 2 bytes - pointer to source data
     success         .byte   ; 1 byte - output: 1 if insert successful
 .endstruct
 

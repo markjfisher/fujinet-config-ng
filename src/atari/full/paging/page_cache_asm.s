@@ -14,10 +14,12 @@
 
         .import _bank_count
         .import _change_bank
+        .import _get_bank_base
         .import _set_default_bank
 
         .import _memmove
         .import pushax
+        .import _memcpy
 
         .include "zeropage.inc"
         .include "page_cache_asm.inc"
@@ -237,7 +239,41 @@ try_insert:
         jmp no_space
 
 have_space:
-        ; Set up find_params from insert_params
+        ; Set up find_bank parameters from insert_params
+        lda _insert_params+page_cache_insert_params::group_size
+        sta _find_bank_params+page_cache_find_bank_params::size_needed
+        lda _insert_params+page_cache_insert_params::group_size+1
+        sta _find_bank_params+page_cache_find_bank_params::size_needed+1
+        lda _insert_params+page_cache_insert_params::path_hash
+        sta _find_bank_params+page_cache_find_bank_params::path_hash
+        lda _insert_params+page_cache_insert_params::path_hash+1
+        sta _find_bank_params+page_cache_find_bank_params::path_hash+1
+
+        ; Find a bank with enough space
+        jsr _page_cache_find_free_bank
+        
+        ; Check if we found a bank
+        lda _find_bank_params+page_cache_find_bank_params::bank_id
+        cmp #$FF
+        bne :+
+        jmp no_space
+        
+        ; Store the bank_id in insert_params
+:       sta _insert_params+page_cache_insert_params::bank_id
+        
+        ; Calculate bank offset from free space
+        lda _find_bank_params+page_cache_find_bank_params::bank_id
+        asl a              ; * 2 for word offset
+        tay
+        lda #<BANK_SIZE
+        sec
+        sbc _cache+page_cache::bank_free_space,y
+        sta _insert_params+page_cache_insert_params::bank_offset
+        lda #>BANK_SIZE
+        sbc _cache+page_cache::bank_free_space+1,y
+        sta _insert_params+page_cache_insert_params::bank_offset+1
+
+        ; Set up find_params from insert_params for position search
         lda _insert_params+page_cache_insert_params::path_hash
         sta _find_params+page_cache_find_params::path_hash
         lda _insert_params+page_cache_insert_params::path_hash+1
@@ -249,10 +285,12 @@ have_space:
 
         ; Check if entry already exists
         lda _find_params+page_cache_find_params::found_exact
-        bne entry_exists
+        beq :+
+
+        jmp entry_exists
 
         ; this is common to both moving old indexes, and inserting new one, so calculate once
-        jsr calc_entry_loc
+:       jsr calc_entry_loc
 
         ; Calculate source and count for memmove if needed
         ldx _find_params+page_cache_find_params::position     ; Get insert position
@@ -332,6 +370,47 @@ copy_loop:
         lda _cache+page_cache::bank_free_space,y
         sbc _insert_params+page_cache_insert_params::group_size+1
         sta _cache+page_cache::bank_free_space,y
+
+        ; Switch to target bank for data copy
+        lda _insert_params+page_cache_insert_params::bank_id
+        jsr _change_bank
+
+        ; Get bank base address
+        jsr _get_bank_base
+        sta ptr2           ; Store bank base in ptr2
+        stx ptr2+1
+
+        ; Add offset to get destination address
+        lda _insert_params+page_cache_insert_params::bank_offset
+        clc
+        adc ptr2
+        sta ptr2
+        lda _insert_params+page_cache_insert_params::bank_offset+1
+        adc ptr2+1
+        sta ptr2+1
+
+        ; Set up source pointer to data
+        lda _insert_params+page_cache_insert_params::data_ptr
+        sta ptr3
+        lda _insert_params+page_cache_insert_params::data_ptr+1
+        sta ptr3+1
+
+        ; Push destination address (ptr2)
+        lda ptr2
+        ldx ptr2+1
+        jsr pushax
+
+        ; Push source address (ptr3)
+        lda ptr3
+        ldx ptr3+1
+        jsr pushax
+
+        ; Push size
+        lda _insert_params+page_cache_insert_params::group_size
+        ldx _insert_params+page_cache_insert_params::group_size+1
+        jsr _memcpy
+        ; reset to default bank to allow access to _cache
+        jsr _set_default_bank
 
         ; Increment entry count
         inc _cache+page_cache::entry_count
@@ -602,9 +681,8 @@ move_bank:
         jsr _change_bank
         
         ; Get bank base address into ptr3/ptr4 for calculations
-        lda #<$4000
+        jsr _get_bank_base
         sta ptr3
-        lda #>$4000
         stx ptr3+1
         
         ; Calculate source address (bank_base + offset + group_size)
