@@ -3,6 +3,7 @@
         .export _page_cache_insert
         .export _page_cache_remove_group
         .export _page_cache_remove_path
+        .export _page_cache_init
 
         .export _cache
         .export _find_params
@@ -20,6 +21,38 @@
 
         .include "zeropage.inc"
         .include "page_cache_asm.inc"
+
+; --------------------------------------------------------------------
+; page_cache_init(uint8_t max)
+; Initialize the cache structure with the specified maximum number of banks
+; Parameter is passed in A register
+; --------------------------------------------------------------------
+.proc _page_cache_init
+        ; Store max_banks parameter
+        sta _cache+page_cache::max_banks
+
+        ; Calculate max_banks * 2 for array size (safe as max_banks <= 64)
+        asl                 ; Double the value
+        sta tmp1           ; Store for comparison
+
+        ; Initialize entry_count to 0
+        lda #0
+        sta _cache+page_cache::entry_count
+
+        ; Initialize bank_free_space array - each bank starts with BANK_SIZE free space
+        ldx #0              ; Array index
+init_banks:
+        lda #<BANK_SIZE
+        sta _cache+page_cache::bank_free_space,x
+        inx
+        lda #>BANK_SIZE
+        sta _cache+page_cache::bank_free_space,x
+        inx
+        cpx tmp1           ; Compare with max_banks * 2
+        bne init_banks
+
+        rts
+.endproc
 
 ; --------------------------------------------------------------------
 ; page_cache_find
@@ -343,7 +376,7 @@ try_expel:
         lda _remove_path_params+page_cache_remove_path_params::removed_count
         bne success       ; If entries removed, return success
         
-try_remove_entries:        
+try_remove_entries:
         ; Get first entry's hash and group_id
         lda _cache+page_cache::entries+page_cache_entry::path_hash
         sta _remove_group_params+page_cache_remove_group_params::path_hash
@@ -866,7 +899,7 @@ next_bank:
         ; Move to next bank
         inc tmp2           ; bank_index++
         lda tmp2
-        cmp _bank_count
+        cmp _cache+page_cache::max_banks
         bne bank_loop
         
         ; Check if we found a bank with enough space
