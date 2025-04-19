@@ -1,4 +1,4 @@
         .export fn_dir_path
 
-.segment "BUFFER"
+.segment "BANK"
 fn_dir_path:   .res $e0

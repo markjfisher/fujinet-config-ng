@@ -1,4 +1,4 @@
         .export fuji_buffer
 
-.segment "BUFFER"
+.segment "BANK"
 fuji_buffer:         .res $100

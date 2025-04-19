@@ -2,5 +2,5 @@
 
         .include    "fujinet-fuji.inc"
 
-.segment "BUFFER"
+.segment "BANK"
 fuji_netconfig:      .tag NetConfig

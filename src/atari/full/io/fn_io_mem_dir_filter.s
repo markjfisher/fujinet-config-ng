@@ -1,4 +1,4 @@
         .export fn_dir_filter
 
-.segment "BUFFER"
+.segment "BANK"
 fn_dir_filter: .res $20

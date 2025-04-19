@@ -6,15 +6,15 @@
         .export _page_cache_init
 
         .import _cache
+        .import _find_bank_params
         .import _find_params
         .import _insert_params
         .import _remove_group_params
         .import _remove_path_params
-        .import _find_bank_params
 
-        .import _change_bank
-        .import _get_bank_base
         .import _bank_count
+        .import _change_bank
+        .import _set_default_bank
 
         .import _memmove
         .import pushax
@@ -539,7 +539,6 @@ calc_end_offset:
 
 
 update_highest:
-
         ; lda end_offset - A is already end_offset
         sta highest_offset
         lda end_offset+1
@@ -647,6 +646,9 @@ move_bank:
         lda move_size         ; Load size to move
         ldx move_size+1
         jsr _memmove
+
+        ; reset to normal memory to access cache again
+        jsr _set_default_bank
 
 bank_done:
         ; Now continue with removing entry from index
