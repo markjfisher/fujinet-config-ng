@@ -22,6 +22,7 @@ altirra-*.ini
 breakpoints.txt
 
 _libs/
+_cache/
 src/version.txt
 
 font_data/cng-font*.*

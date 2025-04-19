@@ -1,6 +1,6 @@
-FUJINET_LIB_VERSION := 4.7.2
+FUJINET_LIB_VERSION := 4.7.6
 
-FUJINET_LIB = _libs
+FUJINET_LIB = $(CACHE_DIR)/fujinet-lib
 # is target correct, or platform? eg. atarixl vs atari, pet vs c64 vs commodore
 FUJINET_LIB_VERSION_DIR = $(FUJINET_LIB)/$(FUJINET_LIB_VERSION)-$(CURRENT_TARGET)
 FUJINET_LIB_PATH = $(FUJINET_LIB_VERSION_DIR)/fujinet-$(CURRENT_TARGET)-$(FUJINET_LIB_VERSION).lib
