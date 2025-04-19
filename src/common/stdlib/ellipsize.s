@@ -8,7 +8,6 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
-        .include    "macros.inc"
 
 ; void ellipsize(uint8_t max, char *dst, char *src)
 ;
