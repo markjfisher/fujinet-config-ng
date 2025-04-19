@@ -36,6 +36,8 @@
         .include    "macros.inc"
         .include    "zp.inc"
 
+.segment "CODE2"
+
 _mi_init_screen:
         jsr     _scr_clr_highlight
         jsr     _clr_help

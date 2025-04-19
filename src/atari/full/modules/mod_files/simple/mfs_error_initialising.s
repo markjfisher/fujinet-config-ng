@@ -6,6 +6,8 @@
 
         .include    "macros.inc"
 
+.segment "CODE2"
+
 .proc mfs_error_initialising
         jsr     _scr_clr_highlight
         pusha   #26

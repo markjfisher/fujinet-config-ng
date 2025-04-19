@@ -31,6 +31,8 @@
         .include    "popup.inc"
         .include    "args.inc"
 
+.segment "CODE2"
+
 ; Handle Selection of the currently highlighted line
 ; tmp1,tmp2,tmp3
 ; ptr1,ptr2

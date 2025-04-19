@@ -26,6 +26,8 @@
         .include    "modules.inc"
         .include    "fn_data.inc"
 
+.segment "CODE2"
+
 ;  kb_max_entries:  Total entries on page - 1, for up/down movement
 ;         prevmod:  which mod to go to if press left key
 ;         nextmod:  which mod to go to if press right key

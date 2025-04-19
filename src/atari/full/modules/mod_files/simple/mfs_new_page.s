@@ -34,6 +34,8 @@
         .include    "zp.inc"
         .include    "macros.inc"
 
+.segment "CODE2"
+
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 ; ptr1
 .proc mfs_new_page

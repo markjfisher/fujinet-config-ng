@@ -30,6 +30,9 @@
         .include        "modules.inc"
         .include        "zp.inc"
 
+.segment "CODE2"
+
+
 .proc _mi_edit_preferences
         jsr     debug
         ; keep a copy of the real value so we can revert if user presses ESC
@@ -184,7 +187,6 @@ reset_help:
         jmp     _put_help
 
 .endproc
-
 
 ; displays the current value of the preference value in pref_copy
 ; INPUTS:  tmp2, if 0 will invert the text (used during editing), otherwise in normal text (e.g. resetting value)

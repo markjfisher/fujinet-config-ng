@@ -19,6 +19,8 @@
         .include    "macros.inc"
         .include    "zp.inc"
 
+.segment "CODE2"
+
 .proc _mi_display_prefs
         put_s   #2, #7,  #mx_k_colour
         put_s   #2, #8,  #mx_k_bright

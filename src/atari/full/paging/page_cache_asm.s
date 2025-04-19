@@ -5,12 +5,12 @@
         .export _page_cache_remove_path
         .export _page_cache_init
 
-        .export _cache
-        .export _find_params
-        .export _insert_params
-        .export _remove_group_params
-        .export _remove_path_params
-        .export _find_bank_params
+        .import _cache
+        .import _find_params
+        .import _insert_params
+        .import _remove_group_params
+        .import _remove_path_params
+        .import _find_bank_params
 
         .import _change_bank
         .import _get_bank_base
@@ -21,6 +21,8 @@
 
         .include "zeropage.inc"
         .include "page_cache_asm.inc"
+
+.segment "CODE2"
 
 ; --------------------------------------------------------------------
 ; page_cache_init(uint8_t max)
@@ -601,8 +603,9 @@ move_bank:
         jsr _change_bank
         
         ; Get bank base address into ptr3/ptr4 for calculations
-        jsr _get_bank_base
+        lda #<$4000
         sta ptr3
+        lda #>$4000
         stx ptr3+1
         
         ; Calculate source address (bank_base + offset + group_size)
@@ -1004,14 +1007,3 @@ move_size:      .res 2
 adjust_size:    .res 2        ; New variable for storing how much to adjust by
 entry_index:    .res 1        ; New variable for tracking current entry index
 attempts:       .res 1        ; Counter for expel attempts
-
-_find_params:            .tag page_cache_find_params
-_insert_params:          .tag page_cache_insert_params
-_remove_group_params:    .tag page_cache_remove_group_params
-_remove_path_params:     .tag page_cache_remove_path_params
-_find_bank_params:       .tag page_cache_find_bank_params
-
-
-; TODO: put this in BANK 0 so it isn't saved to disk
-
-_cache:         .tag page_cache

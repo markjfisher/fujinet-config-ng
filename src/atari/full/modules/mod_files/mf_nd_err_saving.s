@@ -7,6 +7,8 @@
         .include    "macros.inc"
         .include    "modules.inc"
 
+.segment "CODE2"
+
 .proc mf_nd_err_saving
         pusha   #21
         pusha   #1

@@ -12,6 +12,8 @@
         .include    "macros.inc"
         .include    "zp.inc"
 
+.segment "CODE2"
+
 .proc _bar_setup
         lda     #$44
         jsr     _bar_setcolor

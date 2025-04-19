@@ -29,6 +29,8 @@
         .include    "modules.inc"
         .include    "zp.inc"
 
+.segment "CODE2"
+
 ; 'A' contains the keyboard ascii code
 ; ptr4
 .proc mfs_kbh

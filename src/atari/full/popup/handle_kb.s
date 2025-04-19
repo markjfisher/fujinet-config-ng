@@ -33,6 +33,8 @@
         .include    "popup.inc"
         .include    "edit_string.inc"
 
+.segment "CODE2"
+
 ; tmp5,tmp6,tmp7,tmp8
 ; ptr1,ptr3,ptr4
 .proc handle_kb

@@ -30,6 +30,8 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
+.segment "CODE2"
+
 ; A generic selection popup window that can display different types of widgets
 
 ; tmp1,tmp2,tmp3

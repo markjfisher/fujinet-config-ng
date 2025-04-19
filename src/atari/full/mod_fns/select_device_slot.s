@@ -28,6 +28,8 @@
         .include    "fn_data.inc"
         .include    "popup.inc"
 
+.segment "CODE2"
+
 ; tmp1,tmp2
 ; ptr1,ptr2,ptr3
 

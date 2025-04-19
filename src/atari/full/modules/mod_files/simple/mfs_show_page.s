@@ -24,6 +24,8 @@
         .include    "modules.inc"
         .include    "fn_data.inc"
 
+.segment "CODE2"
+
 ; ptr1,ptr2,ptr4
 .proc mfs_show_page
         mva     #$00, mfs_entry_index

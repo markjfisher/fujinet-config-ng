@@ -19,6 +19,8 @@
         .include    "zp.inc"
         .include    "macros.inc"
 
+.segment "CODE2"
+
 .proc mfs_init
         jsr     _fuji_close_directory
 

@@ -15,6 +15,8 @@
         .include    "modules.inc"
         .include    "zp.inc"
 
+.segment "CODE2"
+
 .proc mf_copy_start
         ; jsr     debug
         ; is the path too long? interesting dilemma. the copy spec eventually sent to FN has to be under 256 bytes. we'll check that at the end

@@ -15,6 +15,8 @@
         .include    "fn_data.inc"
         .include    "modules.inc"
 
+.segment "CODE2"
+
 ; same as original implementation, reads dirs 1 by 1
 .proc mfs_main
         jsr     mfs_init

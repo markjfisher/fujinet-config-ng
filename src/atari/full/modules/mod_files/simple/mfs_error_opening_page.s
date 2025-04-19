@@ -7,6 +7,8 @@
         .include    "macros.inc"
         .include    "modules.inc"
 
+.segment "CODE2"
+
 .proc mfs_error_opening_page
         pusha   #26
         pusha   #1

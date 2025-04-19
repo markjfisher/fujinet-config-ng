@@ -51,6 +51,8 @@
         .include    "popup.inc"
         .include    "args.inc"
 
+.segment "CODE2"
+
 ; tmp1,tmp2,tmp8,tmp9,tmp10
 ; ptr1,ptr2
 
