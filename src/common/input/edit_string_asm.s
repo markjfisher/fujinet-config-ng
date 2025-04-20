@@ -482,7 +482,7 @@ handle_insert:
         sbc _es_params+edit_string_params::cursor_pos+1
         sta tmp2            ; Store high byte of difference
 
-        ; Now add 1 to the 16-bit result
+        ; Add 1 to the 16-bit result
         lda tmp1
         clc
         adc #1              ; Add 1 to length for null terminator
@@ -493,20 +493,11 @@ handle_insert:
         tya                 ; Low byte to A for memmove
         jsr _memmove
 
-        ; Insert space at cursor
-        lda src_ptr
-        sta ptr1
-        lda src_ptr+1
-        sta ptr1+1
-        ldy #$00
-        lda #' '
-        sta (ptr1),y
-
         ; Increment length (16-bit)
         inc _es_params+edit_string_params::current_length
-        bne done_insert
+        bne insert_space
         inc _es_params+edit_string_params::current_length+1
-        jmp done_insert
+        jmp insert_space
 
 use_max_length:
         ; Only first condition true: use max_length - cursor_pos - 1
@@ -530,7 +521,8 @@ use_max_length:
         tya                ; Low byte to A for memmove
         jsr _memmove
 
-        ; Insert space at cursor
+insert_space:
+        ; Common code to insert space at cursor position
         lda src_ptr
         sta ptr1
         lda src_ptr+1
@@ -539,7 +531,6 @@ use_max_length:
         lda #' '
         sta (ptr1),y
 
-done_insert:
         jmp display
 
 handle_kill:
