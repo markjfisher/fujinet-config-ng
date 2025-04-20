@@ -139,9 +139,6 @@ sds_pu_no_opt_devs:
                 .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, <sd_buffer, >sd_buffer, 2
                 .byte PopupItemType::finish
 
-
-.rodata
-
 ; option entry, first string 0 terminated "name", next strings are <len> chars exactly for entries
 sds_mode_name:  .byte " Mode:  ", 0
 sds_mode_r:     .byte " R/O "

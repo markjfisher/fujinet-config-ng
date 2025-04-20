@@ -8,14 +8,12 @@
 
         .include     "page_cache_asm.inc"
 
-.bss
-; params blocks
-_find_params:            .tag page_cache_find_params
-_insert_params:          .tag page_cache_insert_params
-_remove_group_params:    .tag page_cache_remove_group_params
-_remove_path_params:     .tag page_cache_remove_path_params
-_find_bank_params:       .tag page_cache_find_bank_params
-
-
 .segment "BANK"
-_cache:         .tag page_cache
+_cache:                 .tag page_cache
+
+; params blocks
+_find_params:           .tag page_cache_find_params
+_insert_params:         .tag page_cache_insert_params
+_remove_group_params:   .tag page_cache_remove_group_params
+_remove_path_params:    .tag page_cache_remove_path_params
+_find_bank_params:      .tag page_cache_find_bank_params

@@ -39,7 +39,6 @@ mx_ask_txt:
 
 mx_ask_pu_msg:  .byte "Lobby", 0
 
-.rodata
 mx_ask_lobby_info:
                 ; width, y-offset, has_selectable, up/down option (none), l/r option index, edit index (none)
                 .byte 18, 2, 1, $ff, 2, $ff

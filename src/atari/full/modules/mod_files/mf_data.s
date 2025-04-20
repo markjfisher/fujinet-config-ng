@@ -29,7 +29,6 @@ mf_copying:     .byte 0
 mf_fname_buf:   .res 256
 
 .bss
-
 ; the current directory position value while browsing of first entry on screen
 mf_dir_pos:     .res 2
 
@@ -40,17 +39,17 @@ mf_dir_or_file: .res DIR_PG_CNT
 
 mf_copy_from:   .res 2
 
-.rodata
-
 ; values for popups
-
 mf_ask_new_disk_std_sizes_val:         .res 1
 mf_ask_new_disk_cust_sector_size_val:  .res 1
+
+.rodata
 
 ; STANDARD SIZE
 mf_ask_new_disk_std_info:
                 ; width, y-offset (4 shows path and bar), has_selectable, up/down option (size), l/r option index, edit index (name field)
                 .byte 34, 4, 1, 3, $ff, 0
+
 
 mf_ask_new_disk_name_std:
                 ; num, len, #string buffer (val), #title location
@@ -106,8 +105,6 @@ mf_ask_new_disk_cust_sector_size:
 
 ; not used anywhere, but good to know how to use * to get a size
 mfs_size_cst    = * - mf_ask_new_disk_cst_info
-
-.rodata
 
 mf_ask_new_disk_pu_msg:
                 .byte "Create New Disk", 0

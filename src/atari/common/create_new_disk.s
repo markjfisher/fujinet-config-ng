@@ -123,11 +123,10 @@ do_custom:
 
 .endproc
 
-.bss
+.segment "BANK"
 cnd_args:
         .tag    CreateDiskArgs
 
-; this is too large to have as a constant. 256 bytes for a name, and it will rarely get used.
 cnd_newdisk:
         .tag    NewDisk
 
