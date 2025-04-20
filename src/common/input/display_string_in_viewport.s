@@ -11,13 +11,6 @@
         .include    "macros.inc"
         .include    "zp.inc"
 
-.segment "BSS"
-start_pos:       .res 2  ; 16-bit start position for viewport
-half_viewport:   .res 1  ; 8-bit half of viewport width
-char_index:      .res 2  ; 16-bit character index
-
-.segment "CODE2"
-
 ; void display_string_in_viewport()
 _display_string_in_viewport:
         ; Calculate half_viewport = viewport_width / 2
@@ -195,3 +188,8 @@ _display_string_in_viewport:
         bcc     @loop
 
         rts
+
+.bss
+start_pos:       .res 2  ; 16-bit start position for viewport
+half_viewport:   .res 1  ; 8-bit half of viewport width
+char_index:      .res 2  ; 16-bit character index

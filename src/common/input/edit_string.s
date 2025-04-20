@@ -22,20 +22,6 @@
         .include    "edit_string.inc"
         .include    "fn_data.inc"
 
-; allocate 256 byte buffer in BANK segment
-.segment "BANK"
-_edit_string_buff: .res 256
-
-.segment "BSS"
-_es_params: .tag edit_string_params
-
-; Local storage for values that need to persist across function calls
-orig_length:    .res 2  ; 16-bit original length
-char_input:     .res 1  ; Input character
-src_ptr:        .res 2  ; Source pointer for moves
-
-.segment "CODE2"
-
 ; Advance cursor if not at max-1, preserves A/X
 ; Returns to caller if can't advance, falls through if can
 advance_cursor_check:
@@ -577,3 +563,16 @@ handle_end:
 display:
         jsr     _display_string_in_viewport
         jmp     main_loop
+
+
+; allocate 256 byte buffer in BANK segment
+.segment "BANK"
+_edit_string_buff: .res 256
+
+.bss
+_es_params: .tag edit_string_params
+
+; Local storage for values that need to persist across function calls
+orig_length:    .res 2  ; 16-bit original length
+char_input:     .res 1  ; Input character
+src_ptr:        .res 2  ; Source pointer for moves
