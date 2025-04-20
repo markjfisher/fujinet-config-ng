@@ -1,6 +1,7 @@
         .export     _edit_string
         .export     _es_params
         .export     _edit_string_buff
+        .export     cmp_cursor_length
 
         .import     _gotoxy
         .import     _cputc
