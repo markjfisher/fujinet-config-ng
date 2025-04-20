@@ -36,7 +36,7 @@ str_ptr:        .res 2  ; Pointer for string operations
 dest_ptr:       .res 2  ; Destination pointer for moves
 src_ptr:        .res 2  ; Source pointer for moves
 
-.segment "CODE"
+.segment "CODE2"
 
 ; Advance cursor if not at max-1, preserves A/X
 ; Returns to caller if can't advance, falls through if can
@@ -391,54 +391,10 @@ handle_delete:
         cmp _es_params+edit_string_params::current_length
         lda _es_params+edit_string_params::cursor_pos+1
         sbc _es_params+edit_string_params::current_length+1
-        bcc :+
+        bcc common_move_left
         jmp display
 
-        ; Calculate source and destination pointers
-:       lda _es_params+edit_string_params::buffer
-        clc
-        adc _es_params+edit_string_params::cursor_pos
-        sta ptr1
-        lda _es_params+edit_string_params::buffer+1
-        adc _es_params+edit_string_params::cursor_pos+1
-        sta ptr1+1
-
-        pushax  ptr1        ; dst
-        jsr     incax1      ; add 1 to a/x, which are on ptr1
-        jsr     pushax      ; src = dst + 1
-
-        lda _es_params+edit_string_params::current_length
-        sec
-        sbc _es_params+edit_string_params::cursor_pos
-        tay
-        lda _es_params+edit_string_params::current_length+1
-        sbc _es_params+edit_string_params::cursor_pos+1
-        tax
-        tya
-        jsr _memmove
-
-        ; Decrement length (16-bit)
-        lda _es_params+edit_string_params::current_length
-        bne no_borrow1
-        dec _es_params+edit_string_params::current_length+1
-no_borrow1:
-        dec _es_params+edit_string_params::current_length
-        jmp display
-
-handle_backspace:
-        ; Check if at start (16-bit compare)
-        lda _es_params+edit_string_params::cursor_pos
-        ora _es_params+edit_string_params::cursor_pos+1
-        bne :+
-        jmp display
-
-        ; Move cursor left (16-bit)
-:       lda _es_params+edit_string_params::cursor_pos
-        bne no_borrow2
-        dec _es_params+edit_string_params::cursor_pos+1
-no_borrow2:
-        dec _es_params+edit_string_params::cursor_pos
-
+common_move_left:
         ; Calculate source and destination pointers
         lda _es_params+edit_string_params::buffer
         clc
@@ -470,23 +426,32 @@ no_borrow3:
         dec _es_params+edit_string_params::current_length
         jmp display
 
+handle_backspace:
+        ; Check if at start (16-bit compare)
+        lda _es_params+edit_string_params::cursor_pos
+        ora _es_params+edit_string_params::cursor_pos+1
+        bne :+
+        jmp display
+
+        ; Move cursor left (16-bit)
+:       lda _es_params+edit_string_params::cursor_pos
+        bne no_borrow2
+        dec _es_params+edit_string_params::cursor_pos+1
+no_borrow2:
+        dec _es_params+edit_string_params::cursor_pos
+
+        jmp common_move_left
+
 handle_insert:
-        ; Check if we can insert (16-bit compares)
+        ; Check first condition: cursor_pos < current_length
         lda _es_params+edit_string_params::cursor_pos
         cmp _es_params+edit_string_params::current_length
         lda _es_params+edit_string_params::cursor_pos+1
         sbc _es_params+edit_string_params::current_length+1
         bcc :+
-        jmp display
+        jmp display          ; If cursor_pos >= current_length, done
         
-:       lda _es_params+edit_string_params::current_length
-        cmp _es_params+edit_string_params::max_length
-        lda _es_params+edit_string_params::current_length+1
-        sbc _es_params+edit_string_params::max_length+1
-        bcc :+
-        jmp display
-
-        ; Calculate source and destination pointers
+        ; First condition true, setup common pointer
 :       lda _es_params+edit_string_params::buffer
         clc
         adc _es_params+edit_string_params::cursor_pos
@@ -495,39 +460,86 @@ handle_insert:
         adc _es_params+edit_string_params::cursor_pos+1
         sta ptr1+1
 
-        ; Calculate destination (src + 1)
         setax   ptr1
         axinto  src_ptr     ; save the src for after memmove
         jsr     incax1
         jsr     pushax      ; dst = src+1
         jsr     pushptr1    ; src
 
+        ; Check second condition: current_length < max_length
+        lda _es_params+edit_string_params::current_length
+        cmp _es_params+edit_string_params::max_length
+        lda _es_params+edit_string_params::current_length+1
+        sbc _es_params+edit_string_params::max_length+1
+        bcs use_max_length  ; If current_length >= max_length, use max_length case
+
+        ; Both conditions true: use current_length - cursor_pos + 1
         lda _es_params+edit_string_params::current_length
         sec
         sbc _es_params+edit_string_params::cursor_pos
-        tay
+        sta tmp1            ; Store low byte of difference
         lda _es_params+edit_string_params::current_length+1
         sbc _es_params+edit_string_params::cursor_pos+1
-        tax
-        tya
+        sta tmp2            ; Store high byte of difference
+
+        ; Now add 1 to the 16-bit result
+        lda tmp1
+        clc
+        adc #1              ; Add 1 to length for null terminator
+        tay                 ; Low byte to Y for memmove
+        lda tmp2
+        adc #0              ; Add carry to high byte
+        tax                 ; High byte to X for memmove
+        tya                 ; Low byte to A for memmove
         jsr _memmove
 
-        ; Load buffer pointer to zero page for indexed access
+        ; Insert space at cursor
         lda src_ptr
         sta ptr1
         lda src_ptr+1
         sta ptr1+1
-
-        ; Insert space at cursor
         ldy #$00
         lda #' '
         sta (ptr1),y
 
         ; Increment length (16-bit)
         inc _es_params+edit_string_params::current_length
-        bne no_carry6
+        bne done_insert
         inc _es_params+edit_string_params::current_length+1
-no_carry6:
+        jmp done_insert
+
+use_max_length:
+        ; Only first condition true: use max_length - cursor_pos - 1
+        ; First do max_length - cursor_pos
+        lda _es_params+edit_string_params::max_length
+        sec
+        sbc _es_params+edit_string_params::cursor_pos
+        sta tmp1            ; Store low byte result
+        lda _es_params+edit_string_params::max_length+1
+        sbc _es_params+edit_string_params::cursor_pos+1
+        sta tmp2            ; Store high byte result
+
+        ; Now subtract 1 from the 16-bit result
+        lda tmp1
+        sec
+        sbc #1
+        tay                 ; Low byte to Y for memmove
+        lda tmp2
+        sbc #0             ; Subtract carry from high byte
+        tax                ; High byte to X for memmove
+        tya                ; Low byte to A for memmove
+        jsr _memmove
+
+        ; Insert space at cursor
+        lda src_ptr
+        sta ptr1
+        lda src_ptr+1
+        sta ptr1+1
+        ldy #$00
+        lda #' '
+        sta (ptr1),y
+
+done_insert:
         jmp display
 
 handle_kill:
