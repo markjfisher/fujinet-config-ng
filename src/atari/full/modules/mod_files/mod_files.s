@@ -10,4 +10,5 @@
 
         ; this is "mod files - simple", more complex block reading not yet implemented
         jmp     mfs_main
+        ; rts
 .endproc

@@ -1,4 +1,4 @@
-        .export     mfs_init
+        .export     mfc_init
 
         .import     _fuji_close_directory
         .import     _mfs_get_y_offset
@@ -18,10 +18,11 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
+        .include    "fn_data.inc"
 
 .segment "CODE2"
 
-.proc mfs_init
+.proc mfc_init
         jsr     _fuji_close_directory
 
         mwa     #$00, mf_dir_pos
@@ -34,7 +35,7 @@
         dex
         mva     #'/', {fn_dir_path, x}
 
-        jsr     _mfs_get_y_offset
+        lda     #MF_YOFF
         sta     mfs_y_offset
 
         ; -----------------------------------------------------

@@ -4,7 +4,6 @@
         .import     _fc_strlcpy
         .import     _fc_strlen
         .import     _fc_strncpy
-        .import     _free
         .import     _scr_clr_highlight
         .import     fn_dir_path
         .import     fuji_buffer
@@ -100,7 +99,7 @@ too_long_error:
         ; ---------------------------------------------
 
         ; get the chosen dir into 255 byte temp buffer, and then check it will fit on the end of our current path, i.e. doesn't combined go over 254 (allowing for nul)
-        jsr     read_full_dir_name      ; AX holds allocated memory - must free it
+        jsr     read_full_dir_name      ; AX holds allocated memory
         axinto  ptr1
         jsr     _fc_strlen
         sta     tmp2                    ; length of new directory/file chosen
@@ -129,17 +128,12 @@ too_long_error:
         lda     tmp2                    ; we know it will fit and it's this length
         jsr     _fc_strlcpy
 
-        jsr     free_dir
         jmp     return0
 
         ; --------------------------------------------
         ; ERROR path + extra are too long, return 1
         ; --------------------------------------------
 too_big:
-        jsr     free_dir
         jmp     return1
 
-free_dir:
-        setax   ptr1
-        jmp     _free
 .endproc

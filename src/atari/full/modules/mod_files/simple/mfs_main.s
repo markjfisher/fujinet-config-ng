@@ -2,10 +2,10 @@
 
         .import     kb_current_line
         .import     mf_selected
-        .import     mfs_error_initialising
+        .import     mfc_error_initialising
         .import     mfs_error_opening_page
         .import     mfs_handle_input
-        .import     mfs_init
+        .import     mfc_init
         .import     mfs_kbh_running
         .import     mfs_new_page
         .import     mfs_show_page
@@ -19,10 +19,10 @@
 
 ; same as original implementation, reads dirs 1 by 1
 .proc mfs_main
-        jsr     mfs_init
-        bne     init_ok                       ; success status returned by mfs_init
+        jsr     mfc_init
+        bne     init_ok                       ; success status returned by mfc_init
 
-        jsr     mfs_error_initialising
+        jsr     mfc_error_initialising
         mva     #Mod::hosts, mod_current
         rts
 

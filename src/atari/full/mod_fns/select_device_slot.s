@@ -45,24 +45,13 @@
         ; we will put all the relevant selection details into memory starting at sds_pu_devs, and it
         ; is the job of the show_select to display this, calling back to kb handler here
 
-        ; get memory for 8 * devices list width strings - can't use fuji_buffer as that contains the file path we will use
-        lda     sds_pu_devs + POPUP_LEN_IDX
-        asl     a
-        asl     a
-        asl     a       ; * 8
-        ldx     #$00
-
-        jsr     _malloc
-        ; store it into both rather than caring which is actually being shown
-        axinto  sds_pu_devs + PopupItemTextList::text
-        axinto  sds_pu_no_opt_devs + PopupItemTextList::text
         jsr     copy_dev_strings
 
         ; show the selector
         ; no cb handler needed for popup
         mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
 
-        ; decide which version to show
+        ; decide which version to show - with or without options
         lda     tmp2
         beq     no_options
 
@@ -75,16 +64,7 @@ no_options:
 
 :       mwa     #devices_help, ss_args+ShowSelectArgs::help_cb
         mwa     #sds_msg, ss_args+ShowSelectArgs::message
-        jsr     show_select
-        sta     tmp1
-
-        ; free the strings in the device list display. they are for display only
-        setax   sds_pu_devs + PopupItemTextList::text
-        jsr     _free
-
-        ; return the value from the popup so caller can react to Enter/ESC
-        lda     tmp1
-        rts
+        jmp     show_select
 
 copy_dev_strings:
         ; copy 8x width bytes from every DeviceSlot+2 into memory we grabbed
@@ -140,12 +120,14 @@ sds_pu_device_val:      .res 1
 sds_pu_mode_val:        .res 1
 
 
-; SHOULD NOT be RODATA, the buffer isn't a fixed location, needs to be malloc'd
+.segment "BANK"
+; temp buffer for select device string displays, 21 * 8 needed (168), see the sds_pu_devs or sds_pu_no_opt_devs 3rd elements (both 21 string length)
+sd_buffer:              .res 168
 
-.data
+.rodata
 ; the width of textList should be 3+x_off less than the overall width. 2 for list number and space, 1 for end selection char
 sds_pu_info:    .byte 28, 2, 1, 0, 2, $ff           ; width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
-sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
+sds_pu_devs:    .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, <sd_buffer, >sd_buffer, 2
                 .byte PopupItemType::space
 sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mode_val, <sds_mode_name, >sds_mode_name, <sds_opt1_spc, >sds_opt1_spc
                 .byte PopupItemType::finish
@@ -154,7 +136,7 @@ sds_pu_mode:    .byte PopupItemType::option, 2, 5, <sds_pu_mode_val, >sds_pu_mod
 sds_pu_no_opt_info:
                 .byte 28, 7, 1, 0, $ff, $ff           ; PopupItemInfo. width, y_offset, is_selectable, up/down = testList, l/r = option, edit field
 sds_pu_no_opt_devs:
-                .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, $ff, $ff, 2
+                .byte PopupItemType::textList, 8, 21, <sds_pu_device_val, >sds_pu_device_val, <sd_buffer, >sd_buffer, 2
                 .byte PopupItemType::finish
 
 

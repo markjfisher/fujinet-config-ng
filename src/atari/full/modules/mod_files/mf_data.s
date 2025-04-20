@@ -14,6 +14,8 @@
         .export     mf_ask_new_disk_cst_info
         .export     mf_nd_std_h1
 
+        .export     mf_fname_buf
+
 
         .include    "fn_data.inc"
         .include    "macros.inc"
@@ -21,6 +23,10 @@
 
 .data
 mf_copying:     .byte 0
+
+.segment "BANK"
+; temporary buffer for working with filenames
+mf_fname_buf:   .res 256
 
 .bss
 
