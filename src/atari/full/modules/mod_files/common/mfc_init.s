@@ -20,8 +20,6 @@
         .include    "macros.inc"
         .include    "fn_data.inc"
 
-.segment "CODE2"
-
 .proc mfc_init
         jsr     _fuji_close_directory
 

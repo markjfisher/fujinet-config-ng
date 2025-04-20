@@ -30,8 +30,6 @@
         .include    "popup.inc"
         .include    "args.inc"
 
-.segment "CODE2"
-
 ; Handle Selection of the currently highlighted line
 ; tmp1,tmp2,tmp3
 ; ptr1,ptr2
@@ -99,7 +97,7 @@ too_long_error:
         ; ---------------------------------------------
 
         ; get the chosen dir into 255 byte temp buffer, and then check it will fit on the end of our current path, i.e. doesn't combined go over 254 (allowing for nul)
-        jsr     read_full_dir_name      ; AX holds allocated memory
+        jsr     read_full_dir_name      ; AX holds buffer location of dir name string
         axinto  ptr1
         jsr     _fc_strlen
         sta     tmp2                    ; length of new directory/file chosen

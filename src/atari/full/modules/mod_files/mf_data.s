@@ -14,8 +14,11 @@
         .export     mf_ask_new_disk_cst_info
         .export     mf_nd_std_h1
 
+        .export     mf_copy_buf
+        .export     mf_ellipsize
         .export     mf_fname_buf
-
+        .export     mf_ask_buff
+        .export     mf_sct_buff
 
         .include    "fn_data.inc"
         .include    "macros.inc"
@@ -25,8 +28,14 @@
 mf_copying:     .byte 0
 
 .segment "BANK"
-; temporary buffer for working with filenames
+; temporary buffers for working with filenames
 mf_fname_buf:   .res 256
+mf_copy_buf:    .res 256
+mf_ellipsize:   .res 32
+
+; for popup strings
+mf_ask_buff:    .res 64
+mf_sct_buff:    .res 6
 
 .bss
 ; the current directory position value while browsing of first entry on screen
@@ -53,7 +62,7 @@ mf_ask_new_disk_std_info:
 
 mf_ask_new_disk_name_std:
                 ; num, len, #string buffer (val), #title location
-                .byte PopupItemType::string, 1, 64, $ff, $ff, 20, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
+                .byte PopupItemType::string, 1, 64, <mf_ask_buff, >mf_ask_buff, 20, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
 
                 .byte PopupItemType::space
 
@@ -79,14 +88,14 @@ mf_ask_new_disk_cst_info:
 
 mf_ask_new_disk_name_cst:
                 ; num, len, val, #title_text, #string_loc, vpWidth
-                .byte PopupItemType::string, 1, 64, $ff, $ff, 20, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
+                .byte PopupItemType::string, 1, 64, <mf_ask_buff, >mf_ask_buff, 20, <mf_ask_new_disk_name_msg, >mf_ask_new_disk_name_msg
 
                 .byte PopupItemType::space
 
 mf_ask_new_disk_sectors_cst:
                 ; largest value is "65535" so 5 chars+nul = 6
                 ; num, len, val, #title_text, #string_loc
-                .byte PopupItemType::number, 1, 5, $ff, $ff, 5, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
+                .byte PopupItemType::number, 1, 5, <mf_sct_buff, >mf_sct_buff, 5, <mfs_nd_cust_sector_count_name_msg, >mfs_nd_cust_sector_count_name_msg
 
                 .byte PopupItemType::space
                 ; "Sector Size:"

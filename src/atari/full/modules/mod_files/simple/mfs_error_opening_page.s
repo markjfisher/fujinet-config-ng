@@ -3,15 +3,15 @@
         .import     _show_error
         .import     mod_current
         .import     pusha
+        .import     pushax
 
         .include    "macros.inc"
         .include    "modules.inc"
 
-.segment "CODE2"
-
 .proc mfs_error_opening_page
-        pusha   #26
-        pusha   #1
+        ; pusha   #$1a
+        ; pusha   #$01
+        pushax  #$1a01
         setax   #opendir_err_msg
         jsr     _show_error
 

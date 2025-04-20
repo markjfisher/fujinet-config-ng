@@ -9,7 +9,6 @@
         .import     _fc_strncpy
         .import     _fuji_get_device_slots
         .import     _free
-        .import     _malloc
         .import     _put_help
         .import     _scr_clr_highlight
         .import     show_select
@@ -27,8 +26,6 @@
         .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
         .include    "popup.inc"
-
-.segment "CODE2"
 
 ; tmp1,tmp2
 ; ptr1,ptr2,ptr3

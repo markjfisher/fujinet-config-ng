@@ -8,6 +8,7 @@
         .include    "fujinet-fuji.inc"
         .include    "fn_data.inc"
 
+.segment "CODE2"
 
 ; tmp1,tmp2,tmp3,tmp4
 ; ptr2,ptr4

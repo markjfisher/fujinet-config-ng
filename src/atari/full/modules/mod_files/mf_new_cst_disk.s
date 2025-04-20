@@ -1,15 +1,15 @@
         .export     mf_new_disk
         .export     mf_cst_disk
+        .export     nd_common
 
         .import     _clr_help
         .import     create_new_disk
         .import     cnd_args
+        .import     _bzero
         .import     _fc_atoi
         .import     _fc_strlcpy
         .import     _fc_strlen
-        .import     _free
         .import     _fuji_error
-        .import     _malloc
         .import     _put_help
         .import     _scr_clr_highlight
         .import     show_select
@@ -18,6 +18,8 @@
         .import     debug
         .import     fuji_buffer
         .import     load_widget_x
+        .import     mf_ask_buff
+        .import     mf_sct_buff
         .import     mf_ask_new_disk_cst_info
         .import     mf_ask_new_disk_cust_sector_size_val
         .import     mf_ask_new_disk_name_cst
@@ -103,13 +105,10 @@ mf_new_disk:
 
 show_custom:
         ; swap to the custom disk dialogue
-        ; still need to free the previous memory
-        jsr     end_ask
+        ; jsr     end_ask
         jmp     mf_cst_disk
 
 end_ask:
-        setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
-        jsr     _free
         jmp     return0
 
 ; ------------------------------------------------------------
@@ -204,7 +203,6 @@ nd_cst_kbh:
 
 mf_cst_disk:
         jsr     nd_common
-        jsr     alloc_sector_cnt
 
         ; show the select
         mwa     #nd_cst_kbh, ss_args+ShowSelectArgs::kb_cb
@@ -271,54 +269,24 @@ push_size:
         jsr     mf_nd_err_saving
 
 end_ask2:
-        setax   mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
-        jsr     _free
-        jmp     end_ask
+        jmp     return0
 
 show_std:
-        ; swap to the custom disk dialogue
-        ; still need to free the previous memory
-        jsr     end_ask2
+        ; swap to the standard disk dialogue
         jmp     mf_new_disk
 
 nd_common:
         jsr     _scr_clr_highlight
 
-        ; THIS IS A BIT LAZY - USING FACT THE RODATA IS NOT ACTUALLY RO
-        ; TODO: Copy the popup structure into RAM and use that instead of just adjusting the ::string value fields here.
-        ; WHEN I DID THIS IT WAS SUNDAY NIGHT 8PM AND I COULDN'T BE ARSED.
-
-        ; allocate memory for the edit string, and put the location in the name value
-        ; we need ~26 bytes (read from appropriate value in popup structure)
+        pushax  #mf_ask_buff
         lda     mf_ask_new_disk_name_std + POPUP_LEN_IDX
-        sta     tmp8            ; save size
         ldx     #$00
-        jsr     _malloc
-        axinto  tmp9
+        jsr     _bzero
 
-        ; save location in the popups - being lazy and saving it in both, cheaper then deciding which to save it in
-        sta     mf_ask_new_disk_name_std + POPUP_VAL_IDX
-        stx     mf_ask_new_disk_name_std + POPUP_VAL_IDX+1
-        sta     mf_ask_new_disk_name_cst + POPUP_VAL_IDX
-        stx     mf_ask_new_disk_name_cst + POPUP_VAL_IDX+1
-
-        ; zero the memory
-        jmp     zero_mem_tmp9_tmp8
-        ; implicit rts
-
-alloc_sector_cnt:
+        pushax  #mf_sct_buff
         lda     mf_ask_new_disk_sectors_cst + POPUP_LEN_IDX
-        sta     tmp8            ; save size
         ldx     #$00
-        jsr     _malloc
-        axinto  tmp9
-        sta     mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX
-        stx     mf_ask_new_disk_sectors_cst + POPUP_VAL_IDX+1
-
-        ; zero the memory
-        jmp     zero_mem_tmp9_tmp8
-        ; implicit rts
-
+        jmp     _bzero
 
 nd_help:
         jsr     _clr_help

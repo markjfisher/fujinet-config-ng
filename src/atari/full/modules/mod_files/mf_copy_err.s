@@ -8,8 +8,6 @@
         .include    "macros.inc"
         .include    "modules.inc"
 
-.segment "CODE2"
-
 .proc mf_copy_err
         jsr     _scr_clr_highlight
         pusha   #24

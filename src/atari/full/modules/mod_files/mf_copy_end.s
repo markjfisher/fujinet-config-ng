@@ -4,10 +4,10 @@
         .import     _fc_strlcpy
         .import     _fc_strlen
         .import     _fuji_copy_file
-        .import     _free
         .import     _put_s
         .import     _scr_clr_highlight
         .import     fn_dir_path
+        .import     mf_copy_buf
         .import     mf_copy_info
         .import     mf_copying
         .import     mf_error_too_long
@@ -27,15 +27,13 @@
         ; whatever directory we're in is the target.
         ; the copy_file function allows us to JUST specify the target dir in the copy spec. Just need to check src path+file + target path + "|" all come under 256 bytes
 
-        ; jsr     debug
-        ; --------------------------------------------------
-        ; PULL copySpec MEMORY LOCATION
-        jsr     popptr1         ; pull the memory location of the copy string.
+        setax   #mf_copy_buf
+        axinto  ptr1            ; save buffer location to ptr1
         jsr     _fc_strlen      ; how long is it?
         sta     tmp1            ; save length
 
         ; --------------------------------------------------
-        ; PULL SELECTED HOST
+        ; PULL SELECTED HOST - this was pushed in mf_copy_start
         popa    tmp3            ; pull the src host slot
 
         ; get the current path's length
@@ -76,10 +74,6 @@
         pusha   mh_host_selected   ; current host (target)
         setax   ptr1            ; spec
         jsr     _fuji_copy_file
-
-        ; now free up the location we allocated
-        setax   ptr1
-        jsr     _free
 
         ; and we are no longer copying, this will turn highlight to normal colour
         mva     #$00, mf_copying

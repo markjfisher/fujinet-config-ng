@@ -16,8 +16,6 @@
         .include    "modules.inc"
         .include    "fn_data.inc"
 
-.segment "CODE2"
-
 .proc mfs_handle_input
         lda     mfs_kbh_running
         beq     :+

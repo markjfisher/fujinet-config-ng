@@ -6,8 +6,6 @@
         .import     _fuji_error
         .import     _fuji_open_directory
         .import     _fuji_set_directory_position
-        .import     _free
-        .import     _malloc
         .import     _put_help
         .import     _put_s
         .import     _put_status
@@ -20,6 +18,7 @@
         .import     mf_copying
         .import     mf_copying_msg
         .import     mf_dir_pos
+        .import     mf_ellipsize
         .import     mf_filter
         .import     mf_h1
         .import     mf_host
@@ -95,19 +94,13 @@
 :
         setax   #32             ; max length, including the 0 terminator
         jsr     pusha           ; save as parameter for ellipsize
-        jsr     _malloc
-        axinto  ptr1            ; save for free
-        jsr     pushax          ; dst
+        pushax  #mf_ellipsize   ; dst
         setax   #fn_dir_path    ; src
 
         jsr     ellipsize
 
         ; print the ellipsized string
-        put_s   #5, #2, ptr1
-
-        ; free the memory we took
-        setax   ptr1
-        jsr     _free
+        put_s   #5, #2, #mf_ellipsize
 
         rts
 .endproc

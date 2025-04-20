@@ -8,8 +8,6 @@
 
         .include    "macros.inc"
 
-.segment "CODE2"
-
 .proc _mf_init_screen
         ldx     #$01
         stx     _pmg_space_left

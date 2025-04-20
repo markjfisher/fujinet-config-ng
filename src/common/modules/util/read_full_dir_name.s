@@ -2,8 +2,6 @@
 
         .import     get_to_dir_pos
         .import     _fuji_read_directory
-        ; .import     _malloc
-        .import     pusha
         .import     pushax
 
         .import     mf_fname_buf
@@ -20,7 +18,9 @@
 
         ; get filename to 255 chars
         ; do a 255 byte read of current dir entry (file)
-        ; push 2 bytes onto stack, $ff, then $00 for maxlen, and aux
+        ; push 2 bytes onto stack, $ff, then $00 for maxlen, and aux. bit of a hack to save doing 2 jsr calls
+        ; bool fuji_read_directory(unsigned char maxlen, unsigned char aux2, char *buffer)
+        ; FF -> maxlen, 00 -> aux2
         pushax  #$ff00
         setax   #mf_fname_buf
         jsr     _fuji_read_directory

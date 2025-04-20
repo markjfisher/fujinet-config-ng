@@ -1,9 +1,9 @@
         .export     mf_copy_start
 
         .import     _fc_strncpy
-        .import     _malloc
         .import     combine_path_with_selection
         .import     fuji_buffer
+        .import     mf_copy_buf
         .import     mf_copying
         .import     mf_error_too_long
         .import     mh_host_selected
@@ -15,8 +15,6 @@
         .include    "modules.inc"
         .include    "zp.inc"
 
-.segment "CODE2"
-
 .proc mf_copy_start
         ; jsr     debug
         ; is the path too long? interesting dilemma. the copy spec eventually sent to FN has to be under 256 bytes. we'll check that at the end
@@ -24,19 +22,10 @@
         jsr     combine_path_with_selection
         bne     @too_long_error
 
-        ; --------------------------------------------------
-        ; PUSH SELECTED HOST
-        pusha   mh_host_selected
+        pusha   mh_host_selected    ; Saved so we can navigate to different host, and pulled back in mf_copy_end
 
-        setax   #$100               ; do a full 256 bytes for the eventual copyspec
-        jsr     _malloc             ; allocate memory for that length
-
-        ; --------------------------------------------------
-        ; PUSH MEMORY FOR copySpec STRING
-        jsr     pushax              ; save the memory location of the string we're copying int stack, this will eventually be read and freed by the copy_end
-
-        jsr     pushax              ; dst: store location again on stack for the strncpy
-        pushax  #fuji_buffer       ; src: path/file
+        pushax  #mf_copy_buf        ; dst
+        pushax  #fuji_buffer        ; src: path/file
         lda     #$00                ; this is a 256 byte copy (0-ff) filling up to the end with 0's
         jsr     _fc_strncpy         ; copy into memory allocated
 

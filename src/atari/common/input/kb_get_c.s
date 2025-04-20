@@ -26,6 +26,7 @@
 
 no_key:
         tax             ; this is now called from C so ensure X is set appropriately
+        cmp     #$00
         rts
 .endproc
 
@@ -51,6 +52,7 @@ out:
         mva     #12, ICAX1Z     ; ensure calling KEYBDV directly will work
         jsr     do_kb
         ldx     #$00
+        cmp     #$00    ; set bit flags
         rts
 
 do_kb:  lda     KEYBDV+5

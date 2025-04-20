@@ -7,8 +7,6 @@
 
         .include    "macros.inc"
 
-.segment "CODE2"
-
 .proc mf_error_too_long
         jsr     _scr_clr_highlight
         pusha   #16

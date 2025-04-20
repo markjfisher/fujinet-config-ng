@@ -193,14 +193,14 @@ Current layout after initialisation has completed:
 $1000 - $1400 Font data
 $1400 - $1800 Screen memory (17C0 to 1800 is free)
 $1800 - $4000 CORE1 - first code area under BANK, used by CODE segment
-$4000 - $8000 BANK - standard ram is buffer data, cache index and other temporary structures. only ~$1000 used
+$4000 - $8000 BANK - standard ram is buffer data, cache index and other temporary structures. only ~$1400 used
                    - banked RAM is used for storing pagegroups from directory browsing
-$8000 - $C000 CORE2 - 2nd memory area above BANK, used by CODE2, DATA, RODATA, BSS. Reaches about $A300 at time of writing.
+$8000 - $C000 CORE2 - 2nd memory area above BANK, used by CODE2, DATA, RODATA, BSS. Reaches about $9F00 at time of writing.
 ```
 
 All new code should be tagged with `.segment "CODE2"` to use CORE2, as CORE1 is full.
 
-All temporary data structures that don't need clearing at the start can be tagged with `.segment "BANK"`, and will not be saved to disk. There is about $2F00 space there
+All temporary data structures that don't need clearing at the start can be tagged with `.segment "BANK"`, and will not be saved to disk. There is about $2C00 space there
 which could be used for code too as long as it isn't required while using paging routines, which swap the BANK out to read/write from buffers.
 
-Thus at time of writing, there is about $4C00 RAM free (19.5kb).
+Thus at time of writing, there is about $4D00 RAM free (20kb).

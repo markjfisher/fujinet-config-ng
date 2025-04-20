@@ -6,8 +6,6 @@
         .include    "zp.inc"
 
 
-.segment "CODE2"
-
 ; Bit masks for STICK0
 JOY_UP_BIT    = $01
 JOY_DOWN_BIT  = $02
