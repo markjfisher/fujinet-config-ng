@@ -23,24 +23,24 @@
 ; ptr1,ptr4
 .proc _edit_hosts_entry
         jsr     get_to_current_hostslot
-        mwa     ptr1, {_es_params + EditString::initial_str}
+        mwa     ptr1, {_es_params + edit_string_params::initial_str}
         
         lda     #.sizeof(HostSlot)
-        sta     _es_params + EditString::max_length
-        sta     _es_params + EditString::viewport_width
+        sta     _es_params + edit_string_params::max_length
+        sta     _es_params + edit_string_params::viewport_width
 
         lda     #$00
-        sta     _es_params + EditString::max_length + 1
-        sta     _es_params + EditString::is_password
-        sta     _es_params + EditString::is_number
+        sta     _es_params + edit_string_params::max_length + 1
+        sta     _es_params + edit_string_params::is_password
+        sta     _es_params + edit_string_params::is_number
 
         lda     #SL_EDIT_X + 1
-        sta     _es_params + EditString::x_loc
+        sta     _es_params + edit_string_params::x_loc
 
         lda     mh_host_selected
         clc
         adc     #SL_Y
-        sta     _es_params + EditString::y_loc
+        sta     _es_params + edit_string_params::y_loc
 
         jsr     _edit_string
         pha                             ; save the return value for now until we've decided if we need to print empty string

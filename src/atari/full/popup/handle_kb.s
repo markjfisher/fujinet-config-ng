@@ -353,15 +353,15 @@ do_jmp:
 .proc do_edit
         ; string to edit
         lda     ss_pu_entry + POPUP_VAL_IDX
-        sta     _es_params + EditString::initial_str
+        sta     _es_params + edit_string_params::initial_str
         lda     ss_pu_entry + POPUP_VAL_IDX+1
-        sta     _es_params + EditString::initial_str + 1
+        sta     _es_params + edit_string_params::initial_str + 1
 
         ; max length
         lda     ss_pu_entry + POPUP_LEN_IDX
-        sta     _es_params + EditString::max_length
+        sta     _es_params + edit_string_params::max_length
         lda     #$00
-        sta     _es_params + EditString::max_length + 1
+        sta     _es_params + edit_string_params::max_length + 1
 
         ; x
         lda     #SCR_WIDTH-2
@@ -375,18 +375,18 @@ do_jmp:
         clc
         adc     #$03            ; plus 2 for border and left highlight arrow
         adc     ptr1            ; add the offset for the popup width
-        sta     _es_params + EditString::x_loc
+        sta     _es_params + edit_string_params::x_loc
 
         ; y
         lda     ss_y_offset     ; add extra for header
         clc
         adc     #$03
         adc     ss_widget_idx
-        sta     _es_params + EditString::y_loc
+        sta     _es_params + edit_string_params::y_loc
 
         ; viewport width
         lda     ss_pu_entry + POPUP_VPW_IDX
-        sta     _es_params + EditString::viewport_width
+        sta     _es_params + edit_string_params::viewport_width
 
         ; if this is a "password" type, pass '1' (true)
         lda     ss_pu_entry     ; first byte is the type
@@ -396,7 +396,7 @@ do_jmp:
         bne     :+
 is_string:
         lda     #$00
-:       sta     _es_params + EditString::is_password
+:       sta     _es_params + edit_string_params::is_password
 
         ; if this is a number type, pass 1 (true)
         lda     ss_pu_entry
@@ -407,7 +407,7 @@ is_string:
 not_number:
         lda     #$00
 
-:       sta     _es_params + EditString::is_number
+:       sta     _es_params + edit_string_params::is_number
 
         ; everything complete, call edit_string
         jsr     _edit_string

@@ -19,7 +19,7 @@
 
         .include    "macros.inc"
         .include    "zp.inc"
-        .include    "edit_string_asm.inc"
+        .include    "edit_string.inc"
         .include    "fn_data.inc"
 
 ; allocate 256 byte buffer in BANK segment

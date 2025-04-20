@@ -205,15 +205,15 @@ not_parent:
         cmp     #FNK_FILTER
         bne     not_filter
 
-        mwa     #fn_dir_filter, {_es_params + EditString::initial_str}
-        mva     #$06, {_es_params + EditString::x_loc}
-        mva     #$01, {_es_params + EditString::y_loc}
-        mva     #$1f, {_es_params + EditString::max_length}   ; 31 bytes for length and viewport to fit nicely on screen
-        sta     _es_params + EditString::viewport_width
+        mwa     #fn_dir_filter, {_es_params + edit_string_params::initial_str}
+        mva     #$06, {_es_params + edit_string_params::x_loc}
+        mva     #$01, {_es_params + edit_string_params::y_loc}
+        mva     #$1f, {_es_params + edit_string_params::max_length}   ; 31 bytes for length and viewport to fit nicely on screen
+        sta     _es_params + edit_string_params::viewport_width
 
-        mva     #$00, {_es_params + EditString::is_password}
-        sta     _es_params + EditString::is_number
-        sta     _es_params + EditString::max_length + 1
+        mva     #$00, {_es_params + edit_string_params::is_password}
+        sta     _es_params + edit_string_params::is_number
+        sta     _es_params + edit_string_params::max_length + 1
 
         jsr     _edit_string
         beq     no_edit

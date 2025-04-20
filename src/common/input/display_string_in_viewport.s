@@ -7,7 +7,7 @@
         .import     _es_params
         .import     cmp_cursor_length
 
-        .include    "edit_string_asm.inc"
+        .include    "edit_string.inc"
         .include    "macros.inc"
         .include    "zp.inc"
 
