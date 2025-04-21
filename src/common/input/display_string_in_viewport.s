@@ -1,4 +1,7 @@
         .export     _display_string_in_viewport
+        .export     start_pos
+        .export     char_index
+        .export     half_viewport
 
         .import     _gotoxy
         .import     _cputc

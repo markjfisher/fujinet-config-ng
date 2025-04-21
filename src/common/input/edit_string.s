@@ -22,40 +22,42 @@
         .include    "edit_string.inc"
         .include    "fn_data.inc"
 
+.segment "CODE2"
+
 ; Advance cursor if not at max-1, preserves A/X
 ; Returns to caller if can't advance, falls through if can
 advance_cursor_check:
         ; Calculate max_length-1 first
-        lda _es_params+edit_string_params::max_length
+        lda     _es_params+edit_string_params::max_length
         sec                     ; Set carry for subtraction
-        sbc #1                  ; Subtract 1
-        sta tmp1                ; Store low byte
-        lda _es_params+edit_string_params::max_length+1
-        sbc #0                  ; Subtract carry from high byte
-        sta tmp2                ; Store high byte
+        sbc     #1                  ; Subtract 1
+        sta     tmp1                ; Store low byte
+        lda     _es_params+edit_string_params::max_length+1
+        sbc     #0                  ; Subtract carry from high byte
+        sta     tmp2                ; Store high byte
 
         ; Compare cursor_pos with (max_length-1)
-        lda _es_params+edit_string_params::cursor_pos
-        cmp tmp1                ; Compare low bytes
-        lda _es_params+edit_string_params::cursor_pos+1
-        sbc tmp2                ; Compare high bytes with carry
-        bcs @done              ; If cursor_pos >= (max_length-1), don't advance
+        lda     _es_params+edit_string_params::cursor_pos
+        cmp     tmp1                ; Compare low bytes
+        lda     _es_params+edit_string_params::cursor_pos+1
+        sbc     tmp2                ; Compare high bytes with carry
+        bcs     @done              ; If cursor_pos >= (max_length-1), don't advance
 
         ; Safe to increment cursor
-        inc _es_params+edit_string_params::cursor_pos
-        bne @done
-        inc _es_params+edit_string_params::cursor_pos+1
+        inc     _es_params+edit_string_params::cursor_pos
+        bne     @done
+        inc     _es_params+edit_string_params::cursor_pos+1
 
 @done:  
-        jmp display            ; Always go to display
+        jmp     display            ; Always go to display
 
 
 ; Helper function to show string at current position
 ; Input: A/X = length to show (16-bit)
 show_string:
         ; Save length parameter to BSS
-        sta tmp2
-        stx tmp3
+        sta     tmp2
+        stx     tmp3
 
         ; Set cursor position
         pusha   _es_params+edit_string_params::x_loc
@@ -64,41 +66,41 @@ show_string:
         jsr     _gotoxy
 
         ; Initialize counter = tmp1, not trashed by cputc
-        lda #0
-        sta tmp1
+        lda     #0
+        sta     tmp1
 
         ; Load string pointer to zero page for indexed access
         ; Note: ptr1 is not affected by cputc, hence safe to do it once
-        lda _es_params+edit_string_params::initial_str
-        sta ptr1
-        lda _es_params+edit_string_params::initial_str+1
-        sta ptr1+1
+        lda     _es_params+edit_string_params::initial_str
+        sta     ptr1
+        lda     _es_params+edit_string_params::initial_str+1
+        sta     ptr1+1
 
 @loop:
-        lda tmp1
-        cmp _es_params+edit_string_params::viewport_width  ; 1 byte only
-        bcs @done        ; if i >= viewport_width, done
+        lda     tmp1
+        cmp     _es_params+edit_string_params::viewport_width  ; 1 byte only
+        bcs     @done        ; if i >= viewport_width, done
 
         ; Compare counter with length (16-bit)
-        ; lda tmp1   ; already in A
-        cmp tmp2  ; Compare low bytes
-        lda #0          ; High byte of counter is always 0
-        sbc tmp3
-        bcs @print_space ; if counter >= length, print space
+        ; lda     tmp1   ; already in A
+        cmp     tmp2  ; Compare low bytes
+        lda     #0          ; High byte of counter is always 0
+        sbc     tmp3
+        bcs     @print_space ; if counter >= length, print space
 
-        ldy tmp1
-        lda (ptr1),y    ; Load character
-        jsr _cputc
+        ldy     tmp1
+        lda     (ptr1),y    ; Load character
+        jsr     _cputc
         clc
-        bcc @next
+        bcc     @next
 
 @print_space:
-        lda #' '
-        jsr _cputc
+        lda     #' '
+        jsr     _cputc
 
 @next:
-        inc tmp1
-        bne @loop
+        inc     tmp1
+        bne     @loop
 
 @done:
         rts
@@ -136,31 +138,31 @@ cmp_length_max:
 
 ; Decrement cursor_pos (16-bit)
 dec_cursor:
-        lda _es_params+edit_string_params::cursor_pos
-        bne @no_borrow
-        dec _es_params+edit_string_params::cursor_pos+1
+        lda     _es_params+edit_string_params::cursor_pos
+        bne     @no_borrow
+        dec     _es_params+edit_string_params::cursor_pos+1
 @no_borrow:
-        dec _es_params+edit_string_params::cursor_pos
+        dec     _es_params+edit_string_params::cursor_pos
         rts
 
 ; Decrement current_length (16-bit)
 dec_length:
-        lda _es_params+edit_string_params::current_length
-        bne @no_borrow
-        dec _es_params+edit_string_params::current_length+1
+        lda     _es_params+edit_string_params::current_length
+        bne     @no_borrow
+        dec     _es_params+edit_string_params::current_length+1
 @no_borrow:
-        dec _es_params+edit_string_params::current_length
+        dec     _es_params+edit_string_params::current_length
         rts
 
 ; Calculate buffer + cursor_pos into ptr1
 calc_buffer_pos:
-        lda _es_params+edit_string_params::buffer
+        lda     _es_params+edit_string_params::buffer
         clc
-        adc _es_params+edit_string_params::cursor_pos
-        sta ptr1
-        lda _es_params+edit_string_params::buffer+1
-        adc _es_params+edit_string_params::cursor_pos+1
-        sta ptr1+1
+        adc     _es_params+edit_string_params::cursor_pos
+        sta     ptr1
+        lda     _es_params+edit_string_params::buffer+1
+        adc     _es_params+edit_string_params::cursor_pos+1
+        sta     ptr1+1
         rts
 
 ; Increment current_length (16-bit)
@@ -277,7 +279,7 @@ check_ascii:
         bcc     main_loop    ; If less than '0', ignore
         cmp     #'9'+1
         bcs     main_loop    ; If greater than '9', ignore
-        ; jmp handle_char  ; Otherwise handle valid number
+        ; Otherwise handle valid number
 
 handle_char:
         ; Load buffer pointer to zero page for indexed access
@@ -308,7 +310,7 @@ handle_char:
         sta     (ptr1),y
 
 advance_cursor:
-        jmp advance_cursor_check    ; this then jumps to "display"
+        jmp     advance_cursor_check    ; this then jumps to "display"
 
 check_replace:
         ; TODO: check the optimised code which skipped doing
@@ -318,7 +320,7 @@ check_replace:
         lda     char_input
         sta     (ptr1),y
         
-        jmp advance_cursor_check    ; this then jumps to "display"
+        jmp     advance_cursor_check    ; this then jumps to "display"
 
 handle_enter:
         ; Copy buffer back to initial string
@@ -408,7 +410,7 @@ can_move:
 no_carry5:
 
 check_done:
-        jmp display
+        jmp     display
 
 handle_delete:
         ; Check if at end (16-bit compare)
@@ -442,8 +444,8 @@ handle_backspace:
         bne     :+
         jmp     display
 
-:       jsr dec_cursor
-        jmp common_move_left
+:       jsr     dec_cursor
+        jmp     common_move_left
 
 handle_insert:
         ; Check first condition: cursor_pos < current_length
@@ -570,7 +572,7 @@ display:
 _edit_string_buff: .res 256
 
 .bss
-_es_params: .tag edit_string_params
+_es_params:     .tag edit_string_params
 
 ; Local storage for values that need to persist across function calls
 orig_length:    .res 2  ; 16-bit original length

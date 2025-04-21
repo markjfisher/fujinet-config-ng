@@ -1,6 +1,7 @@
         .export     handle_kb
         .export     pu_null_cb
         .export     do_edit
+        .export     start_pu_kbh
 
         .import     ss_args
         .import     _edit_string
@@ -37,7 +38,7 @@
 
 ; tmp5,tmp6,tmp7,tmp8
 ; ptr1,ptr3,ptr4
-.proc handle_kb
+handle_kb:
         ; get current popup item into our buffer so we can read values
         jsr     load_widget_x
 
@@ -90,7 +91,7 @@ start_pu_kbh:
 ; --------------------------------------------------------------------
 ; TAB - switch widget
 ; --------------------------------------------------------------------
-:       cmp     #FNK_TAB
+        cmp     #FNK_TAB
         bne     not_tab
 
         ; do we have any selectables? e.g. info popups have non, so don't want to get stuck in loop here
@@ -261,8 +262,6 @@ not_edit:
 ; end of keyboard switch, reloop until ESC or Enter is hit
 ; --------------------------------------------------------------------
         jmp     start_kb_get
-
-.endproc
 
 .proc pu_null_cb
         rts
