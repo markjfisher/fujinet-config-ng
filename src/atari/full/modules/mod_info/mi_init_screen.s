@@ -30,6 +30,7 @@
         .import     _mx_v_version
         .import     pusha
         .import     temp_num
+        .import     screen_separators
 
         .include    "cng_prefs.inc"
         .include    "fn_data.inc"
@@ -42,7 +43,9 @@ _mi_init_screen:
         jsr     _scr_clr_highlight
         jsr     _clr_help
         jsr     _clr_status
-        lda     #6
+        lda     #$05
+        sta     screen_separators
+        ldy     #$01
         jsr     _clr_scr_with_separator
 
         jsr     mi_set_pmg_widths

@@ -29,6 +29,7 @@
         .import     pusha
         .import     pushax
         .import     return1
+        .import     screen_separators
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -38,7 +39,9 @@
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 ; ptr1
 .proc mfs_new_page
-        lda     #$04                    ; print a separator on line 4
+        lda     #$03                    ; print a separator on line 4
+        sta     screen_separators
+        ldy     #$01
         jsr     _clr_scr_with_separator
 
         jsr     _clr_help

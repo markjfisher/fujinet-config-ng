@@ -15,6 +15,7 @@
         .import     mw_s2
         .import     mw_setting_up
         .import     pusha
+        .import     screen_separators
 
         .include    "macros.inc"
         .include    "zp.inc"
@@ -23,7 +24,9 @@
         jsr     _scr_clr_highlight
         jsr     _clr_help
         jsr     _clr_status
-        lda     #9                     ; print a separator at this line
+        lda     #$08                     ; print a separator at line 9
+        sta     screen_separators
+        ldy     #$01
         jsr     _clr_scr_with_separator
         
         put_status #0, #mw_s1
