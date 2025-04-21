@@ -293,4 +293,11 @@ mg_l1:
                 .byte "OPTION"
                 NORMAL_CHARMAP
                 .byte $02
-                .byte "Mount Disks and Boot", 0
+                .byte "Mount & Boot "
+                .byte $01
+                INVERT_ATASCII
+                .byte "L"
+                NORMAL_CHARMAP
+                .byte $02
+                .byte "Lobby", 0
+

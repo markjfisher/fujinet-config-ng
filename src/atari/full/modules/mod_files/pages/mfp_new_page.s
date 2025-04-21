@@ -1,4 +1,4 @@
-        .export     mfs_new_page
+        .export     mfp_new_page
 
         .import     _clr_help
         .import     _clr_scr_with_separator
@@ -29,10 +29,12 @@
 
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 ; ptr1
-.proc mfs_new_page
-        lda     #$03                    ; print a separator on line 4
+.proc mfp_new_page
+        lda     #3                      ; print a separator on line 4
         sta     screen_separators
-        ldy     #$01
+        lda     #20                     ; allows 16 lines in file list, and 1 in an extra line for Date/Size information for current file
+        sta     screen_separators+1
+        ldy     #$02
         jsr     _clr_scr_with_separator
 
         jsr     _clr_help

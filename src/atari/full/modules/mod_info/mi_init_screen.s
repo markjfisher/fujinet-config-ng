@@ -60,7 +60,7 @@ _mi_init_screen:
         put_s   #18, #2, _mx_v_version
         put_s   #2,  #3, #mx_k_bank_cnt
 
-        put_s      #5, #21, #mg_l1
+        put_s      #3, #21, #mg_l1
 
         ; convert bank count to screen value
         lda     _bank_count

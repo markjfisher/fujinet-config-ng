@@ -18,7 +18,7 @@
         put_status #0, #md_s1
         put_status #1, #md_s2
         put_help   #0, #md_h1
-        put_s      #5, #21, #mg_l1
+        put_s      #3, #21, #mg_l1
 
         mva        #$06, _pmg_space_left
         mva        #$01, _pmg_space_right

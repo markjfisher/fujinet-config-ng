@@ -1,6 +1,5 @@
         .export     mfs_entries_cnt
         .export     mfs_entry_index
-        .export     mfs_is_eod
         .export     mfs_kbh_running
         .export     mfs_y_offset
 
@@ -16,5 +15,4 @@ mfs_entries_cnt: .res 1
 mfs_y_offset:    .res 1
 ; flag to say if we are already in a global kbh or not, so we don't recurse into it when entering a sub-dir
 mfs_kbh_running: .res 1
-; flag to indicate if we are on EOD
-mfs_is_eod:      .res 1
+

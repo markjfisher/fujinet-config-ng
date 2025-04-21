@@ -10,9 +10,9 @@
         .include    "fn_data.inc"
 
 ; expects:
-;   tmp9 = pointer to string
-;   tmp8 = x
-;   tmp7 = y
+;   tmp9  = pointer to string
+;   x reg = x
+;   y reg = y
 ; Use the macro put_s to get setup for variables.
 ;
 ; print string at the screen location x, y accounting for boundaries

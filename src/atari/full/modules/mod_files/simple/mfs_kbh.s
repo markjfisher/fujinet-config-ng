@@ -18,7 +18,7 @@
         .import     mf_copying
         .import     mf_dir_or_file
         .import     mfs_entries_cnt
-        .import     mfs_is_eod
+        .import     mf_is_eod
         .import     mfs_kbh_select_current
         .import     mod_current
 
@@ -45,7 +45,7 @@
 
 do_right:
         ; allow right if we're not at EOD. is_eod = 1 if we are on last page
-        lda     mfs_is_eod
+        lda     mf_is_eod
         bne     exit_reloop
 
         mva     #$00, mf_selected
@@ -128,7 +128,7 @@ do_down:
         bcc     :+              ; not on last entry for page
 
         ; it's last position, but is it eod?
-        lda     mfs_is_eod
+        lda     mf_is_eod
         cmp     #$01
         beq     exit_reloop     ; must be on a EOD page, so ignore this keypress
 

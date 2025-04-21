@@ -20,6 +20,8 @@
         .export     mf_ask_buff
         .export     mf_sct_buff
 
+        .export     mf_is_eod
+
         .include    "fn_data.inc"
         .include    "macros.inc"
         .include    "popup.inc"
@@ -51,6 +53,11 @@ mf_copy_from:   .res 2
 ; values for popups
 mf_ask_new_disk_std_sizes_val:         .res 1
 mf_ask_new_disk_cust_sector_size_val:  .res 1
+
+
+; flag to indicate if we are on EOD
+mf_is_eod:      .res 1
+
 
 .rodata
 

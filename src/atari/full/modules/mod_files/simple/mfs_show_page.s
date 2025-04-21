@@ -14,7 +14,7 @@
         .import     mf_prev
         .import     mfs_entries_cnt
         .import     mfs_entry_index
-        .import     mfs_is_eod
+        .import     mf_is_eod
         .import     mfs_y_offset
         .import     pusha
         .import     sline2
@@ -38,7 +38,7 @@ l_entries:
         bne     :+              ; is it a dir?
 
         ; we are at EOD, so mark it, and skip over any printing
-        mva     #$01, mfs_is_eod
+        mva     #$01, mf_is_eod
         bne     finish_list
 
 :       jsr     print_entry
@@ -48,7 +48,8 @@ l_entries:
         bcc     l_entries
 
 finish_list:
-        ; if we have a full page, check if we have any more to come, and set mfs_is_eod. this stops us showing empty pages if there were exactly number of dirs to fill page
+        ; if we have a full page, check if we have any more to come, and set mf_is_eod.
+        ; this stops us showing empty pages if there were exactly number of dirs to fill page
         ; Z is set if we have a full page
         bne     :+
         jsr     check_for_next_page
@@ -57,13 +58,13 @@ finish_list:
 
         ; show the status text arrows if they are relevant
         ; if mf_dir_pos > 0, we can show "prev"
-        ; if mfs_is_eod is false we can show "next", this was set if the next page would be empty too
+        ; if mf_is_eod is false we can show "next", this was set if the next page would be empty too
         jsr     clear_status_2
         lda     mf_dir_pos
         beq     :+
         jsr     show_prev
 
-:       lda     mfs_is_eod
+:       lda     mf_is_eod
         bne     :+
         jsr     show_next
 
@@ -133,7 +134,7 @@ finish_list:
 .endproc
 
 .proc check_for_next_page
-        ; set mfs_is_eod if the next page of results only has 7f as first entry
+        ; set mf_is_eod if the next page of results only has 7f as first entry
         mwa     mf_dir_pos, ptr1
         adw1    ptr1, #DIR_PG_CNT
         setax   ptr1
@@ -142,7 +143,7 @@ finish_list:
         ; read first dir, and check if it's 7f
         jsr     read_dir_is_eod
         bne     :+
-        mva     #$01, mfs_is_eod
+        mva     #$01, mf_is_eod
 
 :       rts
 .endproc
