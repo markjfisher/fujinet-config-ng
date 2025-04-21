@@ -16,7 +16,6 @@
         .include    "zp.inc"
 
 .proc mf_copy_start
-        ; jsr     debug
         ; is the path too long? interesting dilemma. the copy spec eventually sent to FN has to be under 256 bytes. we'll check that at the end
         lda     #$fc                ; the copy spec will have minimally an extra "|/" 2 chars (pipe, root dir), so reduce $ff by that and nul char
         jsr     combine_path_with_selection

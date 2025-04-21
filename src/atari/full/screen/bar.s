@@ -168,7 +168,6 @@ lhs_under_8:
         sta     shape_data, x
 
 lhs_done:
-        ; jsr     debug
         ; now calculate the rhs
         lda     _pmg_space_right
         cmp     #8

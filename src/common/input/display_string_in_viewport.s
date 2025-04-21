@@ -3,8 +3,8 @@
         .export     char_index
         .export     half_viewport
 
-        .import     _gotoxy
-        .import     _cputc
+        .import     cng_cputc
+        .import     cng_gotoxy
         .import     _revers
         .import     pusha
         .import     _es_params
@@ -106,8 +106,7 @@ _display_string_in_viewport:
         ; gotoxy(es_params.x_loc, es_params.y_loc)
         pusha   _es_params+edit_string_params::x_loc
         lda     _es_params+edit_string_params::y_loc
-        ldx     #0
-        jsr     _gotoxy
+        jsr     cng_gotoxy
 
         ; Initialize char_index = start_pos
         lda     start_pos
@@ -153,17 +152,17 @@ _display_string_in_viewport:
         ; Print character from buffer
         ldy     char_index      ; Use Y for indexing
         lda     (ptr1),y
-        jsr     _cputc
+        jsr     cng_cputc
         jmp     @check_cursor_after
 
 @print_star:
         lda     #'*'
-        jsr     _cputc
+        jsr     cng_cputc
         jmp     @check_cursor_after
 
 @print_space:
         lda     #' '
-        jsr     _cputc
+        jsr     cng_cputc
 
 @check_cursor_after:
         ; Check if we need to turn off reverse mode

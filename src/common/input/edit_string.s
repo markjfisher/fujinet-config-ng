@@ -3,8 +3,8 @@
         .export     _edit_string_buff
         .export     cmp_cursor_length
 
-        .import     _gotoxy
-        .import     _cputc
+        .import     cng_cputc
+        .import     cng_gotoxy
         .import     _kb_get_c
         .import     _display_string_in_viewport
         .import     incax1
@@ -62,8 +62,7 @@ show_string:
         ; Set cursor position
         pusha   _es_params+edit_string_params::x_loc
         lda     _es_params+edit_string_params::y_loc
-        ldx     #$00
-        jsr     _gotoxy
+        jsr     cng_gotoxy
 
         ; Initialize counter = tmp1, not trashed by cputc
         lda     #0
@@ -90,13 +89,13 @@ show_string:
 
         ldy     tmp1
         lda     (ptr1),y    ; Load character
-        jsr     _cputc
+        jsr     cng_cputc
         clc
         bcc     @next
 
 @print_space:
         lda     #' '
-        jsr     _cputc
+        jsr     cng_cputc
 
 @next:
         inc     tmp1

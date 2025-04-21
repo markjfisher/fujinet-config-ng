@@ -34,7 +34,6 @@
 
 
 .proc _mi_edit_preferences
-        jsr     debug
         ; keep a copy of the real value so we can revert if user presses ESC
         jsr     copy_pref_to_temp
 

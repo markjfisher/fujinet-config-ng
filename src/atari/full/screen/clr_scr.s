@@ -6,8 +6,6 @@
         .import     get_scrloc
         .import     mhlp1, sline1, m_l1
 
-        .import     debug, _pause
-
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"

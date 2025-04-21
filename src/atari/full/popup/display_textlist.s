@@ -107,7 +107,6 @@ no_trans:
         bpl     :+                      ; no
 
         ; yes, print it
-        ; jsr     debug
         mva     #FNC_R_END, {(ptr4), y}
         iny
 
