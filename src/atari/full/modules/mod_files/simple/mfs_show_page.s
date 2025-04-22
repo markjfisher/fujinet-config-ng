@@ -13,10 +13,10 @@
         .import     mf_dir_pos
         .import     mf_next
         .import     mf_prev
-        .import     mfs_entries_cnt
-        .import     mfs_entry_index
+        .import     mf_entries_cnt
+        .import     mf_entry_index
         .import     mf_is_eod
-        .import     mfs_y_offset
+        .import     mf_y_offset
         .import     pusha
         .import     sline2
 
@@ -29,10 +29,10 @@
 
 ; ptr1,ptr2,ptr4
 .proc mfs_show_page
-        mva     #$00, mfs_entry_index
+        mva     #$00, mf_entry_index
 l_entries:
         ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
-        ldx     mfs_entry_index
+        ldx     mf_entry_index
         mva     #$00, {mf_dir_or_file, x}
 
         jsr     read_dir_is_eod
@@ -40,22 +40,20 @@ l_entries:
 
         ; we are at EOD, so mark it, and skip over any printing
         mva     #$01, mf_is_eod
-        bne     finish_list
+        bne     skip_check_for_next_page
 
 :       jsr     print_entry
-        inc     mfs_entry_index
-        lda     mfs_entry_index
+        inc     mf_entry_index
+        lda     mf_entry_index
         cmp     mf_dir_pg_cnt   ; are there more to do?
         bcc     l_entries
 
-finish_list:
-        ; if we have a full page, check if we have any more to come, and set mf_is_eod.
+        ; if we ended on a full page, check if we have any more to come, and set mf_is_eod.
         ; this stops us showing empty pages if there were exactly number of dirs to fill page
-        ; Z is set if we have a full page
-        bne     :+
         jsr     check_for_next_page
 
-:       mva     mfs_entry_index, mfs_entries_cnt
+skip_check_for_next_page:
+        mva     mf_entry_index, mf_entries_cnt
 
         ; show the status text arrows if they are relevant
         ; if mf_dir_pos > 0, we can show "prev"
@@ -126,8 +124,8 @@ finish_list:
 
         ; fuji_buffer contains the results
         ; an end of dir is 0x7f, 0x7f
+        ; IMPORTANT: This sets ptr1 to the buffer, and is used in other functions in here, so is a SIDE EFFECT of this function
         mwa     #fuji_buffer, ptr1
-        ; axinto  ptr1
         ldy     #$01
         lda     (ptr1), y
         cmp     #$7f            ; magic marker
@@ -141,7 +139,7 @@ finish_list:
         setax   ptr1
         jsr     _fuji_set_directory_position
 
-        ; read first dir, and check if it's 7f
+        ; read first dir, and check if it's 7f, Z=1 if it is EOD
         jsr     read_dir_is_eod
         bne     :+
         mva     #$01, mf_is_eod
@@ -150,6 +148,8 @@ finish_list:
 .endproc
 
 
+; Assumption:
+;  ptr1 is set to #fuji_buffer
 .proc print_entry
         ; is this a dir? last char of name is '/' - ASSUMPTION - string never 0 length
         setax   ptr1
@@ -165,13 +165,13 @@ finish_list:
         tax                         ; x coordinate = 0
 
         ; save the fact this is a dir so that when it's chosen we traverse it rather than choose it for a device slot
-        ldy     mfs_entry_index
+        ldy     mf_entry_index
         mva     #$01, {mf_dir_or_file, y}
 
         ; add the screen offset for files starting position into Y
         tya
         clc
-        adc     mfs_y_offset
+        adc     mf_y_offset
         tay
 
         jsr     get_scrloc
@@ -180,7 +180,7 @@ finish_list:
         mva     #FNC_DIR_C, {(ptr4), y}
 
 skip_show_dir_char:
-        put_s   #$01, mfs_entry_index, ptr1, mfs_y_offset
+        put_s   #$01, mf_entry_index, ptr1, mf_y_offset
         rts
 
 .endproc

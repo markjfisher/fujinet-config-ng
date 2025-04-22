@@ -1,4 +1,4 @@
-        .export     mfc_init
+        .export     mf_init
 
         .import     _fuji_close_directory
         .import     _mfs_get_y_offset
@@ -6,7 +6,7 @@
         .import     mf_dir_pos
         .import     mf_kbh_running
         .import     mf_selected
-        .import     mfs_y_offset
+        .import     mf_y_offset
         .import     return0
         .import     return1
 
@@ -20,7 +20,7 @@
         .include    "macros.inc"
         .include    "fn_data.inc"
 
-.proc mfc_init
+.proc mf_init
         jsr     _fuji_close_directory
 
         mwa     #$00, mf_dir_pos
@@ -34,7 +34,7 @@
         mva     #'/', {fn_dir_path, x}
 
         lda     #MF_YOFF
-        sta     mfs_y_offset
+        sta     mf_y_offset
 
         ; -----------------------------------------------------
         ; mount the host.

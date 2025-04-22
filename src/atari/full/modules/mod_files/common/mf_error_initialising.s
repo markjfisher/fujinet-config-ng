@@ -1,4 +1,4 @@
-        .export     mfc_error_initialising
+        .export     mf_error_initialising
 
         .import     _show_error
         .import     _scr_clr_highlight
@@ -6,7 +6,7 @@
 
         .include    "macros.inc"
 
-.proc mfc_error_initialising
+.proc mf_error_initialising
         jsr     _scr_clr_highlight
         pusha   #26
         pusha   #1

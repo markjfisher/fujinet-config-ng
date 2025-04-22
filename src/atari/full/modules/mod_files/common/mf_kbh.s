@@ -18,7 +18,7 @@
         .import     mf_copy_start
         .import     mf_copying
         .import     mf_dir_or_file
-        .import     mfs_entries_cnt
+        .import     mf_entries_cnt
         .import     mf_is_eod
         .import     mfs_kbh_select_current
         .import     mod_current
@@ -126,7 +126,7 @@ do_down:
         clc
         adc     #$01
 
-        cmp     mfs_entries_cnt
+        cmp     mf_entries_cnt
         bcc     :+              ; not on last entry for page
 
         ; it's last position, but is it eod?

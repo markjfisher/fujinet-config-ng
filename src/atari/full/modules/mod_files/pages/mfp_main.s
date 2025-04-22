@@ -2,10 +2,10 @@
 
         .import     kb_current_line
         .import     mf_selected
-        .import     mfc_init
+        .import     mf_init
         .import     mod_current
 
-        .import     mfc_error_initialising
+        .import     mf_error_initialising
         .import     mfs_error_opening_page
         .import     mf_handle_input
         .import     mf_kbh_running
@@ -21,10 +21,10 @@
 
 ; page group reading
 .proc mfp_main
-        jsr     mfc_init                        ; identical setup to simple files - 
+        jsr     mf_init                        ; identical setup to simple files - 
         bne     init_ok                       ; success status returned by mfp_init
 
-        jsr     mfc_error_initialising
+        jsr     mf_error_initialising
         mva     #Mod::hosts, mod_current
         rts
 

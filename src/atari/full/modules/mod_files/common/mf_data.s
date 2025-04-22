@@ -23,6 +23,9 @@
 
         .export     mf_is_eod
         .export     mf_kbh_running
+        .export     mf_entry_index
+        .export     mf_entries_cnt
+        .export     mf_y_offset
 
         .include    "fn_data.inc"
         .include    "macros.inc"
@@ -58,12 +61,20 @@ mf_copy_from:   .res 2
 mf_ask_new_disk_std_sizes_val:         .res 1
 mf_ask_new_disk_cust_sector_size_val:  .res 1
 
-
 ; flag to indicate if we are on EOD
 mf_is_eod:      .res 1
 
 ; flag to say if we are already in a global kbh or not, so we don't recurse into it when entering a sub-dir
 mf_kbh_running: .res 1
+
+; a general index counter
+mf_entry_index: .res 1
+
+; the total number of entries on the current screen
+mf_entries_cnt: .res 1
+
+; y offset for displaying files to skip the page header
+mf_y_offset:    .res 1
 
 .rodata
 
