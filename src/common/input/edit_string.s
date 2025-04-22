@@ -5,6 +5,8 @@
 
         .import     cng_cputc
         .import     cng_gotoxy
+        .import     _cputc
+        .import     _gotoxy
         .import     _kb_get_c
         .import     _display_string_in_viewport
         .import     incax1

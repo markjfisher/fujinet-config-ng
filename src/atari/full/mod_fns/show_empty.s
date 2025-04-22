@@ -2,6 +2,8 @@
 
         .import     cng_gotoxy
         .import     cng_cputs
+        .import     _gotoxy
+        .import     _cputs
         .import     pusha
         .import     _es_params
         .import     _s_empty

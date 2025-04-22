@@ -5,6 +5,8 @@
 
         .import     cng_cputc
         .import     cng_gotoxy
+        .import     _cputc
+        .import     _gotoxy
         .import     _revers
         .import     pusha
         .import     _es_params
@@ -26,13 +28,14 @@ _display_string_in_viewport:
         sta     start_pos
         sta     start_pos+1
 
-        ; First check: cursor_pos > half_viewport
+        ; Check if cursor_pos > half_viewport and current_length >= viewport_width
         lda     _es_params+edit_string_params::cursor_pos+1
         bne     @check_length   ; If high byte non-zero, definitely greater
+
         lda     _es_params+edit_string_params::cursor_pos
         cmp     half_viewport
-        beq     @set_position   ; If equal, not greater
-        bcc     @set_position   ; If less, not greater
+        beq     @set_position   ; If cursor_pos == half_viewport, skip adjustment
+        bcc     @set_position   ; If cursor_pos < half_viewport, skip adjustment
 
 @check_length:
         ; Second check: current_length >= viewport_width
@@ -40,60 +43,34 @@ _display_string_in_viewport:
         cmp     _es_params+edit_string_params::viewport_width
         lda     _es_params+edit_string_params::current_length+1
         sbc     #0              ; viewport_width is 8-bit
-        bcs     :+
-        jmp     @set_position   ; If current_length < viewport_width, skip adjustment
+        bcc     @set_position   ; If current_length < viewport_width, skip adjustment
 
-        ; Both conditions true, calculate start_pos = cursor_pos - half_viewport
-:       lda     _es_params+edit_string_params::cursor_pos
+        ; Calculate start_pos = cursor_pos - half_viewport
+        lda     _es_params+edit_string_params::cursor_pos      ; Load low byte of cursor_pos
         sec
-        sbc     half_viewport
-        sta     start_pos
-        lda     _es_params+edit_string_params::cursor_pos+1
-        sbc     #0
-        sta     start_pos+1
+        sbc     half_viewport                                  ; Subtract half_viewport
+        sta     start_pos                                      ; Store low byte of start_pos
 
-        ; Check if cursor_pos >= current_length
-        jsr     cmp_cursor_length
-        bcc     @check_overflow
+        lda     _es_params+edit_string_params::cursor_pos+1    ; Load high byte of cursor_pos
+        sbc     #0                                             ; Subtract carry from high byte
+        sta     start_pos+1                                    ; Store high byte of start_pos
 
-        ; cursor_pos >= current_length case:
-        ; start_pos = current_length - viewport_width + 1
-        lda     _es_params+edit_string_params::current_length
-        sec
-        sbc     _es_params+edit_string_params::viewport_width
-        sta     start_pos
-        lda     _es_params+edit_string_params::current_length+1
-        sbc     #0              ; Complete the 16-bit subtraction
-        sta     start_pos+1
-        ; Now add 1 to the complete 16-bit result
+        ; Check if start_pos + viewport_width > current_length
         clc
         lda     start_pos
-        adc     #1
-        sta     start_pos
-        lda     start_pos+1
-        adc     #0
-        sta     start_pos+1
-        jmp     @set_position
-
-@check_overflow:
-        ; Calculate tmp1/2 = start_pos + viewport_width
-        lda     start_pos
-        clc
         adc     _es_params+edit_string_params::viewport_width
         sta     tmp1
         lda     start_pos+1
-        adc     #0              ; Add carry to high byte
+        adc     #0
         sta     tmp2
 
-        ; Compare tmp1/2 with current_length (16-bit)
         lda     tmp1
         cmp     _es_params+edit_string_params::current_length
         lda     tmp2
         sbc     _es_params+edit_string_params::current_length+1
-        bcc     @set_position   ; If not greater, keep current start_pos
+        bcc     @check_cursor_pos
 
-        ; start_pos + viewport_width > current_length case:
-        ; start_pos = current_length - viewport_width
+        ; Adjust start_pos to current_length - viewport_width
         lda     _es_params+edit_string_params::current_length
         sec
         sbc     _es_params+edit_string_params::viewport_width
@@ -102,7 +79,19 @@ _display_string_in_viewport:
         sbc     #0
         sta     start_pos+1
 
+@check_cursor_pos:
+        ; If cursor_pos >= current_length, increment start_pos
+        jsr     cmp_cursor_length
+        bcs     @increment_start_pos
+        jmp     @set_position
+
+@increment_start_pos:
+        inc     start_pos
+        bne     @set_position
+        inc     start_pos+1
+
 @set_position:
+        ; Finalize start_pos
         ; gotoxy(es_params.x_loc, es_params.y_loc)
         pusha   _es_params+edit_string_params::x_loc
         lda     _es_params+edit_string_params::y_loc

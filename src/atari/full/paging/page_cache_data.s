@@ -6,7 +6,7 @@
         .export     _remove_path_params
         .export     _find_bank_params
 
-        .include     "page_cache_asm.inc"
+        .include     "page_cache.inc"
 
 .segment "BANK"
 _cache:                 .tag page_cache
