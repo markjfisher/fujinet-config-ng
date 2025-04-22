@@ -9,6 +9,7 @@
         .import     fuji_buffer
         .import     get_scrloc
         .import     mf_dir_or_file
+        .import     mf_dir_pg_cnt
         .import     mf_dir_pos
         .import     mf_next
         .import     mf_prev
@@ -44,7 +45,7 @@ l_entries:
 :       jsr     print_entry
         inc     mfs_entry_index
         lda     mfs_entry_index
-        cmp     #DIR_PG_CNT     ; are there more to do?
+        cmp     mf_dir_pg_cnt   ; are there more to do?
         bcc     l_entries
 
 finish_list:
@@ -136,7 +137,7 @@ finish_list:
 .proc check_for_next_page
         ; set mf_is_eod if the next page of results only has 7f as first entry
         mwa     mf_dir_pos, ptr1
-        adw1    ptr1, #DIR_PG_CNT
+        adw1    ptr1, mf_dir_pg_cnt
         setax   ptr1
         jsr     _fuji_set_directory_position
 

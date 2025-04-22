@@ -12,6 +12,7 @@
         .import     fuji_buffer
         .import     mf_copying
         .import     mf_copying_msg
+        .import     mf_dir_pg_cnt
         .import     mf_dir_pos
         .import     mf_h1
         .import     mf_s1
@@ -30,11 +31,14 @@
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 ; ptr1
 .proc mfp_new_page
-        lda     #3                      ; print a separator on line 4
-        sta     screen_separators
-        lda     #20                     ; allows 16 lines in file list, and 1 in an extra line for Date/Size information for current file
-        sta     screen_separators+1
+        ; 16 files/dirs per page
+        mva     #16, mf_dir_pg_cnt
+        ; setup separator lines, and draw border. 0 based index for border line
+        mva     #3, screen_separators
+        ; allows 16 lines in file list (4-19), and 1 in an extra line for Date/Size information for current file
+        mva     #20, screen_separators+1
         ldy     #$02
+        ; redraw page with separator
         jsr     _clr_scr_with_separator
 
         jsr     _clr_help
@@ -60,6 +64,7 @@
         bne     :+
 
         ; all good, set the dir pos, and return dir pos status
+        ; do we want to keep track of dir_pos in same way as simple?
         setax   mf_dir_pos
         jsr     _fuji_set_directory_position
         ; did it fail?

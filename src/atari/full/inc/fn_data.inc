@@ -43,7 +43,7 @@ FNS_N2C     = $10           ; Screen code for '0'. Add this to 0 based index so 
 FNS_C_R     = $32           ; screen code for "R"
 FNS_C_W     = $37           ; screen code for "W"
 
-DIR_PG_CNT  = 18            ; Number of entries to display on a page in the file listing
+; DIR_PG_CNT  = 18            ; Number of entries to display on a page in the file listing
 DIR_MAX_LEN = 36            ; old config was 36, but we don't quite have space on screen for 36 with borders.
 
 MAX_NETS    = 10            ; networks to show when scanning for wifis

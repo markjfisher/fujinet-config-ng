@@ -12,6 +12,7 @@
         .import     fuji_buffer
         .import     mf_copying
         .import     mf_copying_msg
+        .import     mf_dir_pg_cnt
         .import     mf_dir_pos
         .import     mf_h1
         .import     mf_s1
@@ -30,9 +31,12 @@
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 ; ptr1
 .proc mfs_new_page
-        lda     #$03                    ; print a separator on line 4
-        sta     screen_separators
+        ; 18 files/dirs per page
+        mva     #18, mf_dir_pg_cnt
+        ; setup separator lines, and draw border. 0 based index for border line
+        mva     #$03, screen_separators
         ldy     #$01
+        ; redraw page with separator
         jsr     _clr_scr_with_separator
 
         jsr     _clr_help

@@ -1,5 +1,6 @@
         .export     mf_copying
         .export     mf_dir_or_file
+        .export     mf_dir_pg_cnt
         .export     mf_dir_pos
         .export     mf_selected
 
@@ -42,11 +43,13 @@ mf_sct_buff:    .res 6
 .bss
 ; the current directory position value while browsing of first entry on screen
 mf_dir_pos:     .res 2
+mf_dir_pg_cnt:  .res 1
 
 ; currently highlighted option
 mf_selected:    .res 1
 
-mf_dir_or_file: .res DIR_PG_CNT
+; max of simple page count (18), and paged count (16)
+mf_dir_or_file: .res 18
 
 mf_copy_from:   .res 2
 

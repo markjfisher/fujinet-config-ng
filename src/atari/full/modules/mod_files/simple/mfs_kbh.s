@@ -8,6 +8,7 @@
         .import     fn_dir_filter
         .import     fn_dir_path
         .import     get_scrloc
+        .import     mf_dir_pg_cnt
         .import     mf_dir_pos
         .import     mf_selected
         .import     mf_new_disk
@@ -49,7 +50,7 @@ do_right:
         bne     exit_reloop
 
         mva     #$00, mf_selected
-        adw1    mf_dir_pos, #DIR_PG_CNT
+        adw1    mf_dir_pos, mf_dir_pg_cnt
         ldx     #KBH::APP_1
         rts
 
@@ -69,7 +70,7 @@ do_left:
 
         ; set selected to first, reduce dir_pos by page count and reload dirs
         mva     #$00, mf_selected
-        sbw1    mf_dir_pos, #DIR_PG_CNT
+        sbw1    mf_dir_pos, mf_dir_pg_cnt
         ldx     #KBH::APP_1
         rts
 
@@ -99,8 +100,9 @@ do_up:
         beq     exit_reloop      ; we're already at the first directory position possible, so can't go back
 
         ; valid up, reduce by page count, but set our cursor on last line to look cool
-        mva     #(DIR_PG_CNT-1), mf_selected
-        sbw1    mf_dir_pos, #DIR_PG_CNT
+        mva     mf_dir_pg_cnt, mf_selected
+        dec     mf_selected                     ; mf_selected = mf_dir_pg_cnt - 1
+        sbw1    mf_dir_pos, mf_dir_pg_cnt
         ldx     #KBH::APP_1
         rts
 
@@ -134,7 +136,7 @@ do_down:
 
         ; valid down, increase by page count, but set our cursor on first line to look cool
         mva     #$00, mf_selected
-        adw1    mf_dir_pos, #DIR_PG_CNT
+        adw1    mf_dir_pos, mf_dir_pg_cnt
         ldx     #KBH::APP_1
         rts
 

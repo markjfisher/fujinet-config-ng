@@ -4,7 +4,7 @@
         .export     _page_cache_remove_group
         .export     _page_cache_remove_path
         .export     _page_cache_init
-        ; .export     _page_cache_fetch_and_insert
+        .export     _page_cache_fetch_and_insert
 
         .import     _cache
         .import     _find_bank_params
@@ -18,13 +18,16 @@
         .import     _get_bank_base
         .import     _set_default_bank
 
-        .import     _memmove
-        .import     pushax
         .import     _memcpy
+        .import     _memmove
+        .import     pusha
+        .import     pushax
+
         .import     fuji_read_directory_block
 
-        .include    "zeropage.inc"
         .include    "page_cache.inc"
+        .include    "macros.inc"
+        .include    "zp.inc"
 
 .segment "CODE2"
 
@@ -1080,25 +1083,31 @@ found_different:
 
 .endproc
 
-; ; --------------------------------------------------------------------
-; ; page_cache_fetch_and_insert
-; ; Fetches a page group from Fujinet and inserts it into the cache
-; ; Parameters:
-; ;   pagegroup - Index of the page group to fetch
-; ; --------------------------------------------------------------------
-; .proc page_cache_fetch_and_insert
-;         ; Assume pagegroup is passed in A register
-;         sta     pagegroup_index
-
-;         ; Prepare buffer for Fujinet response
-;         ldx     #<buffer
-;         stx     buffer_ptr
-;         ldx     #>buffer
-;         stx     buffer_ptr+1
+; --------------------------------------------------------------------
+; page_cache_fetch_and_insert
+; Fetches a page group from Fujinet and inserts it into the cache
+; Parameters:
+;   pagegroup - Index of the page group to fetch
+; --------------------------------------------------------------------
+.proc _page_cache_fetch_and_insert
+        rts
+;         sta     pagegroup_idx
+;         ; TODO: calculate the directory position from the pagegroup_idx
+;         ; which is page_size(16) * (pagegroup_idx - 1) if 1 based
+;         ; and call _fuji_set_directory_position
+        
+;         ; assuming 1 based
+;         sec
+;         sbc     #1
+;         asl     a
+;         asl     a
+;         asl     a
+;         asl     a
 
 ;         ; Call Fujinet function
-;         lda     #8              ; 8 RAM pages (2048 bytes)
-;         ldx     #16             ; Group size
+;         pushax  #page_cache_buffer
+;         pusha   #$08            ; 8 pages (256 * 8 = 2048)
+;         pusha   #$10            ; 16 entries per group
 ;         jsr     fuji_read_directory_block
 
 ;         ; Parse the response
@@ -1114,7 +1123,7 @@ found_different:
 ;         inx
 
 ;         ; Set other insert parameters
-;         lda     pagegroup_index
+;         lda     pagegroup_idx
 ;         sta     _insert_params+page_cache_insert_params::group_id
 ;         lda     buffer_ptr
 ;         sta     _insert_params+page_cache_insert_params::data_ptr
@@ -1137,12 +1146,7 @@ found_different:
 ; insert_failed:
 ;         ; Handle insertion failure
 ;         rts
-
-; buffer_ptr:   .res 2
-; pagegroup_index: .res 1
-; buffer:       .res 2048
-
-; .endproc
+.endproc
 
 .bss
 entry_loc:      .res 2
@@ -1155,3 +1159,9 @@ move_size:      .res 2
 adjust_size:    .res 2        ; New variable for storing how much to adjust by
 entry_index:    .res 1        ; New variable for tracking current entry index
 attempts:       .res 1        ; Counter for expel attempts
+buffer_ptr:     .res 2
+pagegroup_idx:  .res 1
+
+.segment "BANK"
+; page_cache_buffer:
+;                .res 2048

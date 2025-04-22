@@ -11,6 +11,7 @@
         .import     mf_selected
         .import     mfs_kbh
         .import     mfs_kbh_running
+        .import     mf_dir_pg_cnt
 
         .include    "macros.inc"
         .include    "modules.inc"
@@ -27,7 +28,9 @@
         ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into kb_global 
 :       mva     #$01, mfs_kbh_running
 
-        mva     #DIR_PG_CNT-1, kb_max_entries
+        mva     mf_dir_pg_cnt, kb_max_entries
+        dec     kb_max_entries                          ; make it 0 based by setting to (mf_dir_pg_cnt - 1)
+
         mva     #Mod::files, kb_prev_mod
         mva     #Mod::files, kb_next_mod
         mwa     #mf_selected, kb_mod_current_line_p

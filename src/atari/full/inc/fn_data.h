@@ -19,7 +19,6 @@ extern uint8_t bank_count;
 #define FNS_N2C         0x10
 #define FNS_C_R         0x32
 #define FNS_C_W         0x37
-#define DIR_PG_CNT      18
 #define DIR_MAX_LEN     36
 
 #define MAX_NETS        10
