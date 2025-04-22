@@ -1,4 +1,4 @@
-        .export     mfs_error_opening_page
+        .export     mf_error_opening_page
 
         .import     _show_error
         .import     mod_current
@@ -8,7 +8,7 @@
         .include    "macros.inc"
         .include    "modules.inc"
 
-.proc mfs_error_opening_page
+.proc mf_error_opening_page
         ; pusha   #$1a
         ; pusha   #$01
         pushax  #$1a01

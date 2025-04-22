@@ -3,7 +3,7 @@
         .import     kb_current_line
         .import     mf_selected
         .import     mf_error_initialising
-        .import     mfs_error_opening_page
+        .import     mf_error_opening_page
         .import     mf_handle_input
         .import     mf_init
         .import     mf_kbh_running
@@ -30,7 +30,7 @@ init_ok:
 file_loop:
         jsr     mfs_new_page
         beq     page_ok
-        jmp     mfs_error_opening_page
+        jmp     mf_error_opening_page
 
 page_ok:
         jsr     mfs_show_page

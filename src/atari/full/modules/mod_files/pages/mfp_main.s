@@ -6,7 +6,7 @@
         .import     mod_current
 
         .import     mf_error_initialising
-        .import     mfs_error_opening_page
+        .import     mf_error_opening_page
         .import     mf_handle_input
         .import     mf_kbh_running
         .import     mfp_new_page
@@ -33,7 +33,7 @@ init_ok:
 file_loop:
         jsr     mfp_new_page
         beq     page_ok
-        jmp     mfs_error_opening_page
+        jmp     mf_error_opening_page
 
 page_ok:
         jsr     mfp_show_page

@@ -20,7 +20,7 @@
         .import     mf_dir_or_file
         .import     mf_entries_cnt
         .import     mf_is_eod
-        .import     mfs_kbh_select_current
+        .import     mf_kbh_select_current
         .import     mod_current
 
         .include    "edit_string.inc"
@@ -163,7 +163,7 @@ not_esc:
         cmp     #FNK_ENTER
         bne     not_enter
         ; go into the dir, or choose the file
-        jmp     mfs_kbh_select_current
+        jmp     mf_kbh_select_current
         ; implicit rts with X containing status
 
 not_enter:

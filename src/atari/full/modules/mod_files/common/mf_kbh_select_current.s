@@ -1,5 +1,5 @@
         .export     combine_path_with_selection
-        .export     mfs_kbh_select_current
+        .export     mf_kbh_select_current
 
         .import     _fc_strlcpy
         .import     _fc_strlen
@@ -33,7 +33,7 @@
 ; Handle Selection of the currently highlighted line
 ; tmp1,tmp2,tmp3
 ; ptr1,ptr2
-.proc mfs_kbh_select_current
+.proc mf_kbh_select_current
         ; read the dir/file indicator for current highlight for current page. don't rely on screen reading else can't port to versions that have no ability to grab screen memory
         ldx     mf_selected
         lda     mf_dir_or_file, x
