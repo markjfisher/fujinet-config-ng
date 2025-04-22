@@ -18,7 +18,7 @@
         .import     mf_s1
         .import     mf_is_eod
         .import     mh_host_selected
-        .import     print_dir_info
+        .import     mf_print_dir_info
         .import     pusha
         .import     return1
         .import     screen_separators
@@ -51,7 +51,7 @@
 
 :       mva     #$00, mf_is_eod
         jsr     _scr_clr_highlight
-        jsr     print_dir_info
+        jsr     mf_print_dir_info
         jsr     copy_path_filter_to_buffer
 
         ; -----------------------------------------------------

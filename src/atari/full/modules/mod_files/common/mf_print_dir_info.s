@@ -1,4 +1,4 @@
-        .export     print_dir_info
+        .export     mf_print_dir_info
 
         .import    _put_s
         .import    ellipsize
@@ -17,7 +17,7 @@
 
 .segment "CODE2"
 
-print_dir_info:
+mf_print_dir_info:
         ; use 3 lines at the top of screen to display the Host/Filter/Path
         ; titles
         put_s   #0, #0, #mf_host
