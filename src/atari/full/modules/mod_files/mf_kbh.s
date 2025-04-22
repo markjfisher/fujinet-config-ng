@@ -1,4 +1,4 @@
-        .export mfs_kbh
+        .export mf_kbh
 
         .import     _clr_status
         .import     _edit_string
@@ -34,7 +34,7 @@
 
 ; 'A' contains the keyboard ascii code
 ; ptr4
-.proc mfs_kbh
+.proc mf_kbh
 
 ; -------------------------------------------------
 ; right - next page of results if there are any

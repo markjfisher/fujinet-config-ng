@@ -7,8 +7,8 @@
 
         .import     mfc_error_initialising
         .import     mfs_error_opening_page
-        .import     mfs_handle_input
-        .import     mfs_kbh_running
+        .import     mf_handle_input
+        .import     mf_kbh_running
         .import     mfp_new_page
         .import     mfp_show_page
 
@@ -38,13 +38,13 @@ file_loop:
 page_ok:
         jsr     mfp_show_page
         mva     mf_selected, kb_current_line
-        jsr     mfs_handle_input
+        jsr     mf_handle_input
 
         cpx     #KBH::EXIT
         beq     exit_mfp
 
         ; reloop until hit an exit condition from kbh
-        mva     #$00, mfs_kbh_running
+        mva     #$00, mf_kbh_running
         beq     file_loop
 
 exit_mfp:

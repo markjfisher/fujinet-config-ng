@@ -4,9 +4,9 @@
         .import     mf_selected
         .import     mfc_error_initialising
         .import     mfs_error_opening_page
-        .import     mfs_handle_input
+        .import     mf_handle_input
         .import     mfc_init
-        .import     mfs_kbh_running
+        .import     mf_kbh_running
         .import     mfs_new_page
         .import     mfs_show_page
         .import     mod_current
@@ -35,13 +35,13 @@ file_loop:
 page_ok:
         jsr     mfs_show_page
         mva     mf_selected, kb_current_line
-        jsr     mfs_handle_input
+        jsr     mf_handle_input
 
         cpx     #KBH::EXIT
         beq     exit_mfs
 
         ; reloop until hit an exit condition from kbh
-        mva     #$00, mfs_kbh_running
+        mva     #$00, mf_kbh_running
         beq     file_loop
 
 exit_mfs:

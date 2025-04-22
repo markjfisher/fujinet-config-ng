@@ -22,6 +22,7 @@
         .export     mf_sct_buff
 
         .export     mf_is_eod
+        .export     mf_kbh_running
 
         .include    "fn_data.inc"
         .include    "macros.inc"
@@ -61,6 +62,8 @@ mf_ask_new_disk_cust_sector_size_val:  .res 1
 ; flag to indicate if we are on EOD
 mf_is_eod:      .res 1
 
+; flag to say if we are already in a global kbh or not, so we don't recurse into it when entering a sub-dir
+mf_kbh_running: .res 1
 
 .rodata
 
