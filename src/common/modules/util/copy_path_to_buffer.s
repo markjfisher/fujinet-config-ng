@@ -6,6 +6,7 @@
         .import     fn_dir_path
         .import     fuji_buffer
         .import     pushax
+        .import     return1
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -33,12 +34,14 @@
 .endproc
 
 ; copies the path to buffer, adding on filter if set
+; returns 0 (Z set) if there's no filter added, 1 if there is a filter added, allowing callers to know to skip the null if they need to (page cache)
 .proc copy_path_filter_to_buffer
         jsr     copy_path_to_buffer
 
         ; now append the filter if set
         lda     fn_dir_filter           ; if filter set, we need to cat it on end
         bne     :+
+        ; A = 0, Z = 1, tells caller there was no filter
         rts
 
         ; we have to put the filter 1 byte after the null of the path, not append it
@@ -54,5 +57,7 @@
         iny
         cmp     #$00    ; have we done the null byte, 0 yet?
         bne     :-      ; no
-        rts
+
+        ; let the caller know there was a buffer added
+        jsr     return1
 .endproc

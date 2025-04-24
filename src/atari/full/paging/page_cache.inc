@@ -52,3 +52,10 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
     path_hash       .word   ; 2 bytes - hash of the path string
     removed_count   .byte   ; 1 byte - output: number of entries removed
 .endstruct
+
+.struct page_cache_get_pagegroup
+    dir_position    .word   ; 2 bytes - fujinet position for first file viewed in the page. 0 indexed, and then a multiple of the page_size
+    page_size       .byte   ; number of entries in a page
+    path            .word   ; pointer to path
+    filter          .word   ; pointer to any filter applied to results
+.endstruct

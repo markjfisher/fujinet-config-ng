@@ -6,7 +6,7 @@
         .import     _clr_scr_with_separator
         .import     _clr_status
         .import     _cng_prefs
-        .import     _fc_div10
+        .import     _div_i16_by_i8
         .import     _pmg_space_left
         .import     _pmg_space_right
         .import     _put_help
@@ -62,24 +62,35 @@ _mi_init_screen:
 
         put_s      #3, #21, #mg_l1
 
-        ; convert bank count to screen value
-        lda     _bank_count
-
 to_decimal_str:
-        ldx     #'0'
-        jsr     _fc_div10               ; A = quotient, X = remainder
+        ; convert bank count to screen value
+        pusha   #10                     ; denominator
+        lda     _bank_count
+        ldx     #$00
 
-        ; check if we're under 10
-        cmp     #'0'
+        jsr     _div_i16_by_i8          ; A = quotient, X = remainder
+
+        ; add '0' ascii to A and X to bring into printable char range
+        ; quotient part moved to Y
+        clc
+        adc     #'0'
+        tay
+        ; remainder part moved to A
+        txa
+        clc
+        adc     #'0'
+
+        ; check if we're under 10 (quotient will be '0' ascii)
+        cpy     #'0'
         beq     under_10
 
-        sta     temp_num
-        stx     temp_num + 1
+        sty     temp_num
+        sta     temp_num + 1
         bne     :+                      ; guaranteed to be not 0, as we added 0x30 to get ascii char
 
 under_10:
+        sta     temp_num
         mva     #$00, temp_num+1
-        stx     temp_num
 
 :
         ; now print bank count, it's now an ascii string

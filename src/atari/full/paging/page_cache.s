@@ -4,7 +4,7 @@
         .export     _page_cache_remove_group
         .export     _page_cache_remove_path
         .export     _page_cache_init
-        .export     _page_cache_fetch_and_insert
+        .export     _page_cache_get_pagegroup
 
         .import     _cache
         .import     _find_bank_params
@@ -66,7 +66,13 @@ exit:
 .endproc
 
 ; --------------------------------------------------------------------
-; page_cache_find
+; page_cache_find_position
+;
+; find and set the 'position' vlue in parameters block for the index
+; location for a particular path_hash and group_id.
+; sets 'found_exact' to 1 if we hit an exact match (e.g. to find entry
+; in the cache), or 0 if this pair of values wasn't in the cache index
+; yet (e.g. to allow inserting)
 ; --------------------------------------------------------------------
 .proc _page_cache_find_position
         ; Initialize variables
@@ -135,7 +141,7 @@ calc_mid:
         
         ; Hash matches, compare group_id
         ; ldy     #page_cache_entry::group_id     ; Point to group_id
-        iny                     ; this is same as above as y is already tracking the struct entries, and     group_id is next
+        iny                     ; this is same as above as y is already tracking the struct entries, and group_id is next
         lda     (ptr1),y           ; Load entry group_id
         cmp     _find_params+page_cache_find_params::group_id  ; Load find_params.group_id
         bne     key_differs
@@ -161,7 +167,7 @@ adjust_left_norm:
         bcc     binary_search       ; always, as mid will never overflow
 
 key_differs:
-        ; we can pre-load tmp3 (mid) into A as it's used in all cases following and     doesn't affect carry
+        ; we can pre-load tmp3 (mid) into A as it's used in all cases following and doesn't affect carry
         lda     tmp3
         bcc     adjust_left
 
@@ -210,7 +216,7 @@ adjust_left:
 ; calc_entry_loc
 ; --------------------------------------------------------------------
 
-; set entry_loc to the entry location we need for the new index, and     for moving old data
+; set entry_loc to the entry location we need for the new index, and for moving old data
 .proc calc_entry_loc
         ; Calculate position * 8 for source address
         lda     _find_params+page_cache_find_params::position
@@ -294,12 +300,14 @@ have_space:
         lda     _find_params+page_cache_find_params::found_exact
         beq     :+
 
+        ; TODO: decide if we sould remove the entry from the current cache, and re-insert it from the new data
+        ; this is pretty simple, as we have all the data
         jmp     entry_exists
 
-        ; this is common to both moving old indexes, and     inserting new one, so calculate once
+        ; this is common to both moving old indexes, and inserting new one, so calculate once
 :       jsr     calc_entry_loc
 
-        ; Calculate source and     count for memmove if needed
+        ; Calculate source and count for memmove if needed
         ldx     _find_params+page_cache_find_params::position     ; Get insert position
         cpx     _cache+page_cache::entry_count         ; Compare with entry_count
         bcs     skip_move                              ; Skip if inserting at end
@@ -465,7 +473,7 @@ try_expel:
         bne     success       ; If entries removed, return success
         
 try_remove_entries:
-        ; Get first entry's hash and     group_id
+        ; Get first entry's hash and group_id
         lda     _cache+page_cache::entries+page_cache_entry::path_hash
         sta     _remove_group_params+page_cache_remove_group_params::path_hash
         lda     _cache+page_cache::entries+page_cache_entry::path_hash+1
@@ -518,7 +526,7 @@ found:
         lda     entry_loc+1
         sta     ptr1+1
 
-        ; Get bank_id and     calculate offset into bank_free_space
+        ; Get bank_id and calculate offset into bank_free_space
         ldy     #page_cache_entry::bank_id
         lda     (ptr1),y
         sta     bank_id             ; store it for later
@@ -544,7 +552,7 @@ found:
         sta     _cache+page_cache::bank_free_space,x
 
         ; Save our entry's bank_offset in tmp1/2
-        ; and     initialize highest_offset to our offset
+        ; and initialize highest_offset to our offset
         ldy     #page_cache_entry::bank_offset
         lda     (ptr1),y
         sta     tmp1
@@ -657,7 +665,7 @@ next_entry:
         bcc     :+
         inc     ptr1+1
 
-        ; and     increment our loop counter for all entries
+        ; and increment our loop counter for all entries
 :       inx
         jmp     scan_loop
 
@@ -823,7 +831,7 @@ check_second:
         bcs     done           ; Greater than target, we're done
         
 found_match:
-        ; Hash matches! Set up remove_group_params and     call remove_group
+        ; Hash matches! Set up remove_group_params and call remove_group
         ; Get group_id from entry
         ldy     #page_cache_entry::group_id
         lda     (ptr2),y
@@ -892,7 +900,7 @@ failed_size:
 size_ok:
 
 try_alloc:
-        ; Initialize best bank and     space
+        ; Initialize best bank and space
         lda     #$FF
         sta     tmp1            ; best_bank = 0xFF (not found)
         lda     #0
@@ -997,7 +1005,7 @@ next_bank:
         cmp     #$FF
         beq     need_space      ; If no bank found, try freeing space
         
-        ; Store best bank in result and     return
+        ; Store best bank in result and return
         sta     _find_bank_params+page_cache_find_bank_params::bank_id
         rts
 
@@ -1084,33 +1092,31 @@ found_different:
 .endproc
 
 ; --------------------------------------------------------------------
-; page_cache_fetch_and_insert
-; Fetches a page group from Fujinet and inserts it into the cache
-; Parameters:
-;   pagegroup - Index of the page group to fetch
+; _page_cache_get_pagegroup
+; Tries to get the given pagegroup out of cache, or fetches it from fujinet and stores it in cache (along with any other pagegroups fetched)
+; Parameters in _get_pagegroup, type: page_cache_get_pagegroup
+;   dir_position - the position that we would send to FN to set the location within the directory we are in (0 based)
+;   page_size    - number of files per page, required when making fujinet call for data
+;   path         - the directory we are browsing
+;   filter       - any filter we are using for the results
 ; --------------------------------------------------------------------
-.proc _page_cache_fetch_and_insert
-        rts
-;         sta     pagegroup_idx
-;         ; TODO: calculate the directory position from the pagegroup_idx
-;         ; which is page_size(16) * (pagegroup_idx - 1) if 1 based
-;         ; and call _fuji_set_directory_position
+.proc _page_cache_get_pagegroup
+        ; convert dir_position to a group_id (page group number), 0 based, by dividing by the page size. oh no, maths.
+
+
+
+        sta     pagegroup_idx
+        ; TODO: calculate the directory position from the pagegroup_idx
+        ; which is page_size(16) * (pagegroup_idx - 1) if 1 based
+        ; and call _fuji_set_directory_position
         
-;         ; assuming 1 based
-;         sec
-;         sbc     #1
-;         asl     a
-;         asl     a
-;         asl     a
-;         asl     a
+        ; Call Fujinet function
+        ; pushax  #page_cache_buffer
+        ; pusha   #$08            ; 8 pages (256 * 8 = 2048)
+        ; pusha   #$10            ; 16 entries per group
+        ; jsr     _fuji_read_directory_block
 
-;         ; Call Fujinet function
-;         pushax  #page_cache_buffer
-;         pusha   #$08            ; 8 pages (256 * 8 = 2048)
-;         pusha   #$10            ; 16 entries per group
-;         jsr     fuji_read_directory_block
-
-;         ; Parse the response
+        ; Parse the response
 ;         ldx     #0              ; Start at beginning of buffer
 ; parse_loop:
 ;         lda     buffer,x

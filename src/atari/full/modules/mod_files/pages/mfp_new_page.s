@@ -41,6 +41,8 @@
         ; redraw page with separator
         jsr     _clr_scr_with_separator
 
+        ; TODO: if non of this changes below, move it into a common file for this and mfs_new_page.s
+
         jsr     _clr_help
         put_status #0, #mf_s1
         put_help   #0, #mf_h1
