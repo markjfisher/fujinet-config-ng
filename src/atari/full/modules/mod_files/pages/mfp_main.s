@@ -12,6 +12,8 @@
         .import     mfp_new_page
         .import     mfp_show_page
 
+        .import     _bank_count
+        .import     _page_cache_init
 
         .include    "macros.inc"
         .include    "fn_data.inc"
@@ -21,14 +23,18 @@
 
 ; page group reading
 .proc mfp_main
-        jsr     mf_init                        ; identical setup to simple files - 
-        bne     init_ok                       ; success status returned by mfp_init
+        jsr     mf_init                         ; identical setup to simple files - 
+        bne     init_ok                         ; success status returned by mf_init
 
         jsr     mf_error_initialising
         mva     #Mod::hosts, mod_current
         rts
 
 init_ok:
+        lda     _bank_count
+        jsr     _page_cache_init                ; setup the cache free bank sizes etc.
+
+        ; TODO: make cache init return status and error if there were issues
 
 file_loop:
         jsr     mfp_new_page

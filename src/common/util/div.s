@@ -16,6 +16,9 @@ _div_i16_by_i8:
         stx     tmp2    ; high byte of 16 bit numberator (TH)
         popa    tmp3    ; denominator                    (B)
 
+        cmp     #$10    ; do simple shifts for /16
+        beq     fast_div16
+
         lda     tmp2    ; high
         ldx     #$08
         asl     tmp1
@@ -36,5 +39,38 @@ _div_i16_by_i8:
         ; now we have A with remainder, and TLQ/tmp1 with the quotient
         tax             ; move remainder into X
         lda     tmp1    ; get quotient into A
+        rts
 
+; page caching is exactly 16 in page_size, so we need to div16, and so we can optimize that scenario
+fast_div16:
+        lda     #$00
+        sta     tmp3    ; remainder
+
+; rotoate 4 bits tmp2->tmp1->tmp3, which leaves:
+; tmp2|tmp1 => divided by 16
+; tmp3      => remainder
+        lsr     tmp2
+        ror     tmp1
+        ror     tmp3
+
+        lsr     tmp2
+        ror     tmp1
+        ror     tmp3
+
+        lsr     tmp2
+        ror     tmp1
+        ror     tmp3
+
+        lsr     tmp2
+        ror     tmp1
+        ror     tmp3
+
+        ; move tmp3 across 4 times to get remainder from high nybble to low one
+        lda     tmp3
+        lsr     a
+        lsr     a
+        lsr     a
+        lsr     a
+        tax                     ; remainder
+        lda     tmp1            ; quotient
         rts

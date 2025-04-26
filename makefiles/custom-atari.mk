@@ -72,8 +72,11 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
   $(XS)/debugcmd: "bp debug" \
+  $(XS)/debugcmd: "bp _page_cache_insert" \
 
+# we can also use all Altirra debug commands, like setting a break point on write access to a location
 #   $(XS)/debugcmd: "ba w mw_setting_up" \
+#   $(XS)/debugcmd: "bp mfp_show_page" \
 
 ATARI800 ?= $(ATARI800_HOME)/atari800 \
   -xl -nobasic -ntsc -xl-rev custom -config atari800-debug.cfg -run

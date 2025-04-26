@@ -16,6 +16,8 @@
     .endif
 .endmacro
 
+; increments y between stores. the caller should use:
+; mway foo, {(ptr1), y}
 .macro mway arg1, arg2
     .if (.match (.left (1, {arg1}), #))
         lda     #<(.right (.tcount ({arg1})-1, {arg1}))
@@ -30,6 +32,23 @@
         lda     1+(arg1)
         sta     arg2
     .endif
+.endmacro
+
+; similar to above, but y arg is in the src
+; mywa {(ptr1), y}, foo
+; cannot have literal
+.macro mywa arg1, arg2
+    .if (.match (.left (1, {arg1}), #))
+        .error "mywa: arg1 cannot be literal"
+    .endif
+    .if (.match (.left (1, {arg2}), #))
+        .error "mywa: arg2 cannot be literal"
+    .endif
+    lda     arg1
+    sta     arg2
+    iny
+    lda     arg1
+    sta     1+(arg2)
 .endmacro
 
 .macro  mva     arg1, arg2

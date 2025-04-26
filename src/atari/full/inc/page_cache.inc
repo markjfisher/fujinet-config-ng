@@ -24,6 +24,7 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
     group_id        .byte   ; 1 byte - group ID to search for
     found_exact     .byte   ; 1 byte - output: 1 if exact match found
     position        .byte   ; 1 byte - output: position where found or should be inserted
+    entry_loc       .word   ; 2 bytes - location in cache::entries for this find, matched or not
 .endstruct
 
 .struct page_cache_insert_params
@@ -53,9 +54,22 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
     removed_count   .byte   ; 1 byte - output: number of entries removed
 .endstruct
 
-.struct page_cache_get_pagegroup
+.struct page_cache_get_pagegroup_params
     dir_position    .word   ; 2 bytes - fujinet position for first file viewed in the page. 0 indexed, and then a multiple of the page_size
-    page_size       .byte   ; number of entries in a page
+    page_size       .byte   ; number of entries (files/dirs) in a page
+    data_ptr        .word   ; location to save pagegroup data to
+    fetching_cb     .word   ; callback routine when fetching data, e.g. "loading" screen. X will be 0 for start, 1 for end
+.endstruct
+
+.struct page_cache_set_path_filter_params
     path            .word   ; pointer to path
     filter          .word   ; pointer to any filter applied to results
+    path_hash       .word   ; output location for hash
+.endstruct
+
+.struct page_cache_pagegroup_header
+    flags           .byte    ; bit 7: last group (1=yes)
+    num_entries     .byte    ; if not last group, will be page_size
+    data_size       .word    ; amount of data excluding header for this pagegroup
+    group_id        .byte    ; 0 based index for pagegroup for hash_path
 .endstruct
