@@ -5,19 +5,25 @@
         .import     mf_init
         .import     mod_current
 
+        .import     mf_dir_pg_cnt
+
         .import     mf_error_initialising
         .import     mf_error_opening_page
         .import     mf_handle_input
         .import     mf_kbh_running
+
         .import     mfp_new_page
+        .import     mfp_pg_buf
         .import     mfp_show_page
 
         .import     _bank_count
+        .import     _get_pagegroup_params
         .import     _page_cache_init
 
         .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "modules.inc"
+        .include    "page_cache.inc"
 
 .segment "CODE2"
 
@@ -35,6 +41,15 @@ init_ok:
         jsr     _page_cache_init                ; setup the cache free bank sizes etc.
 
         ; TODO: make cache init return status and error if there were issues
+        ; 16 files/dirs per page
+        mva     #16, mf_dir_pg_cnt
+        sta     _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
+        mwa     #mfp_pg_buf, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
+
+        ; no call back for now
+        lda     #$00
+        sta     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb
+        sta     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb+1
 
 file_loop:
         jsr     mfp_new_page

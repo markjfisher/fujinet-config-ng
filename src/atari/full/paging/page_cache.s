@@ -1290,25 +1290,6 @@ copy_to_cache:
         sta     num_pgs         ; save the count of page groups in this block
         iny                     ; move to first byte of pagegroup data
 
-;  * PageGroup structure:
-;  * Byte  0    : Flags
-;  *              - Bit 7: Last group (1=yes, 0=no)
-;  *              - Bits 6-0: Reserved
-;  * Byte  1    : Number of directory entries in this group
-;  * Bytes 2-3  : Group data size (16-bit little-endian, excluding header)
-;  * Byte  4    : Group index (0-based, calculated as dir_pos/group_size)
-;  * Bytes 5+   : File/Directory entries for this group
-;  *              Each entry:
-;  *              - Bytes 0-3: Packed timestamp and flags
-;  *                          - Byte 0: Years since 1970 (0-255)
-;  *                          - Byte 1: FFFF MMMM (4 bits flags, 4 bits month 1-12)
-;  *                                   Flags: bit 7 = directory, bits 6-4 reserved
-;  *                          - Byte 2: DDDDD HHH (5 bits day 1-31, 3 high bits of hour)
-;  *                          - Byte 3: HH mmmmmm (2 low bits hour 0-23, 6 bits minute 0-59)
-;  *              - Bytes 4-6: File size (24-bit little-endian, 0 for directories)
-;  *              - Byte  7  : Media type (0-255, with 0=unknown)
-;  *              - Bytes 8+ : Null-terminated filename
-
         setax   _set_path_flt_params+page_cache_set_path_filter_params::path_hash
         axinto  _insert_params+page_cache_insert_params::path_hash
 
@@ -1376,14 +1357,14 @@ h_loop:
 .endproc
 
 .proc run_callback
-        lda     page_cache_get_pagegroup_params::fetching_cb
-        ora     page_cache_get_pagegroup_params::fetching_cb+1
+        lda     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb
+        ora     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb+1
         bne     :+
 
         ; there wasn't one set, so just return
         rts
 
-:       mwa     page_cache_get_pagegroup_params::fetching_cb, cb_loc
+:       mwa     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb, cb_loc
 
         jmp     $ffff
 cb_loc  = * - 2

@@ -31,8 +31,6 @@
 ; set up the screen for a new page of files, getting screen ready and buffer with current path, and attempt to open the directory
 ; ptr1
 .proc mfp_new_page
-        ; 16 files/dirs per page
-        mva     #16, mf_dir_pg_cnt
         ; setup separator lines, and draw border. 0 based index for border line
         mva     #3, screen_separators
         ; allows 16 lines in file list (4-19), and 1 in an extra line for Date/Size information for current file
