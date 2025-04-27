@@ -30,17 +30,13 @@ mfp_show_page:
 ;   - <scroll> it to make it visible over whole name - NEED NEW ANIMATION
 ;   - print its file size and date in the extra line
 
-        ; set the path_hash - TODO: move this to where it's not constantly called
+        ; set the path_hash - TODO: move this to where it's not constantly called, and only when it changes
         mwa     #fn_dir_path, _set_path_flt_params+page_cache_set_path_filter_params::path
         mwa     #fn_dir_filter, _set_path_flt_params+page_cache_set_path_filter_params::filter
         jsr     _page_cache_set_path_filter
 
         ; setup the get call's parameters
         mwa     mf_dir_pos, _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position
-
-        ; TODO: move these 2 to some init, as they don't change
-        mva     mf_dir_pg_cnt, _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        mwa     #mfp_pg_buf, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
 
         ; get the pagegroup
         jsr     _page_cache_get_pagegroup
@@ -66,7 +62,17 @@ mfp_show_page:
         ;  *              - Byte  7  : Media type (0-255, with 0=unknown)
         ;  *              - Bytes 8+ : Null-terminated filename
 
+        mva     #$00, mf_entry_index
 
+loop_entries:
+        ldx     mf_entry_index
+        lda     mfp_pg_buf
+
+        ; we need to elipsize each entry as we print it, as fujinet sends entire filename when in block mode.
+        ; then animate it when we're hovering over it. for now, just print them ellipsized
+
+        ; filename is at mfp_pg_buf+5+8 initially, then we skip over to the next entry beyond the filename
+        
 
         rts
 

@@ -36,7 +36,7 @@ l_entries:
         mva     #$00, {mf_dir_or_file, x}
 
         jsr     read_dir_is_eod
-        bne     :+              ; is it a dir?
+        bne     :+              ; is it last entry of whole directory path?
 
         ; we are at EOD, so mark it, and skip over any printing
         mva     #$01, mf_is_eod
