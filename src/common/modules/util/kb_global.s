@@ -59,6 +59,13 @@ not_option:
         bne     some_input
         jsr     _kb_get_c_ucase
         cmp     #$00
+        bne     some_input
+
+        ; increment an idle counter, when it hits a level, run a callback function to allow
+        ; code to do some animation etc.
+
+
+
         beq     start_kb_get          ; simple loop if no key pressed or joystick movement
 
 ; ----------------------------------------------------------
@@ -95,6 +102,24 @@ do_right:
         mva     kb_next_mod, mod_current
         rts
 
+; ---------------------------------------------------
+; placed to be reachable by branches
+save_state:
+        ldy     #$00
+        mwa     kb_mod_current_line_p, ptr1
+        mva     kb_current_line, {(ptr1), y}
+
+        ; only highlight line if there are any to highlight
+        lda     kb_max_entries
+        beq     cont_kb
+        jsr     _scr_highlight_line
+        ; jmp     cont_kb
+
+cont_kb:
+        clc
+        bcc     start_kb_get
+; ---------------------------------------------------
+
 :
 ; -------------------------------------------------
 ; left - set prev module, and exit kb_global
@@ -122,7 +147,8 @@ do_up:
         cmp     #0
         beq     cont_kb
         dec     kb_current_line
-        jmp     save_state
+        ; can't go negative
+        bpl     save_state
 :
 ; -------------------------------------------------
 ; down
@@ -138,17 +164,7 @@ do_down:
         bcs     cont_kb
         inc     kb_current_line
         ; fall through to saving and restarting
-
-save_state:
-        ldy     #$00
-        mwa     kb_mod_current_line_p, ptr1
-        mva     kb_current_line, {(ptr1), y}
-
-        ; only highlight line if there are any to highlight
-        lda     kb_max_entries
-        beq     cont_kb
-        jsr     _scr_highlight_line
-        jmp     cont_kb
+        bne     save_state
 
 not_down:
 ; -------------------------------------------------
@@ -199,9 +215,11 @@ not_q:
 
 ; not_z:
 
-cont_kb:
-        ; and reloop if we didn't leave this routine through a kb option
-        jmp     start_kb_get
+; cont_kb:
+;         ; and reloop if we didn't leave this routine through a kb option
+;         jmp     start_kb_get
+
+        bne     cont_kb
 
 do_kb_module:
         pha                             ; save A, it's needed as parameter to function being called

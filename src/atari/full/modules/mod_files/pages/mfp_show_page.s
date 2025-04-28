@@ -11,6 +11,7 @@
         .import     fn_dir_path
         .import     mf_dir_pos
         .import     mf_dir_pg_cnt
+        .import     mf_entry_index
 
         .import     debug
 
@@ -72,7 +73,7 @@ loop_entries:
         ; then animate it when we're hovering over it. for now, just print them ellipsized
 
         ; filename is at mfp_pg_buf+5+8 initially, then we skip over to the next entry beyond the filename
-        
+
 
         rts
 
@@ -80,6 +81,8 @@ loop_entries:
 
 
 .bss
+
+
 ; this is where the cache copies the current pagegroup data to. just 1 pagegroup (i.e. screen's data for all files and their file sizes etc)
 ; NOTE: this can't be in BANK as the cache is copying out of cache which is in RAM BANK
 ; and can't copy into normal memory BANK as they can't be active at same time
