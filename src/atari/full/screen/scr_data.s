@@ -28,8 +28,8 @@ DL_MODEF      = $0F
 .segment "DLIST"
 
 main_dlist:
-    ; blank lines in head
-    .byte DL_BLK8, DL_BLK2
+    ; blank lines in head, last one has a DLI on it
+    .byte DL_BLK8, DL_BLK2 | DL_DLI
     LMS DL_MODEF, gouttop1
     LMS DL_MODEF, gouttop2, 2
 

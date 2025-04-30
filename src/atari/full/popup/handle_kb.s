@@ -271,10 +271,11 @@ not_edit:
         ; tried the ldx/ptr3 version (and with ptr2), but that breaks other part of the code, so keep the SMC version
         pha                             ; save A, it's needed as parameter to function being called
 
-        mwa     ss_args+ShowSelectArgs::kb_cb, smc+1
+        mwa     ss_args+ShowSelectArgs::kb_cb, smc
         pla
-smc:
-        jmp     $0000
+
+        jmp     $ffff
+smc     = *-2
 
 .endproc
 

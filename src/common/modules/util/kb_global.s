@@ -6,6 +6,7 @@
         .export     kb_next_mod
         .export     kb_mod_current_line_p
         .export     kb_mod_proc
+        .export     kb_idle_counter
 
         .import     _clr_scr_all
         .import     _clr_status
@@ -61,20 +62,33 @@ not_option:
         cmp     #$00
         bne     some_input
 
-        ; increment an idle counter, when it hits a level, run a callback function to allow
+        ; check idle counter, when it hits a level, run a callback function to allow
         ; code to do some animation etc.
 
+        ; is there even a cb setup?
+        lda     kb_cb_function
+        ora     kb_cb_function+1
+        beq     start_kb_get
 
+        lda     kb_idle_counter
+        cmp     #120                    ; have we had roughly 2 seconds for initial trigger, or reached re-trigger?
+        bcc     start_kb_get            ; not yet
 
-        beq     start_kb_get          ; simple loop if no key pressed or joystick movement
+        ; we hit max either for first time after key press, or after an animation frame, so run cb again
+        lda     #108                    ; reset to this so we only wait a shorter period for next animation, 120-108 = 12 = 0.2s
+        sta     kb_idle_counter
+
+        ; do the cb
+        bne     do_kb_cb
 
 ; ----------------------------------------------------------
 ; KEYBOARD HANDLING SWITCH STATEMENT
 ; ----------------------------------------------------------
 
 some_input:
-
-        ldx     #KBH::NOT_HANDLED    ; status of module keyboard handler set in x on return
+        ldx     #$00
+        stx     kb_idle_counter         ; reset counter after any input
+        ldx     #KBH::NOT_HANDLED       ; status of module keyboard handler set in x on return
 
         ; use module specific keyboard handler first, so we can override default handling, e.g. L/R arrow keys may not move modules
         jsr     do_kb_module
@@ -118,6 +132,13 @@ save_state:
 cont_kb:
         clc
         bcc     start_kb_get
+
+; also placed in middle for branches
+do_kb_cb:
+        mwa     kb_cb_function, smc
+        ; A is high byte of cb_function, which is never in page zero, no never 0 at this point
+        bne     do_jmp
+
 ; ---------------------------------------------------
 
 :
@@ -222,14 +243,14 @@ not_q:
         bne     cont_kb
 
 do_kb_module:
-        pha                             ; save A, it's needed as parameter to function being called
-        lda     kb_mod_proc
-        sta     smc+1
-        lda     kb_mod_proc+1
-        sta     smc+2
-        pla
-smc:
-        jmp     $0000
+        ; save A, it's needed as parameter to function being called
+        tay
+        mwa     kb_mod_proc, smc
+        tya
+
+do_jmp:
+        jmp     $ffff
+smc     = *-2
 
 .endproc
 
@@ -240,3 +261,7 @@ kb_mod_proc:            .res 2
 kb_max_entries:         .res 1
 kb_next_mod:            .res 1
 kb_prev_mod:            .res 1
+
+.data
+kb_cb_function:         .word $0000
+kb_idle_counter:        .byte $00

@@ -3,6 +3,7 @@
         .import         _reset_handler
         .import         mod_current
         .import         run_module
+        .import         restore_system_dli
 
         ; in a pure asm application (or where main is in asm, not sure...)
         ; this is required for the APPLE2 target, doesn't harm the atari
@@ -23,6 +24,9 @@
 
         ; ---------------------------------------------------
         ; RETURN TO CALLER
+
+        ; turn off the dli, and restore old vector
+        jsr     restore_system_dli
 
         ; reset DOSINI for reset handling
         mwa     _reset_handler+1+3, DOSINI

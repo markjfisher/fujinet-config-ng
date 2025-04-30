@@ -66,10 +66,11 @@ exit_select:
 .endproc
 
 .proc show_help
-        mwa     ss_args+ShowSelectArgs::help_cb, sh_address+1
+        mwa     ss_args+ShowSelectArgs::help_cb, sh_address
 
-sh_address:
         jmp     $ffff
+sh_address = *-2
+
 .endproc
 
 ; draw top part of select with title/help/status, and initialise some values

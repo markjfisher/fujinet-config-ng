@@ -3,6 +3,7 @@
         .import   _joy_load_driver
         .import   _joy_static_stddrv
         .import   _scr_setup
+        .import   enable_dli
         .import   fn_font_data
 
         .include  "atari.inc"
@@ -27,6 +28,9 @@
         mva     #>fn_font_data, CHBAS
 
         ; setup main Display List, and screen layout
-        jmp     _scr_setup
+        jsr     _scr_setup
+
+        ; enable DLIs
+        jmp     enable_dli
 
 .endproc

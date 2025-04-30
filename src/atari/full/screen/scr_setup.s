@@ -51,7 +51,7 @@
         jsr     _wait_scan1     ; at top of screen, everything is now setup
 
         ; turn screen and interrupts back on with DMA enabled for PMG
-        mva     #$40, NMIEN
+        mva     #$40, NMIEN     ; not DLIs yet, they will be add separately
         mva     #$2e, SDMCTL
 
         ; setup for the screen location to be usable by cc65's output routines
