@@ -9,7 +9,7 @@
         .import     mx_ask_lobby_info
         .import     mx_ask_lobby_option
         .import     mx_ask_pu_msg
-        .import     pu_null_cb
+        .import     _just_rts
         .import     pusha
         .import     pushax
         .import     return0
@@ -21,7 +21,7 @@
 
 .proc mx_ask_lobby
         jsr     _scr_clr_highlight
-        mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
+        mwa     #_just_rts, ss_args+ShowSelectArgs::kb_cb
         mwa     #mx_ask_lobby_info, ss_args+ShowSelectArgs::items
         mwa     #ask_help, ss_args+ShowSelectArgs::help_cb
         mwa     #mx_ask_pu_msg, ss_args+ShowSelectArgs::message

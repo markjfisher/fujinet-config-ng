@@ -32,7 +32,6 @@
         .import     mf_nd_err_saving
         .import     mf_nd_std_h1
         .import     mh_host_selected
-        .import     pu_null_cb
         .import     pusha
         .import     pushax
         .import     return0

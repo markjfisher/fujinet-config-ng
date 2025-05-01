@@ -22,7 +22,7 @@
         mva     mi_selected, kb_current_line
 
         ; count of preferences that can be altered (0 based)
-        mva     #$05, kb_max_entries
+        mva     #$06, kb_max_entries
         mva     #Mod::wifi, kb_prev_mod
         mva     #Mod::hosts, kb_next_mod
         mwa     #mi_selected, kb_mod_current_line_p

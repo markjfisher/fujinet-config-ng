@@ -32,7 +32,6 @@
 
 .segment "CODE2"
 
-
 .proc _mi_edit_preferences
         ; keep a copy of the real value so we can revert if user presses ESC
         jsr     copy_pref_to_temp
@@ -327,7 +326,7 @@ skip_invert:
 
 ; the lengths of each option shown - 1
 mi_prefs_char_count:
-        .byte 0, 0, 0, 1, 1, 1
+        .byte 0, 0, 0, 1, 1, 1, 0
 
 update_table:
         .addr (update_colour - 1)
@@ -336,14 +335,16 @@ update_table:
         .addr (update_bar - 1)
         .addr (update_bar - 1)
         .addr (update_bar - 1)
+        .addr (_just_rts - 1)
 
 on_edit:
-        .addr (_just_rts - 1)   ; colour, no nothing
-        .addr (_just_rts - 1)   ; brightness, no nothing
-        .addr (_just_rts - 1)   ; shade, no nothing
+        .addr (_just_rts - 1)   ; colour, do nothing
+        .addr (_just_rts - 1)   ; brightness, do nothing
+        .addr (_just_rts - 1)   ; shade, do nothing
         .addr (on_edit_bar - 1)
         .addr (on_edit_bar - 1)
         .addr (on_edit_bar - 1)
+        .addr (_just_rts - 1)   ; anim, do nothing
 
 .bss
 pref_copy:      .res 1

@@ -10,21 +10,19 @@
 #define FNC_APP_ID     0x01
 #define FNC_KEY_ID     0x01
 
-uint8_t buffer[sizeof(CNG_PREFS_DATA)];
-
 void write_defaults() {
-	memset(&cng_prefs, 0, sizeof(CNG_PREFS_DATA));
+	// memset(&cng_prefs, 0, sizeof(CNG_PREFS_DATA));
 
 	// set the latest version here
-	cng_prefs.version = 1;
+	cng_prefs.version = 2;
 	cng_prefs.colour = 0;
 	cng_prefs.brightness = 0xd;
 	cng_prefs.shade = 0;
 	cng_prefs.bar_conn = 0xb4;
 	cng_prefs.bar_disconn = 0x33;
 	cng_prefs.bar_copy = 0x66;
-
-	fuji_write_appkey(FNC_KEY_ID, sizeof(cng_prefs), &cng_prefs);
+	cng_prefs.anim_delay = 0x09;
+	write_prefs();
 }
 
 void upgrade(uint8_t from) {
@@ -34,7 +32,22 @@ void upgrade(uint8_t from) {
 		write_defaults();
 		break;
 
-	// case 1:
+	case 1:
+		// v1 had everything before anim_delay, write same values we have from loaded data but with anim_delay set to default 9
+
+		// copy v1 data into structure, it will be short by 1 byte
+		// NOTE: if we update even further, we will need to add the new fields here for v3 extras etc.
+		memcpy(&cng_prefs, keys_buffer, 7);
+		// do updates
+		cng_prefs.version = 2; 			// set new version (UPDATE THIS TO LATEST VERSION)
+		cng_prefs.anim_delay = 0x09;	// v2 additional data
+		// v3 extra here, etc...
+
+		// finally write the keys
+		write_prefs();
+		break;
+
+	// case 2:
 	//  these will have to copy old data correctly from old key structure to the new one...
 
 	default:
@@ -42,8 +55,17 @@ void upgrade(uint8_t from) {
 	}
 }
 
-void write_prefs() {
+void set_appkey_details(void) {
 	fuji_set_appkey_details(FNC_CREATOR_ID, FNC_APP_ID, DEFAULT);
+}
+
+bool read_appkeys(uint16_t *count) {
+	set_appkey_details();
+	return fuji_read_appkey(FNC_KEY_ID, count, keys_buffer);
+}
+
+void write_prefs(void) {
+	set_appkey_details();
 	fuji_write_appkey(FNC_KEY_ID, sizeof(cng_prefs), &cng_prefs);
 }
 
@@ -51,8 +73,8 @@ void read_prefs(void) {
 	bool r;
 	uint16_t read_count = 0;
 
-	fuji_set_appkey_details(FNC_CREATOR_ID, FNC_APP_ID, DEFAULT);
-	r = fuji_read_appkey(FNC_KEY_ID, &read_count, buffer);
+	memset(keys_buffer, 0, 66);
+	r = read_appkeys(&read_count);
 	if (!r) {
 		// couldn't find a key, so set and write defaults
 		write_defaults();
@@ -60,15 +82,18 @@ void read_prefs(void) {
 	}
 
 	// the first byte is the version of the config being loaded, so we can future proof our appkeys
-	cng_prefs.version = buffer[0];
+	cng_prefs.version = keys_buffer[0];
 
 	switch(cng_prefs.version) {
 	case 0:
 		upgrade(0);
 		break;
 	case 1:
+		upgrade(1);
+		break;
+	case 2:
 		// values can be copied directly from buffer to the config object
-		memcpy(&cng_prefs, buffer, sizeof(CNG_PREFS_DATA));
+		memcpy(&cng_prefs, keys_buffer, sizeof(CNG_PREFS_DATA));
 		break;
 	default:
 		write_defaults();

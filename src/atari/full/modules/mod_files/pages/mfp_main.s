@@ -1,5 +1,6 @@
         .export     mfp_main
 
+        .import     kb_cb_function
         .import     kb_current_line
         .import     mf_selected
         .import     mf_init
@@ -69,6 +70,11 @@ page_ok:
         beq     file_loop
 
 exit_mfp:
+        ; reset the kb cb routine to nothing so next screen using a global kb handler doesn't get odd effects
+        lda     #$00
+        sta     kb_cb_function
+        sta     kb_cb_function+1
+
         rts
 
 .endproc

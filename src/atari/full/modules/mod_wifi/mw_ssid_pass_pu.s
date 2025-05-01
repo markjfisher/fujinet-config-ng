@@ -9,7 +9,7 @@
         .import     mw_ask_cutom_wifi_info
         .import     mw_help
         .import     mw_save_ssid
-        .import     pu_null_cb
+        .import     _just_rts
         .import     pushax
         .import     return1
 
@@ -26,7 +26,7 @@
         mwa     {#(fuji_netconfig + NetConfig::ssid)}, { mw_ask_custom_wifi_ssid_info + POPUP_VAL_IDX }
         mwa     {#(fuji_netconfig + NetConfig::password)}, { mw_ask_custom_wifi_pass_info + POPUP_VAL_IDX }
 
-        mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
+        mwa     #_just_rts, ss_args+ShowSelectArgs::kb_cb
         mwa     #mw_ask_cutom_wifi_info, ss_args+ShowSelectArgs::items
         mwa     #mw_help, ss_args+ShowSelectArgs::help_cb
         mwa     #mw_ask_custom_wifi_pu_msg, ss_args+ShowSelectArgs::message

@@ -1,12 +1,14 @@
         .export     kb_global
 
+        .export     kb_cb_function
         .export     kb_current_line
+        .export     kb_idle_counter
         .export     kb_max_entries
-        .export     kb_prev_mod
-        .export     kb_next_mod
         .export     kb_mod_current_line_p
         .export     kb_mod_proc
-        .export     kb_idle_counter
+
+        .export     kb_prev_mod
+        .export     kb_next_mod
 
         .import     _clr_scr_all
         .import     _clr_status
@@ -39,6 +41,7 @@
 ; then deals with common cases (L/R, U/D, Option, ... more TODO)
 
 .proc kb_global
+        mwa     kb_cb_function, smc_cb
         jmp     save_state
         ; implicit rts
 
@@ -75,11 +78,18 @@ not_option:
         bcc     start_kb_get            ; not yet
 
         ; we hit max either for first time after key press, or after an animation frame, so run cb again
-        lda     #108                    ; reset to this so we only wait a shorter period for next animation, 120-108 = 12 = 0.2s
+        ; TODO: make this a preference, e.g. "delay time = 9", and subtract it from 120
+        lda     #111                    ; reset to this so we only wait a shorter period for next animation
         sta     kb_idle_counter
 
-        ; do the cb
-        bne     do_kb_cb
+        ; run the callback function
+        jsr     $ffff
+smc_cb  = *-2
+
+        ; and go back to kb get as though no key pressed
+        clc
+        bcc     start_kb_get
+
 
 ; ----------------------------------------------------------
 ; KEYBOARD HANDLING SWITCH STATEMENT
@@ -110,7 +120,7 @@ global_kb:
         beq     do_right
         cmp     #FNK_RIGHT2
         beq     do_right
-        bne     :+
+        bne     check_left
 
 do_right:
         mva     kb_next_mod, mod_current
@@ -133,15 +143,9 @@ cont_kb:
         clc
         bcc     start_kb_get
 
-; also placed in middle for branches
-do_kb_cb:
-        mwa     kb_cb_function, smc
-        ; A is high byte of cb_function, which is never in page zero, no never 0 at this point
-        bne     do_jmp
-
 ; ---------------------------------------------------
 
-:
+check_left:
 ; -------------------------------------------------
 ; left - set prev module, and exit kb_global
         cmp     #FNK_LEFT
@@ -251,6 +255,9 @@ do_kb_module:
 do_jmp:
         jmp     $ffff
 smc     = *-2
+        ; implicit rts
+
+
 
 .endproc
 

@@ -22,4 +22,7 @@
     ; bar copy colour (0-FF)
     bar_copy     .byte
 
+    ; animation delay (0-F)
+    anim_delay   .byte
+
 .endstruct

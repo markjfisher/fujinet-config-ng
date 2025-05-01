@@ -7,7 +7,7 @@
         .export mx_k_bank_cnt
         .export mf_s1, mf_h1, mf_prev, mf_next, mf_copying_msg
         .export mf_host, mf_filter, mf_path
-        .export mx_k_colour, mx_k_bright, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy
+        .export mx_k_colour, mx_k_bright, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy, mx_k_anim_delay
         .export mg_l1
 
         .export     mw_bssid
@@ -216,6 +216,7 @@ mx_k_shade:     .byte "Shade (B/G)", 0
 mx_k_bar_conn:  .byte "Bar (Conn.)", 0
 mx_k_bar_dconn: .byte "Bar (Discon.)", 0
 mx_k_bar_copy:  .byte "Bar (Copying)", 0
+mx_k_anim_delay:.byte "Anim. Delay", 0
 
 
 ; ------------------------------------------------------------------

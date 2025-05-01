@@ -4,9 +4,11 @@ FujiNet config for Atari in asm.
 
 ## Building
 
-You need cc65 installed to compile the config-ng, and dir2atr to create ATR images for atari.
+Requirements:
 
-If you wish to compress the config-ng binary, you will need the project fujinet-config-loader in a sibling directory to this project.
+- A unix type shell. This will NOT work in powershell/chocolatey make. I tried. I want to kill people
+- cc65 installed
+- dir2atr to create ATR images for atari
 
 If you have the `fujinet-config-tools` project in a sibling directory, and with all applications built in it (see its readme) then
 any built com files will be add to the ATR when doing a `disk` or `diskz` task.

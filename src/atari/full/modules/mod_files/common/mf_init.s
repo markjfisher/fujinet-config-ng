@@ -3,7 +3,9 @@
         .import     _fuji_close_directory
         .import     _mfs_get_y_offset
         .import     fn_dir_path
+        .import     kb_cb_function
         .import     mf_dir_pos
+        .import     mf_kb_cb
         .import     mf_kbh_running
         .import     mf_selected
         .import     mf_y_offset
@@ -22,6 +24,9 @@
 
 .proc mf_init
         jsr     _fuji_close_directory
+
+        ; set the initial kb callback function
+        mwa     #mf_kb_cb, kb_cb_function
 
         mwa     #$00, mf_dir_pos
         sta           mf_selected

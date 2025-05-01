@@ -5,6 +5,7 @@
         .import     _put_s_nl
         .import     hexb
         .import     hex_out
+        .import     mx_k_anim_delay
         .import     mx_k_bar_conn
         .import     mx_k_bar_copy
         .import     mx_k_bar_dconn
@@ -28,9 +29,11 @@
         put_s   #2, #10, #mx_k_bar_conn
         put_s   #2, #11, #mx_k_bar_dconn
         put_s   #2, #12, #mx_k_bar_copy
+        put_s   #2, #13, #mx_k_anim_delay
 
         ; print 0x in front of all hex values
         put_s   #18, #7, #pre_hex_str
+        jsr     _put_s_nl
         jsr     _put_s_nl
         jsr     _put_s_nl
         jsr     _put_s_nl
@@ -68,6 +71,10 @@
         lda     _cng_prefs + CNG_PREFS_DATA::bar_copy
         jsr     hexb
         jsr     _put_s_nl
+
+        lda     _cng_prefs + CNG_PREFS_DATA::anim_delay
+        jsr     hexb
+        put_s   #20, #13, #(temp_num+1)
 
         rts
 .endproc

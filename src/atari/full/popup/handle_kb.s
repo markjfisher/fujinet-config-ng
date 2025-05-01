@@ -1,5 +1,4 @@
         .export     handle_kb
-        .export     pu_null_cb
         .export     do_edit
         .export     start_pu_kbh
 
@@ -262,10 +261,6 @@ not_edit:
 ; end of keyboard switch, reloop until ESC or Enter is hit
 ; --------------------------------------------------------------------
         jmp     start_kb_get
-
-.proc pu_null_cb
-        rts
-.endproc
 
 .proc do_kb_cb
         ; tried the ldx/ptr3 version (and with ptr2), but that breaks other part of the code, so keep the SMC version

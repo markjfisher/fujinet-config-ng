@@ -1,5 +1,6 @@
         .export     mfs_main
 
+        .import     kb_cb_function
         .import     kb_current_line
         .import     mf_selected
         .import     mf_error_initialising
@@ -45,6 +46,10 @@ page_ok:
         beq     file_loop
 
 exit_mfs:
+        lda     #$00
+        sta     kb_cb_function
+        sta     kb_cb_function+1
+
         rts
 
 .endproc

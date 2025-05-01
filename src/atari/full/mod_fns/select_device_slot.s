@@ -15,7 +15,7 @@
         .import     ss_args
         .import     fuji_deviceslots
         .import     md_is_devices_data_fetched
-        .import     pu_null_cb
+        .import     _just_rts
         .import     pusha
         .import     pushax
         .import     _s_empty
@@ -46,7 +46,7 @@
 
         ; show the selector
         ; no cb handler needed for popup
-        mwa     #pu_null_cb, ss_args+ShowSelectArgs::kb_cb
+        mwa     #_just_rts, ss_args+ShowSelectArgs::kb_cb
 
         ; decide which version to show - with or without options
         lda     tmp2
