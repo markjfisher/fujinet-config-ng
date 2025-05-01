@@ -12,6 +12,7 @@
 
         .import     _clr_scr_all
         .import     _clr_status
+        .import     _cng_prefs
         .import     _kb_get_c_ucase
         .import     _kb_is_option
         .import     _scr_highlight_line
@@ -28,6 +29,7 @@
         .include    "macros.inc"
         .include    "modules.inc"
         .include    "fn_data.inc"
+        .include    "cng_prefs.inc"
 
 .segment "CODE2"
 
@@ -41,7 +43,16 @@
 ; then deals with common cases (L/R, U/D, Option, ... more TODO)
 
 .proc kb_global
+        ; setup the callback routine
         mwa     kb_cb_function, smc_cb
+
+        ; setup the delay for animation, 0-F, convert to 0-F to 0-1E (0-30), and subtract this from 115 so that always have at least 5 delay
+        lda     #115
+        sec
+        sbc     _cng_prefs + CNG_PREFS_DATA::anim_delay
+        sbc     _cng_prefs + CNG_PREFS_DATA::anim_delay
+        sta     lower_anim_delay
+
         jmp     save_state
         ; implicit rts
 
@@ -78,8 +89,9 @@ not_option:
         bcc     start_kb_get            ; not yet
 
         ; we hit max either for first time after key press, or after an animation frame, so run cb again
-        ; TODO: make this a preference, e.g. "delay time = 9", and subtract it from 120
-        lda     #111                    ; reset to this so we only wait a shorter period for next animation
+        lda     #$ff                    ; changed at start of kb_global to correct value
+lower_anim_delay = *-1
+
         sta     kb_idle_counter
 
         ; run the callback function

@@ -73,7 +73,6 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
   $(XS)/debugcmd: "bp debug" \
   $(XS)/debugcmd: "bp _page_cache_insert" \
-  $(XS)/debugcmd: "bp _read_prefs" \
 
 #  $(XS)/debugcmd: "bp mf_kb_cb" \
 
