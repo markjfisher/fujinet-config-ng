@@ -1,5 +1,5 @@
 	; Quickshot font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,24,56,56,0,56,56,0 ; !
 	.byte 238,204,136,0,0,0,0,0 ; "
 	.byte 108,254,108,108,108,254,108,0 ; #

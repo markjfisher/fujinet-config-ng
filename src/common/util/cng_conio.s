@@ -23,7 +23,7 @@
 
 
 ; void cng_gotoxy(uint8_t x, uint8_t y)
-cng_gotoxy:        
+cng_gotoxy:
         sta     ROWCRS          ; Set Y
         jsr     popa            ; Get X
         sta     COLCRS          ; Set X

@@ -150,7 +150,7 @@ sds_opt1_spc:   .byte 4, 2, 4
         NORMAL_CHARMAP
 sds_msg:
         .byte "Select Device Slot", 0
-        
+
 
 mfss_h1:
                 NORMAL_CHARMAP

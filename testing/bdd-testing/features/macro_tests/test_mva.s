@@ -6,7 +6,7 @@
 
 .code
 
-test_mva:    
+test_mva:
     ; immediate to address
     mva #$80, $80
     mva #$81, $2000

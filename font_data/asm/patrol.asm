@@ -1,5 +1,5 @@
 	; Patrol font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,16,16,16,0,48,0,0 ; !
 	.byte 0,102,136,0,0,0,0,0 ; "
 	.byte 0,68,254,68,254,68,0,0 ; #

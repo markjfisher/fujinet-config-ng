@@ -1,5 +1,5 @@
 	; Joshua font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,8,0,24,24,0 ; !
 	.byte 36,108,108,0,0,0,0,0 ; "
 	.byte 68,254,68,68,68,254,68,0 ; #

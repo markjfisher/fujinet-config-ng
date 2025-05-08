@@ -1,5 +1,5 @@
 	; Treatise font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,48,16,16,16,0,48,0 ; !
 	.byte 102,136,0,0,0,0,0,0 ; "
 	.byte 36,36,126,36,126,36,36,0 ; #

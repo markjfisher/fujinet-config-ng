@@ -1,5 +1,5 @@
 	; Fatality font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,24,24,0,16,48,0 ; !
 	.byte 238,204,68,0,0,0,0,0 ; "
 	.byte 0,54,126,108,108,252,216,0 ; #

@@ -1,5 +1,5 @@
 	; ZX Chicago font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,24,24,0,24,0 ; !
 	.byte 54,54,108,0,0,0,0,0 ; "
 	.byte 20,20,126,40,252,80,80,0 ; #

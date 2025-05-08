@@ -1,5 +1,5 @@
 	; Quantra font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 4,8,16,32,32,0,96,0 ; !
 	.byte 36,36,108,0,0,0,0,0 ; "
 	.byte 18,36,254,72,254,72,72,0 ; #

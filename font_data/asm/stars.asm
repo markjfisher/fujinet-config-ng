@@ -1,5 +1,5 @@
 	; Stars font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,40,56,40,56,0,56,0 ; !
 	.byte 119,85,238,0,0,0,0,0 ; "
 	.byte 116,84,254,84,254,84,116,0 ; #

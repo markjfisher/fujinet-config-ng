@@ -157,7 +157,7 @@ not_esc:
         sta     _cng_prefs, x           ; store it
         jsr     _write_prefs            ; save them
         jsr     mi_set_pmg_widths       ; set the widths back to normal
-        
+
         jsr     reset_help
         lda     _cng_prefs + CNG_PREFS_DATA::bar_conn
         sta     bar_colour

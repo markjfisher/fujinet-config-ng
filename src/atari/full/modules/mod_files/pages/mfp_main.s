@@ -30,7 +30,7 @@
 
 ; page group reading
 .proc mfp_main
-        jsr     mf_init                         ; identical setup to simple files - 
+        jsr     mf_init                         ; identical setup to simple files -
         bne     init_ok                         ; success status returned by mf_init
 
         jsr     mf_error_initialising

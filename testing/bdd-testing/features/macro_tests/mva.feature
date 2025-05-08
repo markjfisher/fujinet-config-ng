@@ -8,7 +8,7 @@ Feature: MACRO tests - mva
       And I create and load simple atari application
 
      When I execute the procedure at test_mva for no more than 200 instructions
-     
+
      Then I expect to see $80 equal $80
       And I expect to see $81 equal $01
       And I expect to see $2000 equal $81

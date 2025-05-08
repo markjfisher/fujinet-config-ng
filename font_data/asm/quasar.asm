@@ -1,5 +1,5 @@
 	; Quasar font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 40,40,40,8,56,40,56,0 ; !
 	.byte 102,85,170,68,0,0,0,0 ; "
 	.byte 92,214,130,214,130,214,116,0 ; #

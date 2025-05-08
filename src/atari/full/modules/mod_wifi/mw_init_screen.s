@@ -28,7 +28,7 @@
         sta     screen_separators
         ldy     #$01
         jsr     _clr_scr_with_separator
-        
+
         put_status #0, #mw_s1
         put_status #1, #mw_s2
         put_help   #0, #mw_h1

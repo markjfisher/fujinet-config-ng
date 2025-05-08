@@ -1,5 +1,5 @@
 	; ZX Eurostile font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,24,0,24,24,0 ; !
 	.byte 102,102,204,0,0,0,0,0 ; "
 	.byte 0,36,126,36,72,252,72,0 ; #

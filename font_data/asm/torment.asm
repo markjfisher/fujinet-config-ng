@@ -1,5 +1,5 @@
 	; Torment font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 28,24,24,24,16,0,24,16 ; !
 	.byte 54,36,72,0,0,0,0,0 ; "
 	.byte 108,108,254,108,254,108,72,144 ; #

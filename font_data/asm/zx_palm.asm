@@ -1,5 +1,5 @@
 	; ZX Palm font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,16,0,16,0 ; !
 	.byte 40,40,40,0,0,0,0,0 ; "
 	.byte 20,20,126,40,252,80,80,0 ; #

@@ -1,5 +1,5 @@
 	; Torque font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,24,24,0,48,48,0 ; !
 	.byte 54,54,108,0,0,0,0,0 ; "
 	.byte 54,127,54,108,254,108,0,0 ; #

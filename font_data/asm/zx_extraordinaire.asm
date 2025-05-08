@@ -1,5 +1,5 @@
 	; ZX Extraordinaire font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,8,8,0,8,8 ; !
 	.byte 36,36,72,72,0,0,0,0 ; "
 	.byte 0,20,62,20,20,62,20,0 ; #

@@ -1,5 +1,5 @@
 	; Quaked font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,56,0,56,56,0 ; !
 	.byte 238,238,238,0,0,0,0,0 ; "
 	.byte 40,124,254,108,254,254,108,0 ; #

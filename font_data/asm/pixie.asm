@@ -1,5 +1,5 @@
 	; Pixie font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,32,32,32,0,32,0,0 ; !
 	.byte 0,80,80,0,0,0,0,0 ; "
 	.byte 0,40,124,40,124,40,0,0 ; #

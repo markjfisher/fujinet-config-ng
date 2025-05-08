@@ -75,7 +75,7 @@
 .proc _bar_show
         sta     tmp10   ; highlight offset for currently viewed module, forces PMG down screen a bit as we don't always start on first line.
 
-        iny             ; make row 1 based 
+        iny             ; make row 1 based
         tya
         asl     a       ; row x 2
         asl     a       ; row x 4

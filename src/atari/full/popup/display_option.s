@@ -66,7 +66,7 @@ widget_loop:
         bne     over1                      ; no
 
         ldy     tmp2                    ; restore y as it was required to get the VAL location
-        ; set inverse on, we are the current 
+        ; set inverse on, we are the current
         mva     #$80, tmp4              ; turn inverting on
 
         ; but are we the current widget?
@@ -111,7 +111,7 @@ over1:
         dex
         bne     :-                      ; loop over len chars
 
-        
+
         ; other side of the text print closing char if we the current highlight
         lda     tmp5                    ; restore the VAL of option
         cmp     tmp1

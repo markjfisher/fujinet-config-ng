@@ -1,5 +1,5 @@
 	; Parchment font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 20,28,8,16,16,0,48,0 ; !
 	.byte 34,102,68,136,0,0,0,0 ; "
 	.byte 108,36,126,72,252,72,144,0 ; #

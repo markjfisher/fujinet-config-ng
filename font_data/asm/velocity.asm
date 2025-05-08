@@ -1,5 +1,5 @@
 	; Velocity font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,12,24,24,0,24,48 ; !
 	.byte 54,108,72,0,0,0,0,0 ; "
 	.byte 18,38,254,68,254,200,144,0 ; #

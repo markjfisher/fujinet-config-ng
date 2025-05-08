@@ -1,5 +1,5 @@
 	; High Noon font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,16,0,56,56,0 ; !
 	.byte 54,54,108,0,0,0,0,0 ; "
 	.byte 36,126,126,36,126,126,36,0 ; #

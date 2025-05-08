@@ -1,5 +1,5 @@
 	; Winterforge font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,16,48,16,48,0,48,0 ; !
 	.byte 0,54,108,0,0,0,0,0 ; "
 	.byte 0,20,62,40,124,40,0,0 ; #

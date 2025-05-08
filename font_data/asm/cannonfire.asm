@@ -1,5 +1,5 @@
 	; CannonFire font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,16,16,32,32,0,64,0 ; !
 	.byte 0,80,80,160,0,0,0,0 ; "
 	.byte 0,40,120,80,80,240,160,0 ; #

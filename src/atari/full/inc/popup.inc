@@ -94,7 +94,7 @@ POPUP_VPW_IDX   := 5            ; byte pointer to the ViewPort width for this fi
 
 ; a bit like html widgets
 .enum PopupItemType
-        finish                  ; marker that we have finished items             
+        finish                  ; marker that we have finished items
         space                   ; just a line of space
         textList                ; simple text list display with numbers, non editable, but selectable
         option                  ; like radio buttons, only 1 can be selected

@@ -110,7 +110,7 @@ end_ask:
 
 ; ------------------------------------------------------------
 ; Normal Disk Keyboard Handler
-; 
+;
 ; If they press "C", jump to CUSTOM dialog
 ; If they press "Enter" (Return), check the String fields, if empty, pretend we pressed E to edit instead and mark as unhandled for primary kbh to edit it
 nd_std_kbh:
@@ -129,7 +129,7 @@ nd_std_kbh:
         ldy     #$00
         lda     (ptr1), y
         beq     @name_empty
-        
+
         ; name is not empty, reset our keypress in A and return. X unchanged from default of not-handled
         lda     #FNK_ENTER
         rts
@@ -301,7 +301,7 @@ join_path_and_filename:
         ; check if the filename plus path are over limit
         setax   mf_ask_new_disk_name_std + POPUP_VAL_IDX
         axinto  ptr1
-        
+
         ; TODO: This is a copy of the code in combine_path_with_selection
         jsr     _fc_strlen
         sta     tmp2            ; capture the length for the append later

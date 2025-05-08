@@ -1,5 +1,5 @@
 	; Emmaline font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,16,0,56,56,0 ; !
 	.byte 238,238,204,0,0,0,0,0 ; "
 	.byte 0,116,254,116,116,254,116,0 ; #

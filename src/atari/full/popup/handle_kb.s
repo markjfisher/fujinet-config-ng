@@ -96,7 +96,7 @@ start_pu_kbh:
         ; do we have any selectables? e.g. info popups have non, so don't want to get stuck in loop here
         lda     ss_has_sel
         bne     :+
-        
+
         ; ignore tab, as we have no selectable widgets
         beq     start_kb_get
 
@@ -424,13 +424,13 @@ not_number:
         beq     kb_edit_yes
         cmp     #PopupItemType::number
         beq     kb_edit_yes
-        
+
         lda     ss_str_idx
         bmi     :+                              ; $ff means there is no EDIT option on page
 
         ; only 1 other can handle this key press, but not current widget
         lda     #PopupHandleKBEvent::other      ; indicate there's another widget that can use this press
-        rts 
+        rts
 
         ; default to NO, if more types need adding, add them above
 :       lda     #PopupHandleKBEvent::no
@@ -445,13 +445,13 @@ kb_edit_yes:
         jsr     get_current_item_type
         cmp     #PopupItemType::option
         beq     kb_lr_yes
-        
+
         lda     ss_lr_idx
         bmi     :+                              ; $ff means there is no U/D option on page
 
         ; only 1 other can handle this key press, but not current widget
         lda     #PopupHandleKBEvent::other      ; indicate there's another widget that can use this press
-        rts 
+        rts
 
         ; default to NO, if more types need adding, add them above
 :       lda     #PopupHandleKBEvent::no
@@ -466,13 +466,13 @@ kb_lr_yes:
         jsr     get_current_item_type
         cmp     #PopupItemType::textList
         beq     kb_ud_yes
-        
+
         lda     ss_ud_idx
         bmi     :+                              ; $ff means there is no U/D option on page
 
         ; only 1 other can handle this key press, but not current widget
         lda     #PopupHandleKBEvent::other      ; indicate there's another widget that can use this press
-        rts 
+        rts
 
         ; default to NO, if more types need adding, add them above
 :       lda     #PopupHandleKBEvent::no

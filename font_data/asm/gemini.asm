@@ -1,5 +1,5 @@
 	; Gemini font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,16,0,16,0 ; !
 	.byte 72,72,72,0,0,0,0,0 ; "
 	.byte 0,54,127,54,108,254,108,0 ; #

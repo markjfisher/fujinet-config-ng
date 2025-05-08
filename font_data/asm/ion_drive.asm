@@ -1,5 +1,5 @@
 	; Ion Drive font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,16,16,16,48,0,48,0 ; !
 	.byte 0,36,108,0,0,0,0,0 ; "
 	.byte 0,40,124,40,124,40,0,0 ; #

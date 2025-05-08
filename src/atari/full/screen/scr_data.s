@@ -39,7 +39,7 @@ main_dlist:
     ; status line
     LMS DL_MODE2, sline1
     LMS DL_MODE2, sline2
-    
+
     ; 2 spacers (40 x $ff)
     LMS DL_MODEF, gbk, 2
 

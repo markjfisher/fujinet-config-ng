@@ -1,5 +1,5 @@
 	; Byteletter font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,24,56,24,0,24,16,0 ; !
 	.byte 34,102,102,136,0,0,0,0 ; "
 	.byte 236,108,254,108,254,108,72,0 ; #

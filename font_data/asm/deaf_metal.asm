@@ -1,5 +1,5 @@
 	; Deaf Metal font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,56,56,56,16,56,16,0 ; !
 	.byte 34,119,238,0,0,0,0,0 ; "
 	.byte 40,124,254,108,254,124,40,0 ; #

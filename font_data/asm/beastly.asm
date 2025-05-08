@@ -1,5 +1,5 @@
 	; Beastly font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,24,24,8,24,0,56,0 ; !
 	.byte 54,36,72,0,0,0,0,0 ; "
 	.byte 0,40,124,40,124,40,0,0 ; #

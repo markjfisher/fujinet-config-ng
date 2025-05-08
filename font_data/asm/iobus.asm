@@ -1,5 +1,5 @@
 	; IoBus font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,56,56,0,56,0 ; !
 	.byte 54,54,36,0,0,0,0,0 ; "
 	.byte 58,58,62,58,62,58,58,0 ; #

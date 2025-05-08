@@ -1,5 +1,5 @@
 	; Comic Fans font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,16,16,0,48,0 ; !
 	.byte 102,136,0,0,0,0,0,0 ; "
 	.byte 0,20,60,40,120,80,0,0 ; #

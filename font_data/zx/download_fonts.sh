@@ -14,14 +14,14 @@ font_links=$(echo "$main_page" | grep -o 'href="/typography/zx-origins/[^"]*"' |
 while IFS= read -r link; do
     # Skip empty lines
     [ -z "$link" ] && continue
-    
+
     # Get the font page content
     font_page=$(curl -s "${BASE_URL}${link}")
-    
+
     # Extract the download link using grep and sed
     # Look for .zip files in the dl.damieng.com domain
     download_url=$(echo "$font_page" | grep -o 'https://dl\.damieng\.com/fonts/zx-origins/[^"]*\.zip' | head -n 1)
-    
+
     if [ ! -z "$download_url" ]; then
         echo "Downloading: $download_url"
         # Extract filename from URL and replace spaces with %20

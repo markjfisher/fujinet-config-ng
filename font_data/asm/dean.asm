@@ -1,5 +1,5 @@
 	; Dean font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 6,28,24,24,48,0,240,0 ; !
 	.byte 36,108,108,0,0,0,0,0 ; "
 	.byte 0,99,255,102,255,198,0,0 ; #

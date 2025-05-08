@@ -1,5 +1,5 @@
 	; Gattars Fork font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 6,12,12,24,24,0,48,0 ; !
 	.byte 102,68,136,0,0,0,0,0 ; "
 	.byte 19,54,126,36,126,108,200,0 ; #

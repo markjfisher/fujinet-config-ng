@@ -26,48 +26,48 @@ def format_line(line, line_number):
     # Split the line into parts
     parts = line.strip().split(';', 1)
     data_part = parts[0].strip()
-    
+
     # Skip if not a byte line
     if ".byte" not in data_part:
         return line.strip()
-    
+
     # Extract and convert the byte values
     bytes_str = data_part.replace(".byte", "").strip()
     bytes_list = [parse_byte(x.strip()) for x in bytes_str.split(',')]
-    
+
     # Format bytes in hex
     hex_bytes = [f"${x:02X}" for x in bytes_list]
-    
+
     # Construct the new line with comment from our array
     new_line = "    .byte " + ", ".join(hex_bytes)
     new_line += f" ; {COMMENTS[line_number]}"
-    
+
     return new_line
 
 def process_file(input_filepath):
     # Create pretty directory if it doesn't exist
     pretty_dir = os.path.join('font_data', 'pretty')
     os.makedirs(pretty_dir, exist_ok=True)
-    
+
     # Get the font name (remove _combined.asm)
     filename = os.path.basename(input_filepath)
     font_name = filename.replace("_combined.asm", "")
-    
+
     # Create new output filename
     output_filename = f"fd_{font_name}.asm"
     output_filepath = os.path.join(pretty_dir, output_filename)
-    
+
     with open(input_filepath, 'r') as f:
         lines = f.readlines()
-    
+
     # Start with the font header
     formatted_lines = [f"; FONT: {font_name}"]
-    
+
     # Process the byte lines
     for i, line in enumerate(lines):
         formatted_line = format_line(line, i)
         formatted_lines.append(formatted_line)
-    
+
     # Write to the new file in pretty directory
     with open(output_filepath, 'w') as f:
         f.write('\n'.join(formatted_lines) + '\n')

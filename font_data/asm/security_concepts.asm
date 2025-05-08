@@ -1,5 +1,5 @@
 	; Security Concepts font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,24,24,0,24,24 ; !
 	.byte 108,108,72,0,0,0,0,0 ; "
 	.byte 36,126,126,36,126,126,36,0 ; #

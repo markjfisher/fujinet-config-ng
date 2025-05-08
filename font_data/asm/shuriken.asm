@@ -1,5 +1,5 @@
 	; Shuriken font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,24,24,24,0,24,16,0 ; !
 	.byte 108,108,72,0,0,0,0,0 ; "
 	.byte 36,108,254,108,254,108,72,0 ; #

@@ -11,7 +11,7 @@
     ; return:
     ; hash in A/X (A=low byte, X=high byte)
 
-    ; ptr1 is a Zero Page location pointing to the current string    
+    ; ptr1 is a Zero Page location pointing to the current string
     sta     ptr1
     stx     ptr1+1
 

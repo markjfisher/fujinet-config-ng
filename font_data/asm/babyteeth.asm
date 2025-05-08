@@ -1,5 +1,5 @@
 	; Babyteeth font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 124,124,124,56,56,0,56,56 ; !
 	.byte 238,238,238,204,0,0,0,0 ; "
 	.byte 108,254,254,124,254,254,108,0 ; #

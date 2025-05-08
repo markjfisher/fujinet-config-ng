@@ -12,7 +12,7 @@ Feature: Screen Functions test - get_scrloc
       And I set register Y to <y>
       And I write word at t_fn with address get_scrloc
       And I execute the procedure at _main for no more than 30 instructions
-    
+
      Then I expect to see ptr4 equal lo(<loc>)
      Then I expect to see ptr4+1 equal hi(<loc>)
 

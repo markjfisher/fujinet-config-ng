@@ -20,12 +20,12 @@
 .proc mf_handle_input
         lda     mf_kbh_running
         beq     :+
-        
+
         ; don't redo kb handler if we're drilling down into directories, it just eats stack space, simply return and let the one previously setup to reloop
         ldx     #KBH::RELOOP
         rts
 
-        ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into kb_global 
+        ; start main keyboard handler, mark it's running so recursing into dirs doesn't cause stack issues by recursing into kb_global
 :       mva     #$01, mf_kbh_running
 
         mva     mf_dir_pg_cnt, kb_max_entries

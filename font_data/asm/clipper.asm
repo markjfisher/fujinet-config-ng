@@ -1,5 +1,5 @@
 	; Clipper font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,56,56,0,56,0 ; !
 	.byte 118,118,50,100,0,0,0,0 ; "
 	.byte 116,254,254,116,116,254,116,0 ; #

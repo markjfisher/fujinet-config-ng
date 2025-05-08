@@ -1,5 +1,5 @@
 	; Neoflow font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,24,24,48,48,0,96,0 ; !
 	.byte 0,54,54,108,0,0,0,0 ; "
 	.byte 0,26,126,180,53,126,104,0 ; #

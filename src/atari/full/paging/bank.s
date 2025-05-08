@@ -36,7 +36,7 @@ _change_bank:
 
 ; void set_default_bank(void)
 ;
-; changes to the 
+; changes to the
 _set_default_bank:
         lda     #$ff
         sta     PORTB

@@ -32,7 +32,7 @@ hex2int:
 ;
 ; caller is expected to modify hex_out+1/+2 to location to write to
 ; input: A = byte to convert to character
-; 
+;
 hexb:
         jsr     lHex
         ldy     #$01

@@ -1,5 +1,5 @@
 	; Firebird font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 28,24,24,24,0,24,24,0 ; !
 	.byte 102,238,68,136,0,0,0,0 ; "
 	.byte 0,119,127,54,108,254,108,0 ; #

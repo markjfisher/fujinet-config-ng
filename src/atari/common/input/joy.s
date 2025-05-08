@@ -77,7 +77,7 @@ check_button:
 
         ; passed both tests
         dec     button_was_pressed      ; set to 0
-        
+
         lda     used_up
         beq     :+
         lda     #FNK_ESC
@@ -236,18 +236,18 @@ used_right:         .byte 0
 ;     unsigned char return_key = 0;
 ;     unsigned char stick_state = *STICK0;
 ;     unsigned char trig_state = *STRIG0;
-    
+
 ;     // Check current joystick state (0 means pressed)
 ;     bool current_left = !(stick_state & JOY_LEFT_BIT);
 ;     bool current_right = !(stick_state & JOY_RIGHT_BIT);
 ;     bool current_up = !(stick_state & JOY_UP_BIT);
 ;     bool current_down = !(stick_state & JOY_DOWN_BIT);
 ;     button_pressed = (trig_state == 0);
-    
+
 ;     // Button was just released
 ;     if (!button_pressed && button_was_pressed) {
 ;         button_was_pressed = false;
-        
+
 ;         // Check if any direction was used during button press
 ;         if (used_left) {
 ;             return_key = FNK_PARENT;
@@ -262,19 +262,19 @@ used_right:         .byte 0
 ;             // No direction was used - simple button click
 ;             return_key = FNK_ENTER;
 ;         }
-        
+
 ;         // Reset all direction tracking
 ;         used_left = false;
 ;         used_right = false;
 ;         used_up = false;
 ;         used_down = false;
-        
+
 ;         return return_key;
 ;     }
 ;     // Button was just pressed
 ;     else if (button_pressed && !button_was_pressed) {
 ;         button_was_pressed = true;
-        
+
 ;         // Initialize direction tracking
 ;         used_left = current_left;
 ;         used_right = current_right;
@@ -309,13 +309,13 @@ used_right:         .byte 0
 ;             return FNK_DOWN;
 ;         }
 ;     }
-    
+
 ;     // Update state
 ;     is_joy_left = current_left;
 ;     is_joy_right = current_right;
 ;     is_joy_up = current_up;
 ;     is_joy_down = current_down;
-    
+
 ;     return 0;  // No event
 ; }
 

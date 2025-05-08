@@ -1,5 +1,5 @@
 	; Xcerpt font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,8,16,16,0,32,48,0 ; !
 	.byte 54,36,72,0,0,0,0,0 ; "
 	.byte 0,36,126,36,72,252,72,0 ; #

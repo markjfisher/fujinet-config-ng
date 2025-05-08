@@ -1,5 +1,5 @@
 	; Wand font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,8,8,16,0,32,32,0 ; !
 	.byte 20,20,40,0,0,0,0,0 ; "
 	.byte 0,72,120,72,72,120,72,0 ; #

@@ -1,5 +1,5 @@
 	; Xcelerant font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 4,12,8,24,0,24,48,0 ; !
 	.byte 54,108,72,0,0,0,0,0 ; "
 	.byte 27,18,126,36,254,72,216,0 ; #

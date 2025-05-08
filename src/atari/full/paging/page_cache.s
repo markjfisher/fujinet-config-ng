@@ -20,7 +20,7 @@
         .import     _get_pagegroup_params
         .import     _path_filter
         .import     _set_path_flt_params
-    
+
         .import     _bank_count
         .import     _change_bank
         .import     _get_bank_base
@@ -148,19 +148,19 @@ calc_mid:
         lda     (ptr1),y
         cmp     _find_params+page_cache_find_params::path_hash
         bne     key_differs
-        
+
         ; First byte matches, compare second byte
         iny
         lda     (ptr1),y
         cmp     _find_params+page_cache_find_params::path_hash+1
         bne     key_differs
-        
+
         ; Hash matches, compare group_id. This relies on group_id being next byte in struct
         iny
         lda     (ptr1),y                ; group_id
         cmp     _find_params+page_cache_find_params::group_id
         bne     key_differs
-        
+
         ; Exact match found!
         inc     _find_params+page_cache_find_params::found_exact  ; set found_exact = 1
 
@@ -282,7 +282,7 @@ try_insert:
         ; No space in index, try to free up space
         jsr     try_free_space
         bne     try_insert      ; If space was freed (A != 0), try again
-        
+
         ; No space could be freed
         jmp     no_space
 
@@ -296,16 +296,16 @@ have_space:
 
         ; Find a bank with enough space
         jsr     _page_cache_find_free_bank
-        
+
         ; Check if we found a bank
         lda     _find_bank_params+page_cache_find_bank_params::bank_id
         cmp     #$FF
         bne     :+
         jmp     no_space
-        
+
         ; Store the bank_id in insert_params
 :       sta     _insert_params+page_cache_insert_params::bank_id
-        
+
         ; Calculate bank offset from free space
         lda     _find_bank_params+page_cache_find_bank_params::bank_id
         asl     a              ; * 2 for word offset
@@ -459,17 +459,17 @@ try_expel:
         lda     attempts
         cmp     #3
         bcs     try_remove_entries  ; If attempts >= 3, try removing entries
-        
+
         ; Increment attempts counter
         inc     attempts
-        
+
         ; Try to expel a path
         jsr     _page_cache_expel_path
-        
+
         ; Check if any entries were removed
         lda     _remove_path_params+page_cache_remove_path_params::removed_count
         bne     success       ; If entries removed, return success
-        
+
 try_remove_entries:
         ; Get first entry's hash and group_id
         lda     _cache+page_cache::entries+page_cache_entry::path_hash
@@ -478,10 +478,10 @@ try_remove_entries:
         sta     _remove_group_params+page_cache_remove_group_params::path_hash+1
         lda     _cache+page_cache::entries+page_cache_entry::group_id
         sta     _remove_group_params+page_cache_remove_group_params::group_id
-        
+
         ; Remove the entry
         jsr     _page_cache_remove_group
-        
+
         ; Entry was removed, return success
 success:
         lda     #1
@@ -560,30 +560,30 @@ found:
         lda     (ptr1),y
         sta     tmp2
         sta     highest_offset+1
-        
+
         ; Start scanning from beginning of entries
         lda     #<(_cache+page_cache::entries)
         sta     ptr1
         lda     #>(_cache+page_cache::entries)
         sta     ptr1+1
-        
+
         ldx     #0                  ; Entry counter
 scan_loop:
         cpx     _cache+page_cache::entry_count
         bne     continue_scan
         jmp     scan_done
 
-continue_scan:        
+continue_scan:
         ; Check if this is our entry
         cpx     _find_params+page_cache_find_params::position
         beq     next_entry
-        
+
         ; Check if same bank
         ldy     #page_cache_entry::bank_id
         lda     (ptr1),y           ; Get bank_id
         cmp     bank_id
         bne     next_entry
-        
+
         ; Get this entry's offset
         iny                    ; Point to bank_offset
         lda     (ptr1),y
@@ -591,7 +591,7 @@ continue_scan:
         iny
         lda     (ptr1),y
         sta     entry_offset+1
-        
+
         ; save the entry's group size
         iny                    ; Point to group_size
         lda     (ptr1),y
@@ -599,7 +599,7 @@ continue_scan:
         iny
         lda     (ptr1),y
         sta     group_size+1
-        
+
         ; Compare with our offset (entry_offset > tmp1/2?)
         lda     entry_offset+1     ; Compare high bytes first
         cmp     tmp2
@@ -619,7 +619,7 @@ calc_end_offset:
         lda     entry_offset+1
         adc     group_size+1      ; Add high byte of group_size
         sta     end_offset+1
-        
+
         ; Update highest_offset if this is higher (entry_offset > highest_offset?)
         ; lda     end_offset+1     ; Compare high bytes first
         cmp     highest_offset+1
@@ -646,7 +646,7 @@ adjust_offset:
         lda     entry_offset+1
         sbc     adjust_size+1     ; Use saved adjustment size
         sta     entry_offset+1
-        
+
         ; Store adjusted offset back to entry
         ldy     #page_cache_entry::bank_offset+1
         ; lda     entry_offset
@@ -674,7 +674,7 @@ scan_done:
         sta     ptr1
         lda     entry_loc+1
         sta     ptr1+1
-        
+
         ; Calculate total size to move
         sec
         lda     highest_offset
@@ -683,7 +683,7 @@ scan_done:
         lda     highest_offset+1
         sbc     tmp2
         sta     move_size+1
-        
+
         ; If nothing to move, we're done with bank operations
         ora     move_size
         bne     move_bank
@@ -693,12 +693,12 @@ move_bank:
         ; Switch to correct bank
         lda     bank_id
         jsr     _change_bank
-        
+
         ; Get bank base address into ptr3/ptr4 for calculations
         jsr     _get_bank_base
         sta     ptr3
         stx     ptr3+1
-        
+
         ; Calculate source address (bank_base + offset + group_size)
         ; First add offset
         clc
@@ -708,7 +708,7 @@ move_bank:
         lda     ptr3+1
         adc     tmp2              ; Add high byte of offset
         sta     ptr2+1
-        
+
         ; Now add group_size to get final source
         clc
         lda     ptr2
@@ -717,7 +717,7 @@ move_bank:
         lda     ptr2+1
         adc     group_size+1      ; Add high byte of group_size
         sta     ptr2+1
-        
+
         ; Calculate destination address (bank_base + offset)
         lda     ptr3
         clc
@@ -728,12 +728,12 @@ move_bank:
         tax                     ; high byte for pushax
         tya                     ; low byte for pushax
         jsr     pushax
-        
+
         ; Push source address
         lda     ptr2              ; Load source address
         ldx     ptr2+1
         jsr     pushax
-        
+
         ; Push size
         lda     move_size         ; Load size to move
         ldx     move_size+1
@@ -749,7 +749,7 @@ bank_done:
         sec
         sbc     _find_params+page_cache_find_params::position     ; A = count - position
         beq     last_entry                             ; If removing last entry, no move needed
-        
+
         sec                     ; Set carry for sbc
         sbc     #1                  ; Subtract 1 since position is included
         jsr     mul8                                   ; Get number of bytes to move in tmp1/tmp2
@@ -799,62 +799,62 @@ set_success:
         lda     #0
         sta     _remove_path_params+page_cache_remove_path_params::removed_count
         sta     entry_index      ; Initialize entry index to 0
-        
+
         ; Initialize entry pointer to start of entries
         lda     #<(_cache+page_cache::entries)
         sta     ptr2
         lda     #>(_cache+page_cache::entries)
         sta     ptr2+1
-        
+
 scan_loop:
         ; Check if we've reached the end
         lda     entry_index
         cmp     _cache+page_cache::entry_count
         bcs     done
-        
+
         ; Compare first hash byte
-        ldy     #0              
+        ldy     #0
         lda     (ptr2),y
         cmp     _remove_path_params+page_cache_remove_path_params::path_hash  ; Compare with stored hash
         beq     check_second    ; Equal, check second byte
         bcc     next_entry     ; Less than target, keep scanning
         bcs     done           ; Greater than target, we're done
-        
+
 check_second:
         ; First byte matches, check second byte
-        iny                 
+        iny
         lda     (ptr2),y
         cmp     _remove_path_params+page_cache_remove_path_params::path_hash+1  ; Compare with stored hash
         beq     found_match     ; Equal, we found a match
         bcc     next_entry     ; Less than target, keep scanning
         bcs     done           ; Greater than target, we're done
-        
+
 found_match:
         ; Hash matches! Set up remove_group_params and call remove_group
         ; Get group_id from entry
         ldy     #page_cache_entry::group_id
         lda     (ptr2),y
         sta     _remove_group_params+page_cache_remove_group_params::group_id
-        
+
         ; Copy path hash to remove_group_params
         lda     _remove_path_params+page_cache_remove_path_params::path_hash
         sta     _remove_group_params+page_cache_remove_group_params::path_hash
         lda     _remove_path_params+page_cache_remove_path_params::path_hash+1
         sta     _remove_group_params+page_cache_remove_group_params::path_hash+1
-        
+
         ; Call remove_group
         jsr     _page_cache_remove_group
-        
+
         ; Check if removal was successful
         lda     _remove_group_params+page_cache_remove_group_params::success
         beq     next_entry
-        
+
         ; Removal succeeded, increment removed count
         inc     _remove_path_params+page_cache_remove_path_params::removed_count
-        
+
         ; Don't increment entry_index since entries shifted down
         bne     scan_loop
-        
+
 next_entry:
         ; Move to next entry - add index size to ptr2
         lda     ptr2
@@ -863,11 +863,11 @@ next_entry:
         sta     ptr2
         bcc     :+
         inc     ptr2+1
-:       
+:
         ; Move to next entry index
         inc     entry_index
         bne     scan_loop
-        
+
 done:
         rts
 
@@ -915,20 +915,20 @@ try_alloc:
         sta     ptr2           ; best_space low = 0
         sta     ptr2+1         ; best_space high = 0
         sta     tmp2           ; bank_index = 0
-        
+
 bank_loop:
         ; Get index into bank_free_space array (bank_index * 2)
         lda     tmp2           ; bank_index
         asl                ; * 2 for word offset
         tay
-        
+
         ; Load bank space into tmp3/tmp4
         lda     _cache+page_cache::bank_free_space,y
         sta     tmp3           ; Low byte
         iny
         lda     _cache+page_cache::bank_free_space,y
         sta     tmp4           ; High byte
-        
+
         ; Skip if bank doesn't have enough space
         cmp     _find_bank_params+page_cache_find_bank_params::size_needed+1
         bcc     next_bank      ; If high byte less, skip
@@ -936,25 +936,25 @@ bank_loop:
         lda     tmp3           ; High bytes equal, compare low
         cmp     _find_bank_params+page_cache_find_bank_params::size_needed
         bcc     next_bank      ; If low byte less, skip
-        
+
 check_entries:
         ; Initialize entry pointer
         lda     #<(_cache+page_cache::entries)
         sta     ptr1
         lda     #>(_cache+page_cache::entries)
         sta     ptr1+1
-        
+
         ldx     #0              ; entry counter
 scan_loop:
         cpx     _cache+page_cache::entry_count
         beq     update_best     ; No matches, update best if better space
-        
+
         ; Check if entry is in this bank
         ldy     #page_cache_entry::bank_id
         lda     (ptr1),y
         cmp     tmp2           ; Compare with current bank_index
         bne     next_entry
-        
+
         ; Check path hash
         ldy     #page_cache_entry::path_hash
         lda     (ptr1),y        ; Load first byte of hash
@@ -964,12 +964,12 @@ scan_loop:
         lda     (ptr1),y        ; Load second byte of hash
         cmp     _find_bank_params+page_cache_find_bank_params::path_hash+1
         bne     next_entry
-        
+
         ; Found matching bank with enough space - use it!
         lda     tmp2           ; Get bank_index
         sta     _find_bank_params+page_cache_find_bank_params::bank_id
         rts
-        
+
 next_entry:
         ; Move to next entry
         lda     ptr1
@@ -980,7 +980,7 @@ next_entry:
         inc     ptr1+1
 :       inx
         bne     scan_loop
-        
+
 update_best:
         ; Compare with current best space
         lda     tmp4           ; High byte
@@ -991,7 +991,7 @@ update_best:
         cmp     ptr2
         bcc     next_bank      ; If less than best, try next
         beq     next_bank      ; If equal, keep current
-        
+
 set_best:
         ; Update best values
         lda     tmp3
@@ -1000,19 +1000,19 @@ set_best:
         sta     ptr2+1         ; best_space high
         lda     tmp2           ; bank_index
         sta     tmp1           ; best_bank
-        
+
 next_bank:
         ; Move to next bank
         inc     tmp2           ; bank_index++
         lda     tmp2
         cmp     _cache+page_cache::max_banks
         bne     bank_loop
-        
+
         ; Check if we found a bank with enough space
         lda     tmp1
         cmp     #$FF
         beq     need_space      ; If no bank found, try freeing space
-        
+
         ; Store best bank in result and return
         sta     _find_bank_params+page_cache_find_bank_params::bank_id
         rts
@@ -1023,7 +1023,7 @@ need_space:
         beq     too_large
 
         jmp     try_alloc      ; If space was freed, try allocation again
-        
+
 too_large:
 no_space:
         ; Return 0xFF to indicate no space found
@@ -1042,35 +1042,35 @@ no_space:
         ; Initialize removed count to 0
         lda     #0
         sta     _remove_path_params+page_cache_remove_path_params::removed_count
-        
+
         ; Exit early if no entries
         lda     _cache+page_cache::entry_count
         beq     done
-        
+
         ; Initialize entry pointer to start of entries
         lda     #<(_cache+page_cache::entries)
         sta     ptr1
         lda     #>(_cache+page_cache::entries)
         sta     ptr1+1
-        
+
         ldx     #0              ; Entry counter
 scan_loop:
         cpx     _cache+page_cache::entry_count
         beq     done           ; Reached end of entries
-        
+
         ; Check if this entry has a different path hash
         ; First byte
         ldy     #page_cache_entry::path_hash
         lda     (ptr1),y
         cmp     _find_bank_params+page_cache_find_bank_params::path_hash
         bne     found_different
-        
+
         ; Second byte
         iny
         lda     (ptr1),y
         cmp     _find_bank_params+page_cache_find_bank_params::path_hash+1
         bne     found_different
-        
+
 next_entry:
         ; Move to next entry
         lda     ptr1
@@ -1081,7 +1081,7 @@ next_entry:
         inc     ptr1+1
 :       inx
         bne     scan_loop      ; Always taken as entry_count < 256
-        
+
 done:
         rts
 
@@ -1093,7 +1093,7 @@ found_different:
         iny
         lda     (ptr1),y        ; Get second byte of hash
         sta     _remove_path_params+page_cache_remove_path_params::path_hash+1
-        
+
         ; Call page_cache_remove_path
         jmp     _page_cache_remove_path  ; Tail call optimization
 

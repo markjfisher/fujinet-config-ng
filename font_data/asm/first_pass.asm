@@ -1,5 +1,5 @@
 	; First Pass font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,8,0,16,0 ; !
 	.byte 36,54,2,0,0,0,0,0 ; "
 	.byte 36,36,127,20,23,122,18,0 ; #

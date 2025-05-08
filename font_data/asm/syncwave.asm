@@ -1,5 +1,5 @@
 	; Syncwave font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,56,56,40,16,40,56,0 ; !
 	.byte 0,119,119,85,102,0,0,0 ; "
 	.byte 40,40,254,56,214,40,40,0 ; #

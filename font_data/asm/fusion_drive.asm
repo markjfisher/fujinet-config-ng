@@ -1,5 +1,5 @@
 	; Fusion Drive font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,8,8,16,0,48,0,0 ; !
 	.byte 0,18,36,72,0,0,0,0 ; "
 	.byte 0,40,124,40,124,40,0,0 ; #

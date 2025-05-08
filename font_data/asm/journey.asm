@@ -1,5 +1,5 @@
 	; Journey font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 4,12,12,24,24,0,48,0 ; !
 	.byte 54,54,36,72,0,0,0,0 ; "
 	.byte 22,22,127,44,254,88,88,0 ; #

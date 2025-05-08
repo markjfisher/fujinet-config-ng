@@ -1,5 +1,5 @@
 	; JumpZone font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,40,40,56,16,40,56,0 ; !
 	.byte 119,153,170,68,0,0,0,0 ; "
 	.byte 116,84,222,84,222,84,116,0 ; #

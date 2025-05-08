@@ -223,6 +223,16 @@ s2:
     stx     1+(arg1)
 .endmacro
 
+; adds values mem1 and args into mem1, or mem3 if present
+; handles literals of 1 or 2 bytes as well as memory.
+; examples:
+; adw mem1, #$05
+; adw mem1, #$05, mem2
+; adw mem1, #$0500
+; adw mem1, #$0500, mem2
+; adw mem1, mem2
+; adw mem1, mem2, mem3
+
 .macro adw arg1, arg2, arg3
     .local l1_a, l1_b
     ; ensure arg1/arg3 don't have immediate values. They are always locations.

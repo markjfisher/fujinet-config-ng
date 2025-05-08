@@ -16,6 +16,8 @@
         .include    "macros.inc"
         .include    "zp.inc"
 
+.segment "CODE2"
+
 ; void display_string_in_viewport()
 _display_string_in_viewport:
         ; Calculate half_viewport = viewport_width / 2
@@ -115,7 +117,7 @@ _display_string_in_viewport:
         lda     char_index+1
         cmp     _es_params+edit_string_params::cursor_pos+1
         bne     @not_cursor
-        
+
         ; Set reverse mode
         lda     #1
         jsr     _revers
@@ -161,7 +163,7 @@ _display_string_in_viewport:
         lda     char_index+1
         cmp     _es_params+edit_string_params::cursor_pos+1
         bne     @next
-        
+
         ; Turn off reverse mode
         lda     #0
         jsr     _revers

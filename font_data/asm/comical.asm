@@ -1,5 +1,5 @@
 	; Comical font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 28,28,24,48,0,96,96,0 ; !
 	.byte 102,102,136,0,0,0,0,0 ; "
 	.byte 0,54,127,54,108,254,108,0 ; #

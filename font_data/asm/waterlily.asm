@@ -1,5 +1,5 @@
 	; Waterlily font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,16,16,0,48,0 ; !
 	.byte 18,36,36,0,0,0,0,0 ; "
 	.byte 20,20,108,40,108,80,80,0 ; #

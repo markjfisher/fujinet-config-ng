@@ -1,5 +1,5 @@
 	; Reflections font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 28,20,20,28,8,28,28,0 ; !
 	.byte 68,170,238,0,0,0,0,0 ; "
 	.byte 0,84,254,92,116,254,84,0 ; #

@@ -8,7 +8,7 @@ Feature: MACRO tests - mwa
       And I create and load simple atari application
 
      When I execute the procedure at test_mwa for no more than 200 instructions
-     
+
      Then I expect to see t_t1 equal lo($1234)
       And I expect to see t_t1+1 equal hi($1234)
       And I expect to see t_t2 equal lo($abcd)

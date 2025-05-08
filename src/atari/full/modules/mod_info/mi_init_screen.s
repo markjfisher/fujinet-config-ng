@@ -5,35 +5,30 @@
         .import     _clr_help
         .import     _clr_scr_with_separator
         .import     _clr_status
-        .import     _cng_prefs
-        .import     _div_i16_by_i8
+        .import     _mx_v_version
         .import     _pmg_space_left
         .import     _pmg_space_right
         .import     _put_help
         .import     _put_s
-        .import     _put_s_nl
         .import     _put_status
         .import     _scr_clr_highlight
+        .import     itoa_args
+        .import     itoa_2digits
         .import     mg_l1
         .import     mx_h1
         .import     mx_k_app_name
         .import     mx_k_bank_cnt
-        .import     mx_k_bar_conn
-        .import     mx_k_bar_copy
-        .import     mx_k_bar_dconn
-        .import     mx_k_colour
-        .import     mx_k_shade
         .import     mx_k_version
         .import     mx_s1
         .import     mx_s2
         .import     mx_v_app_name
-        .import     _mx_v_version
         .import     pusha
-        .import     temp_num
         .import     screen_separators
+
 
         .include    "cng_prefs.inc"
         .include    "fn_data.inc"
+        .include    "itoa.inc"
         .include    "macros.inc"
         .include    "zp.inc"
 
@@ -64,37 +59,12 @@ _mi_init_screen:
 
 to_decimal_str:
         ; convert bank count to screen value
-        pusha   #10                     ; denominator
-        lda     _bank_count
-        ldx     #$00
+        mva     _bank_count, itoa_args+ITOA_PARAMS::itoa_input
+        mva     #$00, itoa_args+ITOA_PARAMS::itoa_show0
+        jsr     itoa_2digits
 
-        jsr     _div_i16_by_i8          ; A = quotient, X = remainder
-
-        ; add '0' ascii to A and X to bring into printable char range
-        ; quotient part moved to Y
-        clc
-        adc     #'0'
-        tay
-        ; remainder part moved to A
-        txa
-        clc
-        adc     #'0'
-
-        ; check if we're under 10 (quotient will be '0' ascii)
-        cpy     #'0'
-        beq     under_10
-
-        sty     temp_num
-        sta     temp_num + 1
-        bne     :+                      ; guaranteed to be not 0, as we added 0x30 to get ascii char
-
-under_10:
-        sta     temp_num
-        mva     #$00, temp_num+1
-
-:
         ; now print bank count, it's now an ascii string
-        put_s   #18, #3, #temp_num
+        put_s   #18, #3, #itoa_args+ITOA_PARAMS::itoa_buf
 
         rts
 

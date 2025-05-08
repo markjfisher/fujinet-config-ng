@@ -50,7 +50,7 @@ advance_cursor_check:
         bne     @done
         inc     _es_params+edit_string_params::cursor_pos+1
 
-@done:  
+@done:
         jmp     display            ; Always go to display
 
 
@@ -177,7 +177,7 @@ inc_length:
 _edit_string:
         ; Save original length
         setax   _es_params+edit_string_params::initial_str
-        jsr     _strlen        
+        jsr     _strlen
         axinto  orig_length
 
         ; Set up buffer pointer
@@ -190,11 +190,11 @@ _edit_string:
         lda     _es_params+edit_string_params::buffer
         ldx     _es_params+edit_string_params::buffer+1
         jsr     pushax      ; Push destination
-        
+
         lda     _es_params+edit_string_params::initial_str
         ldx     _es_params+edit_string_params::initial_str+1
         jsr     pushax      ; Push source
-        
+
         setax   orig_length
         jsr     _memcpy
 
@@ -274,7 +274,7 @@ check_ascii:
         ; Check if number only mode
         lda     _es_params+edit_string_params::is_number
         beq     handle_char  ; If not number mode, accept any char
-        
+
         lda     char_input
         cmp     #'0'
         bcc     main_loop    ; If less than '0', ignore
@@ -302,9 +302,9 @@ handle_char:
         ; Update length if at end
         jsr     cmp_cursor_length
         bne     advance_cursor
-        
+
         jsr     inc_length
-        
+
         ; Add null terminator
         ldy     _es_params+edit_string_params::current_length
         lda     #0
@@ -320,7 +320,7 @@ check_replace:
         ldy     _es_params+edit_string_params::cursor_pos
         lda     char_input
         sta     (ptr1),y
-        
+
         jmp     advance_cursor_check    ; this then jumps to "display"
 
 handle_enter:
@@ -328,11 +328,11 @@ handle_enter:
         lda     _es_params+edit_string_params::initial_str
         ldx     _es_params+edit_string_params::initial_str+1
         jsr     pushax      ; Push destination
-        
+
         lda     _es_params+edit_string_params::buffer
         ldx     _es_params+edit_string_params::buffer+1
         jsr     pushax      ; Push source
-        
+
         lda     _es_params+edit_string_params::current_length
         ldx     _es_params+edit_string_params::current_length+1
         jsr     _memcpy
@@ -352,7 +352,7 @@ handle_enter:
         lda     _es_params+edit_string_params::current_length
         ldx     _es_params+edit_string_params::current_length+1
         jsr     show_string
-        
+
         jmp     return1 ; return true
 
 handle_escape:
@@ -360,7 +360,7 @@ handle_escape:
         lda     orig_length     ; Original length low byte
         ldx     orig_length+1   ; Original length high byte
         jsr     show_string
-        
+
         jmp     return0 ; return false
 
 handle_left:
@@ -453,7 +453,7 @@ handle_insert:
         jsr     cmp_cursor_length
         bcc     :+
         jmp     display          ; If cursor_pos >= current_length, done
-        
+
         ; First condition true, setup common pointer
 :       jsr     calc_buffer_pos
         setax   ptr1
@@ -535,7 +535,7 @@ handle_kill:
         ldy     _es_params+edit_string_params::cursor_pos
         lda     #0
         sta     (ptr1),y
-        
+
         ; Set current length to cursor position (16-bit)
         lda     _es_params+edit_string_params::cursor_pos
         sta     _es_params+edit_string_params::current_length
@@ -556,7 +556,7 @@ handle_end:
         sta     _es_params+edit_string_params::cursor_pos
         lda     _es_params+edit_string_params::current_length+1
         sta     _es_params+edit_string_params::cursor_pos+1
-        
+
         ; Check if cursor_pos == max_length (16-bit compare)
         jsr     cmp_cursor_max
         bne     display

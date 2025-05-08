@@ -1,5 +1,5 @@
 	; Factor font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,24,24,24,0,48,48 ; !
 	.byte 102,238,204,0,0,0,0,0 ; "
 	.byte 54,127,127,54,54,127,127,54 ; #

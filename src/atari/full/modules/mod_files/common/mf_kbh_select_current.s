@@ -71,7 +71,7 @@ is_file:
         cpx     #PopupItemReturn::escape
         beq     :+
 
-        ; use the mode/device_slot from select to save our choice        
+        ; use the mode/device_slot from select to save our choice
         mva     sds_pu_mode_val, sdc_args+SaveDeviceChoiceArgs::mode
         mva     sds_pu_device_val, sdc_args+SaveDeviceChoiceArgs::device_slot
         jsr     save_device_choice

@@ -1,5 +1,5 @@
 	; Broadwary font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,60,60,60,60,0,60,0 ; !
 	.byte 0,114,114,0,0,0,0,0 ; "
 	.byte 0,0,122,126,122,126,122,0 ; #

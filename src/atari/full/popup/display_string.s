@@ -95,7 +95,7 @@ over1:
         cmp     #PopupItemType::password
         beq     print_stars
         ; this is normal text, call ascii_to_code
-        mwa     #ascii_to_code, {smc_alter_char + 1}        
+        mwa     #ascii_to_code, {smc_alter_char + 1}
 
 do_print:
         ldx     #$00                    ; track the string size as we print it

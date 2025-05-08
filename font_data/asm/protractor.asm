@@ -1,5 +1,5 @@
 	; Protractor font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,16,0,16,0 ; !
 	.byte 36,36,72,0,0,0,0,0 ; "
 	.byte 8,44,56,108,56,104,32,0 ; #

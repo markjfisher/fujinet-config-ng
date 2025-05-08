@@ -1,5 +1,5 @@
 	; Lander font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,8,8,0,8,0 ; !
 	.byte 18,18,36,0,0,0,0,0 ; "
 	.byte 0,36,126,36,36,126,36,0 ; #

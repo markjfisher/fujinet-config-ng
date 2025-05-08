@@ -1,5 +1,5 @@
 	; Star Maker font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,24,24,8,24,0 ; !
 	.byte 102,102,136,0,0,0,0,0 ; "
 	.byte 100,96,254,100,254,4,100,0 ; #

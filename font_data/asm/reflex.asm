@@ -1,5 +1,5 @@
 	; Reflex font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 48,48,24,24,0,12,12,0 ; !
 	.byte 108,108,36,0,0,0,0,0 ; "
 	.byte 0,108,254,108,54,127,54,0 ; #

@@ -176,7 +176,7 @@ mx_s2:
                 NORMAL_CHARMAP
                 .byte $81, $1f, $82, 0
 
-mx_h1:          
+mx_h1:
                 NORMAL_CHARMAP
                 .byte $81, $1c, $1d, $82        ; endL up down endR
                 INVERT_ATASCII

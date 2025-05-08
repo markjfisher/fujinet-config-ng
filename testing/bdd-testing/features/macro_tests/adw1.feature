@@ -10,7 +10,7 @@ Feature: MACRO tests - adw1
 
      ########################################################
      # WORD, #byte
-     When I execute the procedure at test_adw1_word_imm for no more than 10 instructions     
+     When I execute the procedure at test_adw1_word_imm for no more than 10 instructions
      Then I expect to see t_t1 equal lo($1245)
       And I expect to see t_t1+1 equal hi($1245)
 

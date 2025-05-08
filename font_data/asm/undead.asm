@@ -1,5 +1,5 @@
 	; Undead font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,24,8,8,8,0,24,0 ; !
 	.byte 54,36,72,0,0,0,0,0 ; "
 	.byte 36,36,126,36,126,36,36,0 ; #

@@ -1,5 +1,5 @@
 	; Bubblegum font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,36,36,36,24,36,24,0 ; !
 	.byte 68,170,204,0,0,0,0,0 ; "
 	.byte 124,214,130,198,130,214,124,0 ; #

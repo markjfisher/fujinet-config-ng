@@ -1,5 +1,5 @@
 	; Coded Entry font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,0,56,56,0 ; !
 	.byte 102,102,68,0,0,0,0,0 ; "
 	.byte 0,36,126,36,36,126,36,0 ; #

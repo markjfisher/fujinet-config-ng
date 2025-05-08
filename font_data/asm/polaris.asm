@@ -1,5 +1,5 @@
 	; Polaris font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,24,16,0,56,0 ; !
 	.byte 36,108,216,0,0,0,0,0 ; "
 	.byte 0,54,127,36,254,108,0,0 ; #

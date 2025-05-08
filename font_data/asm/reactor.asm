@@ -1,5 +1,5 @@
 	; Reactor font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,56,0,56,56,0 ; !
 	.byte 238,238,102,204,0,0,0,0 ; "
 	.byte 0,36,254,108,108,254,72,0 ; #

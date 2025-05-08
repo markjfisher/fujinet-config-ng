@@ -22,6 +22,8 @@
         .include    "fujinet-fuji.inc"
         .include    "modules.inc"
 
+.segment "CODE2"
+
 ; void _mod_init()
 ;
 ; First Module to load when application starts.

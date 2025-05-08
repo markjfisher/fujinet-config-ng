@@ -14,7 +14,7 @@ test_mway:
     mwa     #t_t1, ptr1
     ; immediate values
     mway    #$1234, {(ptr1), y}
-    
+
     ; absolute values from memory
     ldy     #$02
     mway    t_w1, {(ptr1), y}

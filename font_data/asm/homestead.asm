@@ -1,5 +1,5 @@
 	; Homestead font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 28,24,24,16,0,48,48,0 ; !
 	.byte 108,108,72,0,0,0,0,0 ; "
 	.byte 0,40,124,40,124,40,0,0 ; #

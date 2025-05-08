@@ -59,7 +59,7 @@ not_edit:
         jsr     get_to_current_hostslot
         ldy     #$00
         lda     (ptr1), y               ; first byte of the host name, empty string is 0
-        beq     do_exit     
+        beq     do_exit
 
         ; set module to 'files' to show entries of chosen host. the files module will timeout if the host is rubbish, and will show errors etc, but we aren't concerned with that here.
         mva     #Mod::files, mod_current

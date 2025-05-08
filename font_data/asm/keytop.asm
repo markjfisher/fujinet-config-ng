@@ -1,5 +1,5 @@
 	; Keytop font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,24,24,0,48,48,0 ; !
 	.byte 54,54,108,0,0,0,0,0 ; "
 	.byte 54,54,126,108,252,216,216,0 ; #

@@ -19,21 +19,21 @@ ext_b           := $4000
         lda     ext_b
         pha
 
-        ldx     #$0f       ; save ext bytes (from 16 64k blocks) 
+        ldx     #$0f       ; save ext bytes (from 16 64k blocks)
 _p0:    jsr     setpb
         lda     ext_b
         sta     bsav,x
         dex
         bpl     _p0
 
-        ldx     #$0f       ; reset them (w separate loop, because it is not known 
-_p1:    jsr     setpb      ; which PORTB bit combinations select the same banks) 
+        ldx     #$0f       ; reset them (w separate loop, because it is not known
+_p1:    jsr     setpb      ; which PORTB bit combinations select the same banks)
         lda     #$00
         sta     ext_b
         dex
         bpl     _p1
 
-        stx     PORTB      ; eliminate core memory (X=$FF) 
+        stx     PORTB      ; eliminate core memory (X=$FF)
         stx     ext_b
         stx     $00        ; necessary for some extensions up to 256k
 
@@ -43,14 +43,14 @@ _p2:    jsr     setpb
         lda     ext_b      ; if ext_b is non-zero, block 64k already counted
         bne     _n2
 
-        dec     ext_b      ; otherwise mark as counted 
+        dec     ext_b      ; otherwise mark as counted
 
         lda     ext_b      ; check if it is marked; if not -> something wrong with the hardware
         bpl     _n2
 
         lda     PORTB      ; enter the value of PORTB into the array for bank 0
         sta     banks,y
-        eor     #%00000100 ; fill in values ​​for banks 1, 2, 3 
+        eor     #%00000100 ; fill in values ​​for banks 1, 2, 3
         sta     banks+1,y
         eor     #%00001100
         sta     banks+2,y
@@ -95,7 +95,7 @@ finished:
 
 ; subroutines
 setpb:  txa     ; change bit order: %0000dcba -> %cba000d0
-        lsr            
+        lsr
         ror
         ror
         ror

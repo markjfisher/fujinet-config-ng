@@ -1,5 +1,5 @@
 	; Vindicated font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,24,56,32,56,0,56,0 ; !
 	.byte 238,170,68,136,0,0,0,0 ; "
 	.byte 0,114,251,114,82,222,114,0 ; #

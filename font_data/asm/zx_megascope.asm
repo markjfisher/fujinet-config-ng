@@ -1,5 +1,5 @@
 	; ZX Megascope font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,8,8,0,8,8 ; !
 	.byte 36,36,36,0,0,0,0,0 ; "
 	.byte 10,10,63,20,20,126,40,40 ; #

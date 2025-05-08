@@ -1,5 +1,5 @@
 	; Shinobi Extended font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,12,24,16,0,48,48 ; !
 	.byte 36,54,54,36,72,0,0,0 ; "
 	.byte 18,36,126,36,108,254,108,72 ; #

@@ -1,5 +1,5 @@
 	; Panda font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,28,24,24,16,0,48,0 ; !
 	.byte 36,108,108,0,0,0,0,0 ; "
 	.byte 52,52,126,52,126,52,52,0 ; #

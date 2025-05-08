@@ -1,5 +1,5 @@
 	; Star Ranger font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 48,48,48,16,16,0,16,0 ; !
 	.byte 108,72,0,0,0,0,0,0 ; "
 	.byte 104,104,254,72,250,8,72,0 ; #

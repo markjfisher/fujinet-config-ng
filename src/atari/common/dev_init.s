@@ -1,5 +1,5 @@
         .export   _dev_init
-        
+
         .import   _joy_load_driver
         .import   _joy_static_stddrv
         .import   _scr_setup

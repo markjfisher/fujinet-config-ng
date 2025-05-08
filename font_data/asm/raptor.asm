@@ -1,5 +1,5 @@
 	; Raptor font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,8,8,0,28,0 ; !
 	.byte 54,72,0,0,0,0,0,0 ; "
 	.byte 0,18,127,36,36,254,72,0 ; #

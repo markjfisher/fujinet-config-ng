@@ -187,7 +187,7 @@ not_enter:
         lda     fn_dir_path, x
         cmp     #'/'
         bne     :-
-        
+
         ; X = position in path where parent '/' is, so replace everything after it up to path length ($e0) with 0
         lda     #$00
 :       inx
@@ -246,7 +246,7 @@ not_new_disk:
         bne     not_copy
 
         ; if mf_copying is false, then need to take current selection as source, but only if it's a file
-        ; if it's true, start the copy into the current path 
+        ; if it's true, start the copy into the current path
 
         lda     mf_copying
         bne     @perform_copy

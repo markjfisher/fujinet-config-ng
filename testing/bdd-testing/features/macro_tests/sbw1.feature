@@ -10,7 +10,7 @@ Feature: MACRO tests - sbw1
 
      ########################################################
      # WORD, #WORD
-     When I execute the procedure at test_sbw1_word_imm for no more than 10 instructions     
+     When I execute the procedure at test_sbw1_word_imm for no more than 10 instructions
      Then I expect to see t_t1 equal lo($1223)
       And I expect to see t_t1+1 equal hi($1223)
 

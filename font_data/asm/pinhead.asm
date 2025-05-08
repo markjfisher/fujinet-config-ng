@@ -1,5 +1,5 @@
 	; Pinhead font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,0,0,16,0 ; !
 	.byte 36,36,36,0,0,0,0,0 ; "
 	.byte 68,68,170,68,170,68,68,0 ; #

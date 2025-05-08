@@ -133,7 +133,7 @@ not_number:
 
 
 
-; HERE: IMPLEMENT OTHER PopupItemType VALUES 
+; HERE: IMPLEMENT OTHER PopupItemType VALUES
 
 
 .endproc

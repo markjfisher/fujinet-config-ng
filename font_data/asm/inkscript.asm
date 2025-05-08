@@ -1,5 +1,5 @@
 	; Inkscript font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,28,24,16,0,48,32,0 ; !
 	.byte 54,108,72,144,0,0,0,0 ; "
 	.byte 34,102,255,102,255,102,68,0 ; #

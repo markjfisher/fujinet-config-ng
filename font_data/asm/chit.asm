@@ -1,5 +1,5 @@
 	; Chit font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 32,32,32,32,32,0,32,0 ; !
 	.byte 54,18,36,0,0,0,0,0 ; "
 	.byte 36,36,126,36,126,36,36,0 ; #

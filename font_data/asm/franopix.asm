@@ -1,5 +1,5 @@
 	; Franopix font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,16,0,16,0 ; !
 	.byte 36,36,0,0,0,0,0,0 ; "
 	.byte 0,36,126,36,72,252,72,0 ; #

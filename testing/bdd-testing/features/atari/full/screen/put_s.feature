@@ -20,7 +20,7 @@ Feature: Screen Functions test - _put_s
       And I execute the procedure at _clr_scr_all until return
       And I execute the procedure at _init for no more than 375 instructions
       And I print memory from m_l1 to m_l1+$78
-    
+
      Then screen memory at m_l1 contains ascii
      """
      {^}ythis string fits!                     {inv}{^}y{inv}
@@ -44,7 +44,7 @@ Feature: Screen Functions test - _put_s
       And I execute the procedure at _clr_scr_all until return
       And I execute the procedure at _init for no more than 375 instructions
       And I print memory from m_l1 to m_l1+$78
-    
+
      Then screen memory at m_l1 contains ascii
      """
      {^}y                              this doe{inv}{^}y{inv}

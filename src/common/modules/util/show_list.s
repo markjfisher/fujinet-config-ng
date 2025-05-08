@@ -15,6 +15,8 @@
         .include    "fn_data.inc"
         .include    "modules.inc"
 
+.segment "CODE2"
+
 ; show list of strings on screen, used on hosts and devices.
 .proc show_list
 

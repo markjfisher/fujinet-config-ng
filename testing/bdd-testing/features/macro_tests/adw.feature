@@ -10,7 +10,7 @@ Feature: MACRO tests - adw
 
      ########################################################
      # WORD, #WORD
-     When I execute the procedure at test_adw_word_immw for no more than 12 instructions     
+     When I execute the procedure at test_adw_word_immw for no more than 12 instructions
      Then I expect to see t_t1 equal lo($2345)
       And I expect to see t_t1+1 equal hi($2345)
 

@@ -1,5 +1,5 @@
 	; Blood Rain font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,8,24,24,16,16 ; !
 	.byte 102,102,204,132,4,0,0,0 ; "
 	.byte 108,254,108,254,108,100,68,0 ; #

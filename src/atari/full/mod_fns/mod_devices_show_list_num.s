@@ -31,7 +31,7 @@ ds_0:
         iny
         mva     {(ptr2), y}, tmp3       ; mode
         iny
-        mva     {(ptr2), y}, tmp4       ; first byte 
+        mva     {(ptr2), y}, tmp4       ; first byte
 
         ; put the list number onto screen
         lda     tmp1

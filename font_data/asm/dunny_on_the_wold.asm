@@ -1,5 +1,5 @@
 	; Dunny on the Wold font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,12,24,32,28,24,0 ; !
 	.byte 38,102,136,0,0,0,0,0 ; "
 	.byte 0,36,126,236,110,252,72,0 ; #

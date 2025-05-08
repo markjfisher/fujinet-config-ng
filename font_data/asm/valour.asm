@@ -1,5 +1,5 @@
 	; Valour font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,24,0,24,24,0 ; !
 	.byte 102,204,0,0,0,0,0,0 ; "
 	.byte 0,27,127,54,54,255,108,0 ; #

@@ -1,5 +1,5 @@
 	; Ident font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,24,24,16,0,48,0,0 ; !
 	.byte 0,108,108,72,0,0,0,0 ; "
 	.byte 0,102,254,108,254,204,0,0 ; #

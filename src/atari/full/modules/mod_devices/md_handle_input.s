@@ -5,7 +5,7 @@
         .import     kb_global
         .import     _scr_highlight_line
         .import     fuji_deviceslots
-        
+
         .import     kb_current_line
         .import     kb_max_entries
         .import     kb_prev_mod

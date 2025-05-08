@@ -1,5 +1,5 @@
 	; Stepper font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,8,8,8,8,0,28,0 ; !
 	.byte 0,51,68,0,0,0,0,0 ; "
 	.byte 0,36,126,36,36,126,36,0 ; #

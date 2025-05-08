@@ -1,5 +1,5 @@
 	; Truffle Shuffle font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,56,56,0,56,0 ; !
 	.byte 238,238,204,0,0,0,0,0 ; "
 	.byte 108,254,254,108,254,254,108,0 ; #

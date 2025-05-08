@@ -1,5 +1,5 @@
 	; Doublewear font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 40,40,40,40,16,40,16,0 ; !
 	.byte 36,90,36,216,0,0,0,0 ; "
 	.byte 40,84,214,68,214,84,40,0 ; #

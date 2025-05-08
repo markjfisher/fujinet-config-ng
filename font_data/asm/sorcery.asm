@@ -1,5 +1,5 @@
 	; Sorcery font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 28,28,8,24,0,112,112,0 ; !
 	.byte 119,102,136,0,0,0,0,0 ; "
 	.byte 52,52,126,52,126,52,52,0 ; #

@@ -1,5 +1,5 @@
 	; Isofell font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 0,32,16,16,8,0,4,0 ; !
 	.byte 8,72,68,36,32,0,0,0 ; "
 	.byte 16,92,232,70,44,116,16,0 ; #

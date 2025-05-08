@@ -2,7 +2,7 @@
 #
 # This file is only responsible for compiling source code.
 # It has some hooks for additional behaviour, see Additional Make Files below.
-# 
+#
 # The compilation will look in following directories for source:
 #
 #   src/*.[c|s]               # considered the "top level" dir, you can keep everything in here if you like, will not recurse into subdirs

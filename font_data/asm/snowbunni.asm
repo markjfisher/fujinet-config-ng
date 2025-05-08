@@ -1,5 +1,5 @@
 	; SnowBunni font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 64,64,64,64,64,0,64,0 ; !
 	.byte 40,40,80,0,0,0,0,0 ; "
 	.byte 72,120,72,72,120,72,0,0 ; #

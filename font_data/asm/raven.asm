@@ -1,5 +1,5 @@
 	; Raven font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 32,32,32,32,32,0,32,0 ; !
 	.byte 80,80,0,0,0,0,0,0 ; "
 	.byte 72,120,72,72,120,72,0,0 ; #

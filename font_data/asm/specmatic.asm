@@ -1,5 +1,5 @@
 	; Specmatic font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 12,12,12,24,0,48,48,0 ; !
 	.byte 108,108,72,0,0,0,0,0 ; "
 	.byte 0,54,127,54,108,254,108,0 ; #

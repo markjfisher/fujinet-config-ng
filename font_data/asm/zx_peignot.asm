@@ -1,5 +1,5 @@
 	; ZX Peignot font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 24,24,24,24,8,0,24,0 ; !
 	.byte 36,36,36,0,0,0,0,0 ; "
 	.byte 0,10,63,20,20,126,40,0 ; #

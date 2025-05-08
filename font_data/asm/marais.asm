@@ -1,5 +1,5 @@
 	; Marais font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 4,12,12,24,24,0,48,0 ; !
 	.byte 54,54,36,0,0,0,0,0 ; "
 	.byte 0,54,127,38,100,254,108,0 ; #

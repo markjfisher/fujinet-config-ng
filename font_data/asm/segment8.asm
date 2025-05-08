@@ -1,5 +1,5 @@
 	; Segment8 font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 8,8,8,8,0,8,8,0 ; !
 	.byte 18,18,108,0,0,0,0,0 ; "
 	.byte 34,34,34,28,34,34,34,0 ; #

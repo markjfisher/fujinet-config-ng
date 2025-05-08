@@ -1,5 +1,5 @@
 	; Scribe font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,48,16,16,0,48,32,0 ; !
 	.byte 102,68,136,0,0,0,0,0 ; "
 	.byte 0,20,126,40,252,80,0,0 ; #

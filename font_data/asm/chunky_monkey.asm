@@ -1,5 +1,5 @@
 	; Chunky Monkey font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,56,0,56,56,0 ; !
 	.byte 119,119,238,0,0,0,0,0 ; "
 	.byte 108,108,254,108,254,108,108,0 ; #

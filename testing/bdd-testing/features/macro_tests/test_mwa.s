@@ -6,10 +6,10 @@
 
 .code
 
-test_mwa:    
+test_mwa:
     ; immediate values
     mwa #$1234, t_t1
-    
+
     ; absolute values from memory
     mwa t_w1, t_t2
 

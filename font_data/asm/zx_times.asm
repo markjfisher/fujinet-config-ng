@@ -1,5 +1,5 @@
 	; ZX Times font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,16,16,0,56,0 ; !
 	.byte 108,108,72,0,0,0,0,0 ; "
 	.byte 0,20,126,40,40,252,80,0 ; #

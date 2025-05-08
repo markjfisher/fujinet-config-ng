@@ -1,5 +1,5 @@
 	; Computing 60s font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 56,56,56,56,16,0,56,0 ; !
 	.byte 238,238,68,0,0,0,0,0 ; "
 	.byte 0,54,127,54,108,254,108,0 ; #

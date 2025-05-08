@@ -1,5 +1,5 @@
 	; Ramscoop font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 60,36,44,44,60,0,60,0 ; !
 	.byte 102,170,204,136,0,0,0,0 ; "
 	.byte 116,206,222,84,222,222,116,0 ; #

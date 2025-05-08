@@ -24,7 +24,7 @@
 .proc _edit_hosts_entry
         jsr     get_to_current_hostslot
         mwa     ptr1, {_es_params + edit_string_params::initial_str}
-        
+
         lda     #.sizeof(HostSlot)
         sta     _es_params + edit_string_params::max_length
         sta     _es_params + edit_string_params::viewport_width

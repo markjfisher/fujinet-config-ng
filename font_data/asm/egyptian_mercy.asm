@@ -1,5 +1,5 @@
 	; Egyptian Mercy font from https://damieng.com/zx-origins
-	.byte 0,0,0,0,0,0,0,0 ;  
+	.byte 0,0,0,0,0,0,0,0 ;
 	.byte 16,16,16,16,16,0,16,0 ; !
 	.byte 36,36,108,0,0,0,0,0 ; "
 	.byte 68,254,68,68,40,124,40,0 ; #

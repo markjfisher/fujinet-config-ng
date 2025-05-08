@@ -11,7 +11,7 @@ Feature: Screen Functions test - _clr_scr_all
       And I create and load atari application
       And I write word at t_fn with address _clr_scr_all
       And I execute the procedure at _init for no more than 3800 instructions
-    
+
      Then screen memory at m_l1 contains ascii
      """
      {^}y                                      {inv}{^}y{inv}\
