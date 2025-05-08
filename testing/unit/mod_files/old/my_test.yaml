@@ -1,0 +1,16 @@
+name: fn_under_test
+
+configs:
+  - base_configs/atari.yaml
+
+test_start: src/test_runner.s
+
+src_files:
+  - src/fn_under_test.s
+
+include_paths:
+  - "src"
+asm_include_paths:
+  - "src"
+
+test_script: tests/my_test.txt
