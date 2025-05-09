@@ -1,0 +1,16 @@
+marker $$testing ts_to_datestr function$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+
+// test first date string
+registers set cycle_count = 0
+run $_main while CP != $t1_end AND cycle_count < 5000
+assert $ts_output ~ "28/10/2019 11:00\0"  $$t1 matches 28/10/2019 11:00$$
+
+// test second date string
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 5000
+assert $ts_output ~ "09/05/2025 18:01\0"  $$t2 matches 09/05/2025 18:01$$

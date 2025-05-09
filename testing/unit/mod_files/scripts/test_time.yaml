@@ -1,0 +1,15 @@
+name: ts_to_datestr test
+
+configs:
+  - ../../base_configs/atari.yaml
+
+src_files:
+  - ../src/test_time.s
+  - ../../../../src/common/util/time.s
+  - ../../../../src/common/util/itoa.s
+  - ../../../../src/common/util/div.s
+
+test_script: test_time.txt
+
+asm_include_paths:
+  - ../../../../src/common/inc

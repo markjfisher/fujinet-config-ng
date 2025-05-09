@@ -114,7 +114,7 @@ After this, user navigation dictates which module to load.
 
 ## Testing
 
-Testing is done with BDD features. See [Testing README](testing/bdd-testing/README.md)
+Testing is done with soft65c02 unit testing. See [Testing README](testing/unit/README.md)
 
 ## Platform Specific Information
 

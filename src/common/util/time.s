@@ -81,9 +81,9 @@ do_year:
     cmp     #30
     bcc     is_19xx
 
-    ; adjust A to be the 20YY part
+    ; adjust A to be the 20YY part by subtracting 30 (2025 - 1970 = 55 => 55 - 30 = 25)
     sec
-    sbc     #70
+    sbc     #30
 
     ldx     #'2'
     stx     ts_output+6
@@ -151,15 +151,14 @@ over_19:
     ; : separator
     ; -----------------------------------
 
-    lda     #':'
-    mva     itoa_args+ITOA_PARAMS::itoa_buf, ts_output+13
+    mva     #':', ts_output+13
 
     ; -----------------------------------
     ; MM (mins)
     ; -----------------------------------
 
     ; lowest 6 bits of byte 3
-    ldy     #$02
+    ldy     #$03
     lda     (ptr3), y
     and     #$3F
     sta     itoa_args+ITOA_PARAMS::itoa_input
