@@ -28,7 +28,7 @@
 .segment "CODE2"
 
 ; ptr1,ptr2,ptr4
-.proc mfs_show_page
+mfs_show_page:
         mva     #$00, mf_entry_index
 l_entries:
         ; clear the dir/file indicator. if it's a dir, the print routine will change the value.
@@ -50,7 +50,17 @@ l_entries:
 
         ; if we ended on a full page, check if we have any more to come, and set mf_is_eod.
         ; this stops us showing empty pages if there were exactly number of dirs to fill page
-        jsr     check_for_next_page
+
+        ; set mf_is_eod if the next page of results only has 7f as first entry
+        mwa     mf_dir_pos, ptr1
+        adw1    ptr1, mf_dir_pg_cnt
+        setax   ptr1
+        jsr     _fuji_set_directory_position
+
+        ; read first dir, and check if it's 7f, Z=1 if it is EOD
+        jsr     read_dir_is_eod
+        bne     :+
+        mva     #$01, mf_is_eod
 
 skip_check_for_next_page:
         mva     mf_entry_index, mf_entries_cnt
@@ -69,9 +79,7 @@ skip_check_for_next_page:
 
 :       jmp     _fuji_close_directory
 
-.endproc
-
-.proc clear_status_2
+clear_status_2:
         ; ONLY CLEAR 8 FROM EACH END
         mwa     #sline2, ptr1
         ldy     #8
@@ -88,23 +96,20 @@ skip_check_for_next_page:
         bpl     :-
 
         rts
-.endproc
 
-.proc show_prev
+show_prev:
         mwa     #sline2, ptr1
         adw1    ptr1, #$01      ; 1 char into line
         mwa     #mf_prev, ptr2
-        jmp     put_mf_s
-.endproc
+        bne     put_mf_s        ; always, the high byte is never 0
 
-.proc show_next
+show_next:
         mwa     #sline2, ptr1
         adw1    ptr1, #(SCR_WIDTH - 8)          ; string is 8 chars, adjust for end of line
         mwa     #mf_next, ptr2
-        jmp     put_mf_s
-.endproc
+        ; fall through to print
 
-.proc put_mf_s
+put_mf_s:
         ldy     #$00
 :       lda     (ptr2), y
         beq     :+              ; string terminator
@@ -113,10 +118,9 @@ skip_check_for_next_page:
         iny
         bne     :-
         rts
-.endproc
 
 ; reads the next entry and compares to EOD marker
-.proc read_dir_is_eod
+read_dir_is_eod:
         pusha   #DIR_MAX_LEN    ; the max length of each line for directory/file names
         pusha   #$00            ; special aux2 param
         setax   #fuji_buffer
@@ -130,27 +134,11 @@ skip_check_for_next_page:
         lda     (ptr1), y
         cmp     #$7f            ; magic marker
         rts
-.endproc
-
-.proc check_for_next_page
-        ; set mf_is_eod if the next page of results only has 7f as first entry
-        mwa     mf_dir_pos, ptr1
-        adw1    ptr1, mf_dir_pg_cnt
-        setax   ptr1
-        jsr     _fuji_set_directory_position
-
-        ; read first dir, and check if it's 7f, Z=1 if it is EOD
-        jsr     read_dir_is_eod
-        bne     :+
-        mva     #$01, mf_is_eod
-
-:       rts
-.endproc
 
 
 ; Assumption:
 ;  ptr1 is set to #fuji_buffer
-.proc print_entry
+print_entry:
         ; is this a dir? last char of name is '/' - ASSUMPTION - string never 0 length
         setax   ptr1
         jsr     _fc_strlen
@@ -182,5 +170,3 @@ skip_check_for_next_page:
 skip_show_dir_char:
         put_s   #$01, mf_entry_index, ptr1, mf_y_offset
         rts
-
-.endproc
