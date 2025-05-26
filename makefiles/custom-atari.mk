@@ -67,8 +67,8 @@ DISKZ_FILE := $(DIST_DIR)/$(PROGRAM)-z.atr
 # Specify ATARI_EMULATOR=[ALTIRRA|ATARI800] to set which one to run, default is ALTIRRA
 # At the current time, ATARI800 does not have any integration with fujinet
 
-ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
-  $(XS)/portable $(XS)/portablealt:altirra-basic.ini \
+ALTIRRA ?= $(ALTIRRA_BIN) \
+  $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
   $(XS)/debugcmd: "bp debug" \
@@ -80,8 +80,10 @@ ALTIRRA ?= $(ALTIRRA_HOME)/Altirra64.exe \
 #   $(XS)/debugcmd: "ba w mw_setting_up" \
 #   $(XS)/debugcmd: "bp mfp_show_page" \
 
-ATARI800 ?= $(ATARI800_HOME)/atari800 \
-  -xl -nobasic -ntsc -xl-rev custom -config atari800-debug.cfg -run
+ATARI800 ?= $(ATARI800_HOME)/atari800 -netsio -xl -pal -config atari800-debug.cfg -windowed -win-width 1366 -win-height 817
+
+#  -windowed -win-width 1366 -win-height 817 \
+# -netsio -xl -pal -config atari800-debug.cfg -windowed -win-width 1366 -win-height 817 -run dist/config.atari.full.com
 
 atari_EMUCMD := $($(ATARI_EMULATOR))
 

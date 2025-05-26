@@ -91,7 +91,7 @@ loop_entries:
         ; mf_selected is 0 based currently selected line, mf_entry_index is the loop index we're currently displaying
         ; the animation doesn't start until after we print this page anyway, so we don't need to special case it here
 
-
+        jsr     debug
 
 
         ; deal with the time

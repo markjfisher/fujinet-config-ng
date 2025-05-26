@@ -190,9 +190,9 @@ $(BUILD_DIR)/$(PROGRAM_TGT): $(OBJECTS) $(LIBS) | $(BUILD_DIR)
 
 $(PROGRAM_TGT): $(BUILD_DIR)/$(PROGRAM_TGT) | $(BUILD_DIR)
 
-test: $(PROGRAM_TGT)
+test: $(PROGRAM_TGT) release
 	$(PREEMUCMD)
-	$(EMUCMD) $(BUILD_DIR)\\$<
+	$(EMUCMD) $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX)
 	$(POSTEMUCMD)
 
 test-disk: disk

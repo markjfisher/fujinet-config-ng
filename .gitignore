@@ -14,8 +14,8 @@ a.out
 autorun.atr
 autorun-*.atr
 
-# a personal altirra setup
-altirra-*.ini
+# emulator files
+atari800-*
 
 .vscode/
 

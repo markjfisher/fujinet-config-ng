@@ -8,9 +8,9 @@
         jsr     _mf_init_screen
 
         ; this is "mod files - simple", more complex block reading not yet implemented
-        jmp     mfs_main
+        ; jmp     mfs_main
 
         ; shiny new "mod files - paging" - eventually make this picked from config
-        ; jmp     mfp_main
+        jmp     mfp_main
         ; rts
 .endproc
