@@ -66,7 +66,15 @@ mfp_show_page:
         ;  *              - Bytes 8+ : Null-terminated filename
 
         mva     #$00, mf_entry_index
-        adw     mfp_pg_buf, #$05, mfp_current_entry
+
+        ; Set mfp_current_entry to mfp_pg_buf + 5
+        lda     #<mfp_pg_buf
+        clc
+        adc     #$05
+        sta     mfp_current_entry
+        lda     #>mfp_pg_buf
+        adc     #$00            ; Add carry if it occurred
+        sta     mfp_current_entry+1
 
         ; check flags for EOD
         lda     mfp_pg_buf

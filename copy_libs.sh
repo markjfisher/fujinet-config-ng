@@ -9,7 +9,7 @@
 THIS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 PLATFORMS=${PLATFORMS:-"atari"}
-FUJI_LIB_DIR=${FUJI_LIB_DIR:-/d/dev/atari/fujinet/fujinet-lib}
+FUJI_LIB_DIR=${FUJI_LIB_DIR:-../fujinet-lib}
 VERSION=${FUJINET_LIB_VERSION:-$(grep '^FUJINET_LIB_VERSION :=' ${THIS_DIR}/makefiles/fujinet-lib.mk | awk '{print $3}')}
 
 LIBS_DIR=_cache/fujinet-lib

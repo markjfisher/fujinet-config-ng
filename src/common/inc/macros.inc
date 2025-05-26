@@ -235,9 +235,11 @@ s2:
 
 .macro adw arg1, arg2, arg3
     .local l1_a, l1_b
-    ; ensure arg1/arg3 don't have immediate values. They are always locations.
-    .if (.match (.left (1, {arg1}), #))
-        .error "adw: arg1 cannot be literal"
+    ; Only check arg1 for literal if we don't have 3 args
+    .ifblank arg3
+        .if (.match (.left (1, {arg1}), #))
+            .error "adw: arg1 cannot be literal without destination arg3"
+        .endif
     .endif
     .if (.match (.left (1, {arg3}), #))
         .error "adw: arg3 cannot be literal"
@@ -246,52 +248,74 @@ s2:
     clc
     .if (.match (.left (1, {arg2}), #))
         ; immediate value in arg2
-        lda     arg1
-        adc     #<(.right (.tcount ({arg2})-1, {arg2}))
-        .ifnblank arg3
+        .if (.match (.left (1, {arg1}), #))
+            ; both arg1 and arg2 are immediate
+            lda     #<(.right (.tcount ({arg1})-1, {arg1}))
+            adc     #<(.right (.tcount ({arg2})-1, {arg2}))
             sta     arg3
-        .else
-            sta     arg1
-        .endif
-
-        .if .hibyte (.right (.tcount ({arg2})-1, {arg2})) = 0
-            .ifnblank arg3
-                ; must store high byte of arg1 in arg3 still, and adjust if carry set
-                lda 1+(arg1)
-                sta 1+(arg3)
-                bcc l1_a
-                inc 1+(arg3)
-l1_a:
-            .else
-                ; the literal was only a byte, so only need to check carry
-                bcc l1_b
-                inc 1+(arg1)
-l1_b:
-            .endif
-        .else
-            ; full add of 2nd byte of constant
-            lda     1+(arg1)
+            lda     #>(.right (.tcount ({arg1})-1, {arg1}))
             adc     #>(.right (.tcount ({arg2})-1, {arg2}))
+            sta     1+(arg3)
+        .else
+            ; just arg2 is immediate
+            lda     arg1
+            adc     #<(.right (.tcount ({arg2})-1, {arg2}))
+            .ifnblank arg3
+                sta     arg3
+            .else
+                sta     arg1
+            .endif
+
+            .if .hibyte (.right (.tcount ({arg2})-1, {arg2})) = 0
+                .ifnblank arg3
+                    ; must store high byte of arg1 in arg3 still, and adjust if carry set
+                    lda 1+(arg1)
+                    sta 1+(arg3)
+                    bcc l1_a
+                    inc 1+(arg3)
+l1_a:
+                .else
+                    ; the literal was only a byte, so only need to check carry
+                    bcc l1_b
+                    inc 1+(arg1)
+l1_b:
+                .endif
+            .else
+                ; full add of 2nd byte of constant
+                lda     1+(arg1)
+                adc     #>(.right (.tcount ({arg2})-1, {arg2}))
+                .ifnblank arg3
+                    sta     1+(arg3)
+                .else
+                    sta     1+(arg1)
+                .endif
+            .endif
+        .endif
+    .else
+        .if (.match (.left (1, {arg1}), #))
+            ; arg1 is immediate, arg2 is memory
+            lda     #<(.right (.tcount ({arg1})-1, {arg1}))
+            adc     arg2
+            sta     arg3
+            lda     #>(.right (.tcount ({arg1})-1, {arg1}))
+            adc     1+(arg2)
+            sta     1+(arg3)
+        .else
+            ; both are memory locations
+            lda     arg1
+            adc     arg2
+            .ifnblank arg3
+                sta     arg3
+            .else
+                sta     arg1
+            .endif
+            lda     1+(arg1)
+            adc     1+(arg2)
             .ifnblank arg3
                 sta     1+(arg3)
             .else
                 sta     1+(arg1)
             .endif
-        .endif
-    .else
-        lda     arg1
-        adc     arg2
-        .ifnblank arg3
-            sta     arg3
-        .else
-            sta     arg1
-        .endif
-        lda     1+(arg1)
-        adc     1+(arg2)
-        .ifnblank arg3
-            sta     1+(arg3)
-        .else
-            sta     1+(arg1)
         .endif
     .endif
 .endmacro
@@ -300,9 +324,11 @@ l1_b:
 ; complement of adw
 .macro sbw arg1, arg2, arg3
     .local l1_a, l1_b
-    ; ensure arg1/arg3 don't have immediate values. They are always locations.
-    .if (.match (.left (1, {arg1}), #))
-        .error "sbw: arg1 cannot be literal"
+    ; Only check arg1 for literal if we don't have 3 args
+    .ifblank arg3
+        .if (.match (.left (1, {arg1}), #))
+            .error "sbw: arg1 cannot be literal without destination arg3"
+        .endif
     .endif
     .if (.match (.left (1, {arg3}), #))
         .error "sbw: arg3 cannot be literal"
@@ -311,52 +337,74 @@ l1_b:
     sec
     .if (.match (.left (1, {arg2}), #))
         ; immediate value in arg2
-        lda     arg1
-        sbc     #<(.right (.tcount ({arg2})-1, {arg2}))
-        .ifnblank arg3
+        .if (.match (.left (1, {arg1}), #))
+            ; both arg1 and arg2 are immediate
+            lda     #<(.right (.tcount ({arg1})-1, {arg1}))
+            sbc     #<(.right (.tcount ({arg2})-1, {arg2}))
             sta     arg3
-        .else
-            sta     arg1
-        .endif
-
-        .if .hibyte (.right (.tcount ({arg2})-1, {arg2})) = 0
-            .ifnblank arg3
-                ; must store high byte of arg1 in arg3 still, and adjust if carry set
-                lda 1+(arg1)
-                sta 1+(arg3)
-                bcs l1_a
-                dec 1+(arg3)
-l1_a:
-            .else
-                ; the literal was only a byte, so only need to check carry
-                bcs l1_b
-                dec 1+(arg1)
-l1_b:
-            .endif
-        .else
-            ; full add of 2nd byte of constant
-            lda     1+(arg1)
+            lda     #>(.right (.tcount ({arg1})-1, {arg1}))
             sbc     #>(.right (.tcount ({arg2})-1, {arg2}))
+            sta     1+(arg3)
+        .else
+            ; just arg2 is immediate
+            lda     arg1
+            sbc     #<(.right (.tcount ({arg2})-1, {arg2}))
+            .ifnblank arg3
+                sta     arg3
+            .else
+                sta     arg1
+            .endif
+
+            .if .hibyte (.right (.tcount ({arg2})-1, {arg2})) = 0
+                .ifnblank arg3
+                    ; must store high byte of arg1 in arg3 still, and adjust if carry set
+                    lda 1+(arg1)
+                    sta 1+(arg3)
+                    bcs l1_a
+                    dec 1+(arg3)
+l1_a:
+                .else
+                    ; the literal was only a byte, so only need to check carry
+                    bcs l1_b
+                    dec 1+(arg1)
+l1_b:
+                .endif
+            .else
+                ; full add of 2nd byte of constant
+                lda     1+(arg1)
+                sbc     #>(.right (.tcount ({arg2})-1, {arg2}))
+                .ifnblank arg3
+                    sta     1+(arg3)
+                .else
+                    sta     1+(arg1)
+                .endif
+            .endif
+        .endif
+    .else
+        .if (.match (.left (1, {arg1}), #))
+            ; arg1 is immediate, arg2 is memory
+            lda     #<(.right (.tcount ({arg1})-1, {arg1}))
+            sbc     arg2
+            sta     arg3
+            lda     #>(.right (.tcount ({arg1})-1, {arg1}))
+            sbc     1+(arg2)
+            sta     1+(arg3)
+        .else
+            ; both are memory locations
+            lda     arg1
+            sbc     arg2
+            .ifnblank arg3
+                sta     arg3
+            .else
+                sta     arg1
+            .endif
+            lda     1+(arg1)
+            sbc     1+(arg2)
             .ifnblank arg3
                 sta     1+(arg3)
             .else
                 sta     1+(arg1)
             .endif
-        .endif
-    .else
-        lda     arg1
-        sbc     arg2
-        .ifnblank arg3
-            sta     arg3
-        .else
-            sta     arg1
-        .endif
-        lda     1+(arg1)
-        sbc     1+(arg2)
-        .ifnblank arg3
-            sta     1+(arg3)
-        .else
-            sta     1+(arg1)
         .endif
     .endif
 .endmacro

@@ -1,0 +1,51 @@
+marker $$testing sbw macro functionality$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+
+// Test 1: word - immediate word
+registers set cycle_count = 0
+run $_main while CP != $test1_end AND cycle_count < 1000
+assert $t_t1 ~ 0x(10,32) $$t_t1: $4321 - $1111 = $3210$$
+
+// Test 2: word - word
+registers set cycle_count = 0
+run while CP != $test2_end AND cycle_count < 1000
+assert $t_t2 ~ 0x(22,33) $$t_t2: $4321 - $0fff = $3322$$
+
+// Test 3: word - immediate word with destination
+registers set cycle_count = 0
+run while CP != $test3_end AND cycle_count < 1000
+assert $t_t3 ~ 0x(ff,20) $$t_t3: $4321 - $2222 = $20ff$$
+
+// Test 4: word - word with destination
+registers set cycle_count = 0
+run while CP != $test4_end AND cycle_count < 1000
+assert $t_t4 ~ 0x(22,33) $$t_t4: $4321 - $0fff = $3322$$
+
+// Test 5: word - immediate byte (no borrow)
+registers set cycle_count = 0
+run while CP != $test5_end AND cycle_count < 1000
+assert $t_t5 ~ 0x(20,43) $$t_t5: $4321 - $01 = $4320$$
+
+// Test 6: word - immediate byte (with borrow)
+registers set cycle_count = 0
+run while CP != $test6_end AND cycle_count < 1000
+assert $t_t6 ~ 0x(54,42) $$t_t6: $4321 - $cd = $4254$$
+
+// Test 7: word - immediate byte with destination (no borrow)
+registers set cycle_count = 0
+run while CP != $test7_end AND cycle_count < 1000
+assert $t_t7 ~ 0x(20,43) $$t_t7: $4321 - $01 = $4320$$
+
+// Test 8: word - immediate byte with destination (with borrow)
+registers set cycle_count = 0
+run while CP != $test8_end AND cycle_count < 1000
+assert $t_t8 ~ 0x(54,42) $$t_t8: $4321 - $cd = $4254$$
+
+// Test 9: immediate word - immediate word with destination (new test)
+registers set cycle_count = 0
+run while CP != $test9_end AND cycle_count < 1000
+assert $t_t9 ~ 0x(10,32) $$t_t9: $4321 - $1111 = $3210$$ 

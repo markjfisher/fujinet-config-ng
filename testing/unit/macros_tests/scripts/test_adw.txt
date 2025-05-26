@@ -1,0 +1,54 @@
+// Test cases for adw macro
+// Each test verifies the result of adding two values using different parameter combinations
+
+marker $$testing adw macro functionality$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+
+// Test 1: word + immediate word
+registers set cycle_count = 0
+run $_main while CP != $test1_end AND cycle_count < 1000
+assert $t_t1 ~ 0x(45,23) $$t_t1: $1234 + $1111 = $2345$$
+
+// Test 2: word + word
+registers set cycle_count = 0
+run while CP != $test2_end AND cycle_count < 1000
+assert $t_t2 ~ 0x(47,b2) $$t_t2: $1234 + $a013 = $b247$$
+
+// Test 3: word + immediate word with destination
+registers set cycle_count = 0
+run while CP != $test3_end AND cycle_count < 1000
+assert $t_t3 ~ 0x(56,34) $$t_t3: $1234 + $2222 = $3456$$
+
+// Test 4: word + word with destination
+registers set cycle_count = 0
+run while CP != $test4_end AND cycle_count < 1000
+assert $t_t4 ~ 0x(24,b1) $$t_t4: $a013 + $1111 = $b124$$
+
+// Test 5: word + immediate byte (no carry)
+registers set cycle_count = 0
+run while CP != $test5_end AND cycle_count < 1000
+assert $t_t5 ~ 0x(35,12) $$t_t5: $1234 + $01 = $1235$$
+
+// Test 6: word + immediate byte (with carry)
+registers set cycle_count = 0
+run while CP != $test6_end AND cycle_count < 1000
+assert $t_t6 ~ 0x(01,13) $$t_t6: $1234 + $cd = $1301$$
+
+// Test 7: word + immediate byte with destination (no carry)
+registers set cycle_count = 0
+run while CP != $test7_end AND cycle_count < 1000
+assert $t_t7 ~ 0x(35,12) $$t_t7: $1234 + $01 = $1235$$
+
+// Test 8: word + immediate byte with destination (with carry)
+registers set cycle_count = 0
+run while CP != $test8_end AND cycle_count < 1000
+assert $t_t8 ~ 0x(01,13) $$t_t8: $1234 + $cd = $1301$$
+
+// Test 9: immediate word + immediate word with destination
+registers set cycle_count = 0
+run while CP != $test9_end AND cycle_count < 1000
+assert $t_t9 ~ 0x(ac,68) $$t_t9: $1234 + $5678 = $68ac$$ 

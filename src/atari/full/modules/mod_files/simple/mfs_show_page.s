@@ -59,7 +59,7 @@ l_entries:
 
         ; read first dir, and check if it's 7f, Z=1 if it is EOD
         jsr     read_dir_is_eod
-        bne     :+
+        bne     skip_check_for_next_page
         mva     #$01, mf_is_eod
 
 skip_check_for_next_page:
@@ -117,7 +117,7 @@ put_mf_s:
         sta     (ptr1), y
         iny
         bne     :-
-        rts
+:       rts
 
 ; reads the next entry and compares to EOD marker
 read_dir_is_eod:
