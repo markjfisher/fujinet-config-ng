@@ -434,7 +434,7 @@ copy_loop:
 
 no_space:
 entry_exists:
-        ; Set success = 0
+        ; Set success = 0 (fail)
         lda     #0
 
 set_success:
@@ -1208,9 +1208,13 @@ skip_calc:
         mywa    {(ptr1), y}, ptr2
 
         jsr     _get_bank_base
-        ; TODO: can we make this more efficient?
-        axinto  ptr3
-        adw     ptr2, ptr3              ; ptr2 += ptr3
+        ; add A/X from _get_bank_base into ptr2, i.e. ptr2 += get_bank_base()
+        clc
+        adc     ptr2
+        sta     ptr2
+        txa
+        adc     ptr2+1
+        sta     ptr2+1
 
         ; get the page group size into tmp1/2
         iny
@@ -1332,12 +1336,13 @@ h_loop:
         ; everything is set in the _insert_params block for calling insert. it will handle memory/banks etc
         jsr     _page_cache_insert
 
-        ; check if it worked. 0 = fail
-        lda     _insert_params+page_cache_insert_params::success
+        ; check if it worked. 0 = fail, A is already set to success value
+        ; lda     _insert_params+page_cache_insert_params::success
         beq     exit_error
 
         ; now loop for all the other entries in the cache.
         ; first move ptr1 on by the size of the page group and header
+        ; these can't be combined as we have to use the carry in the high byte before moving onto second addition
         adw     ptr1, page_header+page_cache_pagegroup_header::data_size
         adw     ptr1, #$05
 

@@ -1,8 +1,16 @@
         .export     mfp_show_page
         .export     mfp_pg_buf
 
+        .export     mfp_start_pg_ptr
+        .export     mfp_current_entry
+        .export     mfp_is_last_group
+        .export     mfp_num_entries
+        .export     mfp_e_is_dir
+
         .import     _page_cache_get_pagegroup
         .import     _page_cache_set_path_filter
+        .import     ts_to_datestr
+        .import     ts_output
 
         .import     _get_pagegroup_params
         .import     _set_path_flt_params
@@ -45,63 +53,94 @@ mfp_show_page:
         jsr     _page_cache_get_pagegroup
 
         ; now display it, the raw page group data is in mfp_pg_buf
+        ; mfp_pg_buf contains JUST THE PAGE GROUP ENTRY DATA, so from byte 5 in the following
 
-        ;  * PageGroup structure:
-        ;  * Byte  0    : Flags
-        ;  *              - Bit 7: Last group (1=yes, 0=no)
-        ;  *              - Bits 6-0: Reserved
-        ;  * Byte  1    : Number of directory entries in this group
-        ;  * Bytes 2-3  : Group data size (16-bit little-endian, excluding header)
-        ;  * Byte  4    : Group index (0-based, calculated as dir_pos/group_size)
-        ;  * Bytes 5+   : File/Directory entries for this group
-        ;  *              Each entry:
-        ;  *              - Bytes 0-3: Packed timestamp and flags
-        ;  *                          - Byte 0: Years since 1970 (0-255)
-        ;  *                          - Byte 1: FFFF MMMM (4 bits flags, 4 bits month 1-12)
-        ;  *                                   Flags: bit 7 = directory, bits 6-4 reserved
-        ;  *                          - Byte 2: DDDDD HHH (5 bits day 1-31, 3 high bits of hour)
-        ;  *                          - Byte 3: HH mmmmmm (2 low bits hour 0-23, 6 bits minute 0-59)
-        ;  *              - Bytes 4-6: File size (24-bit little-endian, 0 for directories)
-        ;  *              - Byte  7  : Media type (0-255, with 0=unknown) - could be used for interesting icons
-        ;  *              - Bytes 8+ : Null-terminated filename
+        ;  * PageGroup Entry structure:
+        ;  *  Each entry:
+        ;  *  - Bytes 0-3: Packed timestamp and flags
+        ;  *              - Byte 0: Years since 1970 (0-255)
+        ;  *              - Byte 1: FFFF MMMM (4 bits flags, 4 bits month 1-12)
+        ;  *                       Flags: bit 7 = directory, bit 6 = last entry in group (1=yes), bits 5-4 reserved
+        ;  *              - Byte 2: DDDDD HHH (5 bits day 1-31, 3 high bits of hour)
+        ;  *              - Byte 3: HH mmmmmm (2 low bits hour 0-23, 6 bits minute 0-59)
+        ;  *  - Bytes 4-6: File size (24-bit little-endian, 0 for directories)
+        ;  *  - Byte  7  : Media type (0-255, with 0=unknown) - could be used for interesting icons
+        ;  *  - Bytes 8+ : Null-terminated filename
+
+        ; HOW DO WE KNOW HOW MANY ENTRIES ARE IN THIS PAGEGROUP? we only get the pagegroup data returned, not
+        ; the header bytes
+        ; ANSWER: Bit 6 of the flags is 1 if the entry is the last one in the page group
 
         mva     #$00, mf_entry_index
 
-        ; Set mfp_current_entry to mfp_pg_buf + 5
-        adw     #mfp_pg_buf, #$05, mfp_current_entry
+        mwa     mfp_pg_buf, mfp_current_entry
 
-        ; check flags for EOD
-        lda     mfp_pg_buf
-        and     #$80
+loop_entries:
+        ; move mfp_current_entry into ptr1 so we can use indirection
+        mwa     mfp_current_entry, ptr1
+
+        ; TODO: we only need this for the 1st entry.
+        ; Later when using arrow keys highlighting different entries, we will call the appropriate routines for the highlighted entry
+        ; OR: we stash the timestamps and sizes into memory here once, and the highlighting only needs to read from the cached values
+
+        ; Get timestamp string - ptr1 already points to the 4 timestamp bytes
+        lda     ptr1            ; Low byte of address
+        ldx     ptr1+1         ; High byte of address
+        jsr     ts_to_datestr  ; Result will be in ts_output
+
+        ; Check if this is last entry in group (bit 6 of byte 1)
+        ldy     #1              ; Byte 1 contains flags in upper nibble
+        lda     (ptr1),y
+        and     #%01000000     ; Bit 6 = last entry flag
         sta     mfp_is_last_group
 
-        ; capture the number of entries in this group. it'll be page_size, or potentially less if EOD
-        lda     mfp_pg_buf+1
-        sta     mfp_num_entries
+        ; Check if it's a directory (bit 7 of byte 1)
+        lda     (ptr1),y
+        and     #%10000000     ; Bit 7 = directory flag
+        sta     mfp_e_is_dir
 
-        ; do we need the pagegroup data size? we don't move over pages here
-        ; mwa     mfp_pg_buf+2, mfp_pagegroup_size
+        ; Get filesize (bytes 4-6, 24-bit little endian)
+        ldy     #4
+        lda     (ptr1),y       ; Low byte
+        sta     tmp1
+        iny
+        lda     (ptr1),y       ; Middle byte
+        sta     tmp2           ; tmp2 is next byte after tmp1
+        iny
+        lda     (ptr1),y       ; High byte
+        sta     tmp3           ; tmp3 is next byte after tmp2
 
-        ; capture the pagegroup index - do we need this?
-        ; lda     mfp_pg_buf+4, mfp_current_pg_idx
+        ; TODO: use strlen, and allow for longer than 256 bytes? Also, we can only go to 256-8 because of Y starting at 8
+        ; Find length of filename to know how far to advance
+        ldy     #8              ; Start of filename
+        ldx     #0              ; Will count length
+@find_end:
+        lda     (ptr1),y
+        beq     @got_length
+        iny
+        inx
+        bne     @find_end      ; Safety check - don't loop forever
+@got_length:
+        ; Y now points at the nul byte
+        ; Total entry length = 8 (header) + filename length + 1 (nul)
+        tya
+        sec
+        adc     mfp_current_entry    ; Add low byte
+        sta     mfp_current_entry
+        bcc     :+
+        inc     mfp_current_entry+1  ; Handle carry to high byte
 
-        ; start_pg_ptr    = pointer to start of pagegroup, doesn't increment, as we are only displaying 1 pagegroup, this is just #mfp_pg_buf
-        ; current_entry   = pointer to current entry, starts at start_pg_ptr+5, increases by 8+strlen(filename)
-loop_entries:
-        ; move mfp_current_entry into ptr1 so we can use indirection, as it is dynamic
-        mwa     mfp_current_entry, ptr1
-        ; mf_selected is 0 based currently selected line, mf_entry_index is the loop index we're currently displaying
-        ; the animation doesn't start until after we print this page anyway, so we don't need to special case it here
+:       ; Check if this was the last entry
+        lda     mfp_is_last_group
+        bne     done
 
-        jsr     debug
+        inc     mf_entry_index
+        jmp     loop_entries
 
-
-        ; deal with the time
-
+done:   
         rts
 
 .bss
-mfp_start_pg_ptr:       .res 2
 mfp_current_entry:      .res 2
 mfp_is_last_group:      .res 1
 mfp_num_entries:        .res 1
