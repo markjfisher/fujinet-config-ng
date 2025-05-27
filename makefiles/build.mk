@@ -33,7 +33,7 @@
 
 # Ensure WSL2 Ubuntu and other linuxes use bash by default instead of /bin/sh, which does not always like the shell commands.
 SHELL := /usr/bin/env bash
-ALL_TASKS =
+ALL_TASKS = unit_test
 DISK_TASKS =
 
 # split "atari.full" or "atari.lite" into "atari" and appropriate sub-target
