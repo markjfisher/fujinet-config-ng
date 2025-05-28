@@ -17,7 +17,9 @@
         .import     size_to_str
         .import     size_output
 
+        .import     pushax
         .import     _fc_strlen
+        .import     _fc_strncpy
         .import     _get_pagegroup_params
         .import     _set_path_flt_params
         .import     _put_s
@@ -83,7 +85,6 @@ mfp_show_page:
         mwa     #mfp_filesize_cache, mfp_size_cache_ptr
         mwa     #mfp_filename_cache, mfp_fname_cache_ptr
 
-        ; TODO: why do we touch this at all?
         mva     #$00, mf_entry_index
         mwa     #mfp_pg_buf, mfp_current_entry
 
@@ -97,16 +98,15 @@ loop_entries:
         ; Get timestamp string - ptr1 already points to the 4 timestamp bytes
         jsr     ts_to_datestr  ; Result will be in ts_output
 
-        ; Cache the timestamp string using ptr2
+        ; Cache the timestamp string using ptr2 and _fc_strncpy
         mwa     mfp_ts_cache_ptr, ptr2
-        ldy     #15             ; Copy 16 bytes (without nul)
-:       lda     ts_output,y
-        sta     (ptr2),y
-        dey
-        bpl     :-
+        pushax  ptr2            ; destination
+        pushax  #ts_output      ; source
+        lda     #17            ; length including null
+        jsr     _fc_strncpy
         
-        ; Advance timestamp cache pointer by 16
-        adw     mfp_ts_cache_ptr, #16
+        ; Advance timestamp cache pointer by 17 (16 chars + null)
+        adw     mfp_ts_cache_ptr, #17
 
         ; Check if this is last entry in group (bit 6 of byte 1)
         ldy     #$01            ; Byte 1 contains flags in upper nibble
@@ -128,16 +128,15 @@ loop_entries:
         jsr     size_to_str     ; Result will be in size_output - trashes ptr1-4 via memmove
         mwa     tmp5, ptr1      ; restore ptr1
 
-        ; Cache the size string
+        ; Cache the size string using _fc_strncpy
         mwa     mfp_size_cache_ptr, ptr2
-        ldy     #9             ; Copy 10 bytes (without nul)
-:       lda     size_output,y
-        sta     (ptr2),y
-        dey
-        bpl     :-
+        pushax  ptr2            ; destination
+        pushax  #size_output    ; source
+        lda     #11            ; length including null
+        jsr     _fc_strncpy
 
-        ; Advance size cache pointer by 10
-        adw     mfp_size_cache_ptr, #10
+        ; Advance size cache pointer by 11 (10 chars + null)
+        adw     mfp_size_cache_ptr, #11
 
         adw     ptr1, #$04      ; skip the rest of the header, so we can allow up to 255 bytes for the name
         mwa     mfp_fname_cache_ptr, ptr2
@@ -191,10 +190,14 @@ just_file:
 :       lda     mfp_is_last_group
         bne     done
 
-        inc     mf_entry_index          ; TODO: is this needed?
+        inc     mf_entry_index
         jmp     loop_entries
 
-done:   
+done:
+        ; print the time and size for first entry
+        put_s   #01, #21, #mfp_timestamp_cache
+        put_s   #29, #21, #mfp_filesize_cache
+
         rts
 
 .bss
@@ -213,6 +216,6 @@ mfp_fname_cache_ptr:    .res 2  ; points to next free filename pointer slot
 mfp_pg_buf:             .res 2048
 
 .segment "BANK"
-mfp_timestamp_cache:    .res 16*20      ; "dd/mm/yyyy hh:mm" calculated string without nul
-mfp_filesize_cache:     .res 10*20      ; 24 bits max size is "16,777,216", so 10 chars with commas and no nul
+mfp_timestamp_cache:    .res 17*20      ; "dd/mm/yyyy hh:mm" calculated string without nul
+mfp_filesize_cache:     .res 11*20      ; 24 bits max size is "16,777,216", so 10 chars with commas and no nul
 mfp_filename_cache:     .res 2*20       ; store the locations of the full names in the page cache
