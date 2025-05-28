@@ -10,6 +10,8 @@
         .export     kb_prev_mod
         .export     kb_next_mod
 
+        .export     some_input
+
         .import     _clr_scr_all
         .import     _clr_status
         .import     _cng_prefs
@@ -42,7 +44,7 @@
 ; A global keyboard handler for navigation on modules. Passes off to mod specific kb handler first to allow it to be processed locally.
 ; then deals with common cases (L/R, U/D, Option, ... more TODO)
 
-.proc kb_global
+kb_global:
         ; setup the callback routine
         mwa     kb_cb_function, smc_cb
 
@@ -270,8 +272,6 @@ smc     = *-2
         ; implicit rts
 
 
-
-.endproc
 
 .bss
 kb_mod_current_line_p:  .res 2

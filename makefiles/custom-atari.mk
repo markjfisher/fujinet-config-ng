@@ -72,8 +72,9 @@ ALTIRRA ?= $(ALTIRRA_BIN) \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
   $(XS)/debugcmd: "bp debug" \
-  $(XS)/debugcmd: "bp mfp_show_page" \
+  $(XS)/debugcmd: "bp some_input" \
 
+#   $(XS)/debugcmd: "bp mfp_show_page" \
 #  $(XS)/debugcmd: "bp mf_kb_cb" \
 
 # we can also use all Altirra debug commands, like setting a break point on write access to a location

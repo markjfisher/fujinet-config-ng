@@ -31,6 +31,7 @@
 
         .import     mf_dir_pos
         .import     mf_dir_pg_cnt
+        .import     mf_entries_cnt
         .import     mf_entry_index
         .import     mf_selected
         .import     mf_y_offset
@@ -90,7 +91,6 @@ mfp_show_page:
         mwa     #mfp_pg_buf, mfp_current_entry
 
 loop_entries:
-        jsr     debug
         lda     mfp_current_entry
         ldx     mfp_current_entry+1
         sta     ptr1
@@ -171,7 +171,6 @@ just_file:
         adw     mfp_fname_cache_ptr, #2
 
         ; Find length of filename to know how far to advance
-        jsr     debug
         setax   ptr1
         jsr     _fc_strlen      ; up to 254 bytes allowed, or $ff for error which we will ignore for now
 
@@ -198,6 +197,9 @@ just_file:
         jmp     loop_entries
 
 done:
+        ; save the entries for the page so the kb handler will let us move around
+        inc     mf_entry_index
+        mva     mf_entry_index, mf_entries_cnt
         ; print the time and size for first entry
         put_s   #01, #21, #mfp_timestamp_cache
 
@@ -231,9 +233,9 @@ mfp_fname_cache_ptr:    .res 2  ; points to next free filename pointer slot
 ; and can't copy into normal memory BANK as they can't be active at same time
 mfp_pg_buf:             .res 2048
 
-mfp_dir_flag_cache:     .res 20       ; One byte per entry to store directory flags
+mfp_dir_flag_cache:     .res 16       ; One byte per entry to store directory flags
 
 .segment "BANK"
-mfp_timestamp_cache:    .res 17*20      ; "dd/mm/yyyy hh:mm" calculated string without nul
-mfp_filesize_cache:     .res 11*20      ; 24 bits max size is "16,777,216", so 10 chars with commas and no nul
-mfp_filename_cache:     .res 2*20       ; store the locations of the full names in the page cache
+mfp_timestamp_cache:    .res 17*16      ; "dd/mm/yyyy hh:mm" calculated string without nul
+mfp_filesize_cache:     .res 11*16      ; 24 bits max size is "16,777,216", so 10 chars with commas and no nul
+mfp_filename_cache:     .res 2*16       ; store the locations of the full names in the page cache
