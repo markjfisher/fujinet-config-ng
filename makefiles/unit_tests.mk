@@ -6,8 +6,8 @@ UNIT_TEST_FILES := $(shell find testing/unit -name "test_*.yaml")
 	@mkdir -p /tmp/config-ng-unit
 
 # Run all unit tests
-.PHONY: unit_test
-unit_test: /tmp/config-ng-unit
+.PHONY: unit-test
+unit-test: /tmp/config-ng-unit
 	@echo "Running unit tests..."
 	@failed=0; \
 	for test in $(UNIT_TEST_FILES); do \

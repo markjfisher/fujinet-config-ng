@@ -1,0 +1,54 @@
+marker $$testing size_to_str function$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+
+// test small number left justified
+registers set cycle_count = 0
+run $_main while CP != $t1_end AND cycle_count < 2500
+assert $size_output ~ "123       \0"  $$t1 matches "123" left justified$$
+assert $t1 ~ 0x(7b,00,00)  $$t1 data preserved$$
+
+// test medium number left justified
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 4000
+assert $size_output ~ "12,345    \0"  $$t2 matches "12,345" left justified$$
+assert $t2 ~ 0x(39,30,00)  $$t2 data preserved$$
+
+// test large number left justified
+registers set cycle_count = 0
+run while CP != $t3_end AND cycle_count < 6500
+assert $size_output ~ "16,777,214\0"  $$t3 matches "16,777,214" left justified$$
+assert $t3 ~ 0x(fe,ff,ff)  $$t3 data preserved$$
+
+// test zero left justified
+registers set cycle_count = 0
+run while CP != $t4_end AND cycle_count < 250
+assert $size_output ~ "0         \0"  $$t4 matches "0" left justified$$
+assert $t4 ~ 0x(00,00,00)  $$t4 data preserved$$
+
+// test small number right justified
+registers set cycle_count = 0
+run while CP != $t5_end AND cycle_count < 3000
+assert $size_output ~ "       123\0"  $$t5 matches "123" right justified$$
+assert $t1 ~ 0x(7b,00,00)  $$t1 data preserved$$
+
+// test medium number right justified
+registers set cycle_count = 0
+run while CP != $t6_end AND cycle_count < 4500
+assert $size_output ~ "    12,345\0"  $$t6 matches "12,345" right justified$$
+assert $t2 ~ 0x(39,30,00)  $$t2 data preserved$$
+
+// test large number right justified
+registers set cycle_count = 0
+run while CP != $t7_end AND cycle_count < 6500
+assert $size_output ~ "16,777,214\0"  $$t7 matches "16,777,214" right justified$$
+assert $t3 ~ 0x(fe,ff,ff)  $$t3 data preserved$$
+
+// test zero right justified
+registers set cycle_count = 0
+run while CP != $t8_end AND cycle_count < 250
+assert $size_output ~ "         0\0"  $$t8 matches "0" right justified$$
+assert $t4 ~ 0x(00,00,00)  $$t4 data preserved$$

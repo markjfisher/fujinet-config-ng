@@ -6,7 +6,7 @@
 TARGETS = atari.full
 PROGRAM := config
 
-SUB_TASKS := clean disk diskz test test-disk test-diskz release
+SUB_TASKS := clean disk diskz test test-disk test-diskz release unit-test
 .PHONY: all help $(SUB_TASKS)
 
 all:
@@ -31,6 +31,7 @@ help:
 	@echo "clean      - remove all build artifacts"
 	@echo "disk       - generate platform specific disk versions of application (PO/ATR etc)"
 	@echo "test       - run application in emulator for given platform."
+	@echo "unit-test  - run the soft65c02 unit tests"
 	@echo "test-disk  - create and run emulator with disk release"
 	@echo "             specific platforms may expose additional variables to run with"
 	@echo "             different emulators, see makefiles/custom-<platform>.mk"

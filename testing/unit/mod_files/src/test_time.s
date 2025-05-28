@@ -5,6 +5,7 @@
     .import     ts_to_datestr
     .import     itoa_args
 
+.code
 ; this will setup any appropriate data required for the function and then run it.
 ; for this simple test, there's no parameters or anything to setup, so just call it.
 _main:
