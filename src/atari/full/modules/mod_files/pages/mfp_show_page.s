@@ -1,17 +1,22 @@
         .export     mfp_show_page
         .export     mfp_pg_buf
 
-        .export     mfp_start_pg_ptr
+        ;.export     mfp_start_pg_ptr
         .export     mfp_current_entry
         .export     mfp_is_last_group
         .export     mfp_num_entries
         .export     mfp_e_is_dir
+
+        .export     mfp_timestamp_cache
+        .export     mfp_filesize_cache
+        .export     mfp_filename_cache
 
         .import     _page_cache_get_pagegroup
         .import     _page_cache_set_path_filter
         .import     ts_to_datestr
         .import     ts_output
 
+        .import     _fc_strlen
         .import     _get_pagegroup_params
         .import     _set_path_flt_params
 
@@ -67,29 +72,60 @@ mfp_show_page:
         ;  *  - Byte  7  : Media type (0-255, with 0=unknown) - could be used for interesting icons
         ;  *  - Bytes 8+ : Null-terminated filename
 
-        ; HOW DO WE KNOW HOW MANY ENTRIES ARE IN THIS PAGEGROUP? we only get the pagegroup data returned, not
-        ; the header bytes
-        ; ANSWER: Bit 6 of the flags is 1 if the entry is the last one in the page group
+
+        ; Initialize cache pointers
+        mwa     #mfp_timestamp_cache, mfp_ts_cache_ptr
+        mwa     #mfp_filesize_cache, mfp_size_cache_ptr
+        mwa     #mfp_filename_cache, mfp_fname_cache_ptr
 
         mva     #$00, mf_entry_index
-
-        mwa     mfp_pg_buf, mfp_current_entry
+        mwa     #mfp_pg_buf, mfp_current_entry
 
 loop_entries:
-        ; move mfp_current_entry into ptr1 so we can use indirection
-        mwa     mfp_current_entry, ptr1
+        lda     mfp_current_entry
+        ldx     mfp_current_entry+1
+        sta     ptr1
+        stx     ptr1+1
 
-        ; TODO: we only need this for the 1st entry.
-        ; Later when using arrow keys highlighting different entries, we will call the appropriate routines for the highlighted entry
-        ; OR: we stash the timestamps and sizes into memory here once, and the highlighting only needs to read from the cached values
+        jsr     debug
 
         ; Get timestamp string - ptr1 already points to the 4 timestamp bytes
-        lda     ptr1            ; Low byte of address
-        ldx     ptr1+1         ; High byte of address
         jsr     ts_to_datestr  ; Result will be in ts_output
 
+        ; Cache the timestamp string using ptr2
+        mwa     mfp_ts_cache_ptr, ptr2
+        ldy     #15             ; Copy 16 bytes (without nul)
+:       lda     ts_output,y
+        sta     (ptr2),y
+        dey
+        bpl     :-
+        
+        ; Advance timestamp cache pointer by 16
+        adw     mfp_ts_cache_ptr, #16
+
+        ; Cache the filename pointer using ptr2
+        ldy     #$00
+        mwa     mfp_fname_cache_ptr, ptr2
+        lda     ptr1
+        clc
+        adc     #$08            ; Point to start of filename
+        sta     (ptr2),y
+        lda     ptr1+1
+        adc     #$00            ; Handle carry
+        iny                     ; Y=1 for high byte
+        sta     (ptr2),y
+
+        ; Advance filename cache pointer by 2
+        adw     mfp_fname_cache_ptr, #2
+
+        ; TODO: When size_to_str is implemented, call it here with tmp1-3
+        ; and cache the result from size_output to mfp_filesize_cache using ptr2
+        ; For now, just advance the pointer
+        adw     mfp_size_cache_ptr, #10
+
         ; Check if this is last entry in group (bit 6 of byte 1)
-        ldy     #1              ; Byte 1 contains flags in upper nibble
+        ; y is already 1
+        ; ldy     #$01              ; Byte 1 contains flags in upper nibble
         lda     (ptr1),y
         and     #%01000000     ; Bit 6 = last entry flag
         sta     mfp_is_last_group
@@ -100,38 +136,39 @@ loop_entries:
         sta     mfp_e_is_dir
 
         ; Get filesize (bytes 4-6, 24-bit little endian)
-        ldy     #4
-        lda     (ptr1),y       ; Low byte
-        sta     tmp1
-        iny
-        lda     (ptr1),y       ; Middle byte
-        sta     tmp2           ; tmp2 is next byte after tmp1
-        iny
-        lda     (ptr1),y       ; High byte
-        sta     tmp3           ; tmp3 is next byte after tmp2
+        ; ldy     #4
+        ; lda     (ptr1),y       ; Low byte
+        ; sta     tmp1
+        ; iny
+        ; lda     (ptr1),y       ; Middle byte
+        ; sta     tmp2           ; tmp2 is next byte after tmp1
+        ; iny
+        ; lda     (ptr1),y       ; High byte
+        ; sta     tmp3           ; tmp3 is next byte after tmp2
 
-        ; TODO: use strlen, and allow for longer than 256 bytes? Also, we can only go to 256-8 because of Y starting at 8
         ; Find length of filename to know how far to advance
-        ldy     #8              ; Start of filename
-        ldx     #0              ; Will count length
-@find_end:
-        lda     (ptr1),y
-        beq     @got_length
-        iny
-        inx
-        bne     @find_end      ; Safety check - don't loop forever
-@got_length:
-        ; Y now points at the nul byte
+        adw     ptr1, #$08      ; skip the header, so we can allow up to 255 bytes for the name
+        ; ptr1 into A/X for the strlen call. A is already ptr1
+        ldx     ptr1+1
+        jsr     _fc_strlen      ; up to 254 bytes allowed, or $ff for error which we will ignore for now
+
         ; Total entry length = 8 (header) + filename length + 1 (nul)
-        tya
-        sec
-        adc     mfp_current_entry    ; Add low byte
+        sec                             ; account for nul byte by adding 1 more through C
+        adc     mfp_current_entry       ; Add low byte
         sta     mfp_current_entry
         bcc     :+
-        inc     mfp_current_entry+1  ; Handle carry to high byte
+        inc     mfp_current_entry+1     ; Handle carry to high byte
+        clc                             ; need to clear it for next addition
 
-:       ; Check if this was the last entry
-        lda     mfp_is_last_group
+        ; add on the header length as we moved ptr1 on by this
+        ; already have value in A
+:       adc     #$08
+        sta     mfp_current_entry
+        bcc     :+
+        inc     mfp_current_entry+1     ; Handle carry to high byte
+
+        ; Check if this was the last entry
+:       lda     mfp_is_last_group
         bne     done
 
         inc     mf_entry_index
@@ -148,7 +185,17 @@ mfp_num_entries:        .res 1
 ; entry data
 mfp_e_is_dir:           .res 1
 
+; pointers to current position in cache tables as we build them
+mfp_ts_cache_ptr:       .res 2  ; points to next free timestamp slot
+mfp_size_cache_ptr:     .res 2  ; points to next free filesize slot
+mfp_fname_cache_ptr:    .res 2  ; points to next free filename pointer slot
+
 ; this is where the cache copies the current pagegroup data to. just 1 pagegroup (i.e. screen's data for all files and their file sizes etc)
 ; NOTE: this can't be in BANK as the cache is copying out of cache which is in RAM BANK
 ; and can't copy into normal memory BANK as they can't be active at same time
 mfp_pg_buf:             .res 2048
+
+.segment "BANK"
+mfp_timestamp_cache:    .res 16*20      ; "dd/mm/yyyy hh:mm" calculated string without nul
+mfp_filesize_cache:     .res 10*20      ; 24 bits max size is "16,777,216", so 10 chars with commas and no nul
+mfp_filename_cache:     .res 2*20       ; store the locations of the full names in the page cache

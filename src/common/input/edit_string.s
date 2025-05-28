@@ -15,7 +15,8 @@
         .import     pushptr1
         .import     return0
         .import     return1
-        .import     _strlen
+        ; .import     _strlen
+        .import     _fc_strlen
         .import     _memcpy
         .import     _memmove
 
@@ -177,7 +178,7 @@ inc_length:
 _edit_string:
         ; Save original length
         setax   _es_params+edit_string_params::initial_str
-        jsr     _strlen
+        jsr     _fc_strlen
         axinto  orig_length
 
         ; Set up buffer pointer

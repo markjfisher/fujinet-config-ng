@@ -9,6 +9,7 @@
 ; uses tmp9/10
 .proc _fc_strlen
         axinto  tmp9    ; p
+        ldx     #$00
 
         ldy     #$00
 :       lda     (tmp9), y
@@ -17,11 +18,9 @@
         beq     err     ; rolled over to 0, exit with err
         bne     :-      ; always
 err:
-        ldx     #$00
         lda     #$ff
         rts
 out:
-        ldx     #$00
         tya
         rts
 .endproc
