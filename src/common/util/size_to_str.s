@@ -2,21 +2,31 @@
         .export     size_output
 
         .import     _memmove
-        .import     pushax        
+        .import     pushax
 
         .include    "zp.inc"
         .include    "macros.inc"
 
 ; converts 3 bytes from little endian to comma separated string
 ; input:
-;   A/X = pointer to 3 bytes
+;   A/X = pointer to 3 bytes (little endian, range 0-16,777,214)
 ;   Y = 1 for right justified, 0 for left justified
 ; output:
-;   size_output contains the string
+;   size_output contains the string (10 chars + null terminator)
+;   - left justified: string starts at position 0
+;   - right justified: string ends at position 9
+;   - includes commas every 3 digits from right (e.g. "16,777,214")
+;   - padded with spaces
+;   - input data is preserved
 ; uses:
 ;   ptr3 - points to input bytes
-;   ptr4 - working pointer for output string
-;   tmp1-tmp4 - for division/conversion
+;   ptr4 - justification flag
+;   tmp1-tmp4 - for division/conversion/string length
+; cycles:
+;   ~2000-6500 depending on number size and comma count
+; size:
+;   ~220 bytes of code
+;   21 bytes of BSS for output buffer (10 chars + null + 10 temp)
 
 .segment "CODE2"
 
@@ -177,6 +187,7 @@ justify:
         ; Set size directly in A/X
         lda     tmp4            ; Length of string
         ldx     #0             ; High byte is 0 as string is < 256 bytes
+        ; this affects ptr1-4
         jsr     _memmove
 
         ; Fill leading positions with spaces

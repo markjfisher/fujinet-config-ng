@@ -4,7 +4,6 @@
         ;.export     mfp_start_pg_ptr
         .export     mfp_current_entry
         .export     mfp_is_last_group
-        .export     mfp_num_entries
         .export     mfp_e_is_dir
 
         .export     mfp_timestamp_cache
@@ -15,6 +14,8 @@
         .import     _page_cache_set_path_filter
         .import     ts_to_datestr
         .import     ts_output
+        .import     size_to_str
+        .import     size_output
 
         .import     _fc_strlen
         .import     _get_pagegroup_params
@@ -78,16 +79,16 @@ mfp_show_page:
         mwa     #mfp_filesize_cache, mfp_size_cache_ptr
         mwa     #mfp_filename_cache, mfp_fname_cache_ptr
 
+        ; TODO: why do we touch this at all?
         mva     #$00, mf_entry_index
         mwa     #mfp_pg_buf, mfp_current_entry
 
 loop_entries:
+        jsr     debug
         lda     mfp_current_entry
         ldx     mfp_current_entry+1
         sta     ptr1
         stx     ptr1+1
-
-        jsr     debug
 
         ; Get timestamp string - ptr1 already points to the 4 timestamp bytes
         jsr     ts_to_datestr  ; Result will be in ts_output
@@ -103,31 +104,10 @@ loop_entries:
         ; Advance timestamp cache pointer by 16
         adw     mfp_ts_cache_ptr, #16
 
-        ; Cache the filename pointer using ptr2
-        ldy     #$00
-        mwa     mfp_fname_cache_ptr, ptr2
-        lda     ptr1
-        clc
-        adc     #$08            ; Point to start of filename
-        sta     (ptr2),y
-        lda     ptr1+1
-        adc     #$00            ; Handle carry
-        iny                     ; Y=1 for high byte
-        sta     (ptr2),y
-
-        ; Advance filename cache pointer by 2
-        adw     mfp_fname_cache_ptr, #2
-
-        ; TODO: When size_to_str is implemented, call it here with tmp1-3
-        ; and cache the result from size_output to mfp_filesize_cache using ptr2
-        ; For now, just advance the pointer
-        adw     mfp_size_cache_ptr, #10
-
         ; Check if this is last entry in group (bit 6 of byte 1)
-        ; y is already 1
-        ; ldy     #$01              ; Byte 1 contains flags in upper nibble
+        ldy     #$01            ; Byte 1 contains flags in upper nibble
         lda     (ptr1),y
-        and     #%01000000     ; Bit 6 = last entry flag
+        and     #%01000000      ; Bit 6 = last entry flag
         sta     mfp_is_last_group
 
         ; Check if it's a directory (bit 7 of byte 1)
@@ -135,21 +115,44 @@ loop_entries:
         and     #%10000000     ; Bit 7 = directory flag
         sta     mfp_e_is_dir
 
-        ; Get filesize (bytes 4-6, 24-bit little endian)
-        ; ldy     #4
-        ; lda     (ptr1),y       ; Low byte
-        ; sta     tmp1
-        ; iny
-        ; lda     (ptr1),y       ; Middle byte
-        ; sta     tmp2           ; tmp2 is next byte after tmp1
-        ; iny
-        ; lda     (ptr1),y       ; High byte
-        ; sta     tmp3           ; tmp3 is next byte after tmp2
+
+        ; Convert size to string (right justified)
+        adw     ptr1, #$04
+        mwa     ptr1, tmp5
+        setax   ptr1
+        ldy     #1              ; Right justify
+        jsr     size_to_str     ; Result will be in size_output - trashes ptr1-4 via memmove
+        mwa     tmp5, ptr1      ; restore ptr1
+
+        ; Cache the size string
+        mwa     mfp_size_cache_ptr, ptr2
+        ldy     #9             ; Copy 10 bytes (without nul)
+:       lda     size_output,y
+        sta     (ptr2),y
+        dey
+        bpl     :-
+
+        ; Advance size cache pointer by 10
+        adw     mfp_size_cache_ptr, #10
+
+        adw     ptr1, #$04      ; skip the rest of the header, so we can allow up to 255 bytes for the name
+        mwa     mfp_fname_cache_ptr, ptr2
+        ldy     #$00
+        ; write the string location to fname cache
+        mway    ptr1, {(ptr2), y}
+
+
+
+
+
+
+
+        ; Advance filename cache pointer by 2
+        adw     mfp_fname_cache_ptr, #2
 
         ; Find length of filename to know how far to advance
-        adw     ptr1, #$08      ; skip the header, so we can allow up to 255 bytes for the name
-        ; ptr1 into A/X for the strlen call. A is already ptr1
-        ldx     ptr1+1
+        jsr     debug
+        setax   ptr1
         jsr     _fc_strlen      ; up to 254 bytes allowed, or $ff for error which we will ignore for now
 
         ; Total entry length = 8 (header) + filename length + 1 (nul)
@@ -171,7 +174,7 @@ loop_entries:
 :       lda     mfp_is_last_group
         bne     done
 
-        inc     mf_entry_index
+        inc     mf_entry_index          ; TODO: is this needed?
         jmp     loop_entries
 
 done:   
@@ -180,9 +183,6 @@ done:
 .bss
 mfp_current_entry:      .res 2
 mfp_is_last_group:      .res 1
-mfp_num_entries:        .res 1
-; mfp_current_pg_idx:     .res 1          ; the pagegroup number (0, 1, 2, ...) used in cache index
-; entry data
 mfp_e_is_dir:           .res 1
 
 ; pointers to current position in cache tables as we build them
