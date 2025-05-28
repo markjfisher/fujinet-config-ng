@@ -9,6 +9,7 @@
         .export     mfp_timestamp_cache
         .export     mfp_filesize_cache
         .export     mfp_filename_cache
+        .export     mfp_dir_flag_cache
 
         .import     _page_cache_get_pagegroup
         .import     _page_cache_set_path_filter
@@ -119,6 +120,9 @@ loop_entries:
         and     #%10000000     ; Bit 7 = directory flag
         sta     mfp_e_is_dir
 
+        ; Store directory flag in cache
+        ldy     mf_entry_index
+        sta     mfp_dir_flag_cache,y
 
         ; Convert size to string (right justified)
         adw     ptr1, #$04
@@ -196,9 +200,21 @@ just_file:
 done:
         ; print the time and size for first entry
         put_s   #01, #21, #mfp_timestamp_cache
-        put_s   #29, #21, #mfp_filesize_cache
 
+        ; Check if first entry is a directory
+        lda     mfp_dir_flag_cache     ; first entry's flag
+        beq     show_size
+
+        ; It's a directory, show spaces instead
+        put_s   #29, #21, #dir_spaces
         rts
+
+show_size:
+        put_s   #29, #21, #mfp_filesize_cache
+        rts
+
+.data
+dir_spaces:     .byte "          ",0     ; 10 spaces for directory entries
 
 .bss
 mfp_current_entry:      .res 2
@@ -214,6 +230,8 @@ mfp_fname_cache_ptr:    .res 2  ; points to next free filename pointer slot
 ; NOTE: this can't be in BANK as the cache is copying out of cache which is in RAM BANK
 ; and can't copy into normal memory BANK as they can't be active at same time
 mfp_pg_buf:             .res 2048
+
+mfp_dir_flag_cache:     .res 20       ; One byte per entry to store directory flags
 
 .segment "BANK"
 mfp_timestamp_cache:    .res 17*20      ; "dd/mm/yyyy hh:mm" calculated string without nul
