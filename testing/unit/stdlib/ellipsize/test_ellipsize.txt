@@ -1,0 +1,21 @@
+marker $$testing ellipsize function$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+
+// Test 1: String under max size (should copy as-is)
+registers set cycle_count = 0
+run $_main while CP != $t1_end AND cycle_count < 50000
+assert $dst_buf ~ "1234\0"  $$t1 under max size, copied as-is$$
+
+// Test 2: String exactly at max size (should copy as-is)
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 50000
+assert $dst_buf ~ "12345\0"  $$t2 at max size, copied as-is$$
+
+// Test 3: String above max size (should ellipsize)
+registers set cycle_count = 0
+run while CP != $t3_end AND cycle_count < 50000
+assert $dst_buf ~ "12...89\0"  $$t3 above max size, correctly ellipsized$$ 

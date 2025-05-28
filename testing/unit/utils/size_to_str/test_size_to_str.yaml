@@ -1,10 +1,10 @@
 name: size_to_str test
 
 configs:
-  - ../../base_configs/base_test.yaml
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
 
 src_files:
-  - ../src/test_size_to_str.s
+  - test_size_to_str.s
   - ${WS_ROOT}/src/common/util/size_to_str.s
 
 test_script: test_size_to_str.txt 

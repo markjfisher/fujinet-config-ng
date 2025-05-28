@@ -12,7 +12,7 @@ unit-test: /tmp/config-ng-unit
 	@failed=0; \
 	for test in $(UNIT_TEST_FILES); do \
 		echo "Running $$test..."; \
-		if ! WS_ROOT=$(CURDIR) soft65c02_unit -b /tmp/config-ng-unit -i $$test; then \
+		if ! WS_ROOT=$(CURDIR) UNIT_TEST_DIR=$(CURDIR)/testing/unit soft65c02_unit -b /tmp/config-ng-unit -i $$test; then \
 			echo "FAILED: $$test"; \
 			failed=1; \
 		fi; \

@@ -1,0 +1,12 @@
+name: test_ellipsize
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+src_files:
+  - test_ellipsize.s
+  - ${WS_ROOT}/src/common/stdlib/ellipsize.s
+  - ${WS_ROOT}/src/common/stdlib/fc_strlcpy.s
+  - ${WS_ROOT}/src/common/stdlib/fc_strlen.s
+
+test_script: test_ellipsize.txt

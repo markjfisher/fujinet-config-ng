@@ -20,6 +20,8 @@
         .import     _fc_strlen
         .import     _get_pagegroup_params
         .import     _set_path_flt_params
+        .import     _put_s
+        .import     get_scrloc
 
         .import     fn_dir_filter
         .import     fn_dir_path
@@ -28,12 +30,14 @@
         .import     mf_dir_pg_cnt
         .import     mf_entry_index
         .import     mf_selected
+        .import     mf_y_offset
 
         .import     debug
 
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "page_cache.inc"
+        .include    "fn_data.inc"
 
 .segment "CODE2"
 
@@ -141,11 +145,24 @@ loop_entries:
         ; write the string location to fname cache
         mway    ptr1, {(ptr2), y}
 
+        ; ------------------------------------------------------------
+        ; show the file name elipsized on the screen
 
+        ; is this a directory?
+        lda     mfp_e_is_dir
+        beq     just_file
 
+        clc
+        lda     mf_entry_index
+        adc     mf_y_offset
+        tay
+        ldx     #$00
+        jsr     get_scrloc
+        ldy     #$00
+        mva     #FNC_DIR_C, {(ptr4), y}
 
-
-
+just_file:
+        put_s   #$01, mf_entry_index, ptr1, mf_y_offset
 
         ; Advance filename cache pointer by 2
         adw     mfp_fname_cache_ptr, #2

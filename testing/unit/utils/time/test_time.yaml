@@ -1,10 +1,10 @@
 name: ts_to_datestr test
 
 configs:
-  - ../../base_configs/base_test.yaml
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
 
 src_files:
-  - ../src/test_time.s
+  - test_time.s
   - ${WS_ROOT}/src/common/util/time.s
   - ${WS_ROOT}/src/common/util/itoa.s
   - ${WS_ROOT}/src/common/util/div.s

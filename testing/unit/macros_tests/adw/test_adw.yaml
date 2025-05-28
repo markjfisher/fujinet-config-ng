@@ -1,9 +1,9 @@
 name: adw macro tests
 
 configs:
-  - ../../base_configs/base_test.yaml
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
 
 src_files:
-  - ../src/test_adw.s
+  - test_adw.s
 
 test_script: test_adw.txt
