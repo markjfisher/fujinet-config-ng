@@ -130,9 +130,8 @@ do_down:
         bcc     :+              ; not on last entry for page
 
         ; it's last position, but is it eod?
-        lda     mf_is_eod
-        cmp     #$01
-        beq     exit_reloop     ; must be on a EOD page, so ignore this keypress
+        lda     mf_is_eod       ; EOD if not 0
+        bne     exit_reloop     ; must be on a EOD page, so ignore this keypress
 
         ; valid down, increase by page count, but set our cursor on first line to look cool
         mva     #$00, mf_selected

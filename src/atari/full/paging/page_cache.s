@@ -352,7 +352,7 @@ have_space:
         jsr     mul8
         axinto  tmp3            ; goes into tmp3/4
 
-        ; Calculate destination (source + 8)
+        ; Calculate destination (source + PAGE_CACHE_ENTRY_SIZE)
         lda     entry_loc
         clc
         adc     #PAGE_CACHE_ENTRY_SIZE
@@ -375,20 +375,21 @@ skip_move:
         ; Set up source pointer to insert_params
         mwa     #_insert_params, ptr2
 
-        ; Copy 8 bytes from insert_params to entry
-        ldy     #7              ; Start from last byte
+        ; Copy PAGE_CACHE_ENTRY_SIZE bytes from insert_params to entry
+        ; TODO: if we extend the page_cache entry data, need additional bytes here
+        ldy     #PAGE_CACHE_ENTRY_SIZE-1        ; Start from last byte
 copy_loop:
         lda     (ptr2),y        ; Load from insert_params
         sta     (ptr1),y        ; Store to entry
         dey
-        bpl     copy_loop       ; Loop until y wraps (8 bytes)
+        bpl     copy_loop       ; Loop until y wraps (PAGE_CACHE_ENTRY_SIZE bytes)
 
         ; Update bank free space
         lda     _insert_params+page_cache_insert_params::bank_id
         asl     a               ; * 2 for word offset
         tay                     ; Use as index
 
-        ; Subtract group_size from bank_free_space[bank_id]
+        ; Subtract group_size (which includes additional 2 bytes for header) from bank_free_space[bank_id]
         lda     _cache+page_cache::bank_free_space,y
         sec
         sbc     _insert_params+page_cache_insert_params::group_size
@@ -401,16 +402,26 @@ copy_loop:
 
         ; Get bank base address
         jsr     _get_bank_base
+
+        ; TODO check code here, macros are inefficiently loading ptr2 a lot
         axinto  ptr2
 
-        ; Add offset to get destination address - TODO, INEFFICIENT MACROS HERE, A is already ptr2
+        ; Add offset to get destination address
         adw     ptr2, _insert_params+page_cache_insert_params::bank_offset
+        ; add 2 bytes for the bulk data we are copying, the 2 header bytes will go in separately
+        adw     ptr2, #$02
 
-        ; AND HERE
         pushax  ptr2
+
         pushax  _insert_params+page_cache_insert_params::data_ptr
         ; save the group size in tmp1/tmp2 so we can access it after changing banks
         mwa     _insert_params+page_cache_insert_params::group_size, tmp1
+        ; the bulk copy should be 2 bytes less for the header bytes
+        sbw     tmp1, #$02
+
+        ; copy the header bytes into tmp3/4 while we are in banked mode
+        ; note this does 2 bytes
+        mwa     _insert_params+page_cache_insert_params::pg_flags, tmp3
 
         ; Switch to target bank for data copy
         ; this must be done at the last possible second, so we can continue to use all the _params data
@@ -421,6 +432,12 @@ copy_loop:
         ; the src/dst are in software stack, just need the size from tmp1/2 in A/X
         setax   tmp1
         jsr     _memcpy
+
+        ; copy tmp3/4 to the start of the bank, first reduce ptr2 by 2 to point to start of memory
+        sbw     ptr2, #$02
+        ldy     #$00
+        ; copy 2 bytes
+        mway    tmp3, {(ptr2), y}
 
         ; reset to default bank to allow access to _cache
         jsr     _set_default_bank
@@ -1178,12 +1195,13 @@ start:
         ; e.g. dir_position = 25, but page_size = 16, we're not on page 2, we're somewhere down page 2.
         ; that would potentially cause issues with page alignment to directory location
         cpx     #$00
-        beq     skip_calc
+        beq     divides_exactly
 
         ; error out
         jmp     return1
 
 skip_calc:
+divides_exactly:
         sta     _find_params+page_cache_find_params::group_id
 
         ; the caller should have called _page_cache_set_path to generate a hash
@@ -1200,7 +1218,7 @@ skip_calc:
 
         ; yes, already retrieved this page, so return the data
         ; the index entry is set in _find_params::entry_loc
-        ; that points to 8 bytes of type page_cache_entry
+        ; that points to PAGE_CACHE_ENTRY_SIZE bytes of type page_cache_entry
         mwa     _find_params+page_cache_find_params::entry_loc, ptr1
 
         ; get the bank_offset into ptr2, this doesn't include the bank base offset
@@ -1315,6 +1333,18 @@ h_loop:
         ; set the insert group_size and the data pointer
         lda     page_header+page_cache_pagegroup_header::data_size
         sta     _insert_params+page_cache_insert_params::group_size
+        lda     page_header+page_cache_pagegroup_header::data_size+1
+        sta     _insert_params+page_cache_insert_params::group_size+1
+
+        ; add 2 for the header bytes for flags/num_entries
+        adw     _insert_params+page_cache_insert_params::group_size, #$02
+
+        ; add the flags and num entries from header to insert params
+        lda     page_header+page_cache_pagegroup_header::flags
+        sta     _insert_params+page_cache_insert_params::pg_flags
+
+        lda     page_header+page_cache_pagegroup_header::num_entries
+        sta     _insert_params+page_cache_insert_params::pg_entry_cnt
 
         ; data pointer is the 5th byte of this current page group. ptr1 will be moved each iteration so we are at start
         ; of each page group block by moving it forward according to the size of the previous pagegroup
@@ -1328,7 +1358,7 @@ h_loop:
         bcc     :+
         inc     ptr2+1
 :
-        ; TODO, just set/add it directly to data_ptr rather than ptr2
+        ; TODO, just set/add it directly to data_ptr rather than ptr2, i.e. fold above addition into next statement and remove need for ptr2 here
 
         ; now we can copy this location to data_ptr in insert
         mwa     ptr2, _insert_params+page_cache_insert_params::data_ptr
@@ -1338,8 +1368,10 @@ h_loop:
 
         ; check if it worked. 0 = fail, A is already set to success value
         ; lda     _insert_params+page_cache_insert_params::success
-        beq     exit_error
+        bne     :+
+        jmp     exit_error
 
+:
         ; now loop for all the other entries in the cache.
         ; first move ptr1 on by the size of the page group and header
         ; these can't be combined as we have to use the carry in the high byte before moving onto second addition

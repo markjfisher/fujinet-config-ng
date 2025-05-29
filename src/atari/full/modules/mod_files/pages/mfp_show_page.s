@@ -3,7 +3,6 @@
 
         ;.export     mfp_start_pg_ptr
         .export     mfp_current_entry
-        .export     mfp_is_last_group
         .export     mfp_e_is_dir
 
         .export     mfp_timestamp_cache
@@ -35,6 +34,7 @@
         .import     mf_entry_index
         .import     mf_selected
         .import     mf_y_offset
+        .import     mf_is_eod
 
         .import     debug
 
@@ -46,14 +46,6 @@
 .segment "CODE2"
 
 mfp_show_page:
-;  store pagegroup we're on
-;  ask cache for this pagegroup (check for error)
-;  parse the data for pagegroup from returned memory location for the page
-;  display this pages list of files
-
-; when the cursor/selection is on a particular file
-;   - <scroll> it to make it visible over whole name - NEED NEW ANIMATION
-;   - print its file size and date in the extra line
 
         ; set the path_hash - TODO: move this to where it's not constantly called, and only when it changes
         mwa     #fn_dir_path, _set_path_flt_params+page_cache_set_path_filter_params::path
@@ -67,8 +59,13 @@ mfp_show_page:
         jsr     _page_cache_get_pagegroup
 
         ; now display it, the raw page group data is in mfp_pg_buf
-        ; mfp_pg_buf contains JUST THE PAGE GROUP ENTRY DATA, so from byte 5 in the following
+        ; mfp_pg_buf points to cached data, which includes 2 bytes from header for:
+        ;  * Byte  0    : Flags
+        ;  *              - Bit 7: Last group (1=yes, 0=no)
+        ;  *              - Bits 6-0: Reserved
+        ;  * Byte  1    : Number of directory entries in this group
 
+        ; followed by
         ;  * PageGroup Entry structure:
         ;  *  Each entry:
         ;  *  - Bytes 0-3: Packed timestamp and flags
@@ -88,7 +85,18 @@ mfp_show_page:
         mwa     #mfp_filename_cache, mfp_fname_cache_ptr
 
         mva     #$00, mf_entry_index
-        mwa     #mfp_pg_buf, mfp_current_entry
+
+        ; deal with the header bytes
+        ; Are we at End of Directory?
+        lda     mfp_pg_buf
+        and     #$80
+        sta     mf_is_eod
+
+        ; How many entries are there in the group?
+        mva     mfp_pg_buf+1, mfp_entries_in_group
+
+        ; set mfp_current_entry to start of the page group data
+        mwa     #mfp_pg_buf+2, mfp_current_entry
 
 loop_entries:
         lda     mfp_current_entry
@@ -109,13 +117,8 @@ loop_entries:
         ; Advance timestamp cache pointer by 17 (16 chars + null)
         adw     mfp_ts_cache_ptr, #17
 
-        ; Check if this is last entry in group (bit 6 of byte 1)
-        ldy     #$01            ; Byte 1 contains flags in upper nibble
-        lda     (ptr1),y
-        and     #%01000000      ; Bit 6 = last entry flag
-        sta     mfp_is_last_group
-
         ; Check if it's a directory (bit 7 of byte 1)
+        ldy     #$01
         lda     (ptr1),y
         and     #%10000000     ; Bit 7 = directory flag
         sta     mfp_e_is_dir
@@ -189,16 +192,17 @@ just_file:
         bcc     :+
         inc     mfp_current_entry+1     ; Handle carry to high byte
 
-        ; Check if this was the last entry
-:       lda     mfp_is_last_group
-        bne     done
+:       inc     mf_entry_index
+        lda     mf_entry_index
 
-        inc     mf_entry_index
+        cmp     mfp_entries_in_group
+        beq     done
+
         jmp     loop_entries
 
 done:
         ; save the entries for the page so the kb handler will let us move around
-        inc     mf_entry_index
+        ; inc     mf_entry_index
         mva     mf_entry_index, mf_entries_cnt
         ; print the time and size for first entry
         put_s   #01, #21, #mfp_timestamp_cache
@@ -220,8 +224,8 @@ dir_spaces:     .byte "          ",0     ; 10 spaces for directory entries
 
 .bss
 mfp_current_entry:      .res 2
-mfp_is_last_group:      .res 1
 mfp_e_is_dir:           .res 1
+mfp_entries_in_group:   .res 1
 
 ; pointers to current position in cache tables as we build them
 mfp_ts_cache_ptr:       .res 2  ; points to next free timestamp slot
