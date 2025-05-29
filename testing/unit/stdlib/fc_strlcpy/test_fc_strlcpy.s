@@ -4,43 +4,44 @@
 .export dst_buf
 
 .import _fc_strlcpy
-.import pushax
+.import _fc_strlcpy_params
 
 .include "zp.inc"
 .include "macros.inc"
+.include "fc_strlcpy.inc"
 
 .code
 _main:
         jsr     fill_ff         ; Fill dst_buf with $FF pattern
 
 t1:     ; Test count > length, char + 0, no padding
-        pushax  #dst_buf        ; dst
-        pushax  #src1          ; src
-        lda     #3              ; count
+        mwa     #dst_buf, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     #src1, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #3, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
 t1_end:
 
         jsr     fill_ff         ; Fill dst_buf with $FF pattern
 t2:     ; Test count > length, but only copy count-1
-        pushax  #dst_buf        ; dst
-        pushax  #src2          ; src
-        lda     #3              ; count
+        mwa     #dst_buf, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     #src2, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #3, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
 t2_end:
 
         jsr     fill_ff         ; Fill dst_buf with $FF pattern
 t3:     ; Test count = length, truncate for nul
-        pushax  #dst_buf        ; dst
-        pushax  #src3          ; src
-        lda     #3              ; count
+        mwa     #dst_buf, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     #src3, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #3, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
 t3_end:
 
         jsr     fill_ff         ; Fill dst_buf with $FF pattern
 t4:     ; Test count < length, truncate for nul
-        pushax  #dst_buf        ; dst
-        pushax  #src4          ; src
-        lda     #3              ; count
+        mwa     #dst_buf, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     #src4, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #3, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
 t4_end:
         rts
