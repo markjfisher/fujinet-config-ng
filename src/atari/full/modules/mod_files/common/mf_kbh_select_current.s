@@ -2,6 +2,7 @@
         .export     mf_kbh_select_current
 
         .import     _fc_strlcpy
+        .import     _fc_strlcpy_params
         .import     _fc_strlen
         .import     _fc_strncpy
         .import     _scr_clr_highlight
@@ -29,6 +30,7 @@
         .include    "fujinet-fuji.inc"
         .include    "popup.inc"
         .include    "args.inc"
+        .include    "fc_strlcpy.inc"
 
 ; Handle Selection of the currently highlighted line
 ; tmp1,tmp2,tmp3
@@ -48,10 +50,10 @@ is_dir:
         bne     too_long_error
 
         ; copy fuji_buffer to fn_dir_path
-        pushax  #fn_dir_path
-        pushax  #fuji_buffer
-        lda     #$e0
-        jsr     _fc_strncpy
+        mwa     #fn_dir_path, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     #fuji_buffer, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #$e0, _fc_strlcpy_params+fc_strlcpy_params::size
+        jsr     _fc_strlcpy
 
         mva     #$00, mf_selected
         sta     mf_dir_pos
@@ -121,9 +123,11 @@ too_long_error:
 :       mwa     #fuji_buffer, ptr2
         adw1    ptr2, tmp1
         inc     tmp2                    ; allow for nul char in strlcpy. this should be done AFTER the size check!
-        pushax  ptr2                    ; dst, where we will apend the entry to.
-        pushax  ptr1                    ; src, which has a trailing slash conveniently if it's a dir
-        lda     tmp2                    ; we know it will fit and it's this length
+
+        ; Setup fc_strlcpy params
+        mwa     ptr2, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     ptr1, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     tmp2, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
 
         jmp     return0

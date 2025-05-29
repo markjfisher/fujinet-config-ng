@@ -3,6 +3,7 @@
         .import     _clr_status
         .import     _fc_strlcpy
         .import     _fc_strlen
+        .import     _fc_strlcpy_params
         .import     _fuji_copy_file
         .import     _put_s
         .import     _scr_clr_highlight
@@ -22,6 +23,7 @@
         .include    "macros.inc"
         .include    "modules.inc"
         .include    "zp.inc"
+        .include    "fc_strlcpy.inc"
 
 .proc mf_copy_end
         ; whatever directory we're in is the target.
@@ -58,9 +60,11 @@
         ; now copy fn_dir_path onto that
         mwa     ptr1, ptr2      ; copy ptr1 to ptr2, so we keep the memory location for _free
         adw1    ptr2, tmp1      ; move ptr2 onto end of string, including '/'
-        pushax  ptr2            ; dst
-        pushax  #fn_dir_path    ; src
-        lda     tmp2            ; its length
+
+        ; Setup fc_strlcpy params
+        mwa     ptr2, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     #fn_dir_path, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     tmp2, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy     ; minimal copy and guarantee a 0 at the end
 
         ; clear the highlight

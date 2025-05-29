@@ -8,6 +8,7 @@
         .import     _bzero
         .import     _fc_atoi
         .import     _fc_strlcpy
+        .import     _fc_strlcpy_params
         .import     _fc_strlen
         .import     _fuji_error
         .import     _put_help
@@ -51,6 +52,7 @@
         .include    "fujinet-fuji.inc"
         .include    "popup.inc"
         .include    "args.inc"
+        .include    "fc_strlcpy.inc"
 
 ; tmp1,tmp2,tmp8,tmp9,tmp10
 ; ptr1,ptr2
@@ -313,9 +315,11 @@ join_path_and_filename:
         mwa     #fuji_buffer, ptr2
         adw1    ptr2, tmp1
         inc     tmp2            ; allow for null in strlcpy
-        pushax  ptr2            ; dst
-        pushax  ptr1            ; src
-        lda     tmp2
+
+        ; Setup fc_strlcpy params
+        mwa     ptr2, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     ptr1, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     tmp2, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy     ; append
         ; TODO: should we check if the copy worked?
         jmp     return0

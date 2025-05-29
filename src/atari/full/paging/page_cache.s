@@ -29,6 +29,7 @@
         .import     _div_i16_by_i8
         .import     _hash_string
         .import     _fc_strlcpy
+        .import     _fc_strlcpy_params
 
         .import     _bzero
         .import     _memcpy
@@ -37,12 +38,14 @@
         .import     pushax
         .import     return0
         .import     return1
+        .import     debug
 
         .import     _fuji_read_directory_block
 
         .include    "page_cache.inc"
         .include    "macros.inc"
         .include    "zp.inc"
+        .include    "fc_strlcpy.inc"
 
 .segment "CODE2"
 
@@ -297,8 +300,8 @@ have_space:
         ; Find a bank with enough space
         jsr     _page_cache_find_free_bank
 
-        ; Check if we found a bank
-        lda     _find_bank_params+page_cache_find_bank_params::bank_id
+        ; Check if we found a bank (A already contains the bank_id found)
+        ; lda     _find_bank_params+page_cache_find_bank_params::bank_id
         cmp     #$FF
         bne     :+
         jmp     no_space
@@ -307,7 +310,7 @@ have_space:
 :       sta     _insert_params+page_cache_insert_params::bank_id
 
         ; Calculate bank offset from free space
-        lda     _find_bank_params+page_cache_find_bank_params::bank_id
+        ; lda     _find_bank_params+page_cache_find_bank_params::bank_id
         asl     a              ; * 2 for word offset
         tay
         lda     #<BANK_SIZE
@@ -438,6 +441,7 @@ copy_loop:
         ldy     #$00
         ; copy 2 bytes
         mway    tmp3, {(ptr2), y}
+        jsr     debug
 
         ; reset to default bank to allow access to _cache
         jsr     _set_default_bank
@@ -1129,13 +1133,14 @@ found_different:
 .proc _page_cache_set_path_filter
         ; calculate a hash for the path/filter
         ; use the buffer page_cache_buf for this as it will be overwritten anyway with data if we fetch
-        pushax  #page_cache_buf         ; this is for _fc_strlcpy
-        jsr     pushax                  ; this is for _bzero
+        pushax  #page_cache_buf
         setax   #$100
         jsr     _bzero
 
-        pushax  _set_path_flt_params+page_cache_set_path_filter_params::path
-        lda     #$e0                    ; max size of path in config-ng to allow for $1f filter
+        ; Setup fc_strlcpy params
+        mwa     #page_cache_buf, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     _set_path_flt_params+page_cache_set_path_filter_params::path, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #$e0, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
         sta     tmp1                    ; length actually copied
 
@@ -1153,9 +1158,11 @@ found_different:
 
         inc     tmp1                    ; increase size as we added an extra char
         adw1    ptr1, tmp1              ; make ptr1 point to first character after "|"
-        pushax  ptr1                    ; dst
-        pushax  _set_path_flt_params+page_cache_set_path_filter_params::filter ; src
-        lda     #$1f                    ; max size of path
+
+        ; Setup fc_strlcpy params for filter
+        mwa     ptr1, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     _set_path_flt_params+page_cache_set_path_filter_params::filter, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #$1f, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
 
 no_filter:
@@ -1271,6 +1278,7 @@ not_in_cache:
         pusha   _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
         setax   #page_cache_buf
         jsr     _fuji_read_directory_block
+        jsr     debug
 
         ; was there an error? fuji calls return success status, so 1 is ok
         bne     copy_to_cache

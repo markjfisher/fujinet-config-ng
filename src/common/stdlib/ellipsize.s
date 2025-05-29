@@ -3,11 +3,15 @@
 
         .import     _fc_strlen
         .import     _fc_strlcpy
+        .import     _fc_strlcpy_params
         .import     pushax
 
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "ellipsize.inc"
+        .include    "fc_strlcpy.inc"
+
+.segment "CODE2"
 
 ; void ellipsize()
 ; Uses _ellipsize_params structure for parameters:
@@ -28,10 +32,10 @@
         bcs     :+
 
         ; String fits, just copy it
-        pushax  _ellipsize_params+ellipsize_params::dst
-        pushax  _ellipsize_params+ellipsize_params::src
+        mwa     _ellipsize_params+ellipsize_params::dst, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     _ellipsize_params+ellipsize_params::src, _fc_strlcpy_params+fc_strlcpy_params::src
         inc     tmp4    ; add 1 for null
-        lda     tmp4    ; get length back
+        mva     tmp4, _fc_strlcpy_params+fc_strlcpy_params::size
         jmp     _fc_strlcpy
         ; implicit rts
 

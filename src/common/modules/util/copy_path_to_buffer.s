@@ -2,6 +2,7 @@
         .export     copy_path_filter_to_buffer
 
         .import     _fc_strlcpy
+        .import     _fc_strlcpy_params
         .import     fn_dir_filter
         .import     fn_dir_path
         .import     fuji_buffer
@@ -12,28 +13,21 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
+        .include    "fc_strlcpy.inc"
 
 ; tmp4,tmp9
 ; ptr3,ptr4
 
 ; just the path to the buffer
 .proc copy_path_to_buffer
-;         mwa     #fuji_buffer, tmp9
-
-;         ; clear a page of memory
-;         ldy     #$00
-;         lda     #$00
-; :       sta     (tmp9), y
-;         iny
-;         bne     :-
-
         pushax  #fuji_buffer
         setax   #$100
         jsr     _bzero
 
-        pushax  #fuji_buffer
-        pushax  #fn_dir_path
-        lda     #$e0
+        ; Setup fc_strlcpy params
+        mwa     #fuji_buffer, _fc_strlcpy_params+fc_strlcpy_params::dst
+        mwa     #fn_dir_path, _fc_strlcpy_params+fc_strlcpy_params::src
+        mva     #$e0, _fc_strlcpy_params+fc_strlcpy_params::size
         jsr     _fc_strlcpy
         sta     tmp4                    ; A/X hold length, will only be low byte
         rts
