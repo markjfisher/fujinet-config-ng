@@ -8,6 +8,7 @@
         .export     _page_cache_set_path_filter
 
         .export     entry_loc
+        .export     page_header
 
         .export     page_cache_buf
 
@@ -38,7 +39,6 @@
         .import     pushax
         .import     return0
         .import     return1
-        .import     debug
 
         .import     _fuji_read_directory_block
 
@@ -441,7 +441,6 @@ copy_loop:
         ldy     #$00
         ; copy 2 bytes
         mway    tmp3, {(ptr2), y}
-        jsr     debug
 
         ; reset to default bank to allow access to _cache
         jsr     _set_default_bank
@@ -1278,7 +1277,6 @@ not_in_cache:
         pusha   _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
         setax   #page_cache_buf
         jsr     _fuji_read_directory_block
-        jsr     debug
 
         ; was there an error? fuji calls return success status, so 1 is ok
         bne     copy_to_cache
@@ -1372,7 +1370,7 @@ h_loop:
         mwa     ptr2, _insert_params+page_cache_insert_params::data_ptr
 
         ; everything is set in the _insert_params block for calling insert. it will handle memory/banks etc
-        jsr     _page_cache_insert
+        jsr     _page_cache_insert ; corrupts in here.
 
         ; check if it worked. 0 = fail, A is already set to success value
         ; lda     _insert_params+page_cache_insert_params::success

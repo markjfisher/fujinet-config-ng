@@ -16,7 +16,7 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
     max_banks       .byte       ; total banks allowed to use in caching code
     entry_count     .byte       ; Number of active entries
     entries         .res 255*8  ; Array of page_cache_entry (255 entries * 8 bytes each)
-    bank_free_space .res 63*2   ; Array of bank free space (max of 63 banks * 2 bytes each)
+    bank_free_space .res 64*2   ; Array of bank free space (max of 64 banks * 2 bytes each)
 .endstruct
 
 .struct page_cache_find_params
