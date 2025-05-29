@@ -2,6 +2,7 @@
 
         .import    _put_s
         .import    ellipsize
+        .import    _ellipsize_params
         .import    fn_dir_filter
         .import    fn_dir_path
         .import    get_to_current_hostslot
@@ -14,6 +15,7 @@
 
         .include    "zp.inc"
         .include    "macros.inc"
+        .include    "ellipsize.inc"
 
 .segment "CODE2"
 
@@ -34,11 +36,10 @@ mf_print_dir_info:
         beq     :+
         put_s   #5, #1, #fn_dir_filter
 
-:
-        setax   #32             ; max length, including the 0 terminator
-        jsr     pusha           ; save as parameter for ellipsize
-        pushax  #mf_ellipsize   ; dst
-        setax   #fn_dir_path    ; src
+:       ; Setup ellipsize parameters
+        mwa     #mf_ellipsize, _ellipsize_params+ellipsize_params::dst
+        mwa     #fn_dir_path, _ellipsize_params+ellipsize_params::src
+        mva     #32, _ellipsize_params+ellipsize_params::len    ; max length, including the 0 terminator
 
         jsr     ellipsize
 

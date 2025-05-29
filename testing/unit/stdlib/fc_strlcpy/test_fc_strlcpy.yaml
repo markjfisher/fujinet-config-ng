@@ -1,0 +1,10 @@
+name: test_fc_strlcpy
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+src_files:
+  - test_fc_strlcpy.s
+  - ${WS_ROOT}/src/common/stdlib/fc_strlcpy.s
+
+test_script: test_fc_strlcpy.txt 

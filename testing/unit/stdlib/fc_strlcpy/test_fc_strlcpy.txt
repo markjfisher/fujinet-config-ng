@@ -1,0 +1,39 @@
+marker $$testing fc_strlcpy function$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+
+// Test 1: count > length, char + 0, no padding
+// skip the fill
+run $_main while CP != $t1
+registers set cycle_count = 0
+run $t1 while CP != $t1_end AND cycle_count < 500
+assert $dst_buf ~ 0x(61,00,ff,ff,ff)  $$t1: single char + null, no padding$$
+assert A = 1  $$t1 returns correct source length$$
+assert X = 0  $$t1 high byte of length is 0$$
+
+// Test 2: count > length, but only copy count-1
+run while CP != $t2
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 500
+assert $dst_buf ~ 0x(61,62,00,ff,ff)  $$t2: two chars + null, no padding$$
+assert A = 2  $$t2 returns correct source length$$
+assert X = 0  $$t2 high byte of length is 0$$
+
+// Test 3: count = length, truncate for nul
+run while CP != $t3
+registers set cycle_count = 0
+run while CP != $t3_end AND cycle_count < 500
+assert $dst_buf ~ 0x(61,62,00,ff,ff)  $$t3: truncated at count-1 plus null$$
+assert A = 3  $$t3 returns correct source length$$
+assert X = 0  $$t3 high byte of length is 0$$
+
+// Test 4: count < length, truncate for nul
+run while CP != $t4
+registers set cycle_count = 0
+run while CP != $t4_end AND cycle_count < 500
+assert $dst_buf ~ 0x(61,62,00,ff,ff)  $$t4: truncated at count-1 plus null$$
+assert A = 4  $$t4 returns correct source length$$
+assert X = 0  $$t4 high byte of length is 0$$ 

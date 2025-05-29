@@ -135,7 +135,7 @@ loop_entries:
         jsr     size_to_str     ; Result will be in size_output - trashes ptr1-4 via memmove
         mwa     tmp5, ptr1      ; restore ptr1
 
-        ; Cache the size string using _fc_strncpy
+        ; Cache the size string
         mwa     mfp_size_cache_ptr, ptr2
         pushax  ptr2            ; destination
         pushax  #size_output    ; source
@@ -152,7 +152,7 @@ loop_entries:
         mway    ptr1, {(ptr2), y}
 
         ; ------------------------------------------------------------
-        ; show the file name elipsized on the screen
+        ; FILE NAME
 
         ; is this a directory?
         lda     mfp_e_is_dir
@@ -168,6 +168,9 @@ loop_entries:
         mva     #FNC_DIR_C, {(ptr4), y}
 
 just_file:
+        ; ellipsize the name in ptr1
+        
+
         put_s   #$01, mf_entry_index, ptr1, mf_y_offset
 
         ; Advance filename cache pointer by 2
