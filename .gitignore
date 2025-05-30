@@ -16,6 +16,7 @@ autorun-*.atr
 
 # emulator files
 atari800-*
+altirra-debug.ini
 
 .vscode/
 

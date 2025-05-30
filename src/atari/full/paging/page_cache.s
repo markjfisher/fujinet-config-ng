@@ -329,7 +329,7 @@ have_space:
 
         jsr     _page_cache_find_position
 
-        ; Check if entry already exists
+        ; Check if entry already exists, 0 = not found, 1 = found exact
         lda     _find_params+page_cache_find_params::found_exact
         beq     :+
 
@@ -449,13 +449,13 @@ copy_loop:
         inc     _cache+page_cache::entry_count
 
         ; Set success = 1
-        lda     #1
+        lda     #$01
         bne     set_success
 
 no_space:
 entry_exists:
         ; Set success = 0 (fail)
-        lda     #0
+        lda     #$00
 
 set_success:
         sta     _insert_params+page_cache_insert_params::success

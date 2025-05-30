@@ -22,6 +22,7 @@
         .import     pusha
         .import     return1
         .import     screen_separators
+        .import     debug
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -66,6 +67,7 @@
         ; all good, set the dir pos, and return dir pos status
         ; do we want to keep track of dir_pos in same way as simple?
         setax   mf_dir_pos
+        jsr     debug
         jsr     _fuji_set_directory_position
         ; did it fail?
         jmp     _fuji_error

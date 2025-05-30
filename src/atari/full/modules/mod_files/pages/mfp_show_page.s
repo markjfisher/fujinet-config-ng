@@ -86,6 +86,8 @@ mfp_show_page:
 
         mva     #$00, mf_entry_index
 
+        jsr     debug
+
         ; deal with the header bytes
         ; Are we at End of Directory?
         lda     mfp_pg_buf
