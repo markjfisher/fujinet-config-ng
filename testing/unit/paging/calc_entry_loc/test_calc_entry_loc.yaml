@@ -1,0 +1,12 @@
+name: test calc_entry_loc
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+# ALL SOURCE FILES REQUIRED FOR TEST TO RUN, USING ${WS_ROOT} FOR PROJECT ROOT PATH
+src_files:
+  - test_calc_entry_loc.s
+  - ${WS_ROOT}/src/atari/common/paging/calc_entry_loc.s
+  - ${WS_ROOT}/src/atari/common/paging/mul8.s
+
+test_script: test_calc_entry_loc.txt 

@@ -19,8 +19,8 @@
         beq     exit
 
         ; Calculate max_banks * 2 for array size (safe as max_banks <= 64)
-        asl                 ; Double the value
-        sta     tmp1           ; Store for comparison
+        asl                     ; Double the value
+        sta     tmp10           ; Store for comparison
 
         ; Initialize entry_count to 0
         lda     #0
@@ -35,7 +35,7 @@ init_banks:
         lda     #>BANK_SIZE
         sta     _cache+page_cache::bank_free_space,x
         inx
-        cpx     tmp1           ; Compare with max_banks * 2
+        cpx     tmp10           ; Compare with max_banks * 2
         bne     init_banks
 
 exit:

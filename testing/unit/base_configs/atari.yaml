@@ -7,3 +7,6 @@ config_file: "./config_min_atari.cfg"
 # setup files for a basic application
 src_files:
   - ./min_crt0.s
+
+asm_include_paths:
+  - ${WS_ROOT}/src/atari/common/inc

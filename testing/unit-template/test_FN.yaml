@@ -1,0 +1,10 @@
+name: test FUNCTION UNDER TEST
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+# ALL SOURCE FILES REQUIRED FOR TEST TO RUN, USING ${WS_ROOT} FOR PROJECT ROOT PATH
+src_files:
+  - test_FN.s
+
+test_script: test_FN.txt 

@@ -1,0 +1,25 @@
+marker $$testing FUNCTION UNDER TEST$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+
+// Test 1: count > length, char + 0, no padding
+// skip the fill
+run $_main while CP != $t1
+registers set cycle_count = 0
+
+run $t1 while CP != $t1_end AND cycle_count < 5000
+
+// ASSERTIONS
+// assert $dst_buf ~ 0x(61,00,ff,ff,ff)  $$t1: FIRST TEST ASSERTION$$
+// assert A = 1  $$t1: SECOND ASSERTION$$
+// assert X = 0  $$t1: MORE ASSERTIONS CONTINUE$$
+
+// Test 2: count > length, but only copy count-1
+run while CP != $t2
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 5000
+
+// CONTINUE WITH MORE ASSERTIONS AND TESTS

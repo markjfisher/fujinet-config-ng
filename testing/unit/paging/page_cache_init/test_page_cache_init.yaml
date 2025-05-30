@@ -1,0 +1,11 @@
+name: test page_cache_init
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+# ALL SOURCE FILES REQUIRED FOR TEST TO RUN, USING ${WS_ROOT} FOR PROJECT ROOT PATH
+src_files:
+  - test_page_cache_init.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_init.s
+
+test_script: test_page_cache_init.txt 

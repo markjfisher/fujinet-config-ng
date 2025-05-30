@@ -7,24 +7,24 @@
 
 ; --------------------------------------------------------------------
 ; mul8
-; multiply A by 8 into A/X. Destoys ptr4 (just 1 byte)
+; multiply A by 8 into A/X. Destoys tmp10
 ; --------------------------------------------------------------------
 .proc mul8
         tax                     ; save the value we want to multiply while we setup high byte
-        lda     #0
-        sta     ptr4
+        lda     #$00
+        sta     tmp10
         txa
 
         ; it's faster to rotate A (2 cycles), catch bits into high byte and finally have A as low byte
         ; than to shift zp (6 cycles each time)
         asl                     ; * 2
-        rol     ptr4
+        rol     tmp10
         asl                     ; * 4
-        rol     ptr4
+        rol     tmp10
         asl                     ; * 8
-        rol     ptr4
+        rol     tmp10
         ; A = low byte already
-        ldx     ptr4            ; high byte in X
+        ldx     tmp10            ; high byte in X
 
         rts
 
