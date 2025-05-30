@@ -206,3 +206,12 @@ All temporary data structures that don't need clearing at the start can be tagge
 which could be used for code too as long as it isn't required while using paging routines, which swap the BANK out to read/write from buffers.
 
 Thus at time of writing, there is about $4D00 RAM free (20kb).
+
+## tracking and untracking emulator config files
+
+To disable tracking changes for altirra config, use first, to retrack, use second.
+
+```
+git update-index --skip-worktree altirra-debug.ini
+git update-index --no-skip-worktree altirra-debug.ini
+```
