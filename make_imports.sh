@@ -13,7 +13,7 @@ make release 2>&1 | grep 'Error: Symbol .* is undefined' | awk '
         if (file != prev_file) {
             print "; " file
         }
-        imports[file] = imports[file] "        .import     " symbol "\n"
+        imports[file] = imports[file] ".import     " symbol "\n"
         prev_file=file
     }
     END {
