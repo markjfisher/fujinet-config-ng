@@ -1,0 +1,13 @@
+name: test page_cache_set_path_filter
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+src_files:
+  - ${WS_ROOT}/src/common/stdlib/fc_strlcpy.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_set_path_filter.s
+  - test_data.s
+  - test_page_cache_set_path_filter.s
+
+test_script: test_page_cache_set_path_filter.txt
+
