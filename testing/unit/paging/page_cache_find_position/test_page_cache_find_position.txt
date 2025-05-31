@@ -1,0 +1,45 @@
+marker $$testing page_cache_find_position$$
+
+// page_cache_find_params offsets
+//     path_hash       0-1
+//     group_id        2
+//     found_exact     3
+//     position        4
+//     entry_loc       5-6
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+// Test 1: Find exact match for first entry
+run init until CP = $_main
+run $_main while CP != $t1
+registers set cycle_count = 0
+run $t1 while CP != $t1_end AND cycle_count < 450
+
+// path_hash = $1234, group_id = 0
+assert $_find_params+3 = 0x01  $$t1: should find exact match$$
+assert $_find_params+4 = 0x00  $$t1: position should be 0$$
+
+// Test 2: Find position for non-existent entry (path_hash = $1800 between first and second)
+run while CP != $t2
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 450
+
+assert $_find_params+3 = 0x00  $$t2: should not find exact match$$
+assert $_find_params+4 = 0x01  $$t2: position should be 1$$
+
+// Test 3: Find exact match for last entry
+run while CP != $t3
+registers set cycle_count = 0
+run while CP != $t3_end AND cycle_count < 450
+
+assert $_find_params+3 = 0x01  $$t3: should find exact match$$
+assert $_find_params+4 = 0x02  $$t3: position should be 2$$
+
+// Test 4: Find position for entry that would go at end
+run while CP != $t4
+registers set cycle_count = 0
+run while CP != $t4_end AND cycle_count < 450
+
+assert $_find_params+3 = 0x00  $$t4: should not find exact match$$
+assert $_find_params+4 = 0x03  $$t4: position should be 3$$ 

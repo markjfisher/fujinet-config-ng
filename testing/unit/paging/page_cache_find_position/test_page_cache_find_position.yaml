@@ -1,0 +1,13 @@
+name: test page_cache_find_position
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+src_files:
+  - ${WS_ROOT}/src/atari/common/paging/mul8.s
+  - ${WS_ROOT}/src/atari/common/paging/calc_entry_loc.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_find_position.s
+  - cache_data.s
+  - test_page_cache_find_position.s
+
+test_script: test_page_cache_find_position.txt 
