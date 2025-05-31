@@ -1,0 +1,59 @@
+marker $$testing page_cache_find_free_bank$$
+
+// page_cache_find_bank_params offsets
+//     size_needed     0-1
+//     path_hash       2-3
+//     bank_id         4
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+// Test 1: Find bank for new hash with small size
+run init until CP = $_main
+run $_main while CP != $t1
+registers set cycle_count = 0
+run $t1 while CP != $t1_end AND cycle_count < 900
+
+assert $_find_bank_params+4 = 0x00  $$t1: should pick bank 0 as it has most free space$$
+
+// Test 2: Find bank for existing hash
+run while CP != $t2
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 500
+
+assert $_find_bank_params+4 = 0x01  $$t2: should return bank 1 for matching hash$$
+
+// Test 3: Request too large for any bank
+run while CP != $t3
+registers set cycle_count = 0
+run while CP != $t3_end AND cycle_count < 100
+
+assert $_find_bank_params+4 = 0xFF  $$t3: should return 0xFF when try_free_space fails$$
+
+// Test 4: Find bank with exact size match
+run while CP != $t4
+registers set cycle_count = 0
+run while CP != $t4_end AND cycle_count < 600
+
+assert $_find_bank_params+4 = 0x00  $$t4: should pick bank 0 as it has most free space$$
+
+// Test 5: No space initially but try_free_space succeeds
+run while CP != $t5
+registers set cycle_count = 0
+run while CP != $t5_end AND cycle_count < 700
+
+assert $_find_bank_params+4 = 0x00  $$t5: should retry and pick bank 0 after try_free_space succeeds$$
+
+// Test 6: Zero banks configured
+run while CP != $t6
+registers set cycle_count = 0
+run while CP != $t6_end AND cycle_count < 100
+
+assert $_find_bank_params+4 = 0xFF  $$t6: should return 0xFF when no banks configured$$
+
+// Test 7: All banks full but request is small
+run while CP != $t7
+registers set cycle_count = 0
+run while CP != $t7_end AND cycle_count < 700
+
+assert $_find_bank_params+4 = 0x00  $$t7: should retry and pick bank 0 after try_free_space succeeds for small request$$

@@ -37,7 +37,8 @@
         bne     failed_size    ; If high byte greater, fail
         lda     _find_bank_params+page_cache_find_bank_params::size_needed    ; Low byte
         cmp     #<BANK_SIZE
-        bcc     size_ok        ; If low byte < BANK_SIZE low byte, ok
+        beq     size_ok        ; If exactly bank size, ok
+        bcs     failed_size    ; If low byte >= BANK_SIZE low byte, fail
 
 failed_size:
         jmp     too_large     ; Too far for direct branch
