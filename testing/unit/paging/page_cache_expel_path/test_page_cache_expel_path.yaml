@@ -1,0 +1,11 @@
+name: test page_cache_expel_path
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+src_files:
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_expel_path.s
+  - test_page_cache_expel_path.s
+  - test_data.s
+
+test_script: test_page_cache_expel_path.txt 

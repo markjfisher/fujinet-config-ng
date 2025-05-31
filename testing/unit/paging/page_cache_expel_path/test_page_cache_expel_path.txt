@@ -1,0 +1,35 @@
+marker $$testing page_cache_expel_path$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+// Test 1: Empty cache - should return immediately without calling remove_path
+run init until CP = $_main
+run while CP != $t1
+registers set cycle_count = 0
+run $t1 while CP != $t1_end AND cycle_count < 100
+
+assert $_cache+1 = 0  $$t1: entry count should still be 0$$
+assert $remove_path_called = 0  $$t1: remove_path should not be called for empty cache$$
+
+// Test 2: Cache with entries but none match path hash
+// Should call remove_path with first entry's hash ($1234) since it's different from our search hash
+run while CP != $t2
+registers set cycle_count = 0
+run while CP != $t2_end AND cycle_count < 200
+
+assert $_cache+1 = 2  $$t2: entry count should still be 2$$
+assert $remove_path_called = 1  $$t2: remove_path should be called$$
+assert $remove_path_hash_low = 0x12  $$t2: remove_path should be called with first entry's hash low byte$$
+assert $remove_path_hash_high = 0x34  $$t2: remove_path should be called with first entry's hash high byte$$
+
+// Test 3: Cache with matching entry
+// Should call remove_path with second entry's hash ($5678) since first entry matches our search hash
+run while CP != $t3
+registers set cycle_count = 0
+run while CP != $t3_end AND cycle_count < 220
+
+assert $_cache+1 = 2  $$t3: entry count should still be 2 (mock remove_path doesn't modify)$$
+assert $remove_path_called = 1  $$t3: remove_path should be called$$
+assert $remove_path_hash_low = 0x56  $$t3: remove_path should be called with second entry's hash low byte$$
+assert $remove_path_hash_high = 0x78  $$t3: remove_path should be called with second entry's hash high byte$$
