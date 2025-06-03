@@ -1,4 +1,3 @@
-.export     _cache
 .export     _find_params
 .export     _insert_params
 .export     _remove_group_params
@@ -23,9 +22,6 @@
 .include    "page_cache.inc"
 
 .segment "BANK"
-
-; Main cache structure
-_cache:                 .tag    page_cache
 
 ; Parameter blocks for various operations
 _find_params:           .tag    page_cache_find_params

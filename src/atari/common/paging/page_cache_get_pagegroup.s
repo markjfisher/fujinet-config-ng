@@ -1,4 +1,6 @@
 .export     _page_cache_get_pagegroup
+.export     run_callback
+.export     found_requested_group
 
 .import     _change_bank
 .import     _div_i16_by_i8
@@ -24,6 +26,11 @@
 .include    "macros.inc"
 .include    "zp.inc"
 
+.segment "BANK"
+
+saved_ptr1:     .res    2       ; Storage for ptr1 during _page_cache_insert call
+found_requested_group: .res 1  ; Flag: 1 if fujinet returned the requested group_id
+
 .segment "CODE2"
 
 ; --------------------------------------------------------------------
@@ -36,7 +43,7 @@
 ;
 ; Returns error status, 1 = error (not on page boundary), 0 = all ok, data copied
 ; --------------------------------------------------------------------
-.proc _page_cache_get_pagegroup
+_page_cache_get_pagegroup:
         ; convert dir_position to a group_id (page group number), 0 based, by dividing by the page size.
         ; the div routine will perform faster division for page_size of 16, which is one reason to use that if possible
 
@@ -93,6 +100,14 @@ divides_exactly:
         adc     ptr2+1
         sta     ptr2+1
 
+;         ; back up ptr2 by 2 bytes to include the header
+;         sec
+;         lda     ptr2
+;         sbc     #$02
+;         sta     ptr2
+;         bcs     :+
+;         dec     ptr2+1
+; :
         ; get the page group size into tmp1/2
         iny
         mywa    {(ptr1), y}, tmp1
@@ -144,6 +159,10 @@ exit_error:
 copy_to_cache:
         ; now move all the pagegroup data from page_cache_buf into cache
 
+        ; Initialize flag to track if we find the requested group_id
+        lda     #0
+        sta     found_requested_group
+
         ; validate header
         mwa     #page_cache_buf, ptr1
         ldy     #$00
@@ -169,16 +188,25 @@ copy_to_cache:
         beq     exit_error      ; exit if there were none
 
         sta     num_pgs         ; save the count of page groups in this block
-        iny                     ; move to first byte of pagegroup data
-
+        
+        ; Add Y to ptr1 to point to start of first pagegroup
+        tya
+        sec     ; adding 1 more as we are still pointing to num_pgs, but want to skip over that byte
+        adc     ptr1
+        sta     ptr1
+        bcc     :+
+        inc     ptr1+1
+:
         setax   _set_path_flt_params+page_cache_set_path_filter_params::path_hash
         axinto  _insert_params+page_cache_insert_params::path_hash
 
 ins_loop:
-        ; copy header bytes for the pagegroup into structure.
+        ; Reset both X and Y at start of loop
         ldx     #$00
-h_loop:
-        lda     (ptr1), y
+        ldy     #$00
+
+        ; copy header bytes for the pagegroup into structure.
+h_loop: lda     (ptr1), y
         sta     page_header, x
         iny
         inx
@@ -188,6 +216,12 @@ h_loop:
         ; now we need to copy the entries for the pagegroups, bytes 5 onwards
         lda     page_header+page_cache_pagegroup_header::group_id
         sta     _insert_params+page_cache_insert_params::group_id
+
+        ; Check if this is the group_id we originally requested
+        cmp     _find_params+page_cache_find_params::group_id
+        bne     :+
+        inc     found_requested_group   ; Mark that we found the requested group
+:
 
         ; set the insert group_size and the data pointer
         lda     page_header+page_cache_pagegroup_header::data_size
@@ -222,8 +256,14 @@ h_loop:
         ; now we can copy this location to data_ptr in insert
         mwa     ptr2, _insert_params+page_cache_insert_params::data_ptr
 
+        ; save ptr1 before calling insert
+        mwa     ptr1, saved_ptr1
+
         ; everything is set in the _insert_params block for calling insert. it will handle memory/banks etc
-        jsr     _page_cache_insert ; corrupts in here.
+        jsr     _page_cache_insert ; this was erroring when the banks locations wasn't an array of 64
+
+        ; restore ptr1 after insert, it's trashed by memcpy etc.
+        mwa     saved_ptr1, ptr1
 
         ; check if it worked. 0 = fail, A is already set to success value
         ; lda     _insert_params+page_cache_insert_params::success
@@ -231,16 +271,27 @@ h_loop:
         jmp     exit_error
 
 :
+        ; now decrement the page count, and loop if we have more
+        dec     num_pgs
+        beq     :+              ; when we get to 0, we can finish. this skips the addition to ptr1 if we're on the last entry
+
         ; now loop for all the other entries in the cache.
         ; first move ptr1 on by the size of the page group and header
         ; these can't be combined as we have to use the carry in the high byte before moving onto second addition
         adw     ptr1, page_header+page_cache_pagegroup_header::data_size
         adw     ptr1, #$05
+        jmp     ins_loop
 
-        ; now decrement the page count, and loop if we have more
-        dec     num_pgs
-        bne     ins_loop
 
+:       ; Validate that fujinet returned the requested group_id before calling end callback
+        lda     found_requested_group
+        bne     group_found        ; Only proceed if we found the requested group
+
+        ; Error: fujinet didn't return the requested group_id
+        ; This prevents infinite loops when fujinet returns unexpected data
+        jmp     exit_error
+
+group_found:
         ldx     #$01            ; mark this as the end of the fetching
         jsr     run_callback
 
@@ -264,5 +315,3 @@ run_callback:
 cb_loc  = * - 2
 
         ; implicit rts from jmp.
-
-.endproc 

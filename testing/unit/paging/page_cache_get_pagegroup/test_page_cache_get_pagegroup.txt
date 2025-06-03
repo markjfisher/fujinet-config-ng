@@ -1,0 +1,123 @@
+marker $$testing page_cache_get_pagegroup$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+
+// Test 1: Error on non-page-aligned position
+run init until CP = $_main
+disable trace_logging
+run while CP != $t1
+registers set cycle_count = 0
+run $t1 while CP != $t1_end
+
+assert A = 1  $$t1: should return error for non-aligned position$$
+assert $_cache+1 = 0  $$t1: cache entry count should be unchanged$$
+
+// Test 2: Get pagegroup from fujinet (cache miss for $1234)
+run while CP != $t2
+registers set cycle_count = 0
+run $t2 while CP != $t2_end
+
+// Debug memory dumps after t2
+// memory show $_cache 0x80                $$t2 debug: Show cache structure and entries$$
+// memory show $test_buffer 0x40           $$t2 debug: Show test buffer contents$$
+// memory show $mock_bank_data 0x100       $$t2 debug: Show mock bank data$$
+// memory show $page_cache_buf 0x80        $$t2 debug: Show page cache buffer$$
+// memory show $_get_pagegroup_params 0x10 $$t2 debug: Show get pagegroup params$$
+// memory show $_set_path_flt_params 0x10  $$t2 debug: Show set path filter params$$
+// memory show $page_header 0x10           $$t2 debug: Show page header structure$$
+
+assert A = 0  $$t2: should return success$$
+assert $_cache+1 = 2  $$t2: cache should have 2 entries after fujinet fetch$$
+// Validate cache entries structure
+// First entry: hash=1234, group_id=00, bank_id=00, bank_offset=0000, group_size=0022
+assert $_cache+2 ~ 0x(12,34) $$t2: first entry hash (12 34 bytes)$$
+assert $_cache+4 ~ 0x(00) $$t2: first entry group_id=0$$
+assert $_cache+5 ~ 0x(00) $$t2: first entry bank_id=0$$
+assert $_cache+6 ~ 0x(00,00) $$t2: first entry bank_offset=0000$$
+assert $_cache+8 ~ 0x(22,00) $$t2: first entry group_size=0022 (32 data + 2 header)$$
+// Second entry: hash=1234, group_id=01, bank_id=00, bank_offset=0022, group_size=0032
+assert $_cache+10 ~ 0x(12,34) $$t2: second entry hash (12 34 bytes)$$
+assert $_cache+12 ~ 0x(01) $$t2: second entry group_id=1$$
+assert $_cache+13 ~ 0x(00) $$t2: second entry bank_id=0$$
+assert $_cache+14 ~ 0x(22,00) $$t2: second entry bank_offset=0022$$
+assert $_cache+16 ~ 0x(32,00) $$t2: second entry group_size=0032 (48 data + 2 header)$$
+// First verify pagegroup header bytes
+assert $test_buffer+0 ~ 0x(00,01) $$t2: pagegroup header (flags=0, num_entries=1)$$
+// Then verify the actual pagegroup data in 8-byte groups (starts at offset +2)
+assert $test_buffer+2 ~ 0x(00,01,02,03,04,05,06,07) $$t2: first 8 bytes of pagegroup data$$
+assert $test_buffer+10 ~ 0x(08,09,0A,0B,0C,0D,0E,0F) $$t2: next 8 bytes of pagegroup data$$
+assert $test_buffer+18 ~ 0x(10,11,12,13,14,15,16,17) $$t2: next 8 bytes of pagegroup data$$
+assert $test_buffer+26 ~ 0x(18,19,1A,1B,1C,1D,1E,1F) $$t2: final 8 bytes of pagegroup data$$
+
+// Test 3: Get pagegroup from fujinet
+run while CP != $t3
+registers set cycle_count = 0
+run while CP != $t3_end
+
+assert A = 0  $$t3: should return success$$
+assert $_cache+1 = 4  $$t3: cache should now have 4 entries after inserting fujinet data$$
+// Validate existing entries are unchanged (entries 0 and 1)
+assert $_cache+2 ~ 0x(12,34) $$t3: first entry hash unchanged (12 34)$$
+assert $_cache+4 ~ 0x(00) $$t3: first entry group_id unchanged (0)$$
+assert $_cache+10 ~ 0x(12,34) $$t3: second entry hash unchanged (12 34)$$
+assert $_cache+12 ~ 0x(01) $$t3: second entry group_id unchanged (1)$$
+// Third entry: hash=9ABC, group_id=02, bank_id=00, bank_offset=0054, group_size=0022
+assert $_cache+18 ~ 0x(9A,BC) $$t3: third entry hash (9A BC)$$
+assert $_cache+20 ~ 0x(00) $$t3: third entry but first group id for 9ABC$$
+assert $_cache+21 ~ 0x(00) $$t3: third entry bank_id=0$$
+assert $_cache+22 ~ 0x(54,00) $$t3: third entry bank_offset=0054$$
+assert $_cache+24 ~ 0x(22,00) $$t3: third entry group_size=0022$$
+// Fourth entry: hash=9ABC, group_id=03, bank_id=00, bank_offset=0076, group_size=0032
+assert $_cache+26 ~ 0x(9A,BC) $$t3: fourth entry hash (9A BC)$$
+assert $_cache+28 ~ 0x(01) $$t3: 2nd entry for 9ABC group_id=1$$
+assert $_cache+29 ~ 0x(00) $$t3: fourth entry bank_id=0$$
+assert $_cache+30 ~ 0x(76,00) $$t3: fourth entry bank_offset=0076$$
+assert $_cache+32 ~ 0x(32,00) $$t3: fourth entry group_size=0032$$
+// First verify pagegroup header bytes
+assert $test_buffer+0 ~ 0x(00,01) $$t3: pagegroup header (flags=0, num_entries=1)$$
+// Then verify the actual pagegroup data in 8-byte groups (starts at offset +2)
+assert $test_buffer+2 ~ 0x(50,51,52,53,54,55,56,57) $$t3: first 8 bytes of pagegroup data$$
+assert $test_buffer+10 ~ 0x(58,59,5A,5B,5C,5D,5E,5F) $$t3: next 8 bytes of pagegroup data$$
+assert $test_buffer+18 ~ 0x(60,61,62,63,64,65,66,67) $$t3: next 8 bytes of pagegroup data$$
+assert $test_buffer+26 ~ 0x(68,69,6A,6B,6C,6D,6E,6F) $$t3: final 8 bytes of pagegroup data$$
+
+// Test 4: Get second pagegroup from fujinet for 9ABC
+run while CP != $t4
+registers set cycle_count = 0
+run while CP != $t4_end
+
+assert A = 0  $$t4: should return success$$
+assert $_cache+1 = 4  $$t4: cache entry count should be unchanged$$
+// Validate cache entries are unchanged (all 4 entries should be the same)
+assert $_cache+2 ~ 0x(12,34) $$t4: first entry hash unchanged$$
+assert $_cache+10 ~ 0x(12,34) $$t4: second entry hash unchanged$$
+assert $_cache+18 ~ 0x(9A,BC) $$t4: third entry hash unchanged$$
+assert $_cache+26 ~ 0x(9A,BC) $$t4: fourth entry hash unchanged$$
+// First verify pagegroup header bytes
+assert $test_buffer+0 ~ 0x(01,02) $$t4: pagegroup header (flags=last_group, num_entries=2)$$
+// Then verify the actual pagegroup data in 8-byte groups (starts at offset +2)
+assert $test_buffer+2 ~ 0x(70,71,72,73,74,75,76,77) $$t4: first 8 bytes of pagegroup data$$
+assert $test_buffer+10 ~ 0x(78,79,7A,7B,7C,7D,7E,7F) $$t4: next 8 bytes of pagegroup data$$
+assert $test_buffer+18 ~ 0x(80,81,82,83,84,85,86,87) $$t4: next 8 bytes of pagegroup data$$
+assert $test_buffer+26 ~ 0x(88,89,8A,8B,8C,8D,8E,8F) $$t4: next 8 bytes of pagegroup data$$
+assert $test_buffer+34 ~ 0x(90,91,92,93,94,95,96,97) $$t4: next 8 bytes of pagegroup data$$
+assert $test_buffer+42 ~ 0x(98,99,9A,9B,9C,9D,9E,9F) $$t4: final 8 bytes of pagegroup data$$
+
+// Test 5: Error on invalid fujinet data
+run while CP != $t5
+registers set cycle_count = 0
+run while CP != $t5_end
+
+assert A = 1  $$t5: should return error for invalid fujinet data$$
+assert $_cache+1 = 4  $$t5: cache entry count should be unchanged$$
+
+// Test 6: Error when fujinet returns groups that don't include requested group_id
+run while CP != $t6
+registers set cycle_count = 0
+run while CP != $t6_end
+
+assert A = 1  $$t6: should return error when requested group_id not in fujinet response$$
+assert $found_requested_group = 0  $$t6: should have failed for the right reason$$
+assert $_cache+1 = 4  $$t6: cache entry count should be unchanged (defensive validation worked)$$ 

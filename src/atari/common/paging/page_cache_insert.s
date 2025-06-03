@@ -1,4 +1,5 @@
 .export     _page_cache_insert
+.export     saved_dest
 
 .import     _cache
 .import     _change_bank
@@ -20,6 +21,10 @@
 .include    "page_cache.inc"
 .include    "macros.inc"
 .include    "zp.inc"
+
+.segment "BANK"
+
+saved_dest:     .res    2       ; Storage for ptr2 during _memcpy call
 
 .segment "CODE2"
 
@@ -154,24 +159,34 @@ copy_loop:
         sbc     _insert_params+page_cache_insert_params::group_size+1
         sta     _cache+page_cache::bank_free_space,y
 
-
-        ; Get bank base address
+        ; Get bank base address into A/X
         jsr     _get_bank_base
 
-        ; TODO check code here, macros are inefficiently loading ptr2 a lot
-        axinto  ptr2
+        ; add 2 to A, increment X if carry set
+        clc
+        adc     #$02
+        bcc     :+
+        inx
+        clc
 
-        ; Add offset to get destination address
-        adw     ptr2, _insert_params+page_cache_insert_params::bank_offset
-        ; add 2 bytes for the bulk data we are copying, the 2 header bytes will go in separately
-        adw     ptr2, #$02
+        ; now add bank_offset
+:       adc     _insert_params+page_cache_insert_params::bank_offset
+        bcc     :+
+        inx
+        clc
 
-        pushax  ptr2
+        ; A/X = base + bank_offset + 2
+        ; save it into our temp location so we can use it after the memcpy
+:
+        axinto  saved_dest
 
+        jsr     pushax          ; dst for memcpy
+
+        ; src for memcpy
         pushax  _insert_params+page_cache_insert_params::data_ptr
         ; save the group size in tmp1/tmp2 so we can access it after changing banks
         mwa     _insert_params+page_cache_insert_params::group_size, tmp1
-        ; the bulk copy should be 2 bytes less for the header bytes
+        ; the copy from pagegroup data should be 2 bytes less as datasize includes 2 for the header bytes
         sbw     tmp1, #$02
 
         ; copy the header bytes into tmp3/4 while we are in banked mode
@@ -182,16 +197,20 @@ copy_loop:
         ; this must be done at the last possible second, so we can continue to use all the _params data
         ; which are all in normal ram BANK location, so we can't access them after changing bank.
         lda     _insert_params+page_cache_insert_params::bank_id
-        jsr     _change_bank
+        jsr     _change_bank            ; doesn't affect y
 
         ; the src/dst are in software stack, just need the size from tmp1/2 in A/X
         setax   tmp1
         jsr     _memcpy
 
+        ; restore the destination+2 after memcpy
+        mwa     saved_dest, ptr2
+
         ; copy tmp3/4 to the start of the bank, first reduce ptr2 by 2 to point to start of memory
         sbw     ptr2, #$02
         ldy     #$00
         ; copy 2 bytes
+        nop
         mway    tmp3, {(ptr2), y}
 
         ; reset to default bank to allow access to _cache

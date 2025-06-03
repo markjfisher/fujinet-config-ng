@@ -1,0 +1,23 @@
+name: test page_cache_get_pagegroup
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+src_files:
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_data.s
+  - ${WS_ROOT}/src/common/util/div.s
+  - ${WS_ROOT}/src/atari/common/paging/mul8.s
+  - ${WS_ROOT}/src/atari/common/paging/calc_entry_loc.s
+  - ${WS_ROOT}/src/atari/common/paging/try_free_space.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_init.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_remove_group.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_remove_path.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_expel_path.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_insert.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_find_position.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_find_free_bank.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_get_pagegroup.s
+  - test_page_cache_get_pagegroup.s
+  - test_data.s
+
+test_script: test_page_cache_get_pagegroup.txt
