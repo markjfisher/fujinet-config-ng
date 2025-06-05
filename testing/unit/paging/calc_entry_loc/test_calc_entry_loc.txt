@@ -1,6 +1,6 @@
 marker $$testing calc_entry_loc$$
 
-// _cache::entries is at 0x02 offset in _cache, so all pointer tests are 2 + (n*8) for nth entry
+// _cache::entries is at 0x04 offset in _cache, so all pointer tests are 4 + (n*8) for nth entry
 
 memory load atari "${BINARY_PATH}"
 symbols load "${SYMBOLS_PATH}"
@@ -12,18 +12,18 @@ run $_main while CP != $t1
 registers set cycle_count = 0
 run $t1 while CP != $t1_end AND cycle_count < 100
 // entry_loc should be _cache+page_cache::entries + (0 * 8)
-assert $entry_loc -> $_cache + 2  $$t1: entry_loc should point to start of entries$$
+assert $entry_loc -> $_cache + 4  $$t1: entry_loc should point to start of entries$$
 
 // Test 2: Calculate entry location for index 1
 run while CP != $t2
 registers set cycle_count = 0
 run while CP != $t2_end AND cycle_count < 100
 // entry_loc should be _cache+page_cache::entries + (1 * 8)
-assert $entry_loc -> $_cache + 10  $$t2: entry_loc should point to second entry$$
+assert $entry_loc -> $_cache + 12  $$t2: entry_loc should point to second entry$$
 
 // Test 3: Calculate entry location for index 31 (max entries - 1)
 run while CP != $t3
 registers set cycle_count = 0
 run while CP != $t3_end AND cycle_count < 100
 // entry_loc should be _cache+page_cache::entries + (31 * 8)
-assert $entry_loc -> $_cache + 250  $$t3: entry_loc should point to last entry$$
+assert $entry_loc -> $_cache + 252  $$t3: entry_loc should point to last entry$$

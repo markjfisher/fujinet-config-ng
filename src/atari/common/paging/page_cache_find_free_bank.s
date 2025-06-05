@@ -29,22 +29,20 @@
         ; exit if there are no banks at all
         jmp     too_large
 
-:
-        ; First check if size is larger than bank can hold
+:       ; Check against configurable bank size instead of hardcoded BANK_SIZE
         lda     _find_bank_params+page_cache_find_bank_params::size_needed+1  ; High byte
-        cmp     #>BANK_SIZE
-        bcc     size_ok        ; If high byte less, definitely ok
+        cmp     _cache+page_cache::bank_size+1
+        bcc     size_fits      ; If high byte less, definitely ok
         bne     failed_size    ; If high byte greater, fail
         lda     _find_bank_params+page_cache_find_bank_params::size_needed    ; Low byte
-        cmp     #<BANK_SIZE
-        beq     size_ok        ; If exactly bank size, ok
-        bcs     failed_size    ; If low byte >= BANK_SIZE low byte, fail
+        cmp     _cache+page_cache::bank_size
+        beq     size_fits      ; If exactly bank size, ok
+        bcs     failed_size    ; If low byte >= bank_size low byte, fail
 
 failed_size:
-        jmp     too_large     ; Too far for direct branch
+        jmp     too_large       ; Too far for direct branch
 
-size_ok:
-
+size_fits:
 try_alloc:
         ; Initialize best bank and space
         lda     #$FF

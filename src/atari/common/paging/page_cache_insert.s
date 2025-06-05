@@ -70,11 +70,11 @@ have_space:
         ; lda     _find_bank_params+page_cache_find_bank_params::bank_id
         asl     a              ; * 2 for word offset
         tay
-        lda     #<BANK_SIZE
+        lda     _cache+page_cache::bank_size      ; Use configurable bank size
         sec
         sbc     _cache+page_cache::bank_free_space,y
         sta     _insert_params+page_cache_insert_params::bank_offset
-        lda     #>BANK_SIZE
+        lda     _cache+page_cache::bank_size+1
         sbc     _cache+page_cache::bank_free_space+1,y
         sta     _insert_params+page_cache_insert_params::bank_offset+1
 

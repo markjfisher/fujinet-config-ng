@@ -32,17 +32,17 @@ assert A = 0  $$t2: should return success$$
 assert $_cache+1 = 2  $$t2: cache should have 2 entries after fujinet fetch$$
 // Validate cache entries structure
 // First entry: hash=1234, group_id=00, bank_id=00, bank_offset=0000, group_size=0022
-assert $_cache+2 ~ 0x(12,34) $$t2: first entry hash (12 34 bytes)$$
-assert $_cache+4 ~ 0x(00) $$t2: first entry group_id=0$$
-assert $_cache+5 ~ 0x(00) $$t2: first entry bank_id=0$$
-assert $_cache+6 ~ 0x(00,00) $$t2: first entry bank_offset=0000$$
-assert $_cache+8 ~ 0x(22,00) $$t2: first entry group_size=0022 (32 data + 2 header)$$
+assert $_cache+4 ~ 0x(12,34) $$t2: first entry hash (12 34 bytes)$$
+assert $_cache+6 ~ 0x(00) $$t2: first entry group_id=0$$
+assert $_cache+7 ~ 0x(00) $$t2: first entry bank_id=0$$
+assert $_cache+8 ~ 0x(00,00) $$t2: first entry bank_offset=0000$$
+assert $_cache+10 ~ 0x(22,00) $$t2: first entry group_size=0022 (32 data + 2 header)$$
 // Second entry: hash=1234, group_id=01, bank_id=00, bank_offset=0022, group_size=0032
-assert $_cache+10 ~ 0x(12,34) $$t2: second entry hash (12 34 bytes)$$
-assert $_cache+12 ~ 0x(01) $$t2: second entry group_id=1$$
-assert $_cache+13 ~ 0x(00) $$t2: second entry bank_id=0$$
-assert $_cache+14 ~ 0x(22,00) $$t2: second entry bank_offset=0022$$
-assert $_cache+16 ~ 0x(32,00) $$t2: second entry group_size=0032 (48 data + 2 header)$$
+assert $_cache+12 ~ 0x(12,34) $$t2: second entry hash (12 34 bytes)$$
+assert $_cache+14 ~ 0x(01) $$t2: second entry group_id=1$$
+assert $_cache+15 ~ 0x(00) $$t2: second entry bank_id=0$$
+assert $_cache+16 ~ 0x(22,00) $$t2: second entry bank_offset=0022$$
+assert $_cache+18 ~ 0x(32,00) $$t2: second entry group_size=0032 (48 data + 2 header)$$
 // First verify pagegroup header bytes
 assert $test_buffer+0 ~ 0x(00,01) $$t2: pagegroup header (flags=0, num_entries=1)$$
 // Then verify the actual pagegroup data in 8-byte groups (starts at offset +2)
@@ -59,22 +59,22 @@ run while CP != $t3_end
 assert A = 0  $$t3: should return success$$
 assert $_cache+1 = 4  $$t3: cache should now have 4 entries after inserting fujinet data$$
 // Validate existing entries are unchanged (entries 0 and 1)
-assert $_cache+2 ~ 0x(12,34) $$t3: first entry hash unchanged (12 34)$$
-assert $_cache+4 ~ 0x(00) $$t3: first entry group_id unchanged (0)$$
-assert $_cache+10 ~ 0x(12,34) $$t3: second entry hash unchanged (12 34)$$
-assert $_cache+12 ~ 0x(01) $$t3: second entry group_id unchanged (1)$$
+assert $_cache+4 ~ 0x(12,34) $$t3: first entry hash unchanged (12 34)$$
+assert $_cache+6 ~ 0x(00) $$t3: first entry group_id unchanged (0)$$
+assert $_cache+12 ~ 0x(12,34) $$t3: second entry hash unchanged (12 34)$$
+assert $_cache+14 ~ 0x(01) $$t3: second entry group_id unchanged (1)$$
 // Third entry: hash=9ABC, group_id=02, bank_id=00, bank_offset=0054, group_size=0022
-assert $_cache+18 ~ 0x(9A,BC) $$t3: third entry hash (9A BC)$$
-assert $_cache+20 ~ 0x(00) $$t3: third entry but first group id for 9ABC$$
-assert $_cache+21 ~ 0x(00) $$t3: third entry bank_id=0$$
-assert $_cache+22 ~ 0x(54,00) $$t3: third entry bank_offset=0054$$
-assert $_cache+24 ~ 0x(22,00) $$t3: third entry group_size=0022$$
+assert $_cache+20 ~ 0x(9A,BC) $$t3: third entry hash (9A BC)$$
+assert $_cache+22 ~ 0x(00) $$t3: third entry but first group id for 9ABC$$
+assert $_cache+23 ~ 0x(00) $$t3: third entry bank_id=0$$
+assert $_cache+24 ~ 0x(54,00) $$t3: third entry bank_offset=0054$$
+assert $_cache+26 ~ 0x(22,00) $$t3: third entry group_size=0022$$
 // Fourth entry: hash=9ABC, group_id=03, bank_id=00, bank_offset=0076, group_size=0032
-assert $_cache+26 ~ 0x(9A,BC) $$t3: fourth entry hash (9A BC)$$
-assert $_cache+28 ~ 0x(01) $$t3: 2nd entry for 9ABC group_id=1$$
-assert $_cache+29 ~ 0x(00) $$t3: fourth entry bank_id=0$$
-assert $_cache+30 ~ 0x(76,00) $$t3: fourth entry bank_offset=0076$$
-assert $_cache+32 ~ 0x(32,00) $$t3: fourth entry group_size=0032$$
+assert $_cache+28 ~ 0x(9A,BC) $$t3: fourth entry hash (9A BC)$$
+assert $_cache+30 ~ 0x(01) $$t3: 2nd entry for 9ABC group_id=1$$
+assert $_cache+31 ~ 0x(00) $$t3: fourth entry bank_id=0$$
+assert $_cache+32 ~ 0x(76,00) $$t3: fourth entry bank_offset=0076$$
+assert $_cache+34 ~ 0x(32,00) $$t3: fourth entry group_size=0032$$
 // First verify pagegroup header bytes
 assert $test_buffer+0 ~ 0x(00,01) $$t3: pagegroup header (flags=0, num_entries=1)$$
 // Then verify the actual pagegroup data in 8-byte groups (starts at offset +2)
@@ -91,10 +91,10 @@ run while CP != $t4_end
 assert A = 0  $$t4: should return success$$
 assert $_cache+1 = 4  $$t4: cache entry count should be unchanged$$
 // Validate cache entries are unchanged (all 4 entries should be the same)
-assert $_cache+2 ~ 0x(12,34) $$t4: first entry hash unchanged$$
-assert $_cache+10 ~ 0x(12,34) $$t4: second entry hash unchanged$$
-assert $_cache+18 ~ 0x(9A,BC) $$t4: third entry hash unchanged$$
-assert $_cache+26 ~ 0x(9A,BC) $$t4: fourth entry hash unchanged$$
+assert $_cache+4 ~ 0x(12,34) $$t4: first entry hash unchanged$$
+assert $_cache+12 ~ 0x(12,34) $$t4: second entry hash unchanged$$
+assert $_cache+20 ~ 0x(9A,BC) $$t4: third entry hash unchanged$$
+assert $_cache+28 ~ 0x(9A,BC) $$t4: fourth entry hash unchanged$$
 // First verify pagegroup header bytes
 assert $test_buffer+0 ~ 0x(01,02) $$t4: pagegroup header (flags=last_group, num_entries=2)$$
 // Then verify the actual pagegroup data in 8-byte groups (starts at offset +2)

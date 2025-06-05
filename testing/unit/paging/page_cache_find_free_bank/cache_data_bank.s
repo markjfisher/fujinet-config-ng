@@ -12,6 +12,7 @@ _find_bank_params:
 _cache:
         .byte   3               ; max_banks = 3
         .byte   3               ; entry_count = 3 entries
+        .word   $4000           ; bank_size (default 16KB)
 
         ; entries array (3 entries, 8 bytes each)
         ; First entry: hash $12,$34 in bank 0

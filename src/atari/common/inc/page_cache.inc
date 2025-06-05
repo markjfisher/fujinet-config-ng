@@ -1,5 +1,5 @@
 PAGE_CACHE_MAX_ENTRIES = 255    ; Maximum number of entries in cache
-BANK_SIZE              = $4000  ; Size of each bank in bytes (16KB)
+BANK_SIZE_DEFAULT      = $4000  ; Default size of each bank in bytes (16KB)
 
 ; Size of page_cache_entry_t for memmove calculations
 PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
@@ -15,6 +15,7 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
 .struct page_cache
     max_banks       .byte       ; total banks allowed to use in caching code
     entry_count     .byte       ; Number of active entries
+    bank_size       .word       ; configurable size of each bank in bytes
     entries         .res 255*8  ; Array of page_cache_entry (255 entries * 8 bytes each)
     bank_free_space .res 64*2   ; Array of bank free space (max of 64 banks * 2 bytes each)
 .endstruct

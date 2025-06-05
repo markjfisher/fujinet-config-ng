@@ -28,6 +28,7 @@ remove_path_hash_high: .res    1       ; Captures hash high byte passed to remov
 _cache:
         .byte   64              ; max_banks
         .byte   2               ; entry_count
+        .word   $4000           ; bank_size (default 16KB)
         ; First entry
         .byte   $12, $34       ; path_hash ($1234)
         .byte   1              ; group_id
