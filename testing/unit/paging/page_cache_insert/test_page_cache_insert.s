@@ -23,6 +23,7 @@
 .import _cache
 .import _page_cache_insert
 .import _page_cache_init
+.import _page_cache_set_bank_size
 .import _insert_params
 
 .include "zp.inc"
@@ -33,28 +34,52 @@
 
 ; Initialize test data
 .proc init_test_data
-        ; Initialize cache with 1 bank for testing
-        lda     #$01
+        ; Set small bank size for testing (256 bytes)
+        lda     #$00            ; Low byte of bank size
+        ldx     #$01            ; High byte of bank size ($0100 = 256 bytes)
+        jsr     _page_cache_set_bank_size
+        
+        ; Initialize cache with 2 banks for testing
+        lda     #$02
         jsr     _page_cache_init
         rts
 .endproc
 
-; Mock bank switching functions
+; Enhanced bank emulation functions
 .proc _change_bank
         ; A contains bank_id
+        ; For emulation, we store bank_id + 1 (so bank 0 becomes 1, bank 1 becomes 2, etc.)
+        clc
+        adc     #1
         sta     current_bank
         rts
 .endproc
 
 .proc _set_default_bank
-        lda     #$FF
+        ; Default bank is represented as 0 in our emulation
+        lda     #0
         sta     current_bank
         rts
 .endproc
 
 .proc _get_bank_base
-        ; For our test, we just return the base of our mock bank data
-        ; The actual bank switching would modify the memory map
+        ; Calculate bank base address: mock_bank_data + (current_bank * bank_size)
+        ; Since bank_size = $100 (256), we can use current_bank as high byte offset
+        lda     current_bank
+        beq     default_bank    ; If current_bank = 0, use base address
+        
+        ; Calculate: mock_bank_data + (current_bank * 256)
+        ; current_bank * 256 means current_bank becomes the high byte offset
+        ldx     #>mock_bank_data    ; High byte base  
+        txa                         ; Get high byte in A
+        clc
+        adc     current_bank        ; Add current_bank to high byte
+        tax                         ; Put result back in X (high byte)
+        lda     #<mock_bank_data    ; Low byte unchanged
+        rts
+        
+default_bank:
+        ; Return base mock_bank_data address
         lda     #<mock_bank_data
         ldx     #>mock_bank_data
         rts

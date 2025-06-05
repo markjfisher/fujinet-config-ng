@@ -10,6 +10,7 @@ src_files:
   - ${WS_ROOT}/src/atari/common/paging/calc_entry_loc.s
   - ${WS_ROOT}/src/atari/common/paging/try_free_space.s
   - ${WS_ROOT}/src/atari/common/paging/page_cache_init.s
+  - ${WS_ROOT}/src/atari/common/paging/page_cache_config.s
   - ${WS_ROOT}/src/atari/common/paging/page_cache_remove_group.s
   - ${WS_ROOT}/src/atari/common/paging/page_cache_remove_path.s
   - ${WS_ROOT}/src/atari/common/paging/page_cache_expel_path.s

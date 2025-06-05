@@ -43,14 +43,24 @@ marker $$testing page_cache_insert$$
 // 3. Proper position calculation for same-hash entries
 // =============================================================================
 //
-// Expected Final Cache State (5 entries in sorted order):
-// 1. (1234, 0) - from t1 - bank_offset=0000
-// 2. (1234, 1) - from t5 - bank_offset=004E 
-// 3. (2000, 0) - from t2 - bank_offset=0012
-// 4. (3000, 2) - from t6 - bank_offset=0068
-// 5. (5678, 1) - from t3 - bank_offset=002C
+// =============================================================================
+// BANK EMULATION TESTING:
+// - Bank size: 256 bytes ($0100) - configurable for testing
+// - Number of banks: 2 
+// - Bank selection: Algorithm chooses bank with most free space
+// - Bank address calculation: mock_bank_data + (bank_id + 1) * 256
+//   - Bank 0 (default): mock_bank_data + 0 = base address  
+//   - Bank 1: mock_bank_data + 256
+//   - Bank 2: mock_bank_data + 512 (if we had 3 banks)
 //
-// Bank offset calculation: starts at 0000, then accumulates group_size values
+// Expected Cache Behavior:
+// The algorithm prioritizes locality (same hash) over pure "most free space":
+// t1 (18B): Bank 0 (both equal, picks first) → Bank 0: 238, Bank 1: 256
+// t2 (26B): Bank 1 (256 > 238, no hash match) → Bank 0: 238, Bank 1: 230  
+// t3 (34B): Bank 0 (238 > 230, no hash match) → Bank 0: 204, Bank 1: 230
+// t5 (26B): Bank 0 (hash 1234 already exists, locality wins) → Bank 0: 178, Bank 1: 230
+// t6 (34B): Bank 1 (230 > 178, no hash match) → Bank 0: 178, Bank 1: 196
+// This demonstrates both locality optimization and "most free space" fallback.
 // =============================================================================
 
 memory load atari "${BINARY_PATH}"
@@ -76,8 +86,8 @@ assert $_cache+6 ~ 0x(00) $$t1: first entry group_id=0$$
 assert $_cache+7 ~ 0x(00) $$t1: first entry bank_id=0$$
 assert $_cache+8 ~ 0x(00,00) $$t1: first entry bank_offset=0000$$
 assert $_cache+10 ~ 0x(12,00) $$t1: first entry group_size=0012$$
-// Check bank free space was updated
-assert $_cache+2044 ~ 0x(EE,3F) $$t1: bank 0 free space reduced (16384-18=16366)$$
+// Check bank free space was updated (256 - 18 = 238 = 0x00EE)
+assert $_cache+2044 ~ 0x(EE,00) $$t1: bank 0 free space reduced (256-18=238)$$
 
 // Test 2: Insert entry that should go at beginning (hash 2000 < 1234 in insertion order)
 run while CP != $t2
@@ -99,8 +109,8 @@ assert $_cache+8 ~ 0x(00,00) $$t2: entry 0 bank_offset=0000$$
 assert $_cache+10 ~ 0x(12,00) $$t2: entry 0 group_size=0012$$
 assert $_cache+12 ~ 0x(20,00) $$t2: entry 1 hash (20 00)$$
 assert $_cache+14 ~ 0x(00) $$t2: entry 1 group_id=0$$
-assert $_cache+15 ~ 0x(00) $$t2: entry 1 bank_id=0$$
-assert $_cache+16 ~ 0x(12,00) $$t2: entry 1 bank_offset=0012$$
+assert $_cache+15 ~ 0x(01) $$t2: entry 1 bank_id=1 (algorithm chose bank with most free space)$$
+assert $_cache+16 ~ 0x(00,00) $$t2: entry 1 bank_offset=0000 (fresh bank)$$
 assert $_cache+18 ~ 0x(1A,00) $$t2: entry 1 group_size=001A$$
 
 // Test 3: Insert entry at end (hash 5678 > all previous)
@@ -117,8 +127,8 @@ assert $_cache+12 ~ 0x(20,00) $$t3: entry 1 hash (20 00)$$
 assert $_cache+14 ~ 0x(00) $$t3: entry 1 group_id=0$$
 assert $_cache+20 ~ 0x(56,78) $$t3: entry 2 hash (56 78)$$
 assert $_cache+22 ~ 0x(01) $$t3: entry 2 group_id=1$$
-assert $_cache+23 ~ 0x(00) $$t3: entry 2 bank_id=0$$
-assert $_cache+24 ~ 0x(2C,00) $$t3: entry 2 bank_offset=002C$$
+assert $_cache+23 ~ 0x(00) $$t3: entry 2 bank_id=0 (most free space after t2)$$
+assert $_cache+24 ~ 0x(12,00) $$t3: entry 2 bank_offset=0012 (after first entry in bank 0)$$
 assert $_cache+26 ~ 0x(22,00) $$t3: entry 2 group_size=0022$$
 
 // Test 4: Try to insert duplicate entry (should fail)
@@ -143,20 +153,20 @@ assert $_cache+6 ~ 0x(00) $$t5: entry 0 group_id=0$$
 // Entry 1: (1234, 1) - newly inserted at position 1
 assert $_cache+12 ~ 0x(12,34) $$t5: entry 1 hash (12 34)$$
 assert $_cache+14 ~ 0x(01) $$t5: entry 1 group_id=1$$
-assert $_cache+15 ~ 0x(00) $$t5: entry 1 bank_id=0$$
-assert $_cache+16 ~ 0x(4E,00) $$t5: entry 1 bank_offset=004E$$
+assert $_cache+15 ~ 0x(00) $$t5: entry 1 bank_id=0 (same hash locality optimization)$$
+assert $_cache+16 ~ 0x(34,00) $$t5: entry 1 bank_offset=0034 (after both entries in bank 0)$$
 assert $_cache+18 ~ 0x(1A,00) $$t5: entry 1 group_size=001A$$
-// Entry 2: (2000, 0) - shifted from position 1 to 2
+// Entry 2: (2000, 0) - shifted from position 1 to 2 (original t2 entry)
 assert $_cache+20 ~ 0x(20,00) $$t5: entry 2 hash (20 00)$$
 assert $_cache+22 ~ 0x(00) $$t5: entry 2 group_id=0$$
-assert $_cache+23 ~ 0x(00) $$t5: entry 2 bank_id=0$$
-assert $_cache+24 ~ 0x(12,00) $$t5: entry 2 bank_offset=0012$$
+assert $_cache+23 ~ 0x(01) $$t5: entry 2 bank_id=1 (original t2 allocation)$$
+assert $_cache+24 ~ 0x(00,00) $$t5: entry 2 bank_offset=0000 (first in bank 1)$$
 assert $_cache+26 ~ 0x(1A,00) $$t5: entry 2 group_size=001A$$
-// Entry 3: (5678, 1) - shifted from position 2 to 3
+// Entry 3: (5678, 1) - shifted from position 2 to 3 (original t3 entry)
 assert $_cache+28 ~ 0x(56,78) $$t5: entry 3 hash (56 78)$$
 assert $_cache+30 ~ 0x(01) $$t5: entry 3 group_id=1$$
-assert $_cache+31 ~ 0x(00) $$t5: entry 3 bank_id=0$$
-assert $_cache+32 ~ 0x(2C,00) $$t5: entry 3 bank_offset=002C$$
+assert $_cache+31 ~ 0x(00) $$t5: entry 3 bank_id=0 (original t3 allocation)$$
+assert $_cache+32 ~ 0x(12,00) $$t5: entry 3 bank_offset=0012 (after t1 in bank 0)$$
 assert $_cache+34 ~ 0x(22,00) $$t5: entry 3 group_size=0022$$
 
 // Test 6: Insert another entry to test sorting
@@ -177,25 +187,25 @@ assert $_cache+10 ~ 0x(12,00) $$t6: entry 0 group_size=0012$$
 assert $_cache+12 ~ 0x(12,34) $$t6: entry 1 hash (12 34)$$
 assert $_cache+14 ~ 0x(01) $$t6: entry 1 group_id=1$$
 assert $_cache+15 ~ 0x(00) $$t6: entry 1 bank_id=0$$
-assert $_cache+16 ~ 0x(4E,00) $$t6: entry 1 bank_offset=004E$$
+assert $_cache+16 ~ 0x(34,00) $$t6: entry 1 bank_offset=0034$$
 assert $_cache+18 ~ 0x(1A,00) $$t6: entry 1 group_size=001A$$
 // Entry 2: (2000, 0)
 assert $_cache+20 ~ 0x(20,00) $$t6: entry 2 hash (20 00)$$
 assert $_cache+22 ~ 0x(00) $$t6: entry 2 group_id=0$$
-assert $_cache+23 ~ 0x(00) $$t6: entry 2 bank_id=0$$
-assert $_cache+24 ~ 0x(12,00) $$t6: entry 2 bank_offset=0012$$
+assert $_cache+23 ~ 0x(01) $$t6: entry 2 bank_id=1 (original t2 allocation)$$
+assert $_cache+24 ~ 0x(00,00) $$t6: entry 2 bank_offset=0000 (first in bank 1)$$
 assert $_cache+26 ~ 0x(1A,00) $$t6: entry 2 group_size=001A$$
-// Entry 3: (3000, 2) - newly inserted
+// Entry 3: (3000, 2) - newly inserted (bank 1 has most free space)
 assert $_cache+28 ~ 0x(30,00) $$t6: entry 3 hash (30 00)$$
 assert $_cache+30 ~ 0x(02) $$t6: entry 3 group_id=2$$
-assert $_cache+31 ~ 0x(00) $$t6: entry 3 bank_id=0$$
-assert $_cache+32 ~ 0x(68,00) $$t6: entry 3 bank_offset=0068$$
+assert $_cache+31 ~ 0x(01) $$t6: entry 3 bank_id=1 (most free space)$$
+assert $_cache+32 ~ 0x(1A,00) $$t6: entry 3 bank_offset=001A (after t2 entry in bank 1)$$
 assert $_cache+34 ~ 0x(22,00) $$t6: entry 3 group_size=0022$$
-// Entry 4: (5678, 1) - shifted from position 3 to 4
+// Entry 4: (5678, 1) - shifted from position 3 to 4 (original t3 entry)
 assert $_cache+36 ~ 0x(56,78) $$t6: entry 4 hash (56 78)$$
 assert $_cache+38 ~ 0x(01) $$t6: entry 4 group_id=1$$
-assert $_cache+39 ~ 0x(00) $$t6: entry 4 bank_id=0$$
-assert $_cache+40 ~ 0x(2C,00) $$t6: entry 4 bank_offset=002C$$
+assert $_cache+39 ~ 0x(00) $$t6: entry 4 bank_id=0 (original t3 allocation)$$
+assert $_cache+40 ~ 0x(12,00) $$t6: entry 4 bank_offset=0012 (after t1 in bank 0)$$
 assert $_cache+42 ~ 0x(22,00) $$t6: entry 4 group_size=0022$$
 
 // =============================================================================
