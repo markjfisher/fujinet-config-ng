@@ -1,0 +1,216 @@
+marker $$testing page_cache_insert$$
+
+// =============================================================================
+// TEST CASES COVERAGE
+// =============================================================================
+// | Test | Scenario                      | Purpose                           |
+// |------|-------------------------------|-----------------------------------|
+// | t1   | Insert into empty cache       | Basic insertion, bank allocation  |
+// | t2   | Insert at middle position     | Entry shifting, memmove logic     |
+// | t3   | Insert at end                 | Append behavior, no shifting      |
+// | t4   | Duplicate entry               | Error handling, duplicate detect  |
+// | t5   | Same hash, different group_id | Compound key sorting              |
+// | t6   | Complex sorting               | Multiple entry management         |
+// =============================================================================
+//
+// SORTING PROGRESSION: How cache order evolves through test sequence
+// =============================================================================
+// t1: Insert (1234,0) into empty cache
+//     Result: [(1234,0)]
+//     
+// t2: Insert (2000,0) - goes after (1234,0) since 2000 > 1234
+//     Result: [(1234,0), (2000,0)]
+//     
+// t3: Insert (5678,1) - goes at end since 5678 > all previous hashes
+//     Result: [(1234,0), (2000,0), (5678,1)]
+//     
+// t4: Try to insert duplicate (1234,0) - should fail
+//     Result: [(1234,0), (2000,0), (5678,1)] (unchanged)
+//     
+// t5: Insert (1234,1) - CRITICAL COMPOUND KEY TEST
+//     Same hash as entry 0, but group_id=1 > group_id=0
+//     Must insert between position 0 and 1, shifting entries right
+//     Result: [(1234,0), (1234,1), (2000,0), (5678,1)]
+//     *** This tests the most complex insertion logic with memmove ***
+//     
+// t6: Insert (3000,2) - goes between (2000,0) and (5678,1)
+//     Must shift (5678,1) to make room at position 3
+//     Result: [(1234,0), (1234,1), (2000,0), (3000,2), (5678,1)]
+//
+// Key insight: t5 is the most critical test as it verifies:
+// 1. Compound key sorting (hash, group_id)
+// 2. Entry shifting with memmove when inserting in middle
+// 3. Proper position calculation for same-hash entries
+// =============================================================================
+//
+// Expected Final Cache State (5 entries in sorted order):
+// 1. (1234, 0) - from t1 - bank_offset=0000
+// 2. (1234, 1) - from t5 - bank_offset=004E 
+// 3. (2000, 0) - from t2 - bank_offset=0012
+// 4. (3000, 2) - from t6 - bank_offset=0068
+// 5. (5678, 1) - from t3 - bank_offset=002C
+//
+// Bank offset calculation: starts at 0000, then accumulates group_size values
+// =============================================================================
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+// Test 1: Insert into empty cache
+run init until CP = $_main
+run while CP != $t1
+registers set cycle_count = 0
+run $t1 while CP != $t1_end
+
+// Debug memory dumps after t1
+memory show $_cache 0x40                $$t1 debug: Show cache structure$$
+memory show $_insert_params 0x10        $$t1 debug: Show insert parameters$$
+memory show $_cache+2042 0x10           $$t1 debug: Show bank free space array$$
+memory show $mock_bank_data 0x40        $$t1 debug: Show mock bank data$$
+
+assert $_insert_params+12 = 1  $$t1: should return success$$
+assert $_cache+1 = 1  $$t1: cache should have 1 entry$$
+// Validate first entry: hash=1234, group_id=0, bank_id=0, bank_offset=0000, group_size=0012
+assert $_cache+2 ~ 0x(12,34) $$t1: first entry hash (12 34 bytes)$$
+assert $_cache+4 ~ 0x(00) $$t1: first entry group_id=0$$
+assert $_cache+5 ~ 0x(00) $$t1: first entry bank_id=0$$
+assert $_cache+6 ~ 0x(00,00) $$t1: first entry bank_offset=0000$$
+assert $_cache+8 ~ 0x(12,00) $$t1: first entry group_size=0012$$
+// Check bank free space was updated
+assert $_cache+2042 ~ 0x(EE,3F) $$t1: bank 0 free space reduced (16384-18=16366)$$
+
+// Test 2: Insert entry that should go at beginning (hash 2000 < 1234 in insertion order)
+run while CP != $t2
+registers set cycle_count = 0
+run $t2 while CP != $t2_end
+
+// Debug memory dumps after t2
+memory show $_cache 0x50                $$t2 debug: Show cache structure with 2 entries$$
+memory show $_insert_params 0x10        $$t2 debug: Show insert parameters$$
+memory show $_cache+2042 0x10           $$t2 debug: Show bank free space array$$
+
+assert $_insert_params+12 = 1  $$t2: should return success$$
+assert $_cache+1 = 2  $$t2: cache should have 2 entries$$
+// Verify sorted order: (1234,0) < (2000,0)
+assert $_cache+2 ~ 0x(12,34) $$t2: entry 0 hash (12 34)$$
+assert $_cache+4 ~ 0x(00) $$t2: entry 0 group_id=0$$
+assert $_cache+5 ~ 0x(00) $$t2: entry 0 bank_id=0$$
+assert $_cache+6 ~ 0x(00,00) $$t2: entry 0 bank_offset=0000$$
+assert $_cache+8 ~ 0x(12,00) $$t2: entry 0 group_size=0012$$
+assert $_cache+10 ~ 0x(20,00) $$t2: entry 1 hash (20 00)$$
+assert $_cache+12 ~ 0x(00) $$t2: entry 1 group_id=0$$
+assert $_cache+13 ~ 0x(00) $$t2: entry 1 bank_id=0$$
+assert $_cache+14 ~ 0x(12,00) $$t2: entry 1 bank_offset=0012$$
+assert $_cache+16 ~ 0x(1A,00) $$t2: entry 1 group_size=001A$$
+
+// Test 3: Insert entry at end (hash 5678 > all previous)
+run while CP != $t3
+registers set cycle_count = 0
+run $t3 while CP != $t3_end
+
+assert $_insert_params+12 = 1  $$t3: should return success$$
+assert $_cache+1 = 3  $$t3: cache should have 3 entries$$
+// Verify sorted order: (1234,0) < (2000,0) < (5678,1)
+assert $_cache+2 ~ 0x(12,34) $$t3: entry 0 hash (12 34)$$
+assert $_cache+4 ~ 0x(00) $$t3: entry 0 group_id=0$$
+assert $_cache+10 ~ 0x(20,00) $$t3: entry 1 hash (20 00)$$
+assert $_cache+12 ~ 0x(00) $$t3: entry 1 group_id=0$$
+assert $_cache+18 ~ 0x(56,78) $$t3: entry 2 hash (56 78)$$
+assert $_cache+20 ~ 0x(01) $$t3: entry 2 group_id=1$$
+assert $_cache+21 ~ 0x(00) $$t3: entry 2 bank_id=0$$
+assert $_cache+22 ~ 0x(2C,00) $$t3: entry 2 bank_offset=002C$$
+assert $_cache+24 ~ 0x(22,00) $$t3: entry 2 group_size=0022$$
+
+// Test 4: Try to insert duplicate entry (should fail)
+run while CP != $t4
+registers set cycle_count = 0
+run $t4 while CP != $t4_end
+
+assert $_insert_params+12 = 0  $$t4: should return failure for duplicate$$
+assert $_cache+1 = 3  $$t4: cache entry count should be unchanged$$
+
+// Test 5: Insert entry with different group_id for existing hash (should succeed)
+run while CP != $t5
+registers set cycle_count = 0
+run $t5 while CP != $t5_end
+
+assert $_insert_params+12 = 1  $$t5: should return success$$
+assert $_cache+1 = 4  $$t5: cache should have 4 entries$$
+// Verify sorted order after insertion: (1234,0) < (1234,1) < (2000,0) < (5678,1)
+// Entry 0: (1234, 0) - should remain in position 0
+assert $_cache+2 ~ 0x(12,34) $$t5: entry 0 hash (12 34)$$
+assert $_cache+4 ~ 0x(00) $$t5: entry 0 group_id=0$$
+// Entry 1: (1234, 1) - newly inserted at position 1
+assert $_cache+10 ~ 0x(12,34) $$t5: entry 1 hash (12 34)$$
+assert $_cache+12 ~ 0x(01) $$t5: entry 1 group_id=1$$
+assert $_cache+13 ~ 0x(00) $$t5: entry 1 bank_id=0$$
+assert $_cache+14 ~ 0x(4E,00) $$t5: entry 1 bank_offset=004E$$
+assert $_cache+16 ~ 0x(1A,00) $$t5: entry 1 group_size=001A$$
+// Entry 2: (2000, 0) - shifted from position 1 to 2
+assert $_cache+18 ~ 0x(20,00) $$t5: entry 2 hash (20 00)$$
+assert $_cache+20 ~ 0x(00) $$t5: entry 2 group_id=0$$
+assert $_cache+21 ~ 0x(00) $$t5: entry 2 bank_id=0$$
+assert $_cache+22 ~ 0x(12,00) $$t5: entry 2 bank_offset=0012$$
+assert $_cache+24 ~ 0x(1A,00) $$t5: entry 2 group_size=001A$$
+// Entry 3: (5678, 1) - shifted from position 2 to 3
+assert $_cache+26 ~ 0x(56,78) $$t5: entry 3 hash (56 78)$$
+assert $_cache+28 ~ 0x(01) $$t5: entry 3 group_id=1$$
+assert $_cache+29 ~ 0x(00) $$t5: entry 3 bank_id=0$$
+assert $_cache+30 ~ 0x(2C,00) $$t5: entry 3 bank_offset=002C$$
+assert $_cache+32 ~ 0x(22,00) $$t5: entry 3 group_size=0022$$
+
+// Test 6: Insert another entry to test sorting
+run while CP != $t6
+registers set cycle_count = 0
+run $t6 while CP != $t6_end
+
+assert $_insert_params+12 = 1  $$t6: should return success$$
+assert $_cache+1 = 5  $$t6: cache should have 5 entries$$
+// Verify final sorted order: (1234,0) < (1234,1) < (2000,0) < (3000,2) < (5678,1)
+// Entry 0: (1234, 0)
+assert $_cache+2 ~ 0x(12,34) $$t6: entry 0 hash (12 34)$$
+assert $_cache+4 ~ 0x(00) $$t6: entry 0 group_id=0$$
+assert $_cache+5 ~ 0x(00) $$t6: entry 0 bank_id=0$$
+assert $_cache+6 ~ 0x(00,00) $$t6: entry 0 bank_offset=0000$$
+assert $_cache+8 ~ 0x(12,00) $$t6: entry 0 group_size=0012$$
+// Entry 1: (1234, 1)
+assert $_cache+10 ~ 0x(12,34) $$t6: entry 1 hash (12 34)$$
+assert $_cache+12 ~ 0x(01) $$t6: entry 1 group_id=1$$
+assert $_cache+13 ~ 0x(00) $$t6: entry 1 bank_id=0$$
+assert $_cache+14 ~ 0x(4E,00) $$t6: entry 1 bank_offset=004E$$
+assert $_cache+16 ~ 0x(1A,00) $$t6: entry 1 group_size=001A$$
+// Entry 2: (2000, 0)
+assert $_cache+18 ~ 0x(20,00) $$t6: entry 2 hash (20 00)$$
+assert $_cache+20 ~ 0x(00) $$t6: entry 2 group_id=0$$
+assert $_cache+21 ~ 0x(00) $$t6: entry 2 bank_id=0$$
+assert $_cache+22 ~ 0x(12,00) $$t6: entry 2 bank_offset=0012$$
+assert $_cache+24 ~ 0x(1A,00) $$t6: entry 2 group_size=001A$$
+// Entry 3: (3000, 2) - newly inserted
+assert $_cache+26 ~ 0x(30,00) $$t6: entry 3 hash (30 00)$$
+assert $_cache+28 ~ 0x(02) $$t6: entry 3 group_id=2$$
+assert $_cache+29 ~ 0x(00) $$t6: entry 3 bank_id=0$$
+assert $_cache+30 ~ 0x(68,00) $$t6: entry 3 bank_offset=0068$$
+assert $_cache+32 ~ 0x(22,00) $$t6: entry 3 group_size=0022$$
+// Entry 4: (5678, 1) - shifted from position 3 to 4
+assert $_cache+34 ~ 0x(56,78) $$t6: entry 4 hash (56 78)$$
+assert $_cache+36 ~ 0x(01) $$t6: entry 4 group_id=1$$
+assert $_cache+37 ~ 0x(00) $$t6: entry 4 bank_id=0$$
+assert $_cache+38 ~ 0x(2C,00) $$t6: entry 4 bank_offset=002C$$
+assert $_cache+40 ~ 0x(22,00) $$t6: entry 4 group_size=0022$$
+
+// =============================================================================
+// SORTING VERIFICATION COMPLETE
+// =============================================================================
+// Successfully verified that cache entries maintain sorted order by:
+// 1. Primary key: path_hash (ascending)  
+// 2. Secondary key: group_id (ascending)
+//
+// Final verified order in cache:
+// Position 0: (1234, 0) - original first insertion
+// Position 1: (1234, 1) - same hash, higher group_id (compound key test)
+// Position 2: (2000, 0) - shifted during t5 insertion
+// Position 3: (3000, 2) - inserted between (2000,0) and (5678,1)
+// Position 4: (5678, 1) - shifted during t6 insertion
+//
+// This verifies proper memmove logic for entry shifting and insertion sorting.
+// ============================================================================= 
