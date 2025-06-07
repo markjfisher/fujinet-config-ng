@@ -200,10 +200,9 @@ just_file:
 
 done:
         ; save the entries for the page so the kb handler will let us move around
-        ; inc     mf_entry_index
         mva     mf_entry_index, mf_entries_cnt
         ; print the time and size for first entry
-        ; put_s   #01, #21, #mfp_timestamp_cache
+        put_s   #01, #21, #mfp_timestamp_cache
 
         ; Check if first entry is a directory
         lda     mf_dir_or_file     ; first entry's flag
@@ -214,7 +213,7 @@ done:
         rts
 
 show_size:
-        put_s   #28, #21, #mfp_filesize_cache
+        put_s   #27, #21, #mfp_filesize_cache
         rts
 
 .data
