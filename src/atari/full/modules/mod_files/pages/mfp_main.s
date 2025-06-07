@@ -1,4 +1,5 @@
         .export     mfp_main
+        .export     mfp_update_selection_display
 
         .import     kb_cb_function
         .import     kb_current_line
@@ -16,11 +17,17 @@
         .import     mfp_new_page
         .import     mfp_pg_buf
         .import     mfp_show_page
+        .import     mfp_timestamp_cache
+        .import     mfp_filesize_cache
+        .import     mf_dir_or_file
 
         .import     _bank_count
         .import     _get_pagegroup_params
         .import     _page_cache_init
+        .import     kb_selection_changed_cb
+        .import     _put_s
 
+        .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
         .include    "modules.inc"
@@ -51,6 +58,9 @@ init_ok:
         lda     #$00
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb+1
+        
+        ; Set up selection changed callback for updating timestamp/filesize display
+        mwa     #mfp_update_selection_display, kb_selection_changed_cb
 
 file_loop:
         jsr     mfp_new_page
@@ -75,6 +85,65 @@ exit_mfp:
         sta     kb_cb_function
         sta     kb_cb_function+1
 
+        ; Clear selection changed callback
+        sta     kb_selection_changed_cb
+        sta     kb_selection_changed_cb+1
+
         rts
+
+.endproc
+
+; Callback function to update timestamp and filesize display when selection changes
+.proc mfp_update_selection_display
+        ; Calculate offset into timestamp cache: mf_selected * 17
+        lda     mf_selected
+        asl     a               ; * 2
+        asl     a               ; * 4  
+        asl     a               ; * 8
+        asl     a               ; * 16
+        clc
+        adc     mf_selected     ; + 1 = * 17
+        clc
+        adc     #<mfp_timestamp_cache
+        sta     ptr1
+        lda     #>mfp_timestamp_cache
+        adc     #0              ; add carry
+        sta     ptr1+1
+        
+        ; Print timestamp at position (1, 21)
+        put_s   #01, #21, ptr1
+
+        ; Check if selected entry is a directory
+        ldx     mf_selected
+        lda     mf_dir_or_file,x
+        beq     show_size
+
+        ; It's a directory, show spaces instead
+        put_s   #27, #21, #dir_spaces
+        rts
+
+show_size:
+        ; Calculate offset into filesize cache: mf_selected * 11
+        lda     mf_selected
+        asl     a               ; * 2
+        asl     a               ; * 4
+        asl     a               ; * 8
+        clc
+        adc     mf_selected     ; + 1 = * 9
+        adc     mf_selected     ; + 1 = * 10  
+        adc     mf_selected     ; + 1 = * 11
+        clc
+        adc     #<mfp_filesize_cache
+        sta     ptr1
+        lda     #>mfp_filesize_cache
+        adc     #0              ; add carry
+        sta     ptr1+1
+        
+        ; Print filesize at position (27, 21)
+        put_s   #27, #21, ptr1
+        rts
+
+.data
+dir_spaces:     .byte "          ",0     ; 10 spaces for directory entries
 
 .endproc

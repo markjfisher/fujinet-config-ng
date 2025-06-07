@@ -6,6 +6,7 @@
         .export     kb_max_entries
         .export     kb_mod_current_line_p
         .export     kb_mod_proc
+        .export     kb_selection_changed_cb
 
         .export     kb_prev_mod
         .export     kb_next_mod
@@ -147,15 +148,20 @@ save_state:
         mwa     kb_mod_current_line_p, ptr1
         mva     kb_current_line, {(ptr1), y}
 
+        ; Call selection callback if set
+        lda     kb_selection_changed_cb
+        ora     kb_selection_changed_cb+1
+        beq     :+
+        mwa     kb_selection_changed_cb, smc_sel
+        jsr     smc_sel_target
+
         ; only highlight line if there are any to highlight
-        lda     kb_max_entries
+:       lda     kb_max_entries
         beq     cont_kb
         jsr     _scr_highlight_line
-        ; jmp     cont_kb
 
 cont_kb:
-        clc
-        bcc     start_kb_get
+        jmp     start_kb_get
 
 ; ---------------------------------------------------
 
@@ -271,6 +277,9 @@ do_jmp:
 smc     = *-2
         ; implicit rts
 
+smc_sel_target:
+        jmp     $ffff
+smc_sel = *-2
 
 
 .bss
@@ -283,4 +292,5 @@ kb_prev_mod:            .res 1
 
 .data
 kb_cb_function:         .word $0000
+kb_selection_changed_cb: .word $0000
 kb_idle_counter:        .byte $00

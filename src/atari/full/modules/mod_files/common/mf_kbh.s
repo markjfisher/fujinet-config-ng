@@ -21,6 +21,7 @@
         .import     mf_entries_cnt
         .import     mf_is_eod
         .import     mf_kbh_select_current
+        .import     kb_selection_changed_cb
         .import     mod_current
 
         .include    "edit_string.inc"

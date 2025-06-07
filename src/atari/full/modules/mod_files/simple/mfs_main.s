@@ -11,6 +11,8 @@
         .import     mfs_new_page
         .import     mfs_show_page
         .import     mod_current
+        .import     kb_selection_changed_cb
+        .import     _just_rts
 
         .include    "macros.inc"
         .include    "fn_data.inc"
@@ -26,6 +28,8 @@
         rts
 
 init_ok:
+        ; Set up null selection changed callback for simple version
+        mwa     #_just_rts, kb_selection_changed_cb
 
 ; we'll keep looping around here until something is chosen, or we exit
 file_loop:
@@ -49,6 +53,10 @@ exit_mfs:
         lda     #$00
         sta     kb_cb_function
         sta     kb_cb_function+1
+        
+        ; Clear selection changed callback
+        sta     kb_selection_changed_cb
+        sta     kb_selection_changed_cb+1
 
         rts
 
