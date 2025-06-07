@@ -269,4 +269,11 @@ Altirra> .help .pathrecord
 .writemem z:\home\markf\dev\atari\fujinet-config-ng\_cache\b0_4000.bin $e3'4000 L0100
 
 
+# trace to file in altirra (wine in linux, hence z: path)
+.pathreset
+.pathrecord on
+// run your code
+.pathrecord off
+.pathdump
+.pathdump z:\home\markf\dev\atari\fujinet-config-ng\_cache\pathdump_page_cache_getgroup.txt
 

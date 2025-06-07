@@ -14,7 +14,6 @@
 .export _change_bank
 .export _get_bank_base
 .export _set_default_bank
-.export debug
 
 .import test_data_1
 .import test_data_2
@@ -32,10 +31,6 @@
 .include "page_cache.inc"
 
 .segment "CODE"
-
-.proc debug
-        rts
-.endproc
 
 ; Initialize test data
 .proc init_test_data

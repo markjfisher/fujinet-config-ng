@@ -17,7 +17,6 @@
 .export _fuji_read_directory_block
 .export copy_1234
 .export copy_9abc
-.export debug
 
 .import test_buffer
 .import _page_cache_get_pagegroup
@@ -46,10 +45,6 @@
 .include "page_cache.inc"
 
 .segment "CODE"
-
-.proc debug
-        rts
-.endproc
 
 ; Initialize test data
 .proc init_test_data

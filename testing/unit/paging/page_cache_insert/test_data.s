@@ -11,7 +11,7 @@
 .bss
 
 current_bank:           .res    1
-mock_bank_data:         .res    16384     ; Space for testing bank operations
+mock_bank_data:         .res    2048     ; Space for testing bank operations
 
 .data
 

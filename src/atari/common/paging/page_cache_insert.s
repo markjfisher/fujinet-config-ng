@@ -172,15 +172,16 @@ copy_loop:
         inx
         clc
 
-        ; now add bank_offset
+        ; now add bank_offset (16-bit addition)
 :       adc     _insert_params+page_cache_insert_params::bank_offset
-        bcc     :+
-        inx
-        clc
+        tay                     ; save low byte result in Y
+        txa                     ; get current high byte
+        adc     _insert_params+page_cache_insert_params::bank_offset+1  ; add high byte of bank_offset
+        tax                     ; save high byte result back to X  
+        tya                     ; restore low byte to A
 
         ; A/X = base + bank_offset + 2
         ; save it into our temp location so we can use it after the memcpy
-:
         axinto  saved_dest
 
         jsr     pushax          ; dst for memcpy

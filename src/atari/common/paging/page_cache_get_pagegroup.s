@@ -3,13 +3,13 @@
 .export     found_requested_group
 
 .import     _change_bank
-.import     _div_i16_by_i8
 .import     _find_params
 .import     _fuji_read_directory_block
 .import     _get_bank_base
 .import     _get_pagegroup_params
 .import     _insert_params
 .import     _memcpy
+.import     _page_cache_check_exists
 .import     _page_cache_find_position
 .import     _page_cache_insert
 .import     _set_default_bank
@@ -44,43 +44,24 @@ found_requested_group: .res 1  ; Flag: 1 if fujinet returned the requested group
 ; Returns error status, 1 = error (not on page boundary), 0 = all ok, data copied
 ; --------------------------------------------------------------------
 _page_cache_get_pagegroup:
-        ; convert dir_position to a group_id (page group number), 0 based, by dividing by the page size.
-        ; the div routine will perform faster division for page_size of 16, which is one reason to use that if possible
-
+        ; Check if pagegroup exists in cache (handles validation and lookup)
 start:
-        ; faster page 0 as we don't need to do division
-        lda     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position
-        ora     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position+1
-        beq     skip_calc
+        jsr     _page_cache_check_exists
+        beq     in_cache                ; A == 0 means found
+        cmp     #2
+        beq     boundary_error          ; A == 2 means boundary error  
+        ; A == 1 means cache miss, continue to fujinet
+        jmp     not_in_cache
 
-        pusha   _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        setax   _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position
-        jsr     _div_i16_by_i8          ; quotient in A, remainder in X
+boundary_error:
+        jmp     return1                 ; Return error for boundary issue
 
-        ; we have an issue if page_size doesn't exactly divide into dir_position, as it means we're part way into a page.
-        ; e.g. dir_position = 25, but page_size = 16, we're not on page 2, we're somewhere down page 2.
-        ; that would potentially cause issues with page alignment to directory location
-        cpx     #$00
-        beq     divides_exactly
+in_cache:
 
-        ; error out
-        jmp     return1
-
-skip_calc:
-divides_exactly:
-        sta     _find_params+page_cache_find_params::group_id
-
-        ; the caller should have called _page_cache_set_path to generate a hash
-        ; copy it into find
-        ; these 2 are equivalent to "mwa FOO, BAR" but go via A/X instead of just A, and are easier to read
-        setax   _set_path_flt_params+page_cache_set_path_filter_params::path_hash
-        axinto  _find_params+page_cache_find_params::path_hash
-
-        ; so now we have find params; path_hash, group_id
-        ; find out if we have the data already, if not, fetch it and save it
+        ; Cache hit - need to get the entry location for data retrieval
+        ; _page_cache_check_exists already set up the find_params, just need entry_loc
         jsr     _page_cache_find_position
-        lda     _find_params+page_cache_find_params::found_exact
-        beq     not_in_cache
+        ; Note: we know found_exact will be 1 since check_exists returned 0
 
         ; yes, already retrieved this page, so return the data
         ; the index entry is set in _find_params::entry_loc
@@ -100,14 +81,6 @@ divides_exactly:
         adc     ptr2+1
         sta     ptr2+1
 
-;         ; back up ptr2 by 2 bytes to include the header
-;         sec
-;         lda     ptr2
-;         sbc     #$02
-;         sta     ptr2
-;         bcs     :+
-;         dec     ptr2+1
-; :
         ; get the page group size into tmp1/2
         iny
         mywa    {(ptr1), y}, tmp1

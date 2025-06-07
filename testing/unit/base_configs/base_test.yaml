@@ -3,3 +3,6 @@ configs:
 
 asm_include_paths:
   - ${WS_ROOT}/src/common/inc
+
+src_files:
+  - simple_debug.s

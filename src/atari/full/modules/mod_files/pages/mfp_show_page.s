@@ -10,7 +10,6 @@
         .export     mfp_filename_cache
 
         .import     _page_cache_get_pagegroup
-        .import     _page_cache_set_path_filter
         .import     ts_to_datestr
         .import     ts_output
         .import     size_to_str
@@ -20,12 +19,8 @@
         .import     _fc_strlen
         .import     _fc_strncpy
         .import     _get_pagegroup_params
-        .import     _set_path_flt_params
         .import     _put_s
         .import     get_scrloc
-
-        .import     fn_dir_filter
-        .import     fn_dir_path
 
         .import     mf_dir_pos
         .import     mf_dir_pg_cnt
@@ -49,15 +44,11 @@ mfp_show_page:
 
         jsr     debug
 
-        ; set the path_hash - TODO: move this to where it's not constantly called, and only when it changes
-        mwa     #fn_dir_path, _set_path_flt_params+page_cache_set_path_filter_params::path
-        mwa     #fn_dir_filter, _set_path_flt_params+page_cache_set_path_filter_params::filter
-        jsr     _page_cache_set_path_filter
-
+        ; Path hash already set by mfp_new_page, just setup parameters and get pagegroup
         ; setup the get call's parameters
         mwa     mf_dir_pos, _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position
 
-        ; get the pagegroup
+        ; get the pagegroup (cache lookup already done in mfp_new_page)
         jsr     _page_cache_get_pagegroup
 
         jsr     debug

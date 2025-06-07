@@ -1,0 +1,107 @@
+marker $$testing large pagegroup insertions$$
+
+// =============================================================================
+// LARGE PAGEGROUP INSERTION TESTING
+// =============================================================================
+// This test focuses specifically on the 16-bit bank offset arithmetic bug.
+// We insert 3 large pagegroups sequentially to trigger bank offsets > 255 bytes.
+//
+// Test pagegroups:
+// - 240 bytes data + 2 header = 242 total (0xF2)
+// - 256 bytes data + 2 header = 258 total (0x102)  
+// - 272 bytes data + 2 header = 274 total (0x112)
+//
+// Expected bank offset progression:
+// - Insert 1: offset 0x0000 (0 bytes)
+// - Insert 2: offset 0x00F2 (242 bytes) 
+// - Insert 3: offset 0x01F4 (500 bytes) ← CRITICAL: >255, tests 16-bit arithmetic!
+//
+// Bank configuration:
+// - Single 2K bank (2048 bytes = 0x0800)
+// - All pagegroups use same path hash (0x1234) for simplicity
+// - Group IDs: 0, 1, 2 (sequential insertion, no sorting complexity)
+// =============================================================================
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+// Initialize and run until first test
+run init until CP = $_main
+run while CP != $test_240
+registers set cycle_count = 0
+run $test_240 while CP != $test_240_end
+
+// Debug after first insertion (240 bytes)
+memory show $_cache 0x40                $$test_240 debug: Show cache structure$$
+memory show $_insert_params 0x10        $$test_240 debug: Show insert parameters$$
+memory show $_cache+2044 0x10           $$test_240 debug: Show bank free space array$$
+
+assert $_insert_params+12 = 1  $$test_240: should return success$$
+assert $_cache+1 = 1  $$test_240: cache should have 1 entry$$
+// Validate entry: hash=1234, group_id=0, bank_id=0, bank_offset=0000, group_size=00F2
+assert $_cache+4 ~ 0x(34,12) $$test_240: entry 0 hash (34 12 bytes)$$
+assert $_cache+6 ~ 0x(00) $$test_240: entry 0 group_id=0$$
+assert $_cache+7 ~ 0x(00) $$test_240: entry 0 bank_id=0$$
+assert $_cache+8 ~ 0x(00,00) $$test_240: entry 0 bank_offset=0000$$
+assert $_cache+10 ~ 0x(F2,00) $$test_240: entry 0 group_size=00F2 (242 bytes)$$
+// Check bank free space: 2048 - 242 = 1806 (0x070E)
+assert $_cache+2044 ~ 0x(0E,07) $$test_240: bank 0 free space reduced (2048-242=1806)$$
+
+// Run second test (256 bytes)
+run while CP != $test_256
+registers set cycle_count = 0
+run $test_256 while CP != $test_256_end
+
+// Debug after second insertion
+memory show $_cache 0x50                $$test_256 debug: Show cache structure with 2 entries$$
+memory show $_insert_params 0x10        $$test_256 debug: Show insert parameters$$
+memory show $_cache+2044 0x10           $$test_256 debug: Show bank free space array$$
+
+assert $_insert_params+12 = 1  $$test_256: should return success$$
+assert $_cache+1 = 2  $$test_256: cache should have 2 entries$$
+// Verify entry 1: hash=1234, group_id=1, bank_id=0, bank_offset=00F2, group_size=0102
+assert $_cache+12 ~ 0x(34,12) $$test_256: entry 1 hash (34 12 bytes)$$
+assert $_cache+14 ~ 0x(01) $$test_256: entry 1 group_id=1$$
+assert $_cache+15 ~ 0x(00) $$test_256: entry 1 bank_id=0$$
+assert $_cache+16 ~ 0x(F2,00) $$test_256: entry 1 bank_offset=00F2 (242 bytes)$$
+assert $_cache+18 ~ 0x(02,01) $$test_256: entry 1 group_size=0102 (258 bytes)$$
+// Check bank free space: 1806 - 258 = 1548 (0x060C)
+assert $_cache+2044 ~ 0x(0C,06) $$test_256: bank 0 free space reduced (1806-258=1548)$$
+
+// Run third test (272 bytes) - THE CRITICAL TEST
+run while CP != $test_272
+registers set cycle_count = 0
+run $test_272 while CP != $test_272_end
+
+// Debug after third insertion - this tests 16-bit bank offset arithmetic!
+memory show $_cache 0x60                $$test_272 debug: Show cache structure with 3 entries$$
+memory show $_insert_params 0x10        $$test_272 debug: Show insert parameters$$
+memory show $_cache+2044 0x10           $$test_272 debug: Show bank free space array$$
+
+assert $_insert_params+12 = 1  $$test_272: should return success$$
+assert $_cache+1 = 3  $$test_272: cache should have 3 entries$$
+// Verify entry 2: hash=1234, group_id=2, bank_id=0, bank_offset=01F4, group_size=0112
+assert $_cache+20 ~ 0x(34,12) $$test_272: entry 2 hash (34 12 bytes)$$
+assert $_cache+22 ~ 0x(02) $$test_272: entry 2 group_id=2$$
+assert $_cache+23 ~ 0x(00) $$test_272: entry 2 bank_id=0$$
+assert $_cache+24 ~ 0x(F4,01) $$test_272: entry 2 bank_offset=01F4 (500 bytes - CRITICAL 16-bit test!)$$
+assert $_cache+26 ~ 0x(12,01) $$test_272: entry 2 group_size=0112 (274 bytes)$$
+// Check bank free space: 1548 - 274 = 1274 (0x04FA)
+assert $_cache+2044 ~ 0x(FA,04) $$test_272: bank 0 free space reduced (1548-274=1274)$$
+
+// =============================================================================
+// 16-BIT BANK OFFSET VERIFICATION COMPLETE
+// =============================================================================
+// Successfully verified that bank offset calculations work correctly for
+// offsets greater than 255 bytes. The critical test_272 insertion used
+// bank_offset 0x01F4 (500 decimal), which would have failed with the 
+// previous 8-bit arithmetic bug but now works correctly with 16-bit addition.
+//
+// Bank offset progression verified:
+// - test_240: 0x0000 (0 bytes)     ✓
+// - test_256: 0x00F2 (242 bytes)   ✓ 
+// - test_272: 0x01F4 (500 bytes)   ✓ ← 16-bit arithmetic success!
+//
+// This test ensures the fix for the bank_offset calculation bug is working
+// and prevents regression of the PageGroup corruption issue.
+// ============================================================================= 
