@@ -63,9 +63,6 @@ init_ok:
         
         ; Set up selection changed callback for updating timestamp/filesize display
         mwa     #mfp_update_selection_display, kb_selection_changed_cb
-        
-        ; Set up animation callback for scrolling long filenames
-        mwa     #mf_kb_cb, kb_cb_function
 
 file_loop:
         jsr     mfp_new_page
@@ -74,6 +71,10 @@ file_loop:
 
 page_ok:
         jsr     mfp_show_page
+
+        ; Set up animation callback for scrolling long filenames, we can do this once page loaded as we then have all the file names
+        mwa     #mf_kb_cb, kb_cb_function
+
         mva     mf_selected, kb_current_line
         jsr     mf_handle_input
 

@@ -25,9 +25,6 @@
 .proc mf_init
         jsr     _fuji_close_directory
 
-        ; set the initial kb callback function
-        mwa     #mf_kb_cb, kb_cb_function
-
         mwa     #$00, mf_dir_pos
         sta           mf_selected
         sta           mf_kbh_running
