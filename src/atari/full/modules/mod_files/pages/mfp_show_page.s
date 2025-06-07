@@ -30,6 +30,9 @@
         .import     mf_y_offset
         .import     mf_is_eod
         .import     mf_dir_or_file
+        .import     clear_status_2
+        .import     show_prev
+        .import     show_next
 
         .import     debug
 
@@ -90,6 +93,15 @@ mfp_show_page:
         ; How many entries are there in the group?
         mva     mfp_pg_buf+1, mfp_entries_in_group
 
+        ; Show navigation indicators at top of screen
+        jsr     clear_status_2
+        lda     mf_dir_pos
+        beq     :+
+        jsr     show_prev
+:       lda     mf_is_eod
+        bne     :+
+        jsr     show_next
+:
         ; set mfp_current_entry to start of the page group data
         mwa     #mfp_pg_buf+2, mfp_current_entry
 

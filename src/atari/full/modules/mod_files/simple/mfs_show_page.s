@@ -11,14 +11,14 @@
         .import     mf_dir_or_file
         .import     mf_dir_pg_cnt
         .import     mf_dir_pos
-        .import     mf_next
-        .import     mf_prev
         .import     mf_entries_cnt
         .import     mf_entry_index
         .import     mf_is_eod
         .import     mf_y_offset
         .import     pusha
-        .import     sline2
+        .import     clear_status_2
+        .import     show_prev
+        .import     show_next
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -78,46 +78,6 @@ skip_check_for_next_page:
         jsr     show_next
 
 :       jmp     _fuji_close_directory
-
-clear_status_2:
-        ; ONLY CLEAR 8 FROM EACH END
-        mwa     #sline2, ptr1
-        ldy     #8
-        lda     #FNC_FULL
-:       sta     (ptr1), y
-        dey
-        bpl     :-
-
-        adw1    ptr1, #SCR_WIDTH-9
-        ldy     #8
-        lda     #FNC_FULL
-:       sta     (ptr1), y
-        dey
-        bpl     :-
-
-        rts
-
-show_prev:
-        mwa     #sline2, ptr1
-        adw1    ptr1, #$01      ; 1 char into line
-        mwa     #mf_prev, ptr2
-        bne     put_mf_s        ; always, the high byte is never 0
-
-show_next:
-        mwa     #sline2, ptr1
-        adw1    ptr1, #(SCR_WIDTH - 8)          ; string is 8 chars, adjust for end of line
-        mwa     #mf_next, ptr2
-        ; fall through to print
-
-put_mf_s:
-        ldy     #$00
-:       lda     (ptr2), y
-        beq     :+              ; string terminator
-        jsr     ascii_to_code
-        sta     (ptr1), y
-        iny
-        bne     :-
-:       rts
 
 ; reads the next entry and compares to EOD marker
 read_dir_is_eod:
