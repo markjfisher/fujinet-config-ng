@@ -49,11 +49,11 @@ kb_global:
         ; setup the callback routine
         mwa     kb_cb_function, smc_cb
 
-        ; setup the delay for animation, 0-F, convert to 0-F to 0-1E (0-30), and subtract this from 115 so that always have at least 5 delay
-        lda     #115
+        ; setup the delay for animation, 0-F, and subtract this from 57 so that always have at least 3 delay, max 18
+        lda     #57
         sec
         sbc     _cng_prefs + CNG_PREFS_DATA::anim_delay
-        sbc     _cng_prefs + CNG_PREFS_DATA::anim_delay
+        ;sbc     _cng_prefs + CNG_PREFS_DATA::anim_delay
         sta     lower_anim_delay
 
         jmp     save_state
@@ -88,7 +88,7 @@ not_option:
         beq     start_kb_get
 
         lda     kb_idle_counter
-        cmp     #120                    ; have we had roughly 2 seconds for initial trigger, or reached re-trigger?
+        cmp     #60                    ; have we had roughly 1 seconds for initial trigger, or reached re-trigger?
         bcc     start_kb_get            ; not yet
 
         ; we hit max either for first time after key press, or after an animation frame, so run cb again
