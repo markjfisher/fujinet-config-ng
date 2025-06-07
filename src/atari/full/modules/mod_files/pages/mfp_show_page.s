@@ -214,7 +214,7 @@ done:
         rts
 
 show_size:
-        put_s   #29, #21, #mfp_filesize_cache
+        put_s   #28, #21, #mfp_filesize_cache
         rts
 
 .data
