@@ -8,6 +8,7 @@
         .export     mfp_timestamp_cache
         .export     mfp_filesize_cache
         .export     mfp_filename_cache
+        .export     mf_filename_lengths
 
         .import     _page_cache_get_pagegroup
         .import     ts_to_datestr
@@ -187,6 +188,10 @@ just_file:
         setax   ptr1
         jsr     _fc_strlen      ; up to 254 bytes allowed, or $ff for error which we will ignore for now
 
+        ; Store filename length for animation calculations
+        ldy     mf_entry_index
+        sta     mf_filename_lengths,y   ; store the actual length
+
         ; Total entry length = 8 (header) + filename length + 1 (nul)
         sec                             ; account for nul byte by adding 1 more through C
         adc     mfp_current_entry       ; Add low byte
@@ -240,6 +245,9 @@ mfp_entries_in_group:   .res 1
 mfp_ts_cache_ptr:       .res 2  ; points to next free timestamp slot
 mfp_size_cache_ptr:     .res 2  ; points to next free filesize slot
 mfp_fname_cache_ptr:    .res 2  ; points to next free filename pointer slot
+
+; Filename lengths - 1 byte per entry, actual filename length
+mf_filename_lengths:    .res 16 ; Max 16 entries per page
 
 ; this is where the cache copies the current pagegroup data to. just 1 pagegroup (i.e. screen's data for all files and their file sizes etc)
 ; NOTE: this can't be in BANK as the cache is copying out of cache which is in RAM BANK

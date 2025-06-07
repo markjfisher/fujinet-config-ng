@@ -20,6 +20,8 @@
         .import     mfp_timestamp_cache
         .import     mfp_filesize_cache
         .import     mf_dir_or_file
+        .import     mf_kb_cb_reset_anim
+        .import     mf_kb_cb
 
         .import     _bank_count
         .import     _get_pagegroup_params
@@ -61,6 +63,9 @@ init_ok:
         
         ; Set up selection changed callback for updating timestamp/filesize display
         mwa     #mfp_update_selection_display, kb_selection_changed_cb
+        
+        ; Set up animation callback for scrolling long filenames
+        mwa     #mf_kb_cb, kb_cb_function
 
 file_loop:
         jsr     mfp_new_page
@@ -95,6 +100,9 @@ exit_mfp:
 
 ; Callback function to update timestamp and filesize display when selection changes
 .proc mfp_update_selection_display
+        ; Reset filename scrolling animation
+        jsr     mf_kb_cb_reset_anim
+        
         ; Calculate offset into timestamp cache: mf_selected * 17
         lda     mf_selected
         asl     a               ; * 2
