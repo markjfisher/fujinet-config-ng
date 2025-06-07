@@ -14,7 +14,7 @@
         .import     mf_selected
         .import     pusha
         .import     pushax
-        .import     read_full_dir_name
+        .import     read_full_dir_name_cached
         .import     return0
         .import     return1
         .import     save_device_choice
@@ -99,7 +99,7 @@ too_long_error:
         ; ---------------------------------------------
 
         ; get the chosen dir into 255 byte temp buffer, and then check it will fit on the end of our current path, i.e. doesn't combined go over 254 (allowing for nul)
-        jsr     read_full_dir_name      ; AX holds buffer location of dir name string
+        jsr     read_full_dir_name_cached      ; AX holds buffer location of dir name string
         axinto  ptr1
         jsr     _fc_strlen
         sta     tmp2                    ; length of new directory/file chosen
