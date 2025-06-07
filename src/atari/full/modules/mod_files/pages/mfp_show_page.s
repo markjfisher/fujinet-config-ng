@@ -47,6 +47,8 @@
 
 mfp_show_page:
 
+        jsr     debug
+
         ; set the path_hash - TODO: move this to where it's not constantly called, and only when it changes
         mwa     #fn_dir_path, _set_path_flt_params+page_cache_set_path_filter_params::path
         mwa     #fn_dir_filter, _set_path_flt_params+page_cache_set_path_filter_params::filter
@@ -57,6 +59,8 @@ mfp_show_page:
 
         ; get the pagegroup
         jsr     _page_cache_get_pagegroup
+
+        jsr     debug
 
         ; now display it, the raw page group data is in mfp_pg_buf
         ; mfp_pg_buf points to cached data, which includes 2 bytes from header for:
@@ -85,8 +89,6 @@ mfp_show_page:
         mwa     #mfp_filename_cache, mfp_fname_cache_ptr
 
         mva     #$00, mf_entry_index
-
-        jsr     debug
 
         ; deal with the header bytes
         ; Are we at End of Directory?
@@ -210,7 +212,7 @@ done:
         ; inc     mf_entry_index
         mva     mf_entry_index, mf_entries_cnt
         ; print the time and size for first entry
-        put_s   #01, #21, #mfp_timestamp_cache
+        ; put_s   #01, #21, #mfp_timestamp_cache
 
         ; Check if first entry is a directory
         lda     mf_dir_or_file     ; first entry's flag

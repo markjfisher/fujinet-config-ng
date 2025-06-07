@@ -1,0 +1,272 @@
+Altirra> .help
+`    Bypass aliases
+~    Target control
+?    Evaluate expression
+a    Assemble
+a8   Set Atari800-compatible command aliases
+ac   Clear all command aliases
+al   List command aliases
+as   Set or unset command alias
+ap   Add command alias pattern
+ba   Break on memory access
+bc   Clear breakpoint(s)
+bl   List breakpoints
+bp   Set breakpoint
+bsc  Set breakpoint condition
+bt   Set PC breakpoint with trace (tracepoint)
+bta  Set access breakpoint with trace (tracepoint)
+bx   Break on expression (conditional breakpoint)
+bs   Break on disk sector
+c    Compare memory
+da   Display ATASCII string
+db   Display bytes
+dbi  Display bytes w/ INTERNAL dump
+dd   Display double words
+df   Display decimal float
+di   Display INTERNAL string
+dw   Display words
+dbx  Display bytes from expression
+dy   Display binary
+e, eb  Enter (alter) bytes in memory
+ew   Enter (alter) words in memory
+f    Fill memory
+fbx  Fill bytes with expression
+g    Go
+gcr  Go cycle relative
+gf   Go until frame end
+gr   Go until return (step out)
+gs   Go until scanline
+gt   Go with tracing enabled
+gv   Go until vertical blank interrupt (VBI)
+h    Show CPU history
+hma  Show heat map accesses
+hmc  Clear heat map
+hmd  Dump heat map memory status
+hme  Enable or disable heat map
+hmp  Preset heat map range
+hmr  Show heat map register status
+hmt  View/modify heat map trap options
+hmu  Unset heat map range
+ib   Input byte
+k    Show call stack
+lfd  Disable logging channel
+lfe  Enable logging channel
+lfl  List logging filter settings
+lft  Enable logging channel with tagging
+lm   List modules
+ln   List nearest symbol
+m    Move memory
+o    Step over
+r    Registers
+s    Search memory for bytes
+sa   Search memory for ATASCII text
+si   Search memory for INTERNAL text
+sw   Search memory for words
+st   Static trace
+stp  Static trace PBI
+t    Trace (step one instruction) (F11)
+u    Unassemble
+vta  Verifier target add
+vtc  Verifier target clear
+vtl  Verifier target list
+vtr  Verifier target reset
+wb   Watch byte
+wc   Watch clear
+wl   Watch list
+ww   Watch word
+wx   Watch expression
+x    Examine symbols
+ya   Add manual symbol
+yc   Clear manual symbols
+yd   Delete manual symbol
+yr   Read manual symbol table
+yw   Write manual symbol table
+.antic       Display ANTIC status
+.bank        Show memory bank state
+.base        Set numeric parsing base
+.basic       Dump BASIC table pointers
+.basic_dumpline  Dump BASIC program line
+.basic_dumpstack  Dump BASIC runtime stack
+.basic_rebuildvnt  Rebuild BASIC variable name table
+.basic_rebuildvvt  Rebuild BASIC variable value table
+.basic_save  Save BASIC program
+.basic_vars  Dump BASIC variables
+.batch       Run debugger batch script
+.beam        Show ANTIC scan position
+.ciodevs     Dump Central Input/Output (CIO) device list
+.covox       Dump Covox sound extension status
+.crc         Compute CRC of memory range
+.ctc         Dump Z8430 CTC status
+.diskdumpsec Dump floppy disk sector data
+.diskorder   Set forced phantom sector ordering
+.diskreadsec Read sector from floppy disk
+.disktrack   Show sector order within track
+.diskwritesec Write sector to floppy disk
+.dlhistory   Show ANTIC display list execution history
+.ds1305      Show DS1305 real-time clock status
+.dma         Show current ANTIC DMA pattern
+.dmabuf      Show ANTIC DMA line buffer
+.dmamap      Show ANTIC DMA activity map
+.dumpdlist   Dump ANTIC display list
+.dumpdsm     Dump disassembly to file
+.dumpsnap    Create bootable snapshot image
+.echo        Display message to console
+.fpaccel     Control floating-point math pack acceleration
+.gtia        Display GTIA status
+.ide         Display IDE emulator status
+.ide_dumpsec Dump IDE raw sector
+.ide_rdsec   Read IDE sector into memory
+.ide_wrsec   Write IDE sector from memory
+.iocb        Display CIO I/O control blocks
+.kmkjzide Display KMK/JZ IDE / IDEPlus 2.0 status
+.loadksym    Load kernel symbols
+.loadobj     Load executable object
+.loadstate   Load simulation state
+.loadsym     Load module symbols
+.logopen     Open log file
+.logclose    Close log file
+.map         Show memory map layers
+.netpcap     Begin packet trace from emulation network
+.netpcapclose  End packet trace from emulation network
+.netstat     Display network connection status
+.onexeclear  Clear queued on-executable commands
+.onexelist   List queued on-executable commands
+.onexeload   Queue command on executable load
+.onexerun    Queue command on executable run
+.pagesums    Display checksum map of memory pages
+.pathdump    Dump disassembly of recorded paths to a file
+.pathrecord  Show or change path recording setting
+.pathreset   Clear recorded paths
+.pathbreak   Toggle break on new path
+.pbi         Display Parallel Bus Interface (PBI) status
+.pclink      Display PCLink status
+.pia         Display Peripheral Interface Adapter (PIA) status 
+.pokey       Display POKEY status
+.printf      Display message with formatted fields
+.profile_beginframe   Trigger start of profiler frame
+.profile_endframe     Trigger end of profiler frame
+.rapidus     Display Rapidus status
+.readmem     Read memory from disk
+.reload      Reload symbol files
+.restart     Restart emulated system
+.riot        Dump 6532 RIOT status
+.savestate   Save simulation state
+.side3       Dump SIDE3 status
+.sdx_loadsyms  Load SpartaDOS X symbols
+.sio         Dump SIO device control block (DCB)
+.sourcemode  Switch between source and disassembly level debugging
+.sprintf     Construct message with formatted fields
+.sum         Compute sum of memory range
+.tape        Display cassette tape deck status
+.tapedata    Display cassette tape data
+.tracecio    Toggle CIO call tracing
+.traceser    Toggle POKEY serial I/O tracing
+.tracesio    Toggle SIO call tracing
+.ultimate    Dump Ultimate1MB status
+.unloadsym   Unload module symbols
+.vbxe        Display VBXE status
+.vbxe_bl     Display VBXE blit list (BL)
+.vbxe_pal    Display VBXE palette
+.vbxe_traceblits    Toggle VBXE blit tracing
+.vbxe_xdl    Display VBXE extended display list (XDL)
+.vbxe_xdlhistory    Display VBXE extended display list (XDL) history
+.vectors     Display kernel vectors
+.warmreset   Warm reset simulation
+.writemem    Write memory to disk
+
+Commands <xaddress> accept extended addresses:
+  $0000      CPU view of primary memory
+  $01:0000   CPU view, 65C816 high memory
+  $EF'4000   CPU view, extended memory ($4000 with PORTB=$EF)
+  n:$0000    ANTIC view of primary memory
+  v:$00000   VBXE memory
+  r:$0000    Main memory
+  rom:$0000  System ROM (OS, BASIC, self-test)
+  x:$00000   Extended memory
+  cart:$0000 Cartridge ROM, linear view
+  t:$01'A000 Cartridge memory, banked view (bank $01, address $A000)
+
+Some commands support length syntax:
+  db siov L100
+  db 4000 L>5FFF
+
+Commands taking <path> also accept ? to interactively select the file.
+
+Use .help <command> for detailed help on that command.
+
+==================================================================================
+Altirra> .help .writemem 
+.writemem    Write memory to disk
+
+  Write a block of memory to a file on disk.
+
+    .writemem <path> <xaddress> L<length>
+    
+  The address may use extended memory syntax, i.e. v:4000 for VBXE
+  memory.
+
+==================================================================================
+Altirra> .help st
+st   Static trace
+
+  Statically traces program execution and marks labels.
+  
+    st [-m] <baseaddr> [<restrictbase> L<restrictlength>]
+    
+  The st command examines program code and finds all static program traces
+  by following absolute JMP/JSR and relative branch instructions. The custom
+  symbol table is then populated with labels for each jump or branch target.
+
+  If -m is specified, a label is also added for the initial base address.
+
+  Static tracing is only capable of following traces by references that are
+  statically embedded within the code. Dynamic references through jump tables
+  or vectors cannot be seen by the static tracer.
+  
+  If restrictbase and restrictlength are specified, only traces within the
+  given restricted range are followed. This is useful for contraining tracing
+  to within a specific module and avoiding bogus tracing into other regions,
+  such as RAM where dynamic code is kept.
+
+==================================================================================
+Altirra> .help gt
+gt   Go with tracing enabled
+
+  Resume execution with per-instruction tracing enabled.
+  
+    gt
+    
+  During traced execution, the current beam location, PC, registers, and
+  instruction are logged.
+==================================================================================
+Altirra> .help .pathrecord
+.pathdump, .pathrecord, .pathreset, .pathbreak   Manage execution path recording
+
+  Record and dump instruction paths executed by the CPU.
+
+    .pathrecord [on|off] (Show or change path recording setting) 
+    .pathreset           (Clear recorded paths)
+    .pathdump <file>     (Dump path disassembly to a file)
+    .pathbreak [on|off]  (Show or change new path break setting)
+  
+  Path recording, when enabled, marks the addresses of branch targets
+  and subroutines during execution, making it easier to follow
+  execution flow in a disassembly and identifying which memory areas
+  are confirmed to contain code. When enabled, the diassembly will
+  also show pseudo-labels for any addresses not already marked with
+  a symbol.
+  
+  The .pathbreak command permits halting execution whenever a new
+  path is encountered. This is handy for identifying the exit path
+  in a large frame loop, as the body of the loop can be captured and
+  then .pathbreak enabled to capture the exit path
+==================================================================================
+
+
+
+# Examples
+.pathdump z:\home\markf\dev\atari\fujinet-config-ng\_cache\pathdump_page_cache_getgroup.txt
+.writemem z:\home\markf\dev\atari\fujinet-config-ng\_cache\b0_4000.bin $e3'4000 L0100
+
+
+

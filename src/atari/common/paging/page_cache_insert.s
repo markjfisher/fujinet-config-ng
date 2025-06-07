@@ -18,13 +18,16 @@
 .import     pushax
 .import     try_free_space
 
+.import     debug
+
 .include    "page_cache.inc"
 .include    "macros.inc"
 .include    "zp.inc"
 
-.segment "BANK"
+.segment "BSS"
 
 saved_dest:     .res    2       ; Storage for ptr2 during _memcpy call
+header_bytes:   .res    2       ; Storage for pagegroup header bytes (flags, num_entries)
 
 .segment "CODE2"
 
@@ -189,9 +192,9 @@ copy_loop:
         ; the copy from pagegroup data should be 2 bytes less as datasize includes 2 for the header bytes
         sbw     tmp1, #$02
 
-        ; copy the header bytes into tmp3/4 while we are in banked mode
+        ; copy the header bytes into header_bytes while we are in banked mode
         ; note this does 2 bytes
-        mwa     _insert_params+page_cache_insert_params::pg_flags, tmp3
+        mwa     _insert_params+page_cache_insert_params::pg_flags, header_bytes
 
         ; Switch to target bank for data copy
         ; this must be done at the last possible second, so we can continue to use all the _params data
@@ -204,14 +207,15 @@ copy_loop:
         jsr     _memcpy
 
         ; restore the destination+2 after memcpy
+        jsr     debug
         mwa     saved_dest, ptr2
 
-        ; copy tmp3/4 to the start of the bank, first reduce ptr2 by 2 to point to start of memory
+        ; copy header_bytes to the start of the bank, first reduce ptr2 by 2 to point to start of memory
         sbw     ptr2, #$02
         ldy     #$00
         ; copy 2 bytes
         nop
-        mway    tmp3, {(ptr2), y}
+        mway    header_bytes, {(ptr2), y}
 
         ; reset to default bank to allow access to _cache
         jsr     _set_default_bank
