@@ -19,7 +19,6 @@
         .export     mw_netmask
         .export     mw_ssid
         .export     mw_nets_msg
-        .export     mw_nets_msg2
 
         .include    "macros.inc"
 
@@ -282,7 +281,6 @@ mw_mac:         .byte "MAC:", 0
 mw_bssid:       .byte "BSSID:", 0
 
 mw_nets_msg:    .byte "Fetching Networks", 0
-mw_nets_msg2:   .byte "                 ", 0
 
 ; ------------------------------------------------------------------
 ; GLOBAL data

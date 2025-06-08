@@ -30,6 +30,7 @@
         .import     _page_cache_init
         .import     kb_selection_changed_cb
         .import     _put_s
+        .import     empty_help
 
         .include    "zp.inc"
         .include    "macros.inc"
@@ -158,7 +159,7 @@ skip_repaint:
         beq     show_size
 
         ; It's a directory, show spaces instead
-        put_s   #27, #21, #dir_spaces
+        put_s   #27, #21, #empty_help
         rts
 
 show_size:
@@ -182,10 +183,8 @@ show_size:
         put_s   #27, #21, ptr1
         rts
 
-.data
-dir_spaces:     .byte "          ",0     ; 10 spaces for directory entries
 
 .endproc
 
-.bss
+.segment "BANK"
 mf_prev_selected:       .res 1      ; Track previous selection for filename repaint

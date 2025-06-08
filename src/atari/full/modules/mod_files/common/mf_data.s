@@ -44,7 +44,8 @@ mf_ellipsize:   .res 32
 mf_ask_buff:    .res 64
 mf_sct_buff:    .res 6
 
-.bss
+.segment "BANK"
+
 ; the current directory position value while browsing of first entry on screen
 mf_dir_pos:     .res 2
 mf_dir_pg_cnt:  .res 1

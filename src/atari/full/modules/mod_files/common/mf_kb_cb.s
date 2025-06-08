@@ -133,7 +133,7 @@ mf_kb_cb_reset_anim:
         mva     #0, pause_counter
         rts
 
-.bss
+.segment "BANK"
 anim_index:     .res 1      ; Current starting position in filename
 anim_direction: .res 1      ; 0=moving right, 1=moving left  
 pause_counter:  .res 1      ; Pause cycles at boundaries before reversing

@@ -15,6 +15,7 @@
         .import     ts_output
         .import     size_to_str
         .import     size_output
+        .import     empty_help
 
         .import     pushax
         .import     _fc_strlen
@@ -231,15 +232,12 @@ done:
         beq     show_size
 
         ; It's a directory, show spaces instead
-        put_s   #29, #21, #dir_spaces
+        put_s   #27, #21, #empty_help
         rts
 
 show_size:
         put_s   #27, #21, #mfp_filesize_cache
         rts
-
-.data
-dir_spaces:     .byte "          ",0     ; 10 spaces for directory entries
 
 .bss
 mfp_current_entry:      .res 2

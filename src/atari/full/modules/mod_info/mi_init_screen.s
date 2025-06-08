@@ -1,6 +1,7 @@
         .export     _mi_init_screen
         .export     mi_set_pmg_widths
         .export     mi_show_help
+        .export     empty_help
 
         .import     _bank_count
         .import     _clr_help

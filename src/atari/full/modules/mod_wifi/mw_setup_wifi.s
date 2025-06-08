@@ -8,11 +8,11 @@
         .import     mw_custom_msg
         .import     mw_error_no_networks
         .import     mw_net_count
-        .import     mw_nets_msg2
         .import     pusha
         .import     put_s_p1p4
         .import     return0
         .import     return1
+        .import     empty_help
 
         .import     debug
 
@@ -41,7 +41,7 @@
         mva     #10, mw_net_count
 
 ok:
-        put_s   #10, #12, #mw_nets_msg2
+        put_s   #10, #12, #empty_help
         ; loop over all the networks, and display their names for now
         ; screen location for first entry in ptr4
         ldx     #4
