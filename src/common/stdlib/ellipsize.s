@@ -92,5 +92,5 @@
         rts
 .endproc
 
-.bss
+.segment "BANK"
 _ellipsize_params: .tag ellipsize_params

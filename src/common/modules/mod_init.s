@@ -82,5 +82,5 @@ set_wifi:
 
 .endproc
 
-.bss
+.segment "BANK"
 fc_connected:   .res 1

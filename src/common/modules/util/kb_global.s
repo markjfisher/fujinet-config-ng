@@ -282,7 +282,7 @@ smc_sel_target:
 smc_sel = *-2
 
 
-.bss
+.segment "BANK"
 kb_mod_current_line_p:  .res 2
 kb_current_line:        .res 1
 kb_mod_proc:            .res 2

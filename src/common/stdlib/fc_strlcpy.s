@@ -59,5 +59,5 @@ no_copy:
 
 .endproc
 
-.bss
+.segment "BANK"
 _fc_strlcpy_params: .tag fc_strlcpy_params

@@ -112,12 +112,11 @@ devices_help:
         rts
 .endproc
 
-.bss
+
+.segment "BANK"
 sds_pu_device_val:      .res 1
 sds_pu_mode_val:        .res 1
 
-
-.segment "BANK"
 ; temp buffer for select device string displays, 21 * 8 needed (168), see the sds_pu_devs or sds_pu_no_opt_devs 3rd elements (both 21 string length)
 sd_buffer:              .res 168
 

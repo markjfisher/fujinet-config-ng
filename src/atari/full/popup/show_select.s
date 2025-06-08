@@ -184,7 +184,8 @@ str_nul:
 .endproc
 
 
-.bss
+.segment "BANK"
+
 ; this has to be as big as the largest type of popup, as all types will be copied into it for processing.
 ss_pu_entry:    .res POPUP_MAX_SZ
 

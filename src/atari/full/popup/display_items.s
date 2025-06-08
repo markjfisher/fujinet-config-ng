@@ -138,5 +138,5 @@ not_number:
 
 .endproc
 
-.bss
+.segment "BANK"
 di_current_item:        .res 1

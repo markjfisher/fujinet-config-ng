@@ -569,11 +569,9 @@ display:
         jmp     main_loop
 
 
-; allocate 256 byte buffer in BANK segment
 .segment "BANK"
 _edit_string_buff: .res 256
 
-.bss
 _es_params:     .tag edit_string_params
 
 ; Local storage for values that need to persist across function calls

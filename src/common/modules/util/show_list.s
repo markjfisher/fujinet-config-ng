@@ -73,7 +73,7 @@ call_cb:
 
 .endproc
 
-.bss
+.segment "BANK"
 sl_index:    .res 1
 sl_size:     .res 1
 sl_callback: .res 2

@@ -204,5 +204,5 @@ done:
         sta     size_output+10  ; Always put null at position 10
         rts
 
-.bss
+.segment "BANK"
 size_output:    .res 21     ; 10 chars + terminator + 10 temp chars for reversing

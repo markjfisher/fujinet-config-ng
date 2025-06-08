@@ -380,7 +380,7 @@ on_edit:
         .addr (_just_rts - 1)   ; anim, do nothing
         .addr (_just_rts - 1)   ; date_format, do nothing
 
-.bss
+.segment "BANK"
 pref_copy:      .res 1
 char_count:     .res 1
 max_value:      .res 1

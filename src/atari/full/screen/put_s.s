@@ -56,5 +56,5 @@ _put_s_nl:
         ldx     put_s_store_x
         bne     _put_s_direct
 
-.bss
+.segment "BANK"
 put_s_store_x:  .res 1

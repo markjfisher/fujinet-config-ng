@@ -51,5 +51,5 @@ under_10:
         ; result is in itoa_args+ITOA_PARAMS::itoa_buf
 :       rts
 
-.bss
+.segment "BANK"
 itoa_args:      .tag ITOA_PARAMS

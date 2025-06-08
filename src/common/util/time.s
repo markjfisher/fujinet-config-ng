@@ -258,5 +258,5 @@ is_19xx:
     sta     itoa_args+ITOA_PARAMS::itoa_buf+1   ; Restore '9' to position 1
     rts
 
-.bss
+.segment "BANK"
 ts_output:      .res 17     ; "dd/mm/yyyy hh:mm" with nul at end

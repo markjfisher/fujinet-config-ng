@@ -1,5 +1,4 @@
         .export     display_option
-        .export     dopt_reduce_next_space
 
         .import     ss_pu_entry
         .import     left_border
@@ -164,5 +163,5 @@ over1:
         rts
 .endproc
 
-.bss
+.segment "BANK"
 dopt_reduce_next_space:   .res 1

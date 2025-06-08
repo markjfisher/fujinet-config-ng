@@ -27,5 +27,5 @@ restore_system_dli:
         mwa     dli_old_vector, VDSLST      ; restore old vector
         rts
 
-.bss
+.segment "BANK"
 dli_old_vector:     .res 2

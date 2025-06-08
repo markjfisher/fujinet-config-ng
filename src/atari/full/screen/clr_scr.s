@@ -140,7 +140,7 @@ x_inv_spaces:
         bne     :-
         rts
 
-.bss
+.segment "BANK"
 ; allow up to 5 separators
 screen_separators:      .res 5
 

@@ -12,7 +12,7 @@
         .include    "modules.inc"
         .include    "popup.inc"
 
-.bss
+.segment "BANK"
 booting_mode:           .res 1
 mx_ask_lobby_val:       .res 1
 

@@ -67,5 +67,5 @@ no_dev_add:
 
 .endproc
 
-.bss
+.segment "BANK"
 sdc_args:       .tag SaveDeviceChoiceArgs

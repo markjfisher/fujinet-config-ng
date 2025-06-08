@@ -182,7 +182,8 @@ _display_string_in_viewport:
 
         rts
 
-.bss
+.segment "BANK"
+
 start_pos:       .res 2  ; 16-bit start position for viewport
 half_viewport:   .res 1  ; 8-bit half of viewport width
 char_index:      .res 2  ; 16-bit character index
