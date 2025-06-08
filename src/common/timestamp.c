@@ -11,7 +11,7 @@ static void uint8_to_str(char* dest, uint8_t num) {
 // Convert packed timestamp to formatted date string
 // timestamp: 4 bytes containing packed date/time data
 // output: buffer to store the resulting string (should be at least 11 bytes)
-// mfp_date_format: 0 for dd/mm/yyyy, 1 for mm/dd/yyyy
+// mfp_date_format: 0 for dd/mm/yyyy, 1 for mm/dd/yyyy, 2 for yyyy/mm/dd
 void timestamp_to_datestr(const uint8_t* timestamp, char* output, uint8_t mfp_date_format) {
     char temp[5];  // Temporary buffer for number conversion
 
@@ -30,23 +30,45 @@ void timestamp_to_datestr(const uint8_t* timestamp, char* output, uint8_t mfp_da
         strcat(output, "/");
         uint8_to_str(temp, month);
         strcat(output, temp);
-    } else {
+        strcat(output, "/");
+        // Add year
+        temp[0] = '0' + (year / 1000);
+        temp[1] = '0' + ((year / 100) % 10);
+        temp[2] = '0' + ((year / 10) % 10);
+        temp[3] = '0' + (year % 10);
+        temp[4] = '\0';
+        strcat(output, temp);
+    } else if (mfp_date_format == 1) {
         // mm/dd/yyyy format
         uint8_to_str(temp, month);
         strcpy(output, temp);
         strcat(output, "/");
         uint8_to_str(temp, day);
         strcat(output, temp);
+        strcat(output, "/");
+        // Add year
+        temp[0] = '0' + (year / 1000);
+        temp[1] = '0' + ((year / 100) % 10);
+        temp[2] = '0' + ((year / 10) % 10);
+        temp[3] = '0' + (year % 10);
+        temp[4] = '\0';
+        strcat(output, temp);
+    } else {
+        // yyyy/mm/dd format (mfp_date_format == 2)
+        // Add year first
+        temp[0] = '0' + (year / 1000);
+        temp[1] = '0' + ((year / 100) % 10);
+        temp[2] = '0' + ((year / 10) % 10);
+        temp[3] = '0' + (year % 10);
+        temp[4] = '\0';
+        strcpy(output, temp);
+        strcat(output, "/");
+        uint8_to_str(temp, month);
+        strcat(output, temp);
+        strcat(output, "/");
+        uint8_to_str(temp, day);
+        strcat(output, temp);
     }
-
-    // Add year
-    strcat(output, "/");
-    temp[0] = '0' + (year / 1000);
-    temp[1] = '0' + ((year / 100) % 10);
-    temp[2] = '0' + ((year / 10) % 10);
-    temp[3] = '0' + (year % 10);
-    temp[4] = '\0';
-    strcat(output, temp);
 }
 
 // Convert packed timestamp to time string in HH:MM format
