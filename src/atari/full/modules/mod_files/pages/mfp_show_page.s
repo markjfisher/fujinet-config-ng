@@ -126,7 +126,7 @@ loop_entries:
         pushax  #ts_output      ; source
         lda     #17            ; length including null
         jsr     _fc_strncpy
-        
+
         ; Advance timestamp cache pointer by 17 (16 chars + null)
         adw     mfp_ts_cache_ptr, #17
 
@@ -182,7 +182,7 @@ loop_entries:
 
 just_file:
         ; ellipsize the name in ptr1
-        
+
 
         put_s   #$01, mf_entry_index, ptr1, mf_y_offset
 

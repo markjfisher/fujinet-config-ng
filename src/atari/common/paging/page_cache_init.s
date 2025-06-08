@@ -22,7 +22,7 @@
         lda     _cache+page_cache::bank_size
         ora     _cache+page_cache::bank_size+1
         bne     bank_size_set           ; Skip if already initialized
-        
+
         ; Set default bank size
         lda     #<BANK_SIZE_DEFAULT
         sta     _cache+page_cache::bank_size

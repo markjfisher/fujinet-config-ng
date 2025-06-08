@@ -120,18 +120,18 @@ reverse_loop:
 
         ; Y now contains the number of digits
         sty     tmp4            ; Save digit count
-        
+
         ; Insert commas every 3 digits from the right
         lda     tmp4            ; Get number of digits
         sec
         sbc     #3              ; Start with first comma position
         sta     tmp1            ; Save insert position
-        
+
 comma_loop:
         lda     tmp1
         beq     justify         ; If at start, handle justification
         bmi     justify         ; Or if negative
-        
+
         ; Need to insert comma at position tmp1
         ; First shift everything right starting at insert position
         ldx     tmp4            ; Get current length
@@ -141,11 +141,11 @@ shift_loop:
         dex
         cpx     tmp1            ; Until we reach insert position
         bne     shift_loop
-        
+
         ; Insert the comma
         lda     #','
         sta     size_output,x
-        
+
         ; Update counters
         inc     tmp4            ; String is one longer
         lda     tmp1            ; Move insert position left 3
@@ -176,14 +176,14 @@ justify:
         adc     #0
         tax                     ; High byte in X
         pla                     ; Low byte back in A
-        
+
         ; Push destination address
         jsr     pushax
-        
+
         ; Push source address
         setax   #size_output
         jsr     pushax
-        
+
         ; Set size directly in A/X
         lda     tmp4            ; Length of string
         ldx     #0             ; High byte is 0 as string is < 256 bytes

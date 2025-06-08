@@ -161,7 +161,7 @@ copy_to_cache:
         beq     exit_error      ; exit if there were none
 
         sta     num_pgs         ; save the count of page groups in this block
-        
+
         ; Add Y to ptr1 to point to start of first pagegroup
         tya
         sec     ; adding 1 more as we are still pointing to num_pgs, but want to skip over that byte

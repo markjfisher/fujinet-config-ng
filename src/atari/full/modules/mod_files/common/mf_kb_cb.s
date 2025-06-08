@@ -24,11 +24,11 @@ mf_kb_cb:
         ; Get pre-calculated filename length
         ldx     mf_selected
         lda     mf_filename_lengths,x
-        
+
         ; Check if animation is needed (length > screen width)
         cmp     #SCR_WID_NB-2       ; -2 for space + border on right side
         bcs     need_animation      ; animation needed, save more and continue
-        
+
         ; No animation needed - restore minimal registers and exit
         pla
         tax
@@ -40,7 +40,7 @@ need_animation:
         sta     filename_len        ; save filename length
         tya
         pha
-        
+
         ; Save zero page variables we'll use
         mwa     ptr1, saved_ptr1
         mwa     tmp9, saved_tmp9
@@ -66,12 +66,12 @@ need_animation:
         ; Update animation index
         lda     anim_direction
         beq     move_right
-        
+
 move_left:
         ; Moving left (decreasing index)
         lda     anim_index
         bne     continue_left       ; Not at left boundary yet
-        
+
         ; At left boundary - pause then reverse to right
         lda     #0                  ; new direction = right
         beq     handle_boundary_pause
@@ -89,11 +89,11 @@ move_right:
         sbc     #SCR_WID_NB-2       ; filename_len - display_width (space + border on right)
         cmp     anim_index
         bne     continue_right      ; Not at right boundary yet
-        
+
         ; At right boundary - pause then reverse to left  
         lda     #1                  ; new direction = left
         bne     handle_boundary_pause
-        
+
 continue_right:
         inc     anim_index
         bne     done                ; will always branch
@@ -117,7 +117,7 @@ done:
         ; Restore zero page variables
         mwa     saved_ptr1, ptr1
         mwa     saved_tmp9, tmp9
-        
+
         ; Restore registers
         pla
         tay

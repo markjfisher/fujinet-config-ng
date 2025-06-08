@@ -11,10 +11,10 @@
         ; Choose between simple and paging version based on available banked RAM
         lda     _bank_count
         beq     use_simple      ; No banks available - use simple version
-        
+
         ; Banks available - use paging version with cache
         jmp     mfp_main
-        
+
 use_simple:
         ; No banked RAM - use simple version
         jmp     mfs_main

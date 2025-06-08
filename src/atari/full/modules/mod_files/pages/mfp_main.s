@@ -62,7 +62,7 @@ init_ok:
         lda     #$00
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::fetching_cb+1
-        
+
         ; Set up selection changed callback for updating timestamp/filesize display
         mwa     #mfp_update_selection_display, kb_selection_changed_cb
 
@@ -111,18 +111,18 @@ exit_mfp:
         lda     mf_selected
         cmp     mf_prev_selected
         beq     skip_repaint    ; Same selection, no need to repaint
-        
+
         ; Repaint previous filename from beginning
         ldx     mf_prev_selected
         cpx     #$ff            ; Check if previous selection is valid
         beq     skip_repaint    ; Invalid previous selection
-        
+
         ; Get pointer to previous filename from cache
         txa
         asl                     ; multiply by 2 for pointer array
         tay
         mywa    {mfp_filename_cache, y}, ptr1
-        
+
         ; Repaint previous filename at original position
         put_s   #$01, mf_prev_selected, ptr1, mf_y_offset
 
@@ -133,7 +133,7 @@ skip_repaint:
 
         ; Reset filename scrolling animation
         jsr     mf_kb_cb_reset_anim
-        
+
         ; Calculate offset into timestamp cache: mf_selected * 17
         lda     mf_selected
         asl     a               ; * 2
@@ -148,7 +148,7 @@ skip_repaint:
         lda     #>mfp_timestamp_cache
         adc     #0              ; add carry
         sta     ptr1+1
-        
+
         ; Print timestamp at position (1, 21)
         put_s   #01, #21, ptr1
 
@@ -177,7 +177,7 @@ show_size:
         lda     #>mfp_filesize_cache
         adc     #0              ; add carry
         sta     ptr1+1
-        
+
         ; Print filesize at position (27, 21)
         put_s   #27, #21, ptr1
         rts

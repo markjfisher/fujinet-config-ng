@@ -62,7 +62,7 @@
 
         ; -----------------------------------------------------
         ; Check cache first - only call FujiNet if we need new data
-        
+
         ; Set up path hash for cache lookup
         mwa     #fn_dir_path, _set_path_flt_params+page_cache_set_path_filter_params::path
         mwa     #fn_dir_filter, _set_path_flt_params+page_cache_set_path_filter_params::filter

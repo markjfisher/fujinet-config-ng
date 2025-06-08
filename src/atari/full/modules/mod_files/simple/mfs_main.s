@@ -53,7 +53,7 @@ exit_mfs:
         lda     #$00
         sta     kb_cb_function
         sta     kb_cb_function+1
-        
+
         ; Clear selection changed callback
         sta     kb_selection_changed_cb
         sta     kb_selection_changed_cb+1

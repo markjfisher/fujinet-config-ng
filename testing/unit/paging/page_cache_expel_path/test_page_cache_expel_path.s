@@ -49,7 +49,7 @@ _main:
 t1:     ; Test 1: Empty cache (entry_count = 0)
         ; Should not call remove_path at all
         jsr     reset_mock_state
-        
+
         ; Set entry_count to 0
         lda     #0
         sta     _cache+page_cache::entry_count
@@ -59,14 +59,14 @@ t1:     ; Test 1: Empty cache (entry_count = 0)
         sta     _find_bank_params+page_cache_find_bank_params::path_hash
         lda     #$34
         sta     _find_bank_params+page_cache_find_bank_params::path_hash+1
-        
+
         jsr     _page_cache_expel_path
 t1_end:
 
 t2:     ; Test 2: Cache with entries but none match path hash
         ; Should call remove_path with first entry's hash ($1234)
         jsr     reset_mock_state
-        
+
         ; Set entry_count back to 2
         lda     #2
         sta     _cache+page_cache::entry_count
@@ -76,21 +76,21 @@ t2:     ; Test 2: Cache with entries but none match path hash
         sta     _find_bank_params+page_cache_find_bank_params::path_hash
         lda     #$BC
         sta     _find_bank_params+page_cache_find_bank_params::path_hash+1
-        
+
         jsr     _page_cache_expel_path
 t2_end:
 
 t3:     ; Test 3: Cache with matching entry
         ; Should call remove_path with second entry's hash ($5678)
         jsr     reset_mock_state
-        
+
         ; Entry count is already 2
         ; Set up path hash to expel (matches first entry)
         lda     #$12
         sta     _find_bank_params+page_cache_find_bank_params::path_hash
         lda     #$34
         sta     _find_bank_params+page_cache_find_bank_params::path_hash+1
-        
+
         jsr     _page_cache_expel_path
 t3_end:
 

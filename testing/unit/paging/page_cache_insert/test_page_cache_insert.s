@@ -38,7 +38,7 @@
         lda     #$00            ; Low byte of bank size
         ldx     #$01            ; High byte of bank size ($0100 = 256 bytes)
         jsr     _page_cache_set_bank_size
-        
+
         ; Initialize cache with 2 banks for testing
         lda     #$02
         jsr     _page_cache_init
@@ -67,7 +67,7 @@
         ; Since bank_size = $100 (256), we can use current_bank as high byte offset
         lda     current_bank
         beq     default_bank    ; If current_bank = 0, use base address
-        
+
         ; Calculate: mock_bank_data + (current_bank * 256)
         ; current_bank * 256 means current_bank becomes the high byte offset
         ldx     #>mock_bank_data    ; High byte base  
@@ -77,7 +77,7 @@
         tax                         ; Put result back in X (high byte)
         lda     #<mock_bank_data    ; Low byte unchanged
         rts
-        
+
 default_bank:
         ; Return base mock_bank_data address
         lda     #<mock_bank_data
@@ -106,7 +106,7 @@ t1:     ; Test 1: Insert into empty cache
         sta     _insert_params+page_cache_insert_params::pg_flags
         lda     #$01
         sta     _insert_params+page_cache_insert_params::pg_entry_cnt
-        
+
         jsr     _page_cache_insert
 t1_end:
 
@@ -127,7 +127,7 @@ t2:     ; Test 2: Insert entry that should go in middle (hash 2000 < 5678)
         sta     _insert_params+page_cache_insert_params::pg_flags
         lda     #$02
         sta     _insert_params+page_cache_insert_params::pg_entry_cnt
-        
+
         jsr     _page_cache_insert
 t2_end:
 
@@ -148,7 +148,7 @@ t3:     ; Test 3: Insert entry at end (hash 5678 > previous entries)
         sta     _insert_params+page_cache_insert_params::pg_flags
         lda     #$03
         sta     _insert_params+page_cache_insert_params::pg_entry_cnt
-        
+
         jsr     _page_cache_insert
 t3_end:
 
@@ -169,7 +169,7 @@ t4:     ; Test 4: Try to insert duplicate entry (should fail)
         sta     _insert_params+page_cache_insert_params::pg_flags
         lda     #$01
         sta     _insert_params+page_cache_insert_params::pg_entry_cnt
-        
+
         jsr     _page_cache_insert
 t4_end:
 
@@ -190,7 +190,7 @@ t5:     ; Test 5: Insert entry with different group_id for existing hash
         sta     _insert_params+page_cache_insert_params::pg_flags
         lda     #$02
         sta     _insert_params+page_cache_insert_params::pg_entry_cnt
-        
+
         jsr     _page_cache_insert
 t5_end:
 
@@ -211,7 +211,7 @@ t6:     ; Test 6: Insert another entry to test sorting
         sta     _insert_params+page_cache_insert_params::pg_flags
         lda     #$03
         sta     _insert_params+page_cache_insert_params::pg_entry_cnt
-        
+
         jsr     _page_cache_insert
 t6_end:
 

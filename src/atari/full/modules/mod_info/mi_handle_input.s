@@ -30,10 +30,10 @@
         mwa     #mi_kbh, kb_mod_proc
 
         jsr     kb_global      ; rts from this will drop out of module
-        
+
         ; Clear the selection callback when leaving this module
         mwa     #$0000, kb_selection_changed_cb
-        
+
         rts
 .endproc
 

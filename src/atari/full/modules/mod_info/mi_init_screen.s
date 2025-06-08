@@ -86,7 +86,7 @@ mi_show_help:
         lda     kb_current_line
         cmp     #8                      ; check bounds (0-7 for 8 preferences)
         bcs     clear_help              ; clear if out of bounds
-        
+
         ; Use lookup table to get help text address
         asl     a                       ; multiply by 2 for word addresses
         tay
@@ -94,7 +94,7 @@ mi_show_help:
         sta     ptr1
         lda     help_text_table+1,y
         sta     ptr1+1
-        
+
         ; Display help text
         put_s   #1, #19, ptr1
         rts

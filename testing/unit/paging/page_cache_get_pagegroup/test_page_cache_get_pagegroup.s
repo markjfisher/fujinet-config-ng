@@ -139,10 +139,10 @@ t1:     ; Test 1: Error on non-page-aligned position
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position+1
         lda     #16
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        
+
         ; Set data pointer
         mwa     #test_buffer, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
-        
+
         jsr     _page_cache_get_pagegroup
 t1_end:
 
@@ -153,16 +153,16 @@ t2:     ; Test 2: Get existing pagegroup from cache
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position+1
         lda     #16
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        
+
         ; Set path hash to match first cache entry
         lda     #$12
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash
         lda     #$34
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash+1
-        
+
         ; Set data pointer
         mwa     #test_buffer, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
-        
+
         jsr     _page_cache_get_pagegroup
 t2_end:
 
@@ -174,16 +174,16 @@ t3:     ; Test 3: Get pagegroup from fujinet
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position+1
         lda     #16
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        
+
         ; Set path hash to non-existent entry
         lda     #$9A
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash
         lda     #$BC
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash+1
-        
+
         ; Set data pointer
         mwa     #test_buffer, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
-        
+
         jsr     _page_cache_get_pagegroup
 t3_end:
 
@@ -195,16 +195,16 @@ t4:     ; Test 4: Get second pagegroup from fujinet for 9ABC
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position+1
         lda     #16
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        
+
         ; Set path hash to same 9ABC entry
         lda     #$9A
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash
         lda     #$BC
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash+1
-        
+
         ; Set data pointer
         mwa     #test_buffer, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
-        
+
         jsr     _page_cache_get_pagegroup
 t4_end:
 
@@ -216,16 +216,16 @@ t5:     ; Test 5: Error on invalid fujinet data
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position+1
         lda     #16
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        
+
         ; Set path hash to non-existent entry
         lda     #$CD
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash
         lda     #$EF
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash+1
-        
+
         ; Set data pointer
         mwa     #test_buffer, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
-        
+
         jsr     _page_cache_get_pagegroup
 t5_end:
 
@@ -238,16 +238,16 @@ t6:     ; Test 6: Error when fujinet returns groups that don't include requested
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position+1
         lda     #16
         sta     _get_pagegroup_params+page_cache_get_pagegroup_params::page_size
-        
+
         ; Use hash 1234 which will return groups 0,1 (but we're requesting group 5)
         lda     #$12
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash
         lda     #$34
         sta     _set_path_flt_params+page_cache_set_path_filter_params::path_hash+1
-        
+
         ; Set data pointer
         mwa     #test_buffer, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
-        
+
         jsr     _page_cache_get_pagegroup
 t6_end:
 
