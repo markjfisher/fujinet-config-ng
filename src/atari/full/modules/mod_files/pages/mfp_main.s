@@ -19,9 +19,11 @@
         .import     mfp_show_page
         .import     mfp_timestamp_cache
         .import     mfp_filesize_cache
+        .import     mfp_filename_cache
         .import     mf_dir_or_file
         .import     mf_kb_cb_reset_anim
         .import     mf_kb_cb
+        .import     mf_y_offset
 
         .import     _bank_count
         .import     _get_pagegroup_params
@@ -72,6 +74,10 @@ file_loop:
 page_ok:
         jsr     mfp_show_page
 
+        ; Initialize previous selection tracker to invalid value for new page
+        lda     #$ff
+        sta     mf_prev_selected
+
         ; Set up animation callback for scrolling long filenames, we can do this once page loaded as we then have all the file names
         mwa     #mf_kb_cb, kb_cb_function
 
@@ -101,6 +107,30 @@ exit_mfp:
 
 ; Callback function to update timestamp and filesize display when selection changes
 .proc mfp_update_selection_display
+        ; Check if we need to repaint previous filename (from animation state)
+        lda     mf_selected
+        cmp     mf_prev_selected
+        beq     skip_repaint    ; Same selection, no need to repaint
+        
+        ; Repaint previous filename from beginning
+        ldx     mf_prev_selected
+        cpx     #$ff            ; Check if previous selection is valid
+        beq     skip_repaint    ; Invalid previous selection
+        
+        ; Get pointer to previous filename from cache
+        txa
+        asl                     ; multiply by 2 for pointer array
+        tay
+        mywa    {mfp_filename_cache, y}, ptr1
+        
+        ; Repaint previous filename at original position
+        put_s   #$01, mf_prev_selected, ptr1, mf_y_offset
+
+skip_repaint:
+        ; Update previous selection tracker
+        lda     mf_selected
+        sta     mf_prev_selected
+
         ; Reset filename scrolling animation
         jsr     mf_kb_cb_reset_anim
         
@@ -156,3 +186,6 @@ show_size:
 dir_spaces:     .byte "          ",0     ; 10 spaces for directory entries
 
 .endproc
+
+.bss
+mf_prev_selected:       .res 1      ; Track previous selection for filename repaint
