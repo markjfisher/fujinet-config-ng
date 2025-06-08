@@ -10,30 +10,21 @@
 
 ; converts the 4 bytes from the pagegroup packed timestamp data
 ; to a date/time string
-; input is A/X point to 4 byte location
+; input is A/X point to 4 byte location, Y = format (0=dd/mm/yyyy, 1=mm/dd/yyyy, 2=yyyy/mm/dd)
 
 ; Format:
 ;  - Byte 0: Years since 1970 (0-255)
-;  - Byte 1: FFFF MMMM (4 bits format flags, 4 bits month 1-12)
-;           Format: 0=dd/mm/yyyy, 1=mm/dd/yyyy, 2=yyyy/mm/dd
+;  - Byte 1: FFFF MMMM (Flags: bit 7=directory, bits 6-4=reserved, 4 bits month 1-12)
 ;  - Byte 2: DDDDD HHH (5 bits day 1-31, 3 high bits of hour)
 ;  - Byte 3: HH mmmmmm (2 low bits hour 0-23, 6 bits minute 0-59)
 
 ; uses ptr3, tmp1, tmp2
 ts_to_datestr:
     axinto  ptr3
+    sty     tmp2        ; Store format parameter (0=dd/mm/yyyy, 1=mm/dd/yyyy, 2=yyyy/mm/dd)
 
     ; print leading 0s for all routines
     mva     #$01, itoa_args+ITOA_PARAMS::itoa_show0
-
-    ; Extract format from high 4 bits of byte 1
-    ldy     #$01
-    lda     (ptr3), y
-    lsr     a
-    lsr     a
-    lsr     a
-    lsr     a
-    sta     tmp2        ; Store format (0=dd/mm/yyyy, 1=mm/dd/yyyy, 2=yyyy/mm/dd)
 
     ; Check format and branch to appropriate handler
     lda     tmp2

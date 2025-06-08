@@ -35,12 +35,15 @@
         .import     show_prev
         .import     show_next
 
+        .import     _cng_prefs
+
         .import     debug
 
         .include    "zp.inc"
         .include    "macros.inc"
         .include    "page_cache.inc"
         .include    "fn_data.inc"
+        .include    "cng_prefs.inc"
 
 .segment "CODE2"
 
@@ -113,6 +116,8 @@ loop_entries:
         stx     ptr1+1
 
         ; Get timestamp string - ptr1 already points to the 4 timestamp bytes
+        ; Pass user's date format preference in Y register (0=dd/mm/yyyy, 1=mm/dd/yyyy, 2=yyyy/mm/dd)
+        ldy     _cng_prefs + CNG_PREFS_DATA::date_format
         jsr     ts_to_datestr  ; Result will be in ts_output
 
         ; Cache the timestamp string using ptr2 and _fc_strncpy

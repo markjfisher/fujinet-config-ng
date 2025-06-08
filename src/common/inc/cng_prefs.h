@@ -13,6 +13,7 @@ typedef struct
     uint8_t bar_disconn;
     uint8_t bar_copy;
     uint8_t anim_delay;
+    uint8_t date_format;
 } CNG_PREFS_DATA;
 
 extern CNG_PREFS_DATA cng_prefs;

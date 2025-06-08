@@ -21,7 +21,8 @@ void write_defaults() {
 	cng_prefs.bar_conn = 0xb4;
 	cng_prefs.bar_disconn = 0x33;
 	cng_prefs.bar_copy = 0x66;
-	cng_prefs.anim_delay = 0x09;
+	cng_prefs.anim_delay = 0x04;
+	cng_prefs.date_format = 0x00;
 	write_prefs();
 }
 
@@ -33,14 +34,15 @@ void upgrade(uint8_t from) {
 		break;
 
 	case 1:
-		// v1 had everything before anim_delay, write same values we have from loaded data but with anim_delay set to default 9
+		// v1 had everything before anim_delay, write same values we have from loaded data but with anim_delay set to default 4
 
 		// copy v1 data into structure, it will be short by 1 byte
 		// NOTE: if we update even further, we will need to add the new fields here for v3 extras etc.
 		memcpy(&cng_prefs, keys_buffer, 7);
 		// do updates
 		cng_prefs.version = 2; 			// set new version (UPDATE THIS TO LATEST VERSION)
-		cng_prefs.anim_delay = 0x09;	// v2 additional data
+		cng_prefs.anim_delay = 0x04;	// v2 additional data
+		cng_prefs.date_format = 0;      // v2 additional data, dd/mm/yyyy format
 		// v3 extra here, etc...
 
 		// finally write the keys

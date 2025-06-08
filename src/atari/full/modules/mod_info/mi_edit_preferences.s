@@ -36,12 +36,17 @@
         ; keep a copy of the real value so we can revert if user presses ESC
         jsr     copy_pref_to_temp
 
-        ; find number of chars to display for current selection, store in char_count
-        ; x is currently mi_selected + 1 (i.e. 1 based index into char count table) so reduce address by 1 to compensate
-        lda     mi_prefs_char_count-1, x
-        sta     char_count      ; keep track of the chars count
+        mva     #$00, char_count
+        ; Get max value for this preference, which also determines display format
+        ; x is currently mi_selected + 1, so reduce address by 1 to compensate
+        lda     mi_prefs_max_values-1, x
+        sta     max_value       ; store max value for bounds checking
+        ; If max value < $10, it's a single digit display
+        cmp     #$10
+        bcc     :+
+        inc     char_count
 
-        mva     #$00, tmp2      ; invert the values
+:       mva     #$00, tmp2      ; invert the values
         jsr     display_pref
         jsr     edit_start
 
@@ -76,18 +81,26 @@ some_input:
         bne     not_down
 
 is_down:
-        ; if this is colour/shade, we wrap 0 to F, otherwise wrap to FF
-        ; char_count is 0 for first case, 1 otherwise
+        ; Check if value would wrap below 0
         ldx     pref_copy
-        dex                     ; reduce by 1
-        lda     char_count
-        bne     :+              ; don't need to worry about full byte wrap
-        cpx     #$ff
-        bne     :+
-        ldx     #$0f            ; we wrapped to $ff, but should be $0f
 
-:
+        ; Get max value for this preference
+        ldy     mi_selected
+        lda     mi_prefs_max_values,y
+        sta     max_value
+
+        ; Decrement and check for underflow
+        txa
+        sec
+        sbc     #1             ; Try to decrement
+        bcc     wrap_max       ; If carry clear, we underflowed
+        tax                    ; Save decremented value
+        jmp     do_update      ; Use new value
+
+wrap_max:
+        ldx     max_value      ; Wrap to max value
         bne     do_update
+
 not_down:
 
 ; --------------------------------------------------------------------
@@ -99,19 +112,27 @@ not_down:
         bne     not_up
 
 is_up:
-        ; if this is colour/shade, we wrap 0 to F, otherwise wrap to FF
-        ; char_count is 0 for first case, 1 otherwise
+        ; Check if value would exceed max
         ldx     pref_copy
-        inx                     ; reduce by 1
-        lda     char_count
-        bne     :+              ; don't need to worry about full byte wrap
-        cpx     #$10
-        bne     :+
-        ldx     #$00            ; we wrapped to $10, but should be $00
 
-:
-        ; jmp     do_update
+        ; Get max value for this preference
+        ldy     mi_selected
+        lda     mi_prefs_max_values,y
+        sta     max_value
 
+        ; Increment and check for overflow
+        txa
+        clc
+        adc     #1             ; Try to increment
+        bcs     wrap_zero      ; If carry set, we overflowed
+        tax                    ; Save incremented value
+        cpx     max_value      ; Compare against max
+        bcc     do_update
+        beq     do_update
+
+wrap_zero:
+        ldx     #$00           ; Wrap to 0
+        ; fall through
 
 ; common code to the UP/DOWN options
 do_update:
@@ -324,9 +345,20 @@ skip_invert:
 
 .rodata
 
-; the lengths of each option shown - 1
-mi_prefs_char_count:
-        .byte 0, 0, 0, 1, 1, 1, 0
+; Maximum values for each preference
+; Values < $10 are treated as single-digit values (0-F)
+; Value of $02 for date_format (0-2)
+; Value of $0F for color/brightness/shade/anim_delay (0-F)
+; Value of $FF for bar colors (00-FF)
+mi_prefs_max_values:
+        .byte $0F             ; colour (0-F)
+        .byte $0F             ; brightness (0-F)
+        .byte $0F             ; shade (0-F)
+        .byte $FF             ; bar_conn (00-FF)
+        .byte $FF             ; bar_disconn (00-FF)
+        .byte $FF             ; bar_copy (00-FF)
+        .byte $0F             ; anim_delay (0-F)
+        .byte $02             ; date_format (0-2)
 
 update_table:
         .addr (update_colour - 1)
@@ -335,6 +367,7 @@ update_table:
         .addr (update_bar - 1)
         .addr (update_bar - 1)
         .addr (update_bar - 1)
+        .addr (_just_rts - 1)
         .addr (_just_rts - 1)
 
 on_edit:
@@ -345,8 +378,10 @@ on_edit:
         .addr (on_edit_bar - 1)
         .addr (on_edit_bar - 1)
         .addr (_just_rts - 1)   ; anim, do nothing
+        .addr (_just_rts - 1)   ; date_format, do nothing
 
 .bss
 pref_copy:      .res 1
 char_count:     .res 1
+max_value:      .res 1
 bar_colour:     .res 1

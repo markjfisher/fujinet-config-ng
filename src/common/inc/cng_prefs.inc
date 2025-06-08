@@ -25,4 +25,7 @@
     ; animation delay (0-F)
     anim_delay   .byte
 
+    ; date format (0=dd/mm/yyyy, 1=mm/dd/yyyy, 2=yyyy/mm/dd)
+    date_format  .byte
+
 .endstruct

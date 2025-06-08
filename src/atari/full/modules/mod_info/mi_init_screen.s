@@ -1,5 +1,6 @@
         .export     _mi_init_screen
         .export     mi_set_pmg_widths
+        .export     mi_show_help
 
         .import     _bank_count
         .import     _clr_help
@@ -25,6 +26,9 @@
         .import     pusha
         .import     screen_separators
 
+        ; Navigation callback system
+        .import     kb_selection_changed_cb
+        .import     kb_current_line
 
         .include    "cng_prefs.inc"
         .include    "fn_data.inc"
@@ -66,6 +70,9 @@ to_decimal_str:
         ; now print bank count, it's now an ascii string
         put_s   #18, #3, #itoa_args+ITOA_PARAMS::itoa_buf
 
+        ; Set up navigation callback for help text
+        mwa     #mi_show_help, kb_selection_changed_cb
+
         rts
 
 mi_set_pmg_widths:
@@ -73,3 +80,49 @@ mi_set_pmg_widths:
         mva     #19, _pmg_space_left
         mva     #17, _pmg_space_right
         rts
+
+; Callback function to display help text based on current selection
+mi_show_help:
+        lda     kb_current_line
+        cmp     #8                      ; check bounds (0-7 for 8 preferences)
+        bcs     clear_help              ; clear if out of bounds
+        
+        ; Use lookup table to get help text address
+        asl     a                       ; multiply by 2 for word addresses
+        tay
+        lda     help_text_table,y
+        sta     ptr1
+        lda     help_text_table+1,y
+        sta     ptr1+1
+        
+        ; Display help text
+        put_s   #1, #19, ptr1
+        rts
+
+clear_help:
+        ; Clear help line
+        put_s   #1, #19, #empty_help
+        rts
+
+; Help text lookup table (word addresses)
+help_text_table:
+        .word   help_colour             ; 0 - Colour
+        .word   help_brightness         ; 1 - Brightness  
+        .word   help_shade              ; 2 - Shade (B/G)
+        .word   help_bar_conn           ; 3 - Bar (Conn.)
+        .word   help_bar_disconn        ; 4 - Bar (Discon.)
+        .word   help_bar_copy           ; 5 - Bar (Copying)
+        .word   help_anim_delay         ; 6 - Anim. Delay
+        .word   help_date_format        ; 7 - Date Format
+
+; Help text strings
+.rodata
+help_colour:        .byte " Change main colour of the display  ", 0
+help_brightness:    .byte "  Adjust screen brightness (0-F)    ", 0
+help_shade:         .byte " Background/foreground shade (0-F)  ", 0  
+help_bar_conn:      .byte " Highlight bar color when connected ", 0
+help_bar_disconn:   .byte " Highlight bar color when disconn.  ", 0
+help_bar_copy:      .byte "Highlight bar color during file copy", 0
+help_anim_delay:    .byte "Anim speed for scrolling text (0-F) ", 0
+help_date_format:   .byte "  Date: 0=d/m/y, 1=m/d/y, 2=y/m/d   ", 0
+empty_help:         .byte "                                    ", 0
