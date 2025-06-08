@@ -27,9 +27,11 @@
 .proc _page_cache_set_path_filter
         ; calculate a hash for the path/filter
         ; use the buffer page_cache_buf for this as it will be overwritten anyway with data if we fetch
-        pushax  #page_cache_buf
-        setax   #$100
-        jsr     _bzero
+
+        ; don't need to clear the memory, everything terminates strings correctly. Plus we have unit tests to prove it
+        ; pushax  #page_cache_buf
+        ; setax   #$100
+        ; jsr     _bzero
 
         ; Setup fc_strlcpy params
         mwa     #page_cache_buf, _fc_strlcpy_params+fc_strlcpy_params::dst
@@ -45,7 +47,7 @@
         beq     no_filter
 
         ; yes, so append a "|" between path and filter so we can easily hash it and the parts are separated in case there are name/filter clashes
-        mwa     page_cache_buf, ptr1
+        mwa     #page_cache_buf, ptr1
         lda     #'|'
         ldy     tmp1
         sta     (ptr1), y               ; add "|" to end of string

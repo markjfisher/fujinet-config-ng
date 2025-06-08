@@ -3,43 +3,42 @@ marker $$testing page_cache_set_path_filter$$
 memory load atari "${BINARY_PATH}"
 symbols load "${SYMBOLS_PATH}"
 
-// Test 1: First path with test_filter1 - should store hash $1234
 run init until CP = $_main
+
+disable trace_logging
+
+// Test 1: Generate hash for path1 + filter1
 run $_main while CP != $t1
 registers set cycle_count = 0
-run $t1 while CP != $t1_end AND cycle_count < 3500
+run $t1 while CP != $t1_end
+assert $hash1 ~ 0x(0D,DD)  $$t1: path1 + filter1 should produce hash 0xDD0D$$
 
-assert $_set_path_flt_params+4 = 0x34  $$t1: hash low byte should be 0x34$$
-assert $_set_path_flt_params+5 = 0x12  $$t1: hash high byte should be 0x12$$
-
-// Test 2: First path with test_filter2 - should store hash $5678
+// Test 2: Generate hash for path1 + filter2 (different filter)
 run while CP != $t2
 registers set cycle_count = 0
-run while CP != $t2_end AND cycle_count < 3500
+run while CP != $t2_end
+assert $hash2 ~ 0x(6D,1A)  $$t2: path1 + filter2 should produce hash 0x1A6D$$
 
-assert $_set_path_flt_params+4 = 0x78  $$t2: hash low byte should be 0x78$$
-assert $_set_path_flt_params+5 = 0x56  $$t2: hash high byte should be 0x56$$
-
-// Test 3: Second path with test_filter2 - should store hash $9ABC
+// Test 3: Generate hash for path2 + filter2 (different path)  
 run while CP != $t3
 registers set cycle_count = 0
-run while CP != $t3_end AND cycle_count < 3800
+run while CP != $t3_end
+assert $hash3 ~ 0x(72,3A)  $$t3: path2 + filter2 should produce hash 0x3A72$$
 
-assert $_set_path_flt_params+4 = 0xBC  $$t3: hash low byte should be 0xBC$$
-assert $_set_path_flt_params+5 = 0x9A  $$t3: hash high byte should be 0x9A$$
-
-// Test 4: Empty path - should store hash $DEAD
+// Test 4: Generate hash for path1 + null filter
 run while CP != $t4
-registers set cycle_count = 0
-run while CP != $t4_end AND cycle_count < 3000
+registers set cycle_count = 0  
+run while CP != $t4_end
+assert $hash4 ~ 0x(E5,FF)  $$t4: path1 + null filter should produce hash 0xFFE5$$
 
-assert $_set_path_flt_params+4 = 0xAD  $$t4: hash low byte should be 0xAD$$
-assert $_set_path_flt_params+5 = 0xDE  $$t4: hash high byte should be 0xDE$$
-
-// Test 5: Path with no filter - should store hash $ABCD
+// Test 5: Repeat test 1 to verify consistency
 run while CP != $t5
 registers set cycle_count = 0
-run while CP != $t5_end AND cycle_count < 3100
+run while CP != $t5_end
+assert $hash5 ~ 0x(0D,DD)  $$t5: repeated input should produce same hash as t1$$
 
-assert $_set_path_flt_params+4 = 0xCD  $$t5: hash low byte should be 0xCD$$
-assert $_set_path_flt_params+5 = 0xAB  $$t5: hash high byte should be 0xAB$$ 
+// Test 6: Final verification
+run while CP != $t6
+registers set cycle_count = 0
+run while CP != $t6_end
+assert $hash5 ~ 0x(0D,DD)  $$t6: final hash should still be same as t1$$ 

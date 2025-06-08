@@ -5,6 +5,7 @@ configs:
 
 src_files:
   - ${WS_ROOT}/src/common/stdlib/fc_strlcpy.s
+  - ${WS_ROOT}/src/common/util/hash.s
   - ${WS_ROOT}/src/atari/common/paging/page_cache_set_path_filter.s
   - test_data.s
   - test_page_cache_set_path_filter.s

@@ -4,6 +4,8 @@
         .import     _edit_string
         .import     _es_params
         .import     _fc_strlen
+        .import     _page_cache_set_path_filter
+        .import     _set_path_flt_params
         .import     debug
         .import     fn_dir_filter
         .import     fn_dir_path
@@ -29,6 +31,7 @@
         .include    "fujinet-fuji.inc"
         .include    "macros.inc"
         .include    "modules.inc"
+        .include    "page_cache.inc"
         .include    "zp.inc"
 
 .segment "CODE2"
@@ -223,6 +226,11 @@ not_parent:
         ; if there was an edit, reset selected and put back to start of dir, as the list will have changed
         mva     #$00, mf_selected
         sta     mf_dir_pos
+
+        ; recalculate the path+filter hash for the new filter and set up for group_id 0
+        mwa     #fn_dir_path, _set_path_flt_params+page_cache_set_path_filter_params::path
+        mwa     #fn_dir_filter, _set_path_flt_params+page_cache_set_path_filter_params::filter
+        jsr     _page_cache_set_path_filter
 
 no_edit:
         ldx     #KBH::APP_1
