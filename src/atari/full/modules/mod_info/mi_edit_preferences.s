@@ -346,10 +346,6 @@ skip_invert:
 .rodata
 
 ; Maximum values for each preference
-; Values < $10 are treated as single-digit values (0-F)
-; Value of $02 for date_format (0-2)
-; Value of $0F for color/brightness/shade/anim_delay (0-F)
-; Value of $FF for bar colors (00-FF)
 mi_prefs_max_values:
         .byte $0F             ; colour (0-F)
         .byte $0F             ; brightness (0-F)
@@ -359,6 +355,7 @@ mi_prefs_max_values:
         .byte $FF             ; bar_copy (00-FF)
         .byte $0F             ; anim_delay (0-F)
         .byte $02             ; date_format (0-2)
+        .byte $01             ; use_banks (0-1)
 
 update_table:
         .addr (update_colour - 1)
@@ -367,6 +364,7 @@ update_table:
         .addr (update_bar - 1)
         .addr (update_bar - 1)
         .addr (update_bar - 1)
+        .addr (_just_rts - 1)
         .addr (_just_rts - 1)
         .addr (_just_rts - 1)
 
@@ -379,6 +377,7 @@ on_edit:
         .addr (on_edit_bar - 1)
         .addr (_just_rts - 1)   ; anim, do nothing
         .addr (_just_rts - 1)   ; date_format, do nothing
+        .addr (_just_rts - 1)   ; use_banks, do nothing
 
 .segment "BANK"
 pref_copy:      .res 1

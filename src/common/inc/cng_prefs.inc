@@ -28,4 +28,7 @@
     ; date format (0=dd/mm/yyyy, 1=mm/dd/yyyy, 2=yyyy/mm/dd)
     date_format  .byte
 
+    ; use banks (0=no, 1=yes)
+    use_banks    .byte
+
 .endstruct

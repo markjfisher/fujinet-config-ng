@@ -14,6 +14,7 @@ typedef struct
     uint8_t bar_copy;
     uint8_t anim_delay;
     uint8_t date_format;
+    uint8_t use_banks;
 } CNG_PREFS_DATA;
 
 extern CNG_PREFS_DATA cng_prefs;

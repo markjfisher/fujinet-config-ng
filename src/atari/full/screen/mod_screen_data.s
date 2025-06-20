@@ -7,7 +7,15 @@
         .export mx_k_bank_cnt
         .export mf_s1, mf_h1, mf_prev, mf_next, mf_copying_msg
         .export mf_host, mf_filter, mf_path
-        .export mx_k_colour, mx_k_bright, mx_k_shade, mx_k_bar_conn, mx_k_bar_dconn, mx_k_bar_copy, mx_k_anim_delay, mx_k_date_format
+        .export mx_k_colour
+        .export mx_k_bright
+        .export mx_k_shade
+        .export mx_k_bar_conn
+        .export mx_k_bar_dconn
+        .export mx_k_bar_copy
+        .export mx_k_anim_delay
+        .export mx_k_date_format
+        .export mx_k_use_banks
         .export mg_l1
 
         .export     mw_bssid
@@ -204,9 +212,7 @@ mx_pref_edit_help:
                 NORMAL_CHARMAP
 mx_k_app_name:  .byte "Config-NG", 0
 mx_v_app_name:  .byte "(c) 2025 Fenrock", 0
-
 mx_k_version:   .byte "Version", 0
-
 mx_k_bank_cnt:  .byte "Bank Count", 0
 
 mx_k_colour:    .byte "Colour", 0
@@ -217,6 +223,7 @@ mx_k_bar_dconn: .byte "Bar (Discon.)", 0
 mx_k_bar_copy:  .byte "Bar (Copying)", 0
 mx_k_anim_delay:.byte "Anim. Delay", 0
 mx_k_date_format:.byte "Date Format", 0
+mx_k_use_banks:  .byte "Bank Paging", 0
 
 
 ; ------------------------------------------------------------------

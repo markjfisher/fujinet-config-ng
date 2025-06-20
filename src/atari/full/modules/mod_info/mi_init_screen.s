@@ -37,6 +37,8 @@
         .include    "macros.inc"
         .include    "zp.inc"
 
+NUM_OPTIONS = 9
+
 .segment "CODE2"
 
 _mi_init_screen:
@@ -60,7 +62,7 @@ _mi_init_screen:
         put_s   #18, #2, _mx_v_version
         put_s   #2,  #3, #mx_k_bank_cnt
 
-        put_s      #3, #21, #mg_l1
+        put_s   #3, #21, #mg_l1
 
 to_decimal_str:
         ; convert bank count to screen value
@@ -85,7 +87,7 @@ mi_set_pmg_widths:
 ; Callback function to display help text based on current selection
 mi_show_help:
         lda     kb_current_line
-        cmp     #8                      ; check bounds (0-7 for 8 preferences)
+        cmp     #NUM_OPTIONS            ; check bounds (0-(NUM-1) preferences)
         bcs     clear_help              ; clear if out of bounds
 
         ; Use lookup table to get help text address
@@ -115,6 +117,7 @@ help_text_table:
         .word   help_bar_copy           ; 5 - Bar (Copying)
         .word   help_anim_delay         ; 6 - Anim. Delay
         .word   help_date_format        ; 7 - Date Format
+        .word   help_use_banks          ; 8 - Enable banked paging
 
 ; Help text strings
 .rodata
@@ -126,4 +129,5 @@ help_bar_disconn:   .byte " Highlight bar color when disconn.  ", 0
 help_bar_copy:      .byte "Highlight bar color during file copy", 0
 help_anim_delay:    .byte "Anim speed for scrolling text (0-F) ", 0
 help_date_format:   .byte "  Date: 0=d/m/y, 1=m/d/y, 2=y/m/d   ", 0
+help_use_banks:     .byte "   Use banked paging: 0=no, 1=yes   ", 0
 empty_help:         .byte "                                    ", 0

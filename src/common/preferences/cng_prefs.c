@@ -14,7 +14,7 @@ void write_defaults() {
 	// memset(&cng_prefs, 0, sizeof(CNG_PREFS_DATA));
 
 	// set the latest version here
-	cng_prefs.version = 2;
+	cng_prefs.version = 3;
 	cng_prefs.colour = 0;
 	cng_prefs.brightness = 0xd;
 	cng_prefs.shade = 0;
@@ -23,6 +23,7 @@ void write_defaults() {
 	cng_prefs.bar_copy = 0x66;
 	cng_prefs.anim_delay = 0x04;
 	cng_prefs.date_format = 0x00;
+	cng_prefs.use_banks = 0x01;
 	write_prefs();
 }
 
@@ -34,22 +35,32 @@ void upgrade(uint8_t from) {
 		break;
 
 	case 1:
-		// v1 had everything before anim_delay, write same values we have from loaded data but with anim_delay set to default 4
-
-		// copy v1 data into structure, it will be short by 1 byte
-		// NOTE: if we update even further, we will need to add the new fields here for v3 extras etc.
+		// copy v0 data into structure, it was 7 bytes
 		memcpy(&cng_prefs, keys_buffer, 7);
-		// do updates
-		cng_prefs.version = 2; 			// set new version (UPDATE THIS TO LATEST VERSION)
+		cng_prefs.version = 3; 			// set new version (UPDATE THIS TO LATEST VERSION)
+
+		// cumulatative updates
+		// v1
 		cng_prefs.anim_delay = 0x04;	// v2 additional data
 		cng_prefs.date_format = 0;      // v2 additional data, dd/mm/yyyy format
-		// v3 extra here, etc...
-
-		// finally write the keys
+		// v2
+		cng_prefs.use_banks = 1; 		// default to on
 		write_prefs();
 		break;
 
-	// case 2:
+	case 2:
+		// copy v1 data into structure, it was 9 bytes
+		memcpy(&cng_prefs, keys_buffer, 9);
+		cng_prefs.version = 3; 			// set new version (UPDATE THIS TO LATEST VERSION)
+
+		// cumulative updates
+		// v2
+		cng_prefs.use_banks = 1; 		// default to on
+
+		write_prefs();
+		break;
+
+	// case n+1:
 	//  these will have to copy old data correctly from old key structure to the new one...
 
 	default:
@@ -85,15 +96,13 @@ void read_prefs(void) {
 
 	// the first byte is the version of the config being loaded, so we can future proof our appkeys
 	cng_prefs.version = keys_buffer[0];
-
 	switch(cng_prefs.version) {
 	case 0:
-		upgrade(0);
-		break;
 	case 1:
-		upgrade(1);
-		break;
 	case 2:
+		upgrade(cng_prefs.version);
+		break;
+	case 3:
 		// values can be copied directly from buffer to the config object
 		memcpy(&cng_prefs, keys_buffer, sizeof(CNG_PREFS_DATA));
 		break;
