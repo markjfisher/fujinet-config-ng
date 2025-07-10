@@ -1,22 +1,19 @@
         .export     _pause
 
         .include    "atari.inc"
-        .include    "zp.inc"
-        .include    "macros.inc"
+        .include    "zeropage.inc"
 
 ; void _pause(uint8_t jiffies)
 ;
-; wait for clock to cycle to given count 0-255
+; wait for clock to cycle by the given count 0-255
 .proc _pause
-        sta    tmp6
+        clc
+        adc     RTCLOK+2
+        sta     tmp1        ; target timer value to get. don't care about carry, as we are just comparing a byte that cycles anyway
 
-        ; this may need to change if we do more complicated timings elsewhere
-        ; but for now, we set RTCLOK+2 to 0, and wait until it hits jiffies
-        lda     #$00
-        sta     RTCLOK+2
-
+        ; now loop until we match the required time
 :       lda     RTCLOK+2
-        cmp     tmp6
+        cmp     tmp1
         bne     :-
 
         rts

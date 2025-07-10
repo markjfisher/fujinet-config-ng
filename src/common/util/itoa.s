@@ -8,6 +8,8 @@
         .include    "macros.inc"
         .include    "itoa.inc"
 
+.segment "CODE2"
+
 ; converts value in itoa_input to a 2 digit string in itoa_buf
 ; doesn't check bounds, so if it's over decimal 99, you'll get weird chars in first digit
 

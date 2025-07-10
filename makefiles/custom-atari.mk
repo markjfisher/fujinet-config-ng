@@ -71,10 +71,14 @@ ALTIRRA ?= $(ALTIRRA_BIN) \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
-  $(XS)/debugcmd: "bp mfp_show_page" \
-  $(XS)/debugcmd: "bp _page_cache_set_path_filter" \
+  $(XS)/debugcmd: "bp debug" \
 
-#   $(XS)/debugcmd: "bp debug" \
+#   $(XS)/debugcmd: "bp _main" \
+#   $(XS)/debugcmd: "bp pre_init" \
+#   $(XS)/debugcmd: "ba w SDMCTL" \
+
+#   $(XS)/debugcmd: "bp mfp_show_page" \
+#   $(XS)/debugcmd: "bp _page_cache_set_path_filter" \
 #  $(XS)/debugcmd: "bp mf_kb_cb" \
 
 # we can also use all Altirra debug commands, like setting a break point on write access to a location

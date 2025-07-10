@@ -88,6 +88,15 @@ make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768
 
 # uploading directly to SD card on FujiNet
 duck --upload dav://anonymous@fujinet.home/dav/autorun-cng-1.0.0.atr dist/autorun-cng-1.0.0.atr -existing overwrite
+
+
+# new linux way of building everything with atr and rclone:
+
+make clean && make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768 && \
+  cp dist/config-z.atr dist/cng-z-1.1.1.atr && \
+  rclone deletefile fujinet:cng-z-1.1.1.atr && \
+  rclone copyto dist/cng-z-1.1.1.atr fujinet:cng-z-1.1.1.atr
+
 ```
 
 ## Core application

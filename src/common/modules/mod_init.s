@@ -21,6 +21,7 @@
         .include    "macros.inc"
         .include    "fujinet-fuji.inc"
         .include    "modules.inc"
+        .include    "atari.inc"
 
 .segment "CODE2"
 
@@ -29,12 +30,14 @@
 ; First Module to load when application starts.
 ; Connects to wifi if possible, and moves to first screen module
 .proc _mod_init
+        lda     #$00
+        sta     SDMCTL                  ; turn off the screen to minimize flashing etc
+
         ; read stored app state from appkeys - these are used by code called in dev_init
         jsr     _read_prefs
 
         ; call device specific initialization
         jsr     _dev_init
-
 
         ; initialise some module values
         mva     #$00, mh_host_selected

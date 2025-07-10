@@ -3,6 +3,7 @@
         .import     _bar_clear
         .import     _bar_setup
         .import     _cng_prefs
+        .import     _pause
         .import     _wait_scan1
         .import     m_l1
         .import     main_dlist
@@ -11,16 +12,26 @@
 
         .include    "atari.inc"
         .include    "cng_prefs.inc"
+        .include    "zp.inc"
         .include    "macros.inc"
         .include    "fn_data.inc"
 
 ; void scr_setup()
 .proc _scr_setup
+        ; mwa     SAVMSC, ptr1
+        ; ldy     #$03
+        ; lda     #$01
+        ; sta     (ptr1),y
+
+;         ldx     #$f0
+; :       jsr     _wait_scan1     ; at top of screen, everything is now setup
+;         dex
+;         bne     :-
 
         jsr     _wait_scan1
+
         mva     #$00, SDMCTL
         mva     #$00, NMIEN
-        jsr     _wait_scan1
 
         jsr     _bar_setup
         jsr     _bar_clear
@@ -48,7 +59,6 @@
         sta     COLOR4
 
         mva     #$08, GPRIOR    ; this sets the priorities correctly for players/missiles when not using pure black background.
-        jsr     _wait_scan1     ; at top of screen, everything is now setup
 
         ; turn screen and interrupts back on with DMA enabled for PMG
         mva     #$40, NMIEN     ; not DLIs yet, they will be add separately

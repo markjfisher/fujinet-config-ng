@@ -15,6 +15,7 @@
 .segment "INIT"
 
 .proc pre_init
+
         ; detect banked values for NMIEN for up to MAX_BANKS (defined in detect_banks.s)
         jsr     detect_banks
 
@@ -27,18 +28,28 @@
         ; this was required before fixing picoboot.bin in CONFIG, by adding equivalent change.
         ; mva     #$01, BOOTQ                     ; stops RESET going to Self Test every other push of button.
 
-        lda     #$c0        ; check if ramtop is already ok
+        lda     #$c0            ; check if ramtop is already ok
         cmp     RAMTOP
-        beq     ramok
-        sta     RAMTOP      ; set ramtop to end of basic
-        sta     RAMSIZ      ; and ramsiz too
+        beq     :+
+        sta     RAMTOP          ; set ramtop to end of basic
+        sta     RAMSIZ          ; and ramsiz too
 
-        lda     PORTB
-        ora     #$02        ; disable basic bit
+:       lda     PORTB
+        ora     #$02            ; disable basic bit
         sta     PORTB
 
-        lda     #$01        ; keep it off after reset
+        lda     #$01            ; keep it off after reset
         sta     BASICF
+
+;         ldx     #$02            ; Close "E:" before re-openining it again
+;         jsr     editor
+;         ldx     #$00            ; Open "E:" to ensure screen is not at $9C00
+
+; editor:
+;         lda     EDITRV+1, x     ; This prevents garbage when loading up to $bc00
+;         pha
+;         lda     EDITRV, x
+;         pha
 
 ramok:
         rts
