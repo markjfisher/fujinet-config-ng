@@ -29,7 +29,7 @@ $ make clean disk
 $ make clean diskz
 
 # Run application using Altirra, see "Running" below
-$ export ALTIRRA_HOME=/path/to/your/Altirra.exe
+$ export ALTIRRA_BIN=/path/to/your/Altirra.exe
 $ make test
 ```
 
@@ -63,7 +63,7 @@ Then you can issue:
 make test
 ```
 
-which will run the application in the appropriate emulator. For altirra, you must set `ALTIRRA_HOME` to path of the folder it lives in.
+which will run the application in the appropriate emulator. For altirra, you must set `ALTIRRA_BIN` to path of the altirra application.
 
 ## Create ATR
 
@@ -87,16 +87,32 @@ make clean all diskz
 make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768
 
 # uploading directly to SD card on FujiNet
-duck --upload dav://anonymous@fujinet.home/dav/autorun-cng-1.0.0.atr dist/autorun-cng-1.0.0.atr -existing overwrite
+duck --upload dav://anonymous@fujinet.home/dav/autorun-cng-1.0.0.atr dist/autorun-cng-X.Y.Z.atr -existing overwrite
+```
 
+### rclone
 
-# new linux way of building everything with atr and rclone:
+One time setup of a "fujinet" entry for rclone
 
+```shell
+# setup a rclone config for "fujinet:", note, you need to change your fujinet http path, my dns defaults internal domain to `home`:
+$ rclone config create fujinet webdav url http://fujinet.home/dav vendor other
+```
+
+Copying now works with "rclone copyto", here is a complete build and deploy to SD:
+
+```shell
+export CNG_VERSION=1.1.2
 make clean && make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768 && \
-  cp dist/config-z.atr dist/cng-z-1.1.1.atr && \
-  rclone deletefile fujinet:cng-z-1.1.1.atr && \
-  rclone copyto dist/cng-z-1.1.1.atr fujinet:cng-z-1.1.1.atr
+  cp dist/config-z.atr dist/cng-z-${CNG_VERSION}.atr && \
+  rclone deletefile fujinet:cng-z-${CNG_VERSION}.atr && \
+  rclone copyto dist/cng-z-${CNG_VERSION}.atr fujinet:cng-z-${CNG_VERSION}.atr
+```
 
+The compressed atr can be tested with:
+
+```shell
+make test-diskz
 ```
 
 ## Core application
