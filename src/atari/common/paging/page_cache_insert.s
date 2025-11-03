@@ -208,7 +208,7 @@ copy_loop:
         jsr     _memcpy
 
         ; restore the destination+2 after memcpy
-        jsr     debug
+        ; jsr     debug
         mwa     saved_dest, ptr2
 
         ; copy header_bytes to the start of the bank, first reduce ptr2 by 2 to point to start of memory

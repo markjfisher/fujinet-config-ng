@@ -50,8 +50,6 @@
 
 mfp_show_page:
 
-        jsr     debug
-
         ; Path hash already set by mfp_new_page, just setup parameters and get pagegroup
         ; setup the get call's parameters
         mwa     mf_dir_pos, _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position
@@ -59,7 +57,7 @@ mfp_show_page:
         ; get the pagegroup (cache lookup already done in mfp_new_page)
         jsr     _page_cache_get_pagegroup
 
-        jsr     debug
+        ; jsr     debug
 
         ; now display it, the raw page group data is in mfp_pg_buf
         ; mfp_pg_buf points to cached data, which includes 2 bytes from header for:

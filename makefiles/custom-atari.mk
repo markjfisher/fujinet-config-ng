@@ -71,7 +71,8 @@ ALTIRRA ?= $(ALTIRRA_BIN) \
   $(XS)/portable $(XS)/portablealt:altirra-debug.ini \
   $(XS)/debug \
   $(XS)/debugcmd: ".loadsym build\$(PROGRAM_TGT).lbl" \
-  $(XS)/debugcmd: "bp debug" \
+
+#  $(XS)/debugcmd: "bp debug" \
 
 #   $(XS)/debugcmd: "bp _main" \
 #   $(XS)/debugcmd: "bp pre_init" \
