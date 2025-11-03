@@ -107,6 +107,10 @@ make clean && make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD
   cp dist/config-z.atr dist/cng-z-${CNG_VERSION}.atr && \
   rclone deletefile fujinet:cng-z-${CNG_VERSION}.atr && \
   rclone copyto dist/cng-z-${CNG_VERSION}.atr fujinet:cng-z-${CNG_VERSION}.atr
+
+
+# smaller banner, note loading address is $6000 and stops the screen corruption:
+make clean && make diskz BANNERMODE=E BANNERSIZE=small BANNERNAME=cng BANNERLOAD=24576 test-diskz
 ```
 
 The compressed atr can be tested with:

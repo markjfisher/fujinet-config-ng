@@ -3,6 +3,7 @@
 /target/
 /obj/
 /dist/
+/banner/
 
 a.out
 *.swp
