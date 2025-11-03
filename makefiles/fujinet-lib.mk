@@ -1,4 +1,4 @@
-FUJINET_LIB_VERSION := 4.7.6
+FUJINET_LIB_VERSION := 4.8.1
 
 FUJINET_LIB = $(CACHE_DIR)/fujinet-lib
 # is target correct, or platform? eg. atarixl vs atari, pet vs c64 vs commodore
