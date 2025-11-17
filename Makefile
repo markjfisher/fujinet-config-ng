@@ -19,15 +19,7 @@ INCLUDE_DIRS = src/**/inc
 # - a URL to a git repo
 # - empty which will use whatever is the latest
 # - undefined, no fujinet-lib will be used
-FUJINET_LIB = 
-
-# Define extra dirs ("combos") that expand with a platform.
-# Format: platform+=combo1,combo2
-PLATFORM_COMBOS = \
-  c64+=commodore \
-  atarixe+=atari \
-  msxrom+=msx \
-  msxdos+=msx
+FUJINET_LIB = /home/markf/dev/atari/fujinet-lib/build
 
 include makefiles/toplevel-rules.mk
 
@@ -36,3 +28,18 @@ include makefiles/toplevel-rules.mk
 #   coco/r2r:: coco/custom-step2
 # or
 #   apple2/disk: apple2/custom-step1 apple2/custom-step2
+
+ATARI_LINKER_CFG = cfg/atari.full.cfg
+EXECUTABLE_EXTRA_DEPS_ATARI = $(ATARI_LINKER_CFG)
+LDFLAGS_EXTRA_ATARI = -C $(ATARI_LINKER_CFG)
+
+# Unit tests
+-include unit-tests.mk
+
+# Emulation
+ifeq ($(filter atari/emulate,$(MAKECMDGOALS)),atari/emulate)
+include atari-emulator.mk
+endif
+
+atari/emulate::
+	$(EMUCMD)
