@@ -1,0 +1,30 @@
+marker $$testing mfp_show_page$$
+
+memory load atari "${BINARY_PATH}"
+symbols load "${SYMBOLS_PATH}"
+
+run init until CP = $_main
+disable trace_logging
+run while CP != $t1
+registers set cycle_count = 0
+run $t1 while CP != $t1_end
+
+assert $mf_is_eod = 1        $$t1: full final page with legacy last-group flag should mark EOD$$
+assert $mf_entries_cnt = 16  $$t1: all 16 entries should be counted$$
+assert $show_next_calls = 0  $$t1: next indicator should not be displayed on final page$$
+
+run while CP != $t2
+registers set cycle_count = 0
+run $t2 while CP != $t2_end
+
+assert $mf_is_eod = 0x80     $$t2: full page before cached empty terminal group should mark EOD$$
+assert $mf_entries_cnt = 16  $$t2: all 16 entries should still be displayed$$
+assert $show_next_calls = 0  $$t2: next indicator should not be displayed before empty terminal group$$
+
+run while CP != $t3
+registers set cycle_count = 0
+run $t3 while CP != $t3_end
+
+assert $mf_is_eod = 0x80    $$t3: empty terminal page should keep EOD set$$
+assert $mf_entries_cnt = 0  $$t3: empty terminal page should not render a phantom entry$$
+assert $show_next_calls = 0 $$t3: next indicator should not be displayed on empty terminal page$$

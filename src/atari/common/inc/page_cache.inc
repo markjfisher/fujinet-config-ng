@@ -1,5 +1,6 @@
 PAGE_CACHE_MAX_ENTRIES = 255    ; Maximum number of entries in cache
 BANK_SIZE_DEFAULT      = $4000  ; Default size of each bank in bytes (16KB)
+PAGE_CACHE_LAST_GROUP_MASK = $81 ; Last group flag: documented bit 7, legacy bit 0
 
 ; Size of page_cache_entry_t for memmove calculations
 PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
@@ -71,7 +72,7 @@ PAGE_CACHE_ENTRY_SIZE = 8      ; Each entry is 8 bytes
 .endstruct
 
 .struct page_cache_pagegroup_header
-    flags           .byte    ; bit 7: last group (1=yes) - not used
+    flags           .byte    ; PAGE_CACHE_LAST_GROUP_MASK: last group (1=yes)
     num_entries     .byte    ; if not last group, will be page_size - not used
     data_size       .word    ; amount of data excluding header for this pagegroup
     group_id        .byte    ; 0 based index for pagegroup for hash_path

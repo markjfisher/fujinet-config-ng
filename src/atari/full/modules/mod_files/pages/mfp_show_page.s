@@ -10,7 +10,11 @@
         .export     mfp_filename_cache
         .export     mf_filename_lengths
 
+        .import     _change_bank
         .import     _page_cache_get_pagegroup
+        .import     _page_cache_check_exists
+        .import     _find_params
+        .import     _get_bank_base
         .import     ts_to_datestr
         .import     ts_output
         .import     size_to_str
@@ -22,6 +26,7 @@
         .import     _fc_strncpy
         .import     _get_pagegroup_params
         .import     _put_s
+        .import     _set_default_bank
         .import     get_scrloc
 
         .import     mf_dir_pos
@@ -62,8 +67,7 @@ mfp_show_page:
         ; now display it, the raw page group data is in mfp_pg_buf
         ; mfp_pg_buf points to cached data, which includes 2 bytes from header for:
         ;  * Byte  0    : Flags
-        ;  *              - Bit 7: Last group (1=yes, 0=no)
-        ;  *              - Bits 6-0: Reserved
+        ;  *              - PAGE_CACHE_LAST_GROUP_MASK: Last group (1=yes, 0=no)
         ;  * Byte  1    : Number of directory entries in this group
 
         ; followed by
@@ -90,11 +94,12 @@ mfp_show_page:
         ; deal with the header bytes
         ; Are we at End of Directory?
         lda     mfp_pg_buf
-        and     #$80
+        and     #PAGE_CACHE_LAST_GROUP_MASK
         sta     mf_is_eod
 
         ; How many entries are there in the group?
         mva     mfp_pg_buf+1, mfp_entries_in_group
+        jsr     mfp_mark_eod_if_next_group_empty
 
         ; Show navigation indicators at top of screen
         jsr     clear_status_2
@@ -104,6 +109,12 @@ mfp_show_page:
 :       lda     mf_is_eod
         bne     :+
         jsr     show_next
+:
+        lda     mfp_entries_in_group
+        bne     :+
+        sta     mf_entries_cnt
+        rts
+
 :
         ; set mfp_current_entry to start of the page group data
         mwa     #mfp_pg_buf+2, mfp_current_entry
@@ -235,12 +246,73 @@ done:
 
 show_size:
         put_s   #27, #21, #mfp_filesize_cache
+
+; shared rts used below
+mfp_check_next_done:
+        rts
+
+; If the current page is full, FujiNet may already have cached the next
+; pagegroup as a zero-entry EOD marker. Treat the current page as EOD so
+; navigation does not enter that empty marker page.
+mfp_mark_eod_if_next_group_empty:
+        lda     mf_is_eod
+        bne     mfp_check_next_done
+
+        lda     mfp_entries_in_group
+        cmp     mf_dir_pg_cnt
+        bne     mfp_check_next_done
+
+        mwa     mf_dir_pos, _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position
+        adw1    _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position, mf_dir_pg_cnt
+
+        jsr     _page_cache_check_exists
+        bne     restore_params
+
+        mwa     _find_params+page_cache_find_params::entry_loc, ptr1
+        ldy     #page_cache_entry::bank_offset
+        mywa    {(ptr1), y}, ptr2
+
+        jsr     _get_bank_base
+        clc
+        adc     ptr2
+        sta     ptr2
+        txa
+        adc     ptr2+1
+        sta     ptr2+1
+
+        ldy     #page_cache_entry::bank_id
+        lda     (ptr1), y
+        jsr     _change_bank
+
+        ldy     #$00
+        lda     (ptr2), y
+        sta     mfp_next_pg_flags
+        iny
+        lda     (ptr2), y
+        sta     mfp_next_pg_entry_cnt
+
+        jsr     _set_default_bank
+
+        lda     mfp_next_pg_entry_cnt
+        bne     restore_params
+
+        lda     mfp_next_pg_flags
+        and     #PAGE_CACHE_LAST_GROUP_MASK
+        beq     restore_params
+
+        sta     mf_is_eod
+
+restore_params:
+        mwa     mf_dir_pos, _get_pagegroup_params+page_cache_get_pagegroup_params::dir_position
+        mwa     #mfp_pg_buf, _get_pagegroup_params+page_cache_get_pagegroup_params::data_ptr
         rts
 
 .bss
 mfp_current_entry:      .res 2
 mfp_e_is_dir:           .res 1
 mfp_entries_in_group:   .res 1
+mfp_next_pg_flags:      .res 1
+mfp_next_pg_entry_cnt:  .res 1
 
 ; pointers to current position in cache tables as we build them
 mfp_ts_cache_ptr:       .res 2  ; points to next free timestamp slot

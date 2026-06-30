@@ -1,0 +1,14 @@
+name: test mfp_show_page
+
+configs:
+  - ${UNIT_TEST_DIR}/base_configs/base_test.yaml
+
+asm_include_paths:
+  - ${WS_ROOT}/src/atari/full/inc
+
+src_files:
+  - ${WS_ROOT}/src/atari/full/modules/mod_files/pages/mfp_show_page.s
+  - test_mfp_show_page.s
+  - test_data.s
+
+test_script: test_mfp_show_page.txt

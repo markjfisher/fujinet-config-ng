@@ -102,7 +102,7 @@ $ rclone config create fujinet webdav url http://fujinet.home/dav vendor other
 Copying now works with "rclone copyto", here is a complete build and deploy to SD:
 
 ```shell
-export CNG_VERSION=1.1.2
+export CNG_VERSION=1.1.3
 make clean && make diskz BANNERMODE=E BANNERSIZE=large BANNERNAME=cng BANNERLOAD=32768 && \
   cp dist/config-z.atr dist/cng-z-${CNG_VERSION}.atr && \
   rclone deletefile fujinet:cng-z-${CNG_VERSION}.atr && \

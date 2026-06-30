@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-06-30
+
+Fix bug in pagination with banked pages where the final "end" block has no entries, causing corruption
+due to allowing page to be navigated to when it didn't actually exist.
+
 ## [1.1.2] - 2025-11-03
 
 This is an accumulation of all the changes since 1.0.1 as I forgot to update the changelog.
